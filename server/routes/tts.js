@@ -20,6 +20,9 @@
 //     ctx 'course' { course, step, i }  slide i of a course step's lesson (seed-lessons/cs-quest/course), read in English
 //                  with the voice of that step's game character; only a step the player has open (staff and the admin:
 //                  any step). The server reads the slide: the page never sends text.
+//     ctx 'grammar' { topic }  a Grammar Lab topic's teaching card, read in English (services/grammar-lab.js cardSpoken),
+//                  only where the card is read aloud (the K-2 band) and only for a visitor GRAMMAR_LAB lets in. The server
+//                  reads the card: the page never sends text.
 //     ctx 'placement' { runId }  the item a Number Quest placement run (the Sorting Game, or a unit test-out) is
 //                  serving now, regenerated on the server from the run's stored template and seed — the same
 //                  regeneration that grades it. Only the run's own student, only while the run is active, read in
@@ -58,6 +61,8 @@ import * as LS from '../services/classlive-sessions.js';
 import * as PROG from '../services/progress.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { LOCALES } from '../i18n/index.js';
+import * as GLAB from '../services/grammar-lab.js';
+import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
 import { COMMUNITY_CSS } from './social.js';
 import { ADMIN_BODY, ADMIN_CSS, note } from '../views/admin-ui.js';
 import * as COURSES from '../services/courses.js';
@@ -171,6 +176,12 @@ function resolve(req, b) {
     const g = step.game && lines.GAMES[step.game.slug];
     // Lesson slides are English (the course content is English first): read with the English voice.
     return { text: sayOf(slide, step.band), locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
+  }
+  if (b.ctx === 'grammar') {
+    if (!mayOpenGrammarLab(req.user)) return { error: [404, 'off'] };
+    const tp = typeof b.topic === 'string' ? GLAB.topic(b.topic) : null;
+    if (!tp || !GLAB.readsAloud(tp)) return { error: [404, 'off'] };
+    return { text: GLAB.cardSpoken(tp), locale: 'en', role: 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'placement') {
     if (!req.user) return { error: [404, 'off'] };

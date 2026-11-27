@@ -9,6 +9,7 @@ import { config } from './config.js';
 import { sessionMiddleware, csrfCheck } from './auth.js';
 import { notFound, page } from './views/layout.js';
 import { mayOpenCourses } from './services/game-focus.js';
+import { mayOpenGrammarLab, GRAMMAR_LAB_PATH } from './services/grammar-lab-access.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { handler as health, lifecycle } from './services/health.js';
@@ -19,6 +20,7 @@ import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
 import { router as onboardingRoutes } from './routes/onboarding.js';
 import { router as discoverRoutes } from './routes/discover.js';
+import { router as grammarLabRoutes } from './routes/grammar-lab.js';
 import { router as courseRoutes } from './routes/courses.js';
 import { router as gameRoutes } from './routes/games.js';
 import { router as studioRoutes } from './routes/studio.js';
@@ -233,15 +235,18 @@ export function createApp() {
 
   // The ready-made courses while COURSES is off (services/game-focus.js): the normal 404 for everyone but the platform
   // admin and the people of a class that has a course lesson assigned (their lessons, gradebook and standards keep working).
+  // Grammar Lab lives under /courses/grammar-lab but has its own flag: it goes through here for whoever GRAMMAR_LAB lets
+  // in (services/grammar-lab-access.js), and its own router answers the 404 for everyone else, whatever COURSES says.
   app.use((req, res, next) => {
     if (!COURSE_PATH.test(req.path) || mayOpenCourses(req.user)) return next();
+    if (GRAMMAR_LAB_PATH.test(req.path) && mayOpenGrammarLab(req.user)) return next();
     return req.path.startsWith('/api/') ? res.status(404).json({ error: tReq(req)('errors.api.notFound') }) : notFound(req, res);
   });
 
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, liveEmbedRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, homeroomRoutes, homeroomSigninRoutes, homeroomSubRoutes, notebookRoutes, homeroomParentRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, liveEmbedRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, grammarLabRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, homeroomRoutes, homeroomSigninRoutes, homeroomSubRoutes, notebookRoutes, homeroomParentRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

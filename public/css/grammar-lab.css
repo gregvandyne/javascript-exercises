@@ -1,0 +1,177 @@
+/* Grammar Lab's pages (server/views/grammar-lab.js, public/js/grammar-lab.js). Oomba's tokens only (public/css/app.css),
+   so light and dark both come from the token blocks there; nothing here names a theme. K-2 pages get large text. */
+.gl{max-width:880px;margin:0 auto;padding:8px 0 48px;overflow-wrap:anywhere}
+.gl h1{font-size:clamp(26px,5vw,34px);line-height:1.15;margin:6px 0 4px}
+.gl h2{font-size:clamp(20px,4vw,24px);margin:12px 0 8px}
+.gl .muted{color:var(--muted)}
+.gl-top{margin-bottom:16px}
+.gl-top p{margin:0}
+.gl-crumb{margin:0 0 8px;font-weight:600}
+.gl-label{margin:0 0 4px;font-size:14px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+
+/* The course page: a band with its cover and its units. */
+.gl-bandsec{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:16px;margin-bottom:20px}
+.gl-cover{border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:var(--card-2)}
+.gl-cover svg{width:100%;height:100%}
+.gl-units{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gl-unit{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r);background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 2px var(--line)}
+.gl-unit:hover{text-decoration:none;box-shadow:inset 0 0 0 2px var(--accent-line)}
+.gl-unit-t{display:flex;flex-direction:column;flex:1;min-width:0}
+.gl-unit-name{font-weight:700;font-size:19px}
+.gl-go{font-size:28px;color:var(--muted)}
+
+/* A unit's progress ring, from the live topic states. */
+.gl-ring{--p:0;flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;
+  background:conic-gradient(var(--accent-line) calc(var(--p) * 1%),var(--line) 0)}
+.gl-ring span{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--card);font-size:14px;font-weight:700}
+.gl-unithead{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.gl-unithead p{margin:0}
+
+/* Topic tiles, each with its options menu. */
+.gl-topics{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.gl-tile{position:relative;display:flex;align-items:stretch;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 2px var(--line)}
+.gl-tile-main{flex:1;min-width:0;display:flex;align-items:center;gap:14px;padding:16px;color:var(--text);border-radius:var(--r)}
+a.gl-tile-main:hover{text-decoration:none;background:var(--hover)}
+.gl-tile-n{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);font-weight:800;font-size:20px}
+.gl-tile-t{display:flex;flex-direction:column;min-width:0}
+.gl-tile-name{font-weight:700;font-size:20px}
+.gl-tile-state{font-size:15px;color:var(--muted)}
+.gl-mastered{box-shadow:var(--shadow),inset 0 0 0 2px var(--accent-line)}
+.gl-mastered .gl-tile-n{background:var(--accent-line);color:var(--on-current);box-shadow:none;font-size:24px}
+.gl-mastered .gl-tile-state{color:var(--ok);font-weight:700}
+.gl-pending .gl-tile-n{background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark)}
+.gl-locked .gl-tile-main{opacity:.7}
+.gl-menu{position:relative;flex:none;align-self:center;margin-inline-end:8px}
+.gl-menu summary{list-style:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:24px;font-weight:800;color:var(--text)}
+.gl-menu summary::-webkit-details-marker{display:none}
+.gl-menu summary:hover,.gl-menu[open] summary{background:var(--hover)}
+.gl-menu-list{position:absolute;inset-inline-end:0;top:48px;z-index:5;min-width:230px;display:flex;flex-direction:column;padding:6px;border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg),inset 0 0 0 1px var(--line)}
+.gl-mi{display:flex;flex-direction:column;padding:10px 12px;border-radius:10px;color:var(--text);font-weight:600}
+a.gl-mi:hover{background:var(--hover);text-decoration:none}
+.gl-mi[aria-disabled="true"]{color:var(--muted);cursor:not-allowed}
+.gl-mi small{font-weight:500;font-size:13px}
+
+/* The guest's sign-in prompt. */
+.gl-guest{margin:0 0 16px;padding:14px 16px;border-radius:var(--r);background:var(--spark-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--spark)}
+.gl-guest p{margin:0 0 8px}
+.gl-guest-h{font-weight:800;font-size:18px}
+.gl-guest-go{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+
+/* The practice page. */
+.gl-practice{max-width:760px}
+.gl-qhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.gl-qback{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font-size:24px;font-weight:700;color:var(--text);box-shadow:inset 0 0 0 2px var(--line)}
+.gl-qback:hover{background:var(--hover);text-decoration:none}
+.gl-qtitle{display:flex;flex-direction:column;flex:1 1 160px;min-width:0}
+.gl-qunit{font-size:14px;color:var(--muted);font-weight:600}
+.gl-qtopic{font-weight:800;font-size:18px}
+.gl-hbtn{min-height:40px}
+.gl-ibtn{width:40px;padding:0;font-weight:800}
+.gl-dots{display:inline-flex;gap:5px}
+.gl-dots i,.gl-stars i{display:block;width:16px;height:16px;border-radius:50%;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--edge)}
+.gl-dots i.on,.gl-stars i.on{background:var(--spark);box-shadow:inset 0 0 0 2px var(--spark-press)}
+.gl-meter{margin:0 0 14px}
+.gl-counter{margin:0 0 6px;font-weight:700;color:var(--text-2)}
+.gl-bar{list-style:none;margin:0;padding:0;display:flex;gap:3px}
+.gl-seg{flex:1;height:12px;border-radius:6px;background:var(--line)}
+.gl-seg-right{background:var(--accent-line)}
+.gl-seg-missed{background:var(--spark)}
+.gl-screen{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px 16px 22px}
+.gl-lead{font-size:19px;color:var(--text-2)}
+
+.gl-welcome{position:relative;text-align:center}
+.gl-skip{position:absolute;inset-inline-end:12px;top:12px;z-index:2}
+.gl-welcome-art{position:relative;max-width:520px;margin:28px auto 8px}
+.gl-stage-door .gla-welcome{max-width:none}
+.gl-welcome-art .gl-stage-greet{position:absolute;inset-inline-start:-6px;bottom:-14px;width:clamp(96px,26%,140px)}
+.gl-welcome .btn-big{min-width:200px}
+
+.gl-qtop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.gl-ask{margin:0;font-size:20px;font-weight:700}
+.gl-term{border-bottom:2px dotted var(--accent-line);cursor:help;border-radius:4px}
+.gl-term:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-streak{display:flex;align-items:center;gap:8px;margin:0;font-size:15px;color:var(--muted)}
+.gl-pips{display:inline-flex;gap:4px}
+.gl-pips i{display:block;width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--edge)}
+.gl-pips i.on{background:var(--accent-line);box-shadow:none}
+.gl-sentence{margin:22px 0;font-size:clamp(22px,5.4vw,28px);line-height:1.9;font-weight:600}
+.gl-w{font:inherit;color:inherit;background:transparent;border:0;margin:0;padding:0 .14em;border-radius:10px;cursor:pointer;
+  box-shadow:inset 0 -2px 0 var(--line);touch-action:manipulation;min-height:44px}
+.gl-w:hover{background:var(--hover)}
+.gl-w:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-w[aria-pressed="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-notice{margin:0 0 14px;padding:12px 14px;border-radius:var(--r-sm);font-weight:600}
+.gl-notice-wrong{background:var(--spark-soft);color:var(--text);box-shadow:inset 4px 0 0 var(--spark)}
+.gl-notice-near{background:var(--warn-bg);color:var(--warn-ink);box-shadow:inset 4px 0 0 var(--spark-press)}
+.gl-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+.gl-submit{min-width:160px}
+.gl-flag{margin:14px 0 0;text-align:end;font-size:14px}
+.gl-flag .linkish{background:none;border:0;padding:4px;color:var(--link);font:inherit;cursor:pointer;text-decoration:underline}
+.gl-hint{margin:14px 0 0;padding:14px 16px;border-radius:var(--r);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
+.gl-hint-h{margin:0 0 4px;font-weight:800}
+.gl-hint-text{margin:0 0 10px;font-size:18px}
+
+/* The worked example: the key word and the word it tells about, color-coded and labeled. */
+.gl-card-body{font-size:18px}
+.gl-def{font-size:20px;font-weight:600;margin:0 0 12px}
+.gl-example,.gl-tips{margin:0 0 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2)}
+.gl-card-small .gl-example{background:var(--card)}
+.gl-ex-text{font-size:22px;font-weight:600;line-height:2.4;margin:0}
+.gl-ex-note{color:var(--text-2);margin:0}
+.gl-tips ul{margin:0;padding-inline-start:20px}
+.gl-tips li{margin:4px 0}
+.gl-tips .gl-ex-text{font-size:20px}
+.gl-how{margin:0 0 12px}
+.gl-mk{position:relative;display:inline-block;padding:0 .18em;border-radius:8px;line-height:1.3}
+.gl-mk-tag{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;color:var(--text-2)}
+.gl-mk-adjective,.gl-mk-adverb{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-mk-noun,.gl-mk-subject,.gl-mk-pronoun{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
+.gl-mk-verb,.gl-mk-article,.gl-mk-conjunction,.gl-mk-preposition{background:var(--hover);box-shadow:inset 0 -3px 0 var(--edge)}
+
+/* The green confirmation, the level overlay and the dialogs. */
+.gl-flash{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);text-align:center;cursor:pointer}
+.gl-flash p{margin:8px 0 0;font-size:clamp(30px,8vw,48px);font-weight:800}
+.gl-check{display:grid;place-items:center;width:120px;height:120px;margin:0 auto;border-radius:50%;background:var(--brand-cream);color:var(--brand-leaf);font-size:72px;font-weight:800;animation:gl-pop .35s ease-out}
+@keyframes gl-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.gl-overlay{position:fixed;inset:0;z-index:55;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.55)}
+.gl-overlay[hidden],.gl-flash[hidden]{display:none}
+.gl-overlay-card{width:min(440px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:20px;border-radius:var(--r-lg);background:var(--card);color:var(--text);text-align:center;box-shadow:var(--shadow-lg)}
+.gl-stars{display:flex;justify-content:center;gap:10px;margin:0 0 6px}
+.gl-stars i{width:26px;height:26px}
+.gl-overlay .gl-stage-greet{width:150px;margin:0 auto}
+.gl-dialog{width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);border:0;border-radius:var(--r-lg);padding:18px;background:var(--card);color:var(--text);box-shadow:var(--shadow-lg)}
+.gl-dialog::backdrop{background:rgba(20,20,20,.55)}
+.gl-dialog h2{margin-top:0}
+.gl-dialog-go{display:flex;justify-content:flex-end;gap:8px;margin:12px 0 0}
+.gl-bubble{position:absolute;z-index:65;max-width:min(280px,calc(100vw - 16px));padding:10px 14px;border-radius:14px;background:var(--card);color:var(--text);
+  box-shadow:inset 0 0 0 2px var(--text),var(--shadow-lg);font-size:16px;line-height:1.35}
+.gl-bubble b{display:block;font-size:18px;color:var(--accent-ink)}
+
+.gl-done{text-align:center}
+.gl-done .gl-stage-mastery{max-width:520px;margin:0 auto 10px}
+.gl-done-where{margin:0;color:var(--muted);font-weight:600}
+.gl-done-go{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.gl-done .gl-guest{text-align:start}
+
+/* The card page and the look-back list. */
+.gl-card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px 16px}
+.gl-card-go{text-align:center;margin-top:16px}
+.gl-review{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gl-review li{padding:12px 14px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.gl-review .gl-ok{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.gl-review-s{margin:0;font-size:14px;font-weight:700;color:var(--muted)}
+
+/* K-2: large text, one idea at a time. */
+.gl-band-k-2 .gl-sentence{font-size:clamp(28px,7.4vw,40px)}
+.gl-band-k-2 .gl-ask{font-size:24px}
+.gl-band-k-2 .gl-card-body{font-size:21px}
+.gl-band-k-2 .gl-def{font-size:23px}
+.gl-band-k-2 .gl-ex-text{font-size:clamp(24px,6vw,30px)}
+.gl-band-k-2 .gl-hint-text,.gl-band-k-2 .gl-notice{font-size:20px}
+
+@media (prefers-reduced-motion:reduce){.gl-check{animation:none}}
+@media (max-width:520px){
+  .gl-screen,.gl-card,.gl-bandsec{padding:14px 12px 18px;border-radius:var(--r)}
+  .gl-actions .btn{flex:1 1 auto}
+}
+.gl .btn{max-width:100%;white-space:normal;text-align:center}

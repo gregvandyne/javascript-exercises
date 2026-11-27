@@ -1189,5 +1189,10 @@
   },
   "vis": {
     "connectionsClasses": "Friends and classes"
+  },
+  "grammarLab": {
+    "topic": {
+      "again": "Practise again"
+    }
   }
 }

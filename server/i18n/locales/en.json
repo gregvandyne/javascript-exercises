@@ -6826,6 +6826,24 @@
       "joinShort": "Join",
       "join": "Join {title}",
       "over": "The live game ended. You are back at your desk."
+    },
+    "grammar-lab": {
+      "levelOf": "Level {n} of {total}",
+      "levelsDone": "{done} of {total} levels done",
+      "levelsNow": "You are on level {n} of {total}.",
+      "counter": "Question {n} of {total}",
+      "streak": "Right in a row: {n} of {need}",
+      "wrong": "Not quite. Look again and try once more. Get two right in a row to finish this level.",
+      "again": "Still not it. Open the hint for help.",
+      "near": "You picked too many words. Unpick the extras, then submit again.",
+      "hideHint": "Hide hint",
+      "hint": "Hint",
+      "levelDone": "Level {n} done!",
+      "levelText": "Fresh questions are next. Keep going!",
+      "answered": "{count, plural, one {You answered # question.} other {You answered # questions.}}",
+      "next": "Next: {topic}",
+      "flagSent": "Thanks. We will take a look.",
+      "wentWrong": "Something went wrong. Try again."
     }
   },
   "favorites": {
@@ -17881,6 +17899,111 @@
       "title": "Flashcards they shared with the class",
       "cards": "{count, plural, one {# card} other {# cards}}",
       "hidden": "Hidden from the class"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammar and writing, one skill at a time",
+    "band": "Grades {grades}",
+    "topicsN": "{count, plural, one {# topic} other {# topics}}",
+    "ringLabel": "{done} of {total} topics mastered",
+    "allUnits": "All units",
+    "backTo": "Back to {unit}",
+    "noscript": "This practice needs JavaScript turned on.",
+    "topic": {
+      "options": "More for {topic}",
+      "card": "Teaching card",
+      "again": "Practice again",
+      "review": "Look back at questions",
+      "afterMastery": "After you master it",
+      "new": "Start",
+      "started": "Keep going",
+      "mastered": "Mastered",
+      "pending": "Sign in to keep it",
+      "locked": "Master the one before first"
+    },
+    "guest": {
+      "title": "Sign in to keep your wins",
+      "text": "You can play as a guest. To keep a topic you master, sign in or make an account.",
+      "wonTitle": "Nice work! Sign in to keep it",
+      "wonText": "You mastered this as a guest. Sign in or make an account, and we will add it to your progress.",
+      "signup": "Make an account",
+      "login": "Sign in"
+    },
+    "welcome": {
+      "heading": "Welcome to {topic}",
+      "text": "Keep answering until you show you have it. Get the last two right in a row to finish each level.",
+      "go": "Let's go",
+      "skip": "Skip intro"
+    },
+    "practice": {
+      "tip": "How double-tap works",
+      "card": "Teaching card",
+      "hint": "Hint",
+      "hintTitle": "Here is a hint",
+      "submit": "Submit",
+      "flag": "Report a problem with this question",
+      "correct": "Correct!",
+      "levelNext": "Next level"
+    },
+    "levels": {
+      "heading": "Levels and mastery",
+      "rule": "To finish a level, answer its questions and get the last two right in a row. A wrong answer adds one question.",
+      "mastery": "{total, plural, one {Finish the level to master this topic.} other {Finish all # levels to master this topic.}}",
+      "close": "Close"
+    },
+    "tip": {
+      "heading": "Double-tap to see what a word means",
+      "text": "Double-tap a grammar word, like {word}, and its meaning pops up.",
+      "before": "Tap the",
+      "after": "in each sentence.",
+      "def": "tells about a noun",
+      "ok": "Got it",
+      "replay": "Replay"
+    },
+    "flag": {
+      "heading": "Report a problem",
+      "text": "Is something wrong with this question? Send it to us and we will take a look.",
+      "send": "Send",
+      "cancel": "Cancel"
+    },
+    "done": {
+      "heading": "You mastered {topic}!",
+      "back": "Back to {unit}"
+    },
+    "card": {
+      "heading": "Teaching card",
+      "example": "Example",
+      "how": "How it works:",
+      "tips": "More examples",
+      "listen": "Read it to me",
+      "stop": "Stop",
+      "practice": "Start practice"
+    },
+    "review": {
+      "heading": "Look back at your questions",
+      "firstTry": "Right the first time",
+      "fixed": "Fixed after a hint",
+      "none": "Master this topic to look back at its questions."
+    },
+    "roles": {
+      "adjective": "adjective",
+      "noun": "noun",
+      "verb": "verb",
+      "adverb": "adverb",
+      "pronoun": "pronoun",
+      "subject": "subject",
+      "article": "article",
+      "conjunction": "conjunction",
+      "preposition": "preposition"
+    },
+    "glossaryWord": {
+      "adjective": "adjective",
+      "noun": "noun"
+    },
+    "glossary": {
+      "adjective": "a word that tells about a noun: what kind, how many, or which one",
+      "noun": "a word for a person, place, animal, or thing"
     }
   }
 }

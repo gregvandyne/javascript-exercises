@@ -1,0 +1,17 @@
+{
+  "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title and its parts, each part an ordered list of topic ids (a topic opens when the one before it in the unit is mastered). topics: each topic once, by id: where its text is in source/course.md (the band section and the topic heading), its quiz format, the line that asks the question, and its levels (questions per level). scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
+  "bands": [
+    { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs"] }
+  ],
+  "pathways": {
+    "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] }
+  },
+  "topics": {
+    "identifying-adjectives": {
+      "source": { "band": "k-2", "title": "Identifying Adjectives" },
+      "format": "tap",
+      "ask": "Tap the adjective.",
+      "levels": [4, 4, 4]
+    }
+  }
+}

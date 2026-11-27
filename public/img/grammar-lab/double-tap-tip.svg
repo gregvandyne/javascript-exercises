@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" aria-hidden="true" focusable="false"><g style="stroke-linejoin:round;stroke-linecap:round"><rect width="480" height="320" rx="0" style="fill:#F4F1E6;"/>
+<rect x="24" y="140" width="432" height="108" rx="22" style="fill:#FFFDF2;stroke:#E2DDCB;stroke-width:3;"/>
+<text x="126" y="206" text-anchor="end" style="fill:#141414;font-size:34px;font-weight:600;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">The</text>
+<rect x="136" y="172" width="116" height="46" rx="10" style="fill:#FFD23F;"/><path d="M140 222 H248" style="fill:none;stroke:#C99A00;stroke-width:4;"/>
+<text x="194" y="206" text-anchor="middle" style="fill:#141414;font-size:34px;font-weight:800;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">fluffy</text>
+<text x="264" y="206" text-anchor="start" style="fill:#141414;font-size:34px;font-weight:600;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">cat naps.</text>
+<circle cx="194" cy="236" r="16" style="fill:none;stroke:#1F9D63;stroke-width:4;opacity:.8"/><circle cx="194" cy="236" r="28" style="fill:none;stroke:#1F9D63;stroke-width:3;opacity:.4"/>
+<g transform="translate(169 234)"><rect x="56" y="48" width="22" height="34" rx="11" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/><rect x="40" y="44" width="22" height="38" rx="11" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/>
+<rect x="12" y="2" width="27" height="70" rx="13.5" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/>
+<path d="M10 60 Q2 70 8 84 Q14 102 40 104 Q70 104 76 84 L78 66 Q70 62 60 66 L12 62 Z" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/>
+<path d="M18 60 Q6 58 4 70 Q6 80 16 82" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/>
+<path d="M20 14 Q20 8 25 7" style="fill:none;stroke:#E2DDCB;stroke-width:3;"/>
+<rect x="16" y="96" width="58" height="14" rx="5" style="fill:#66C792;stroke:#141414;stroke-width:4;"/></g>
+<g><rect x="74" y="34" width="240" height="94" rx="18" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/><path d="M178 126 L194 146 L210 126" style="fill:#FFFDF2;stroke:#141414;stroke-width:4;"/><path d="M180 124 H208" style="fill:#FFFDF2;stroke:#FFFDF2;stroke-width:6;"/>
+<text x="96" y="72" text-anchor="start" style="fill:#1F9D63;font-size:26px;font-weight:800;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">fluffy</text><text x="96" y="106" text-anchor="start" style="fill:#141414;font-size:22px;font-weight:600;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">soft and full of fur</text>
+<path d="M290 46 Q291.63 56.37 302 58 Q291.63 59.63 290 70 Q288.37 59.63 278 58 Q288.37 56.37 290 46Z" style="fill:#FFD23F;stroke:#141414;stroke-width:3;"/></g></g></svg>
