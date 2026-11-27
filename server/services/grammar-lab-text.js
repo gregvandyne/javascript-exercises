@@ -24,3 +24,6 @@ export function findWords(tokens, phrase) {
 }
 /** Does a text use this word (whole word, any case)? */
 export const hasWord = (text, word) => findWords(tokenize(text), word).length > 0;
+/** A typed sentence as compared (a fix typed by the student, and every accepted fix): curly quotes and apostrophes made
+ *  straight, spaces run together, nothing at the ends. Capitals and marks count: they are what a fix is about. */
+export const normTyped = s => String(s || '').replace(/[“”„‟″]/g, '"').replace(/[‘’‛′]/g, "'").replace(/\s+/g, ' ').trim();

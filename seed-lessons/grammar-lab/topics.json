@@ -13,6 +13,29 @@
     "kinds-of-words",
     "verbs-and-time"
    ]
+  },
+  {
+   "id": "3-5",
+   "grades": "3-5",
+   "pathways": [
+    "adjectives-and-adverbs",
+    "building-sentences",
+    "capital-letters",
+    "titles",
+    "commas",
+    "sound-alike-words",
+    "joining-words",
+    "evidence-that-informs",
+    "evidence-for-an-opinion",
+    "quotes-and-dialogue",
+    "fixing-sentences",
+    "kinds-of-words",
+    "more-kinds-of-words",
+    "evidence-basics",
+    "showing-not-telling",
+    "verbs-and-time",
+    "more-verbs-and-time"
+   ]
   }
  ],
  "pathways": {
@@ -109,6 +132,154 @@
      ]
     }
    ]
+  },
+  "building-sentences": {
+   "title": "Building Sentences",
+   "parts": [
+    {
+     "title": "Compound Sentences",
+     "topics": [
+      "compound-sentences"
+     ]
+    },
+    {
+     "title": "Complex Sentences",
+     "topics": [
+      "complex-sentences"
+     ]
+    }
+   ]
+  },
+  "titles": {
+   "title": "Titles",
+   "parts": [
+    {
+     "topics": [
+      "capitalizing-titles"
+     ]
+    }
+   ]
+  },
+  "joining-words": {
+   "title": "Joining Words",
+   "parts": [
+    {
+     "topics": [
+      "coordinating-conjunctions"
+     ]
+    }
+   ]
+  },
+  "evidence-that-informs": {
+   "title": "Evidence That Informs",
+   "parts": [
+    {
+     "topics": [
+      "evidence-for-informing"
+     ]
+    }
+   ]
+  },
+  "evidence-for-an-opinion": {
+   "title": "Evidence for an Opinion",
+   "parts": [
+    {
+     "topics": [
+      "evidence-for-opinions"
+     ]
+    }
+   ]
+  },
+  "quotes-and-dialogue": {
+   "title": "Quotes and Dialogue",
+   "parts": [
+    {
+     "title": "Dialogue",
+     "topics": [
+      "quotation-marks-in-dialogue"
+     ]
+    },
+    {
+     "title": "Quotes",
+     "topics": [
+      "quotation-marks-around-quotes"
+     ]
+    }
+   ]
+  },
+  "fixing-sentences": {
+   "title": "Fixing Sentences",
+   "parts": [
+    {
+     "title": "Subjects and Verbs",
+     "topics": [
+      "identifying-action-verbs"
+     ]
+    },
+    {
+     "title": "Fragments",
+     "topics": [
+      "recognizing-fragments"
+     ]
+    },
+    {
+     "title": "Run-ons",
+     "topics": [
+      "avoiding-run-ons"
+     ]
+    }
+   ]
+  },
+  "more-kinds-of-words": {
+   "title": "More Kinds of Words",
+   "parts": [
+    {
+     "title": "Conjunctions",
+     "topics": [
+      "coordinating-conjunctions"
+     ]
+    }
+   ]
+  },
+  "evidence-basics": {
+   "title": "Evidence Basics",
+   "parts": [
+    {
+     "topics": [
+      "evidence-that-supports"
+     ]
+    }
+   ]
+  },
+  "showing-not-telling": {
+   "title": "Showing, Not Telling",
+   "parts": [
+    {
+     "topics": [
+      "showing-with-actions"
+     ]
+    }
+   ]
+  },
+  "more-verbs-and-time": {
+   "title": "More Verbs and Time",
+   "parts": [
+    {
+     "title": "Progressive Verbs",
+     "topics": [
+      "progressive-verbs"
+     ]
+    },
+    {
+     "title": "Tense Shifts",
+     "topics": [
+      "tense-shifts"
+     ]
+    }
+   ],
+   "marks": {
+    "tense-shifts": "review"
+   }
   }
  },
  "topics": {
@@ -1992,6 +2163,3175 @@
      "hint": "Tomorrow means it will happen later, so use will plus the verb."
     }
    ]
+  },
+  "compound-sentences": {
+   "id": "compound-sentences",
+   "title": "Combining Ideas to Make Compound Sentences",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Choose the sentence that joins the two thoughts the right way.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 268
+   },
+   "choices": {
+    "kind": "join"
+   },
+   "card": {
+    "definition": "A compound sentence joins two complete thoughts with a word like and, but, or so. Each part could stand alone as a sentence.",
+    "example": {
+     "text": "The rain stopped, and the sun came out.",
+     "note": "",
+     "marks": [],
+     "more": [
+      {
+       "text": "The rain stopped",
+       "note": "is one complete thought.",
+       "marks": []
+      },
+      {
+       "text": "The sun came out",
+       "note": "is another. The word and joins them.",
+       "marks": []
+      }
+     ]
+    },
+    "how": "The word and connects two complete thoughts into one longer sentence.",
+    "tips": [
+     {
+      "text": "Sam likes soccer, but Ana likes tennis.",
+      "note": "But joins two thoughts.",
+      "marks": []
+     },
+     {
+      "text": "We can walk, or we can ride our bikes.",
+      "note": "Or joins two thoughts.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "compound-sentences-1",
+     "text": "The dog barked. The cat hid.",
+     "prompt": "The dog barked. The cat hid.",
+     "options": [
+      "The dog barked the cat hid.",
+      "The dog barked, or the cat hid.",
+      "The dog barked, and the cat hid.",
+      "The dog barked, the cat hid."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The dog barked, and the cat hid.",
+     "hint": "Both things happened. Pick the joining word that adds one thought to the other.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-2",
+     "text": "It was cold. We wore our coats.",
+     "prompt": "It was cold. We wore our coats.",
+     "options": [
+      "It was cold, so we wore our coats.",
+      "It was cold, we wore our coats.",
+      "It was cold we wore our coats.",
+      "It was cold, or we wore our coats."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "It was cold, so we wore our coats.",
+     "hint": "Wearing coats was the result of the cold. Pick the joining word that shows a result.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-3",
+     "text": "Leo wanted to play outside. It started to rain.",
+     "prompt": "Leo wanted to play outside. It started to rain.",
+     "options": [
+      "Leo wanted to play outside, or it started to rain.",
+      "Leo wanted to play outside it started to rain.",
+      "Leo wanted to play outside, but it started to rain.",
+      "Leo wanted to play outside, it started to rain."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Leo wanted to play outside, but it started to rain.",
+     "hint": "The rain was not what Leo wanted. Pick the joining word that shows a difference.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-4",
+     "text": "We can bake cookies. We can make popcorn.",
+     "prompt": "We can bake cookies. We can make popcorn.",
+     "options": [
+      "We can bake cookies we can make popcorn.",
+      "We can bake cookies, or we can make popcorn.",
+      "We can bake cookies, we can make popcorn."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "We can bake cookies, or we can make popcorn.",
+     "hint": "These are two choices. Pick the joining word that shows a choice.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-5",
+     "text": "The class read a book. The class acted out the story.",
+     "prompt": "The class read a book. The class acted out the story.",
+     "options": [
+      "The class read a book the class acted out the story.",
+      "The class read a book, the class acted out the story.",
+      "The class read a book, and the class acted out the story.",
+      "The class read a book, or the class acted out the story."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The class read a book, and the class acted out the story.",
+     "hint": "Both things happened in the same class. Pick the joining word that adds one thought to the other.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-6",
+     "text": "Ana practiced the piano. Her brother played the drums.",
+     "prompt": "Ana practiced the piano. Her brother played the drums.",
+     "options": [
+      "Ana practiced the piano, her brother played the drums.",
+      "Ana practiced the piano, and her brother played the drums.",
+      "Ana practiced the piano her brother played the drums.",
+      "Ana practiced the piano, or her brother played the drums."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ana practiced the piano, and her brother played the drums.",
+     "hint": "Two people did two things. Pick the joining word that adds one thought to the other.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-7",
+     "text": "The store was closed. We went home.",
+     "prompt": "The store was closed. We went home.",
+     "options": [
+      "The store was closed, or we went home.",
+      "The store was closed, so we went home.",
+      "The store was closed we went home.",
+      "The store was closed, we went home."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "The store was closed, so we went home.",
+     "hint": "Going home happened because the store was closed. Pick the joining word that shows a result.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-8",
+     "text": "Sam is fast. Leo is faster.",
+     "prompt": "Sam is fast. Leo is faster.",
+     "options": [
+      "Sam is fast, but Leo is faster.",
+      "Sam is fast, Leo is faster.",
+      "Sam is fast, or Leo is faster.",
+      "Sam is fast Leo is faster."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Sam is fast, but Leo is faster.",
+     "hint": "Sam and Leo are not the same. Pick the joining word that shows a difference.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-9",
+     "text": "We can plant carrots. We can plant beans.",
+     "prompt": "We can plant carrots. We can plant beans.",
+     "options": [
+      "We can plant carrots, we can plant beans.",
+      "We can plant carrots we can plant beans.",
+      "We can plant carrots, or we can plant beans."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "We can plant carrots, or we can plant beans.",
+     "hint": "These are two choices. Pick the joining word that gives a choice between them.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-10",
+     "text": "The baby was tired. She fell asleep.",
+     "prompt": "The baby was tired. She fell asleep.",
+     "options": [
+      "The baby was tired, she fell asleep.",
+      "The baby was tired she fell asleep.",
+      "The baby was tired, so she fell asleep.",
+      "The baby was tired, or she fell asleep."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The baby was tired, so she fell asleep.",
+     "hint": "Falling asleep happened because the baby was tired. Pick the joining word that shows a result.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-11",
+     "text": "Mia likes apples. She does not like pears.",
+     "prompt": "Mia likes apples. She does not like pears.",
+     "options": [
+      "Mia likes apples, she does not like pears.",
+      "Mia likes apples, or she does not like pears.",
+      "Mia likes apples, but she does not like pears.",
+      "Mia likes apples she does not like pears."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Mia likes apples, but she does not like pears.",
+     "hint": "One thought is a like and one is a dislike. Pick the joining word that shows a difference.",
+     "whole": true
+    },
+    {
+     "id": "compound-sentences-12",
+     "text": "The sun set. The stars came out.",
+     "prompt": "The sun set. The stars came out.",
+     "options": [
+      "The sun set the stars came out.",
+      "The sun set, the stars came out.",
+      "The sun set, or the stars came out.",
+      "The sun set, and the stars came out."
+     ],
+     "answer": [
+      3
+     ],
+     "right": "The sun set, and the stars came out.",
+     "hint": "One thing happened after the other. Pick the joining word that adds one thought to the other.",
+     "whole": true
+    }
+   ],
+   "room": true
+  },
+  "complex-sentences": {
+   "id": "complex-sentences",
+   "title": "Adding Ideas with a Middle Connecting Word",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Choose the sentence that adds the extra idea the right way.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 290
+   },
+   "choices": {
+    "kind": "connect"
+   },
+   "card": {
+    "definition": "A complex sentence adds an extra idea to a main thought with a connecting word in the middle, like because, when, or after. The extra idea cannot stand alone.",
+    "example": {
+     "text": "We stayed inside because it was raining.",
+     "note": "",
+     "marks": [],
+     "more": [
+      {
+       "text": "We stayed inside",
+       "note": "is the main thought.",
+       "marks": []
+      },
+      {
+       "text": "Because it was raining",
+       "note": "adds the reason.",
+       "marks": []
+      }
+     ]
+    },
+    "how": "Because connects the reason to the main thought.",
+    "tips": [
+     {
+      "text": "Sam smiled when he saw his friend.",
+      "note": "When adds the time.",
+      "marks": []
+     },
+     {
+      "text": "We packed our bags after lunch.",
+      "note": "After adds the time.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "complex-sentences-1",
+     "text": "The garden grew. It rained all week.",
+     "prompt": "The garden grew. It rained all week.",
+     "options": [
+      "The garden grew although it rained all week.",
+      "The garden grew, it rained all week.",
+      "The garden grew because it rained all week.",
+      "The garden grew. Because it rained all week."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The garden grew because it rained all week.",
+     "hint": "Rain all week is the reason the garden grew. Pick the connecting word that gives a reason.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-2",
+     "text": "Leo ran to the door. He heard the bell.",
+     "prompt": "Leo ran to the door. He heard the bell.",
+     "options": [
+      "Leo ran to the door when he heard the bell.",
+      "Leo ran to the door, he heard the bell.",
+      "Leo ran to the door. When he heard the bell."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo ran to the door when he heard the bell.",
+     "hint": "Hearing the bell tells the moment Leo ran. Pick the connecting word that tells the time.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-3",
+     "text": "We washed the dishes. We ate dinner.",
+     "prompt": "We washed the dishes. We ate dinner.",
+     "options": [
+      "We washed the dishes. After we ate dinner.",
+      "We washed the dishes after we ate dinner.",
+      "We washed the dishes, we ate dinner."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "We washed the dishes after we ate dinner.",
+     "hint": "Dinner came first, then the dishes. Pick the connecting word that tells the time.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-4",
+     "text": "Ana wore her boots. The mud was deep.",
+     "prompt": "Ana wore her boots. The mud was deep.",
+     "options": [
+      "Ana wore her boots. Because the mud was deep.",
+      "Ana wore her boots although the mud was deep.",
+      "Ana wore her boots, the mud was deep.",
+      "Ana wore her boots because the mud was deep."
+     ],
+     "answer": [
+      3
+     ],
+     "right": "Ana wore her boots because the mud was deep.",
+     "hint": "The deep mud is the reason for the boots. Pick the connecting word that gives a reason.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-5",
+     "text": "The cat hid. The dog barked.",
+     "prompt": "The cat hid. The dog barked.",
+     "options": [
+      "The cat hid. When the dog barked.",
+      "The cat hid, the dog barked.",
+      "The cat hid when the dog barked."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The cat hid when the dog barked.",
+     "hint": "The cat hid as soon as the dog barked. Pick the connecting word that tells the time.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-6",
+     "text": "Sam practiced every day. He got better.",
+     "prompt": "Sam practiced every day. He got better.",
+     "options": [
+      "Sam got better. Because he practiced every day.",
+      "Sam got better although he practiced every day.",
+      "Sam got better because he practiced every day.",
+      "Sam got better, he practiced every day."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Sam got better because he practiced every day.",
+     "hint": "Practicing is the reason Sam got better. Start with the main thought, then pick the connecting word that gives a reason.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-7",
+     "text": "We will go swimming. The pool opens.",
+     "prompt": "We will go swimming. The pool opens.",
+     "options": [
+      "We will go swimming when the pool opens.",
+      "We will go swimming, the pool opens.",
+      "We will go swimming. When the pool opens."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "We will go swimming when the pool opens.",
+     "hint": "The pool opening tells the time we will swim. Pick the connecting word that tells the time.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-8",
+     "text": "Mia read her book. The lights went out.",
+     "prompt": "Mia read her book. The lights went out.",
+     "options": [
+      "Mia read her book until the lights went out.",
+      "Mia read her book. Until the lights went out.",
+      "Mia read her book, the lights went out."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Mia read her book until the lights went out.",
+     "hint": "Mia kept reading up to the moment the lights went out. Pick the connecting word that tells how long it lasted.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-9",
+     "text": "The team cheered. They won the game.",
+     "prompt": "The team cheered. They won the game.",
+     "options": [
+      "The team cheered because they won the game.",
+      "The team cheered. Because they won the game.",
+      "The team cheered, they won the game.",
+      "The team cheered although they won the game."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The team cheered because they won the game.",
+     "hint": "Winning is the reason the team cheered. Pick the connecting word that gives a reason.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-10",
+     "text": "Leo brushed his teeth. He went to bed.",
+     "prompt": "Leo brushed his teeth. He went to bed.",
+     "options": [
+      "Leo brushed his teeth before he went to bed.",
+      "Leo brushed his teeth. Before he went to bed.",
+      "Leo brushed his teeth, he went to bed."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo brushed his teeth before he went to bed.",
+     "hint": "Brushing came first, then bed. Pick the connecting word that tells the time.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-11",
+     "text": "We stayed on the path. We did not want to get lost.",
+     "prompt": "We stayed on the path. We did not want to get lost.",
+     "options": [
+      "We stayed on the path because we did not want to get lost.",
+      "We stayed on the path. Because we did not want to get lost.",
+      "We stayed on the path, we did not want to get lost.",
+      "We stayed on the path although we did not want to get lost."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "We stayed on the path because we did not want to get lost.",
+     "hint": "Not wanting to get lost is the reason. Pick the connecting word that gives a reason.",
+     "whole": true
+    },
+    {
+     "id": "complex-sentences-12",
+     "text": "Ana watered the plants. The sun came up.",
+     "prompt": "Ana watered the plants. The sun came up.",
+     "options": [
+      "Ana watered the plants. After the sun came up.",
+      "Ana watered the plants, the sun came up.",
+      "Ana watered the plants after the sun came up."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Ana watered the plants after the sun came up.",
+     "hint": "The sun came up first, then Ana watered the plants. Pick the connecting word that tells the time.",
+     "whole": true
+    }
+   ],
+   "room": true
+  },
+  "coordinating-conjunctions": {
+   "id": "coordinating-conjunctions",
+   "title": "Identifying Coordinating Conjunctions",
+   "band": "3-5",
+   "format": "tap",
+   "ask": "Tap the coordinating conjunction.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 446
+   },
+   "card": {
+    "definition": "A coordinating conjunction is a small word that joins two words, phrases, or thoughts. The main ones are and, but, or, so, for, nor, and yet.",
+    "example": {
+     "text": "We wanted to play outside, but it was raining.",
+     "note": "But joins the two thoughts.",
+     "marks": [
+      {
+       "i": 5,
+       "role": "conjunction"
+      }
+     ]
+    },
+    "how": "But shows that the second thought is different from the first.",
+    "tips": [
+     {
+      "text": "Sam likes apples and oranges.",
+      "note": "And joins two things.",
+      "marks": [
+       {
+        "i": 3,
+        "role": "conjunction"
+       }
+      ]
+     },
+     {
+      "text": "We can walk or ride.",
+      "note": "Or joins a choice.",
+      "marks": [
+       {
+        "i": 3,
+        "role": "conjunction"
+       }
+      ]
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "coordinating-conjunctions-1",
+     "text": "The cat slept and the dog played.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins what the cat did with what the dog did."
+    },
+    {
+     "id": "coordinating-conjunctions-2",
+     "text": "We can swim or we can hike.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that gives a choice."
+    },
+    {
+     "id": "coordinating-conjunctions-3",
+     "text": "It was late, so we went home.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins a cause with what happened next."
+    },
+    {
+     "id": "coordinating-conjunctions-4",
+     "text": "Leo likes soccer, but he does not like tennis.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins two different thoughts."
+    },
+    {
+     "id": "coordinating-conjunctions-5",
+     "text": "The soup was hot, yet Sam ate it all.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the small word that joins two thoughts that seem to disagree."
+    },
+    {
+     "id": "coordinating-conjunctions-6",
+     "text": "We stayed inside, for it was snowing.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins a reason to a thought."
+    },
+    {
+     "id": "coordinating-conjunctions-7",
+     "text": "Mia did not want cake, nor did she want pie.",
+     "answer": [
+      5
+     ],
+     "hint": "Look for the small word that joins two things that are both not wanted."
+    },
+    {
+     "id": "coordinating-conjunctions-8",
+     "text": "Ana read a book and wrote a story.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the small word that joins two things Ana did."
+    },
+    {
+     "id": "coordinating-conjunctions-9",
+     "text": "You can have juice or milk.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the small word that gives a choice between two drinks."
+    },
+    {
+     "id": "coordinating-conjunctions-10",
+     "text": "The baby was tired, so she slept.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the small word that shows what happened because the baby was tired."
+    },
+    {
+     "id": "coordinating-conjunctions-11",
+     "text": "Sam is small, but he is strong.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins two different ideas."
+    },
+    {
+     "id": "coordinating-conjunctions-12",
+     "text": "We packed sandwiches, and we packed fruit.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the small word that joins the two things we packed."
+    }
+   ]
+  },
+  "evidence-for-informing": {
+   "id": "evidence-for-informing",
+   "title": "Selecting Evidence for Informational Writing",
+   "band": "3-5",
+   "format": "passage",
+   "ask": "Tap the sentence that answers the question.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 472
+   },
+   "card": {
+    "sections": [
+     {
+      "title": "Facts",
+      "question": "What is a fact?",
+      "passage": [
+       {
+        "text": "Bees help flowers grow by moving pollen from one flower to another.",
+        "hl": true
+       },
+       {
+        "text": "A single hive can hold 50,000 bees.",
+        "hl": true
+       }
+      ],
+      "note": "Both sentences are facts, because both can be checked. The second one also gives a number."
+     },
+     {
+      "title": "Matching evidence",
+      "question": "Does the fact fit the point?",
+      "passage": [
+       {
+        "text": "Bees are important to farms.",
+        "hl": false
+       },
+       {
+        "text": "A single hive can hold 50,000 bees.",
+        "hl": false
+       },
+       {
+        "text": "Bees help flowers grow by moving pollen.",
+        "hl": true
+       }
+      ],
+      "note": "The sentence about pollen fits the point about farms. It explains why bees matter to farmers."
+     },
+     {
+      "title": "Strong vs. weak",
+      "question": "Which fact is stronger?",
+      "passage": [
+       {
+        "text": "Bees are important to farms.",
+        "hl": false
+       },
+       {
+        "text": "Bees are nice.",
+        "hl": false
+       },
+       {
+        "text": "A farm with bees grows more food.",
+        "hl": true
+       }
+      ],
+      "note": "The sentence about growing more food is stronger evidence. It connects bees to what farms do."
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "evidence-for-informing-1",
+     "text": "The moon changes shape in the sky. The moon takes about a month to go around Earth. The moon looks bright at night.",
+     "ask": "Which sentence is evidence about how long the moon takes to circle Earth?",
+     "options": [
+      "The moon changes shape in the sky.",
+      "The moon takes about a month to go around Earth.",
+      "The moon looks bright at night."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "The moon takes about a month to go around Earth.",
+     "hint": "Evidence is a fact that fits the point."
+    },
+    {
+     "id": "evidence-for-informing-2",
+     "text": "Volcanoes can erupt with hot lava. One volcano in Hawaii erupted for more than 30 years. Lava is very hot.",
+     "ask": "Which sentence gives a fact about how long an eruption lasted?",
+     "options": [
+      "Volcanoes can erupt with hot lava.",
+      "One volcano in Hawaii erupted for more than 30 years.",
+      "Lava is very hot."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "One volcano in Hawaii erupted for more than 30 years.",
+     "hint": "A fact with a number is strong evidence."
+    },
+    {
+     "id": "evidence-for-informing-3",
+     "text": "A goldfish can live for 20 years. Fish breathe with gills. Fish swim in water.",
+     "ask": "Which sentence is evidence about how long a goldfish can live?",
+     "options": [
+      "A goldfish can live for 20 years.",
+      "Fish breathe with gills.",
+      "Fish swim in water."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "A goldfish can live for 20 years.",
+     "hint": "Evidence is a fact that can be checked."
+    },
+    {
+     "id": "evidence-for-informing-4",
+     "text": "The desert is dry. Some deserts get less than one inch of rain a year. Deserts are hot.",
+     "ask": "Which sentence gives a fact about rain in the desert?",
+     "options": [
+      "The desert is dry.",
+      "Some deserts get less than one inch of rain a year.",
+      "Deserts are hot."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Some deserts get less than one inch of rain a year.",
+     "hint": "A number makes the evidence stronger."
+    },
+    {
+     "id": "evidence-for-informing-5",
+     "text": "Trees clean the air. One big tree can make enough oxygen for four people each day. Trees have leaves.",
+     "ask": "Which sentence is evidence about oxygen?",
+     "options": [
+      "Trees clean the air.",
+      "One big tree can make enough oxygen for four people each day.",
+      "Trees have leaves."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "One big tree can make enough oxygen for four people each day.",
+     "hint": "Evidence is a fact that fits the point about clean air."
+    },
+    {
+     "id": "evidence-for-informing-6",
+     "text": "Penguins cannot fly. Penguins swim well. A penguin can swim 15 miles in a day.",
+     "ask": "Which sentence gives a fact about how far a penguin can swim?",
+     "options": [
+      "Penguins cannot fly.",
+      "Penguins swim well.",
+      "A penguin can swim 15 miles in a day."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "A penguin can swim 15 miles in a day.",
+     "hint": "A fact with a number is strong evidence."
+    },
+    {
+     "id": "evidence-for-informing-7",
+     "text": "The heart pumps blood. The heart is in the chest. The heart beats about 100,000 times a day.",
+     "ask": "Which sentence is evidence about how often the heart beats?",
+     "options": [
+      "The heart pumps blood.",
+      "The heart is in the chest.",
+      "The heart beats about 100,000 times a day."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The heart beats about 100,000 times a day.",
+     "hint": "Evidence is a fact that can be checked."
+    },
+    {
+     "id": "evidence-for-informing-8",
+     "text": "Spiders have eight legs. A spider can spin a web in one hour. Spiders are small.",
+     "ask": "Which sentence gives a fact about how fast a spider spins a web?",
+     "options": [
+      "Spiders have eight legs.",
+      "A spider can spin a web in one hour.",
+      "Spiders are small."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "A spider can spin a web in one hour.",
+     "hint": "A fact with a time or number is strong evidence."
+    },
+    {
+     "id": "evidence-for-informing-9",
+     "text": "Rain comes from clouds. A cloud can hold millions of drops of water. Clouds float in the sky.",
+     "ask": "Which sentence is evidence about what a cloud holds?",
+     "options": [
+      "Rain comes from clouds.",
+      "A cloud can hold millions of drops of water.",
+      "Clouds float in the sky."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "A cloud can hold millions of drops of water.",
+     "hint": "Evidence is a fact that fits the point."
+    },
+    {
+     "id": "evidence-for-informing-10",
+     "text": "One ant can lift 50 times its own weight. Ants work together. Ants live in colonies.",
+     "ask": "Which sentence gives a fact about how much an ant can lift?",
+     "options": [
+      "One ant can lift 50 times its own weight.",
+      "Ants work together.",
+      "Ants live in colonies."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "One ant can lift 50 times its own weight.",
+     "hint": "A number makes the evidence stronger."
+    },
+    {
+     "id": "evidence-for-informing-11",
+     "text": "The sun is a star. The sun is about 93 million miles from Earth. The sun gives us light.",
+     "ask": "Which sentence is evidence about how far away the sun is?",
+     "options": [
+      "The sun is a star.",
+      "The sun is about 93 million miles from Earth.",
+      "The sun gives us light."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "The sun is about 93 million miles from Earth.",
+     "hint": "Evidence is a fact that can be checked."
+    },
+    {
+     "id": "evidence-for-informing-12",
+     "text": "Bears sleep in winter. Bears eat a lot before winter. A bear can sleep for up to seven months.",
+     "ask": "Which sentence gives a fact about how long a bear sleeps?",
+     "options": [
+      "Bears sleep in winter.",
+      "Bears eat a lot before winter.",
+      "A bear can sleep for up to seven months."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "A bear can sleep for up to seven months.",
+     "hint": "A fact with a number is strong evidence."
+    }
+   ]
+  },
+  "evidence-for-opinions": {
+   "id": "evidence-for-opinions",
+   "title": "Selecting Evidence for Opinion Writing",
+   "band": "3-5",
+   "format": "passage",
+   "ask": "Tap the sentence that best supports the opinion.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 497
+   },
+   "card": {
+    "sections": [
+     {
+      "title": "Opinions need facts",
+      "question": "Why does an opinion need evidence?",
+      "passage": [
+       {
+        "text": "Our school should plant a garden.",
+        "hl": false
+       },
+       {
+        "text": "Gardens give students fresh food to eat.",
+        "hl": true
+       },
+       {
+        "text": "I like gardens.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about fresh food supports the opinion. The sentence about liking gardens does not."
+     },
+     {
+      "title": "Fitting evidence",
+      "question": "Does the fact fit the opinion?",
+      "passage": [
+       {
+        "text": "Recess should be longer.",
+        "hl": false
+       },
+       {
+        "text": "Kids who play outside learn better.",
+        "hl": true
+       },
+       {
+        "text": "The playground has a slide.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about learning fits the opinion. The sentence about the slide does not."
+     },
+     {
+      "title": "Strong vs. weak",
+      "question": "Which fact is stronger?",
+      "passage": [
+       {
+        "text": "The library should stay open later.",
+        "hl": false
+       },
+       {
+        "text": "Many students need a quiet place to study.",
+        "hl": true
+       },
+       {
+        "text": "The library has blue chairs.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about a quiet place to study is stronger. It gives a reason the library matters."
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "evidence-for-opinions-1",
+     "text": "School lunch should include more fruit. Fruit gives students energy for class. The lunchroom has long tables.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "School lunch should include more fruit.",
+      "Fruit gives students energy for class.",
+      "The lunchroom has long tables."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Fruit gives students energy for class.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-for-opinions-2",
+     "text": "Every class should have a pet. Caring for a pet teaches students to be responsible. Pets are cute.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Every class should have a pet.",
+      "Caring for a pet teaches students to be responsible.",
+      "Pets are cute."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Caring for a pet teaches students to be responsible.",
+     "hint": "Evidence should give a reason, not just a feeling."
+    },
+    {
+     "id": "evidence-for-opinions-3",
+     "text": "The town should build a new park. The park would have green grass. Parks give families a place to play together.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "The town should build a new park.",
+      "The park would have green grass.",
+      "Parks give families a place to play together."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Parks give families a place to play together.",
+     "hint": "Good evidence explains why the park matters."
+    },
+    {
+     "id": "evidence-for-opinions-4",
+     "text": "Kids should read every day. Reading every day helps students learn new words. Books have colorful covers.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Kids should read every day.",
+      "Reading every day helps students learn new words.",
+      "Books have colorful covers."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Reading every day helps students learn new words.",
+     "hint": "Evidence should connect to the opinion with a reason."
+    },
+    {
+     "id": "evidence-for-opinions-5",
+     "text": "Our class should take more field trips. Field trips let students see what they are learning in real life. The bus is yellow.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Our class should take more field trips.",
+      "Field trips let students see what they are learning in real life.",
+      "The bus is yellow."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Field trips let students see what they are learning in real life.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-for-opinions-6",
+     "text": "The school day should start later. The school has a big clock. Students who sleep more do better on tests.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "The school day should start later.",
+      "The school has a big clock.",
+      "Students who sleep more do better on tests."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Students who sleep more do better on tests.",
+     "hint": "Evidence should give a fact that backs up the opinion."
+    },
+    {
+     "id": "evidence-for-opinions-7",
+     "text": "Everyone should learn to swim. Swimming is a skill that can keep you safe in water. The pool is cold.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Everyone should learn to swim.",
+      "Swimming is a skill that can keep you safe in water.",
+      "The pool is cold."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Swimming is a skill that can keep you safe in water.",
+     "hint": "Good evidence explains why the skill matters."
+    },
+    {
+     "id": "evidence-for-opinions-8",
+     "text": "The library should buy more books about animals. Students read more when the books match what they love. The library has tall shelves.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "The library should buy more books about animals.",
+      "Students read more when the books match what they love.",
+      "The library has tall shelves."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Students read more when the books match what they love.",
+     "hint": "Evidence should give a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-for-opinions-9",
+     "text": "Homework should be shorter. Homework is written on paper. Students need time to play and rest after school.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Homework should be shorter.",
+      "Homework is written on paper.",
+      "Students need time to play and rest after school."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Students need time to play and rest after school.",
+     "hint": "Good evidence gives a reason, not just a fact about homework."
+    },
+    {
+     "id": "evidence-for-opinions-10",
+     "text": "Our town should plant more trees. Trees clean the air and give shade on hot days. Trees have bark.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Our town should plant more trees.",
+      "Trees clean the air and give shade on hot days.",
+      "Trees have bark."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Trees clean the air and give shade on hot days.",
+     "hint": "Evidence should explain why trees matter to the town."
+    },
+    {
+     "id": "evidence-for-opinions-11",
+     "text": "Art class should meet twice a week. Making art helps students think in new ways. Art supplies are colorful.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "Art class should meet twice a week.",
+      "Making art helps students think in new ways.",
+      "Art supplies are colorful."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Making art helps students think in new ways.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-for-opinions-12",
+     "text": "The playground needs a new swing set. The playground is near the school. The old swings are broken and unsafe.",
+     "ask": "Which sentence best supports the opinion?",
+     "options": [
+      "The playground needs a new swing set.",
+      "The playground is near the school.",
+      "The old swings are broken and unsafe."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "The old swings are broken and unsafe.",
+     "hint": "Evidence should give a fact that backs up the opinion."
+    }
+   ]
+  },
+  "quotation-marks-in-dialogue": {
+   "id": "quotation-marks-in-dialogue",
+   "title": "Using Quotation Marks with Dialogue",
+   "band": "3-5",
+   "format": "fix",
+   "ask": "Fix the sentence: add the marks and capital that the spoken words need.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 522
+   },
+   "fix": {
+    "kind": "dialogue"
+   },
+   "card": {
+    "definition": "Quotation marks go around the exact words a person says. A comma usually comes before the opening marks, and the end mark goes inside the closing marks.",
+    "example": {
+     "text": "Sam said, 'I found a turtle.'",
+     "note": "The words Sam spoke are inside quotation marks.",
+     "marks": []
+    },
+    "how": "The marks show where Sam's own words begin and end.",
+    "tips": [
+     {
+      "text": "'Can we go to the park?' asked Ana.",
+      "note": "The question is inside the marks.",
+      "marks": []
+     },
+     {
+      "text": "'I love this book,' said Leo.",
+      "note": "The comma sits inside the closing marks.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "quotation-marks-in-dialogue-1",
+     "text": "Sam said I found a turtle.",
+     "right": "Sam said, \"I found a turtle.\"",
+     "accept": [
+      "Sam said, \"I found a turtle.\""
+     ],
+     "options": [
+      "Sam said, \"I found a turtle.\"",
+      "Sam said, I found a turtle.",
+      "Sam said, \"I found a turtle\".",
+      "Sam said \"I found a turtle.\""
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Put quotation marks around the exact words Sam said, and a comma before the opening marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-2",
+     "text": "Ana asked can we go to the park",
+     "right": "Ana asked, \"Can we go to the park?\"",
+     "accept": [
+      "Ana asked, \"Can we go to the park?\""
+     ],
+     "options": [
+      "Ana asked, \"Can we go to the park?\"",
+      "Ana asked \"Can we go to the park?\"",
+      "Ana asked, \"can we go to the park?\"",
+      "Ana asked, \"Can we go to the park\"?"
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Think about what kind of sentence Ana says. The end mark goes inside the closing quotation marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-3",
+     "text": "Leo said I love this book",
+     "right": "Leo said, \"I love this book.\"",
+     "accept": [
+      "Leo said, \"I love this book.\""
+     ],
+     "options": [
+      "Leo said, \"I love this book.\"",
+      "Leo said \"I love this book.\"",
+      "Leo said, I love this book.",
+      "Leo said, \"I love this book\"."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Put quotation marks around the words Leo said."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-4",
+     "text": "Mia shouted watch out",
+     "right": "Mia shouted, \"Watch out!\"",
+     "accept": [
+      "Mia shouted, \"Watch out!\""
+     ],
+     "options": [
+      "Mia shouted \"Watch out!\"",
+      "Mia shouted, \"Watch out\"!",
+      "Mia shouted, \"watch out!\"",
+      "Mia shouted, \"Watch out!\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Think about how Mia says the words. The end mark goes inside the closing quotation marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-5",
+     "text": "The teacher said please sit down",
+     "right": "The teacher said, \"Please sit down.\"",
+     "accept": [
+      "The teacher said, \"Please sit down.\""
+     ],
+     "options": [
+      "The teacher said, \"please sit down.\"",
+      "The teacher said, \"Please sit down.\"",
+      "The teacher said \"Please sit down.\"",
+      "The teacher said, \"Please sit down\"."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put a comma before the opening marks and the end mark inside the closing marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-6",
+     "text": "Ben asked where is my backpack",
+     "right": "Ben asked, \"Where is my backpack?\"",
+     "accept": [
+      "Ben asked, \"Where is my backpack?\""
+     ],
+     "options": [
+      "Ben asked, \"Where is my backpack\"?",
+      "Ben asked \"Where is my backpack?\"",
+      "Ben asked, \"where is my backpack?\"",
+      "Ben asked, \"Where is my backpack?\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Think about what kind of sentence Ben says. The end mark goes inside the closing marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-7",
+     "text": "Sara said the show starts at noon",
+     "right": "Sara said, \"The show starts at noon.\"",
+     "accept": [
+      "Sara said, \"The show starts at noon.\""
+     ],
+     "options": [
+      "Sara said, \"The show starts at noon.\"",
+      "Sara said, \"The show starts at noon\".",
+      "Sara said, \"the show starts at noon.\"",
+      "Sara said \"The show starts at noon.\""
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Put quotation marks around the exact words Sara said."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-8",
+     "text": "Tom whispered I hid the note",
+     "right": "Tom whispered, \"I hid the note.\"",
+     "accept": [
+      "Tom whispered, \"I hid the note.\""
+     ],
+     "options": [
+      "Tom whispered \"I hid the note.\"",
+      "Tom whispered, \"I hid the note.\"",
+      "Tom whispered, \"I hid the note\".",
+      "Tom whispered, I hid the note."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put a comma before the opening marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-9",
+     "text": "Mom said dinner is ready",
+     "right": "Mom said, \"Dinner is ready.\"",
+     "accept": [
+      "Mom said, \"Dinner is ready.\""
+     ],
+     "options": [
+      "Mom said, \"Dinner is ready.\"",
+      "Mom said, \"Dinner is ready\".",
+      "Mom said, \"dinner is ready.\"",
+      "Mom said \"Dinner is ready.\""
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Put quotation marks around the words Mom said, and the end mark inside the closing marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-10",
+     "text": "Liam asked can I have a cookie",
+     "right": "Liam asked, \"Can I have a cookie?\"",
+     "accept": [
+      "Liam asked, \"Can I have a cookie?\""
+     ],
+     "options": [
+      "Liam asked, \"Can I have a cookie\"?",
+      "Liam asked, \"can I have a cookie?\"",
+      "Liam asked \"Can I have a cookie?\"",
+      "Liam asked, \"Can I have a cookie?\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Think about what kind of sentence Liam says. The end mark goes inside the closing marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-11",
+     "text": "The coach yelled run faster",
+     "right": "The coach yelled, \"Run faster!\"",
+     "accept": [
+      "The coach yelled, \"Run faster!\""
+     ],
+     "options": [
+      "The coach yelled, \"run faster!\"",
+      "The coach yelled, \"Run faster\"!",
+      "The coach yelled \"Run faster!\"",
+      "The coach yelled, \"Run faster!\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Think about how the coach says the words. The end mark goes inside the closing marks."
+    },
+    {
+     "id": "quotation-marks-in-dialogue-12",
+     "text": "Ana said I will help you",
+     "right": "Ana said, \"I will help you.\"",
+     "accept": [
+      "Ana said, \"I will help you.\""
+     ],
+     "options": [
+      "Ana said \"I will help you.\"",
+      "Ana said, \"I will help you\".",
+      "Ana said, \"I will help you.\"",
+      "Ana said, I will help you."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Put a comma before the opening marks and the end mark inside the closing marks."
+    }
+   ]
+  },
+  "quotation-marks-around-quotes": {
+   "id": "quotation-marks-around-quotes",
+   "title": "Using Quotation Marks around Quotes",
+   "band": "3-5",
+   "format": "fix",
+   "ask": "Fix the sentence: add the marks and capital that the copied words need.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 544
+   },
+   "fix": {
+    "kind": "quote"
+   },
+   "card": {
+    "definition": "Quotation marks go around words you copy from a book or from what someone else wrote. The marks show that the words are not your own.",
+    "example": {
+     "text": "In her book, Ana wrote, 'The river sang all night.'",
+     "note": "The words from the book are inside quotation marks.",
+     "marks": []
+    },
+    "how": "The marks show the words came from the book, not from you.",
+    "tips": [
+     {
+      "text": "The sign says, 'No swimming today.'",
+      "note": "The words on the sign are inside marks.",
+      "marks": []
+     },
+     {
+      "text": "Leo copied this line: 'The moon rose over the hill.'",
+      "note": "The copied line is inside marks.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "quotation-marks-around-quotes-1",
+     "text": "The book says the river sang all night.",
+     "right": "The book says, \"The river sang all night.\"",
+     "accept": [
+      "The book says, \"The river sang all night.\""
+     ],
+     "options": [
+      "The book says, \"The river sang all night\".",
+      "The book says, \"the river sang all night.\"",
+      "The book says, \"The river sang all night.\"",
+      "The book says \"The river sang all night.\""
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Put quotation marks around words copied from a book."
+    },
+    {
+     "id": "quotation-marks-around-quotes-2",
+     "text": "The sign says no swimming today.",
+     "right": "The sign says, \"No swimming today.\"",
+     "accept": [
+      "The sign says, \"No swimming today.\""
+     ],
+     "options": [
+      "The sign says, \"no swimming today.\"",
+      "The sign says \"No swimming today.\"",
+      "The sign says, \"No swimming today.\"",
+      "The sign says, \"No swimming today\"."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Put the words on the sign inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-3",
+     "text": "Leo copied the line the moon rose over the hill.",
+     "right": "Leo copied the line \"The moon rose over the hill.\"",
+     "accept": [
+      "Leo copied the line \"The moon rose over the hill.\""
+     ],
+     "options": [
+      "Leo copied the line \"the moon rose over the hill.\"",
+      "Leo copied the line \"The moon rose over the hill\".",
+      "Leo copied the line The moon rose over the hill.",
+      "Leo copied the line \"The moon rose over the hill.\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Put quotation marks around the copied words."
+    },
+    {
+     "id": "quotation-marks-around-quotes-4",
+     "text": "The note says please come to the office.",
+     "right": "The note says, \"Please come to the office.\"",
+     "accept": [
+      "The note says, \"Please come to the office.\""
+     ],
+     "options": [
+      "The note says, \"please come to the office.\"",
+      "The note says, \"Please come to the office\".",
+      "The note says \"Please come to the office.\"",
+      "The note says, \"Please come to the office.\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Put the words from the note inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-5",
+     "text": "In the poem, the writer says the snow fell soft and white.",
+     "right": "In the poem, the writer says, \"The snow fell soft and white.\"",
+     "accept": [
+      "In the poem, the writer says, \"The snow fell soft and white.\""
+     ],
+     "options": [
+      "In the poem, the writer says, \"the snow fell soft and white.\"",
+      "In the poem, the writer says \"The snow fell soft and white.\"",
+      "In the poem, the writer says, \"The snow fell soft and white\".",
+      "In the poem, the writer says, \"The snow fell soft and white.\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Put quotation marks around the words from the poem."
+    },
+    {
+     "id": "quotation-marks-around-quotes-6",
+     "text": "The poster reads art show on Friday.",
+     "right": "The poster reads, \"Art show on Friday.\"",
+     "accept": [
+      "The poster reads, \"Art show on Friday.\""
+     ],
+     "options": [
+      "The poster reads, \"art show on Friday.\"",
+      "The poster reads \"Art show on Friday.\"",
+      "The poster reads, \"Art show on Friday.\"",
+      "The poster reads, \"Art show on Friday\"."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Put the words on the poster inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-7",
+     "text": "Sam read the line the brave knight rode off.",
+     "right": "Sam read the line \"The brave knight rode off.\"",
+     "accept": [
+      "Sam read the line \"The brave knight rode off.\""
+     ],
+     "options": [
+      "Sam read the line \"The brave knight rode off\".",
+      "Sam read the line \"The brave knight rode off.\"",
+      "Sam read the line The brave knight rode off.",
+      "Sam read the line \"the brave knight rode off.\""
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put the copied line inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-8",
+     "text": "The recipe says stir the soup slowly.",
+     "right": "The recipe says, \"Stir the soup slowly.\"",
+     "accept": [
+      "The recipe says, \"Stir the soup slowly.\""
+     ],
+     "options": [
+      "The recipe says \"Stir the soup slowly.\"",
+      "The recipe says, \"Stir the soup slowly.\"",
+      "The recipe says, \"Stir the soup slowly\".",
+      "The recipe says, \"stir the soup slowly.\""
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put the words from the recipe inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-9",
+     "text": "The letter says thank you for the gift.",
+     "right": "The letter says, \"Thank you for the gift.\"",
+     "accept": [
+      "The letter says, \"Thank you for the gift.\""
+     ],
+     "options": [
+      "The letter says \"Thank you for the gift.\"",
+      "The letter says, \"Thank you for the gift.\"",
+      "The letter says, \"thank you for the gift.\"",
+      "The letter says, \"Thank you for the gift\"."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put the words from the letter inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-10",
+     "text": "Ana copied this sentence the garden smelled of rain.",
+     "right": "Ana copied this sentence: \"The garden smelled of rain.\"",
+     "accept": [
+      "Ana copied this sentence: \"The garden smelled of rain.\""
+     ],
+     "options": [
+      "Ana copied this sentence: \"The garden smelled of rain.\"",
+      "Ana copied this sentence: \"the garden smelled of rain.\"",
+      "Ana copied this sentence \"The garden smelled of rain.\"",
+      "Ana copied this sentence: \"The garden smelled of rain\"."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Put the copied sentence inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-11",
+     "text": "The map says turn left at the bridge.",
+     "right": "The map says, \"Turn left at the bridge.\"",
+     "accept": [
+      "The map says, \"Turn left at the bridge.\""
+     ],
+     "options": [
+      "The map says \"Turn left at the bridge.\"",
+      "The map says, \"Turn left at the bridge\".",
+      "The map says, \"turn left at the bridge.\"",
+      "The map says, \"Turn left at the bridge.\""
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Put the words on the map inside quotation marks."
+    },
+    {
+     "id": "quotation-marks-around-quotes-12",
+     "text": "The song says row your boat to the shore.",
+     "right": "The song says, \"Row your boat to the shore.\"",
+     "accept": [
+      "The song says, \"Row your boat to the shore.\""
+     ],
+     "options": [
+      "The song says, \"row your boat to the shore.\"",
+      "The song says, \"Row your boat to the shore.\"",
+      "The song says \"Row your boat to the shore.\"",
+      "The song says, \"Row your boat to the shore\"."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Put the words from the song inside quotation marks."
+    }
+   ]
+  },
+  "recognizing-fragments": {
+   "id": "recognizing-fragments",
+   "title": "Recognizing Fragments",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Is it a complete sentence or a fragment?",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 592
+   },
+   "choices": {
+    "kind": "label",
+    "labels": [
+     {
+      "text": "Complete sentence",
+      "answer": "Sentence"
+     },
+     {
+      "text": "Fragment",
+      "answer": "Fragment"
+     }
+    ]
+   },
+   "card": {
+    "definition": "A fragment is a group of words that is not a complete sentence. It is missing a subject, a verb, or a complete thought.",
+    "example": {
+     "text": "Ran to the store.",
+     "note": "This is a fragment. It has a verb but no subject, so we do not know who ran.",
+     "marks": []
+    },
+    "how": "A sentence needs a subject and a verb and a complete thought.",
+    "tips": [
+     {
+      "text": "The big red ball.",
+      "note": "This is a fragment. It has no verb.",
+      "marks": []
+     },
+     {
+      "text": "After the rain stopped.",
+      "note": "This is a fragment. It does not finish the thought.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "recognizing-fragments-1",
+     "text": "Ran to the store.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ran to the store.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-2",
+     "text": "The dog barked at the mail truck.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The dog barked at the mail truck.",
+     "label": "Complete sentence",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-3",
+     "text": "The big red ball.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "The big red ball.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-4",
+     "text": "After the rain stopped.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "After the rain stopped.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-5",
+     "text": "Sam and Ana played tag.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Sam and Ana played tag.",
+     "label": "Complete sentence",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-6",
+     "text": "Under the table.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Under the table.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-7",
+     "text": "The baby slept in her crib.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The baby slept in her crib.",
+     "label": "Complete sentence",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-8",
+     "text": "Because it was cold.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Because it was cold.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-9",
+     "text": "Leo read three books.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo read three books.",
+     "label": "Complete sentence",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-10",
+     "text": "Jumped over the fence.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Jumped over the fence.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-11",
+     "text": "The class will visit the farm on Friday.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The class will visit the farm on Friday.",
+     "label": "Complete sentence",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    },
+    {
+     "id": "recognizing-fragments-12",
+     "text": "When the bell rang.",
+     "options": [
+      "Complete sentence",
+      "Fragment"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "When the bell rang.",
+     "label": "Fragment",
+     "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
+     "plain": true
+    }
+   ]
+  },
+  "avoiding-run-ons": {
+   "id": "avoiding-run-ons",
+   "title": "Avoiding Run-Ons",
+   "band": "3-5",
+   "format": "fix",
+   "ask": "Fix the run-on. Any right fix counts.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 614
+   },
+   "fix": {
+    "kind": "runon"
+   },
+   "card": {
+    "definition": "A run-on is two complete sentences joined with no punctuation or joining word. Fix it by splitting it into two sentences or by joining it with a comma and a word like and, but, or so.",
+    "example": {
+     "text": "The sun came out we went outside.",
+     "note": "This is a run-on. Fix it like this:",
+     "then": {
+      "text": "The sun came out, and we went outside.",
+      "note": ""
+     },
+     "marks": []
+    },
+    "how": "The comma and the word and join the two complete thoughts the right way.",
+    "tips": [
+     {
+      "text": "Sam was hungry he ate a sandwich.",
+      "note": "Fix it:",
+      "then": {
+       "text": "Sam was hungry, so he ate a sandwich.",
+       "note": "",
+       "marks": []
+      },
+      "marks": []
+     },
+     {
+      "text": "It rained all day the game was canceled.",
+      "note": "Fix it:",
+      "then": {
+       "text": "It rained all day. The game was canceled.",
+       "note": "",
+       "marks": []
+      },
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "avoiding-run-ons-1",
+     "text": "The dog barked the cat ran away.",
+     "right": "The dog barked, and the cat ran away.",
+     "accept": [
+      "The dog barked, and the cat ran away.",
+      "The dog barked. The cat ran away.",
+      "The dog barked; the cat ran away.",
+      "The dog barked, so the cat ran away."
+     ],
+     "options": [
+      "The dog barked, the cat ran away.",
+      "The dog barked, and the cat ran away.",
+      "The dog barked the cat ran away.",
+      "The dog barked. the cat ran away."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Find where the first thought ends. Join the two thoughts with a comma and a word that adds one thought to the other."
+    },
+    {
+     "id": "avoiding-run-ons-2",
+     "text": "It was late we went to bed.",
+     "right": "It was late, so we went to bed.",
+     "accept": [
+      "It was late, so we went to bed.",
+      "It was late. We went to bed.",
+      "It was late; we went to bed.",
+      "It was late, and we went to bed."
+     ],
+     "options": [
+      "It was late. we went to bed.",
+      "It was late we went to bed.",
+      "It was late, we went to bed.",
+      "It was late, so we went to bed."
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Going to bed was the result of the late hour. Join the thoughts with a comma and a word that shows a result."
+    },
+    {
+     "id": "avoiding-run-ons-3",
+     "text": "Ana likes apples she does not like pears.",
+     "right": "Ana likes apples, but she does not like pears.",
+     "accept": [
+      "Ana likes apples, but she does not like pears.",
+      "Ana likes apples. She does not like pears.",
+      "Ana likes apples; she does not like pears.",
+      "Ana likes apples, yet she does not like pears."
+     ],
+     "options": [
+      "Ana likes apples, but she does not like pears.",
+      "Ana likes apples, she does not like pears.",
+      "Ana likes apples she does not like pears.",
+      "Ana likes apples. she does not like pears."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Liking apples and not liking pears are different. Join the thoughts with a comma and a word that shows a difference."
+    },
+    {
+     "id": "avoiding-run-ons-4",
+     "text": "The store was closed we went home.",
+     "right": "The store was closed. We went home.",
+     "accept": [
+      "The store was closed. We went home.",
+      "The store was closed; we went home.",
+      "The store was closed, and we went home.",
+      "The store was closed, so we went home."
+     ],
+     "options": [
+      "The store was closed. We went home.",
+      "The store was closed, we went home.",
+      "The store was closed we went home.",
+      "The store was closed. we went home."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Find where the first complete thought ends. Each part can stand alone as its own sentence."
+    },
+    {
+     "id": "avoiding-run-ons-5",
+     "text": "Leo ran fast he won the race.",
+     "right": "Leo ran fast, and he won the race.",
+     "accept": [
+      "Leo ran fast, and he won the race.",
+      "Leo ran fast. He won the race.",
+      "Leo ran fast; he won the race.",
+      "Leo ran fast, so he won the race."
+     ],
+     "options": [
+      "Leo ran fast, and he won the race.",
+      "Leo ran fast, he won the race.",
+      "Leo ran fast he won the race.",
+      "Leo ran fast. he won the race."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Find where the first thought ends. Join the two thoughts with a comma and a word that adds one thought to the other."
+    },
+    {
+     "id": "avoiding-run-ons-6",
+     "text": "The baby cried her mom picked her up.",
+     "right": "The baby cried, so her mom picked her up.",
+     "accept": [
+      "The baby cried, so her mom picked her up.",
+      "The baby cried. Her mom picked her up.",
+      "The baby cried; her mom picked her up.",
+      "The baby cried, and her mom picked her up."
+     ],
+     "options": [
+      "The baby cried her mom picked her up.",
+      "The baby cried, her mom picked her up.",
+      "The baby cried. her mom picked her up.",
+      "The baby cried, so her mom picked her up."
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "The mom picked up the baby because the baby cried. Join the thoughts with a comma and a word that shows a result."
+    },
+    {
+     "id": "avoiding-run-ons-7",
+     "text": "We can walk we can ride our bikes.",
+     "right": "We can walk, or we can ride our bikes.",
+     "accept": [
+      "We can walk, or we can ride our bikes.",
+      "We can walk. We can ride our bikes.",
+      "We can walk; we can ride our bikes."
+     ],
+     "options": [
+      "We can walk, we can ride our bikes.",
+      "We can walk. we can ride our bikes.",
+      "We can walk we can ride our bikes.",
+      "We can walk, or we can ride our bikes."
+     ],
+     "answer": [
+      3
+     ],
+     "hint": "Walking and riding are two choices. Join the thoughts with a comma and a word that gives a choice."
+    },
+    {
+     "id": "avoiding-run-ons-8",
+     "text": "The rain stopped the sun came out.",
+     "right": "The rain stopped. The sun came out.",
+     "accept": [
+      "The rain stopped. The sun came out.",
+      "The rain stopped; the sun came out.",
+      "The rain stopped, and the sun came out."
+     ],
+     "options": [
+      "The rain stopped, the sun came out.",
+      "The rain stopped. The sun came out.",
+      "The rain stopped. the sun came out.",
+      "The rain stopped the sun came out."
+     ],
+     "answer": [
+      1
+     ],
+     "hint": "Find where the first complete thought ends. Each part can stand alone as its own sentence."
+    },
+    {
+     "id": "avoiding-run-ons-9",
+     "text": "Mia practiced every day she got better.",
+     "right": "Mia practiced every day, and she got better.",
+     "accept": [
+      "Mia practiced every day, and she got better.",
+      "Mia practiced every day. She got better.",
+      "Mia practiced every day; she got better.",
+      "Mia practiced every day, so she got better."
+     ],
+     "options": [
+      "Mia practiced every day, she got better.",
+      "Mia practiced every day. she got better.",
+      "Mia practiced every day, and she got better.",
+      "Mia practiced every day she got better."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Find where the first thought ends. Join the two thoughts with a comma and a word that adds one thought to the other."
+    },
+    {
+     "id": "avoiding-run-ons-10",
+     "text": "The cake burned we made a new one.",
+     "right": "The cake burned, so we made a new one.",
+     "accept": [
+      "The cake burned, so we made a new one.",
+      "The cake burned. We made a new one.",
+      "The cake burned; we made a new one.",
+      "The cake burned, and we made a new one."
+     ],
+     "options": [
+      "The cake burned, so we made a new one.",
+      "The cake burned. we made a new one.",
+      "The cake burned, we made a new one.",
+      "The cake burned we made a new one."
+     ],
+     "answer": [
+      0
+     ],
+     "hint": "Making a new cake was the result of the burned one. Join the thoughts with a comma and a word that shows a result."
+    },
+    {
+     "id": "avoiding-run-ons-11",
+     "text": "Sam wanted to play it started to rain.",
+     "right": "Sam wanted to play, but it started to rain.",
+     "accept": [
+      "Sam wanted to play, but it started to rain.",
+      "Sam wanted to play. It started to rain.",
+      "Sam wanted to play; it started to rain.",
+      "Sam wanted to play, yet it started to rain."
+     ],
+     "options": [
+      "Sam wanted to play it started to rain.",
+      "Sam wanted to play, it started to rain.",
+      "Sam wanted to play, but it started to rain.",
+      "Sam wanted to play. it started to rain."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "The rain was not what Sam wanted. Join the thoughts with a comma and a word that shows a difference."
+    },
+    {
+     "id": "avoiding-run-ons-12",
+     "text": "The class read a book they acted out the story.",
+     "right": "The class read a book. They acted out the story.",
+     "accept": [
+      "The class read a book. They acted out the story.",
+      "The class read a book; they acted out the story.",
+      "The class read a book, and they acted out the story."
+     ],
+     "options": [
+      "The class read a book. they acted out the story.",
+      "The class read a book, they acted out the story.",
+      "The class read a book. They acted out the story.",
+      "The class read a book they acted out the story."
+     ],
+     "answer": [
+      2
+     ],
+     "hint": "Find where the first complete thought ends. Each part can stand alone as its own sentence."
+    }
+   ],
+   "room": true
+  },
+  "evidence-that-supports": {
+   "id": "evidence-that-supports",
+   "title": "Which Pieces of Evidence Support the Opinion?",
+   "band": "3-5",
+   "format": "passage",
+   "ask": "Tap the sentence that supports the opinion.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 682
+   },
+   "card": {
+    "sections": [
+     {
+      "title": "Opinions and facts",
+      "question": "What makes a fact good evidence?",
+      "passage": [
+       {
+        "text": "Dogs make great pets.",
+        "hl": false
+       },
+       {
+        "text": "Dogs are loyal and love to play.",
+        "hl": true
+       },
+       {
+        "text": "I like dogs.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about loyalty supports the opinion. The sentence about liking dogs does not."
+     },
+     {
+      "title": "Checking the fit",
+      "question": "Does the fact match the opinion?",
+      "passage": [
+       {
+        "text": "Schools should have gardens.",
+        "hl": false
+       },
+       {
+        "text": "Gardens teach students where food comes from.",
+        "hl": true
+       },
+       {
+        "text": "The garden has a fence.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about where food comes from matches the opinion. The sentence about the fence does not."
+     },
+     {
+      "title": "Picking the best one",
+      "question": "Which fact is the strongest?",
+      "passage": [
+       {
+        "text": "Bikes are the best way to get to school.",
+        "hl": false
+       },
+       {
+        "text": "Riding a bike keeps you healthy and costs nothing.",
+        "hl": true
+       },
+       {
+        "text": "Bikes have wheels.",
+        "hl": false
+       }
+      ],
+      "note": "The sentence about health and cost is the strongest. It gives two reasons in one fact."
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "evidence-that-supports-1",
+     "text": "Cats make good pets. Cats are quiet and clean. Cats have whiskers.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Cats make good pets.",
+      "Cats are quiet and clean.",
+      "Cats have whiskers."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Cats are quiet and clean.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-that-supports-2",
+     "text": "Everyone should eat breakfast. Breakfast is served in the morning. Breakfast gives you energy for the day.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Everyone should eat breakfast.",
+      "Breakfast is served in the morning.",
+      "Breakfast gives you energy for the day."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Breakfast gives you energy for the day.",
+     "hint": "Evidence should give a reason, not just a fact about breakfast."
+    },
+    {
+     "id": "evidence-that-supports-3",
+     "text": "The park needs more benches. People need a place to sit and rest. The park has trees.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "The park needs more benches.",
+      "People need a place to sit and rest.",
+      "The park has trees."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "People need a place to sit and rest.",
+     "hint": "Good evidence explains why benches matter."
+    },
+    {
+     "id": "evidence-that-supports-4",
+     "text": "Reading before bed is a good habit. Reading helps you fall asleep and learn new words. Books sit on a shelf.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Reading before bed is a good habit.",
+      "Reading helps you fall asleep and learn new words.",
+      "Books sit on a shelf."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Reading helps you fall asleep and learn new words.",
+     "hint": "Evidence should give reasons that fit the opinion."
+    },
+    {
+     "id": "evidence-that-supports-5",
+     "text": "Our class should recycle. The bin is blue. Recycling keeps trash out of landfills.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Our class should recycle.",
+      "The bin is blue.",
+      "Recycling keeps trash out of landfills."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Recycling keeps trash out of landfills.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-that-supports-6",
+     "text": "Swimming is the best sport. Swimming uses your whole body and is easy on your joints. Pools have water.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Swimming is the best sport.",
+      "Swimming uses your whole body and is easy on your joints.",
+      "Pools have water."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Swimming uses your whole body and is easy on your joints.",
+     "hint": "Evidence should give reasons, not just facts about pools."
+    },
+    {
+     "id": "evidence-that-supports-7",
+     "text": "The school should have a garden. A garden gives students fresh vegetables. The garden is behind the school.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "The school should have a garden.",
+      "A garden gives students fresh vegetables.",
+      "The garden is behind the school."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "A garden gives students fresh vegetables.",
+     "hint": "Good evidence explains why the garden matters."
+    },
+    {
+     "id": "evidence-that-supports-8",
+     "text": "Kids should wear helmets when they ride bikes. Helmets come in many colors. Helmets protect your head if you fall.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Kids should wear helmets when they ride bikes.",
+      "Helmets come in many colors.",
+      "Helmets protect your head if you fall."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Helmets protect your head if you fall.",
+     "hint": "Evidence should give a safety reason that fits the opinion."
+    },
+    {
+     "id": "evidence-that-supports-9",
+     "text": "Music class is important. Music helps students remember and focus. The music room has a piano.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Music class is important.",
+      "Music helps students remember and focus.",
+      "The music room has a piano."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Music helps students remember and focus.",
+     "hint": "Good evidence gives reasons that fit the opinion."
+    },
+    {
+     "id": "evidence-that-supports-10",
+     "text": "The library should open on Saturdays. Many families can only visit on the weekend. The library has red chairs.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "The library should open on Saturdays.",
+      "Many families can only visit on the weekend.",
+      "The library has red chairs."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Many families can only visit on the weekend.",
+     "hint": "Evidence should explain why Saturday hours matter."
+    },
+    {
+     "id": "evidence-that-supports-11",
+     "text": "Drinking water is healthy. Water is clear. Water keeps your body working well.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Drinking water is healthy.",
+      "Water is clear.",
+      "Water keeps your body working well."
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Water keeps your body working well.",
+     "hint": "Good evidence gives a reason that fits the opinion."
+    },
+    {
+     "id": "evidence-that-supports-12",
+     "text": "Every student should learn first aid. First aid lets you help someone who is hurt. The kit has bandages.",
+     "ask": "Which sentence supports the opinion?",
+     "options": [
+      "Every student should learn first aid.",
+      "First aid lets you help someone who is hurt.",
+      "The kit has bandages."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "First aid lets you help someone who is hurt.",
+     "hint": "Evidence should give a reason that fits the opinion."
+    }
+   ]
+  },
+  "showing-with-actions": {
+   "id": "showing-with-actions",
+   "title": "Using Actions to Show Character Responses",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Choose the sentence that shows instead of telling.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 707
+   },
+   "choices": {
+    "kind": "ab"
+   },
+   "card": {
+    "sections": [
+     {
+      "title": "Telling vs. showing",
+      "question": "What is the difference?",
+      "passage": [
+       {
+        "label": "Telling",
+        "text": "Ana was nervous.",
+        "hl": false
+       },
+       {
+        "label": "Showing",
+        "text": "Ana twisted her hair and bit her lip.",
+        "hl": true
+       }
+      ],
+      "note": "The showing sentence uses actions. The reader can see the nerves."
+     },
+     {
+      "title": "Showing feelings",
+      "question": "How do actions show feelings?",
+      "passage": [
+       {
+        "text": "Leo was excited.",
+        "hl": false
+       },
+       {
+        "text": "Leo jumped up and cheered when his team scored.",
+        "hl": true
+       }
+      ],
+      "note": "The second sentence shows excitement with actions. The reader feels it."
+     },
+     {
+      "title": "Showing character",
+      "question": "How do actions show what a person is like?",
+      "passage": [
+       {
+        "text": "Sam is kind.",
+        "hl": false
+       },
+       {
+        "text": "Sam shared his lunch with the new student.",
+        "hl": true
+       }
+      ],
+      "note": "The second sentence shows kindness with an action. The reader learns about Sam from what he does."
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "showing-with-actions-1",
+     "text": "Which sentence shows how Ana feels?",
+     "ask": "Which sentence shows how Ana feels?",
+     "options": [
+      "Ana was sad.",
+      "Ana wiped her eyes and sniffled."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ana wiped her eyes and sniffled.",
+     "hint": "Showing uses actions the reader can see.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-2",
+     "text": "Which sentence shows how Leo feels?",
+     "ask": "Which sentence shows how Leo feels?",
+     "options": [
+      "Leo stomped his foot and crossed his arms.",
+      "Leo was angry."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo stomped his foot and crossed his arms.",
+     "hint": "Look for the sentence that lets you see what Leo does, instead of naming the feeling.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-3",
+     "text": "Which sentence shows that Mia is brave?",
+     "ask": "Which sentence shows that Mia is brave?",
+     "options": [
+      "Mia was brave.",
+      "Mia stepped forward and faced the big dog."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Mia stepped forward and faced the big dog.",
+     "hint": "Look for the sentence that shows bravery through what Mia does.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-4",
+     "text": "Which sentence shows that Sam is tired?",
+     "ask": "Which sentence shows that Sam is tired?",
+     "options": [
+      "Sam was tired.",
+      "Sam yawned and rubbed his eyes."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Sam yawned and rubbed his eyes.",
+     "hint": "Look for the sentence where you can see what Sam's body does.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-5",
+     "text": "Which sentence shows that the girl is scared?",
+     "ask": "Which sentence shows that the girl is scared?",
+     "options": [
+      "The girl hid behind her mother and held her hand tight.",
+      "The girl was scared."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The girl hid behind her mother and held her hand tight.",
+     "hint": "Look for the sentence that shows fear through actions, not a feeling word.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-6",
+     "text": "Which sentence shows that Ben is proud?",
+     "ask": "Which sentence shows that Ben is proud?",
+     "options": [
+      "Ben was proud.",
+      "Ben held up his trophy and grinned."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ben held up his trophy and grinned.",
+     "hint": "Look for the sentence that shows pride through what Ben does.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-7",
+     "text": "Which sentence shows that Sara is kind?",
+     "ask": "Which sentence shows that Sara is kind?",
+     "options": [
+      "Sara helped her friend carry the heavy box.",
+      "Sara was kind."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Sara helped her friend carry the heavy box.",
+     "hint": "Look for the sentence that shows kindness through an action.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-8",
+     "text": "Which sentence shows that Tom is excited?",
+     "ask": "Which sentence shows that Tom is excited?",
+     "options": [
+      "Tom was excited.",
+      "Tom bounced on his toes and clapped."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Tom bounced on his toes and clapped.",
+     "hint": "Look for the sentence with actions that show excitement.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-9",
+     "text": "Which sentence shows that Kai is nervous?",
+     "ask": "Which sentence shows that Kai is nervous?",
+     "options": [
+      "Kai was nervous.",
+      "Kai tapped his pencil and kept looking at the clock."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Kai tapped his pencil and kept looking at the clock.",
+     "hint": "Look for the sentence with actions that show nerves.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-10",
+     "text": "Which sentence shows that Leo is hungry?",
+     "ask": "Which sentence shows that Leo is hungry?",
+     "options": [
+      "Leo's stomach growled as he stared at the cookies.",
+      "Leo was hungry."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo's stomach growled as he stared at the cookies.",
+     "hint": "Look for the sentence that shows hunger with things you can see and hear.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-11",
+     "text": "Which sentence shows that Mia is surprised?",
+     "ask": "Which sentence shows that Mia is surprised?",
+     "options": [
+      "Mia's eyes went wide and her mouth fell open.",
+      "Mia was surprised."
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Mia's eyes went wide and her mouth fell open.",
+     "hint": "Look for the sentence that shows surprise on Mia's face.",
+     "whole": true
+    },
+    {
+     "id": "showing-with-actions-12",
+     "text": "Which sentence shows that Sam is happy?",
+     "ask": "Which sentence shows that Sam is happy?",
+     "options": [
+      "Sam was happy.",
+      "Sam laughed and danced around the room."
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Sam laughed and danced around the room.",
+     "hint": "Look for the sentence with actions that show happiness.",
+     "whole": true
+    }
+   ]
+  },
+  "progressive-verbs": {
+   "id": "progressive-verbs",
+   "title": "Using Progressive Verbs",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Press the verb to choose the form that fits.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 762
+   },
+   "choices": {
+    "kind": "given",
+    "cycle": true
+   },
+   "cycle": true,
+   "card": {
+    "definition": "A progressive verb shows an action that is happening right now or was happening over time. It uses a form of be plus a verb that ends in ing.",
+    "example": {
+     "text": "Sam is reading a book.",
+     "note": "Is reading shows the action is happening now.",
+     "marks": []
+    },
+    "how": "Is plus reading makes the progressive form.",
+    "tips": [
+     {
+      "text": "Ana was singing when the phone rang.",
+      "note": "Was singing shows the action was happening over time.",
+      "marks": []
+     },
+     {
+      "text": "The dogs are barking at the mail truck.",
+      "note": "Are barking shows the action is happening now.",
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "progressive-verbs-1",
+     "text": "Sam ___ a book right now.",
+     "options": [
+      "is reading",
+      "reads"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Sam is reading a book right now.",
+     "hint": "Right now tells you the action is still going on. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-2",
+     "text": "Ana ___ when the phone rang.",
+     "options": [
+      "sings",
+      "was singing"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ana was singing when the phone rang.",
+     "hint": "The singing was going on when the phone rang. Pick the verb that shows it was in progress."
+    },
+    {
+     "id": "progressive-verbs-3",
+     "text": "The dogs ___ at the mail truck.",
+     "options": [
+      "are barking",
+      "bark"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The dogs are barking at the mail truck.",
+     "hint": "The barking is going on as you read. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-4",
+     "text": "Leo ___ a tower at this moment.",
+     "options": [
+      "is building",
+      "builds"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Leo is building a tower at this moment.",
+     "hint": "At this moment tells you the action is still going on. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-5",
+     "text": "We ___ dinner when the lights went out.",
+     "options": [
+      "were eating",
+      "ate"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "We were eating dinner when the lights went out.",
+     "hint": "Dinner was going on when the lights went out. Pick the verb that shows it was in progress."
+    },
+    {
+     "id": "progressive-verbs-6",
+     "text": "Mia ___ a picture right now.",
+     "options": [
+      "draws",
+      "is drawing"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Mia is drawing a picture right now.",
+     "hint": "Right now tells you the action is still going on. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-7",
+     "text": "The baby ___ all morning.",
+     "options": [
+      "cries",
+      "was crying"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "The baby was crying all morning.",
+     "hint": "All morning tells you the action went on over time. Pick the verb that shows it was in progress."
+    },
+    {
+     "id": "progressive-verbs-8",
+     "text": "Tom ___ in the pool at this moment.",
+     "options": [
+      "swims",
+      "is swimming"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Tom is swimming in the pool at this moment.",
+     "hint": "At this moment tells you the action is still going on. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-9",
+     "text": "The birds ___ when the sun came up.",
+     "options": [
+      "were singing",
+      "sang"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The birds were singing when the sun came up.",
+     "hint": "The singing was going on when the sun came up. Pick the verb that shows it was in progress."
+    },
+    {
+     "id": "progressive-verbs-10",
+     "text": "Ana ___ the piano right now.",
+     "options": [
+      "practices",
+      "is practicing"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Ana is practicing the piano right now.",
+     "hint": "Right now tells you the action is still going on. Pick the verb that shows it in progress."
+    },
+    {
+     "id": "progressive-verbs-11",
+     "text": "We ___ home when it started to rain.",
+     "options": [
+      "were walking",
+      "walked"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "We were walking home when it started to rain.",
+     "hint": "The walk was going on when the rain started. Pick the verb that shows it was in progress."
+    },
+    {
+     "id": "progressive-verbs-12",
+     "text": "Sam ___ dinner at this moment.",
+     "options": [
+      "cooks",
+      "is cooking"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Sam is cooking dinner at this moment.",
+     "hint": "At this moment tells you the action is still going on. Pick the verb that shows it in progress."
+    }
+   ]
+  },
+  "tense-shifts": {
+   "id": "tense-shifts",
+   "title": "Correcting Shifts in Verb Tense",
+   "band": "3-5",
+   "format": "choice",
+   "ask": "Press the verb to make it match the time the first verb sets.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 784
+   },
+   "choices": {
+    "kind": "shift",
+    "cycle": true
+   },
+   "cycle": true,
+   "card": {
+    "definition": "A sentence should keep the same verb tense unless the time really changes. A tense shift is when the verbs jump from one time to another for no reason.",
+    "example": {
+     "text": "Sam walked to school and buys lunch.",
+     "note": "Walked is past, but buys is present. Fix it:",
+     "then": {
+      "text": "Sam walked to school and bought lunch.",
+      "note": ""
+     },
+     "marks": [
+      {
+       "i": 1,
+       "role": "verb"
+      }
+     ]
+    },
+    "how": "Both verbs should be past, because both actions happened in the past.",
+    "tips": [
+     {
+      "text": "Ana read her book and writes a note.",
+      "note": "Fix it:",
+      "then": {
+       "text": "Ana read her book and wrote a note.",
+       "note": "",
+       "marks": []
+      },
+      "marks": []
+     },
+     {
+      "text": "Leo will swim and played tag.",
+      "note": "Fix it:",
+      "then": {
+       "text": "Leo will swim and play tag.",
+       "note": "",
+       "marks": []
+      },
+      "marks": []
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "tense-shifts-1",
+     "text": "Sam walked to school and ___ lunch.",
+     "prompt": "Sam walked to school and buys lunch.",
+     "options": [
+      "buy",
+      "buys",
+      "bought"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Sam walked to school and bought lunch.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-2",
+     "text": "Ana read her book and ___ a note.",
+     "prompt": "Ana read her book and writes a note.",
+     "options": [
+      "wrote",
+      "write",
+      "writes"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Ana read her book and wrote a note.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-3",
+     "text": "Leo will swim and ___ tag.",
+     "prompt": "Leo will swim and played tag.",
+     "options": [
+      "plays",
+      "played",
+      "play"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Leo will swim and play tag.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-4",
+     "text": "Mia baked cookies and ___ one.",
+     "prompt": "Mia baked cookies and eats one.",
+     "options": [
+      "ate",
+      "eat",
+      "eats"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Mia baked cookies and ate one.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-5",
+     "text": "Tom plays soccer and ___ a goal.",
+     "prompt": "Tom plays soccer and scored a goal.",
+     "options": [
+      "score",
+      "scored",
+      "scores"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Tom plays soccer and scores a goal.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-6",
+     "text": "We planted seeds and ___ them with soil.",
+     "prompt": "We planted seeds and cover them with soil.",
+     "options": [
+      "covered",
+      "covers",
+      "cover"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "We planted seeds and covered them with soil.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-7",
+     "text": "The dog barked and ___ the cat.",
+     "prompt": "The dog barked and chases the cat.",
+     "options": [
+      "chased",
+      "chases",
+      "chase"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "The dog barked and chased the cat.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-8",
+     "text": "Ana will read her book and ___ a note.",
+     "prompt": "Ana will read her book and wrote a note.",
+     "options": [
+      "write",
+      "writes",
+      "wrote"
+     ],
+     "answer": [
+      0
+     ],
+     "right": "Ana will read her book and write a note.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-9",
+     "text": "Sam eats lunch and ___ milk.",
+     "prompt": "Sam eats lunch and drank milk.",
+     "options": [
+      "drank",
+      "drink",
+      "drinks"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Sam eats lunch and drinks milk.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-10",
+     "text": "Leo built a tower and ___ it down.",
+     "prompt": "Leo built a tower and knocks it down.",
+     "options": [
+      "knocks",
+      "knocked",
+      "knock"
+     ],
+     "answer": [
+      1
+     ],
+     "right": "Leo built a tower and knocked it down.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-11",
+     "text": "We will visit the farm and ___ the goats.",
+     "prompt": "We will visit the farm and fed the goats.",
+     "options": [
+      "feeds",
+      "fed",
+      "feed"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "We will visit the farm and feed the goats.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    },
+    {
+     "id": "tense-shifts-12",
+     "text": "Mia sings a song and ___ on stage.",
+     "prompt": "Mia sings a song and danced on stage.",
+     "options": [
+      "danced",
+      "dance",
+      "dances"
+     ],
+     "answer": [
+      2
+     ],
+     "right": "Mia sings a song and dances on stage.",
+     "hint": "The first verb sets the time. Change the other verb to match it."
+    }
+   ],
+   "room": true
   }
  },
  "rooms": {
@@ -2177,6 +5517,185 @@
    "need": 4,
    "kinds": [
     "us-your"
+   ]
+  },
+  "compound-sentences": {
+   "title": "Combining Ideas to Make Compound Sentences",
+   "passages": [
+    {
+     "t": "Combining Ideas to Make Compound Sentences",
+     "x": "The baby was tired, so she fell asleep. Sam is fast, but Leo is faster. It was cold, so we wore our coats. We can plant carrots, or we can plant beans. Leo wanted to play outside, but it started to rain. Mia likes apples, but she does not like pears. The class read a book, and the class acted out the story. The store was closed, so we went home.",
+     "g": 1,
+     "m": [
+      {
+       "a": 17,
+       "b": 18,
+       "w": "cold",
+       "k": "pc-compound"
+      },
+      {
+       "a": 26,
+       "b": 27,
+       "w": "carrots",
+       "k": "pc-compound"
+      },
+      {
+       "a": 36,
+       "b": 37,
+       "w": "outside",
+       "k": "pc-compound"
+      },
+      {
+       "a": 44,
+       "b": 45,
+       "w": "apples",
+       "k": "pc-compound"
+      },
+      {
+       "a": 66,
+       "b": 67,
+       "w": "closed",
+       "k": "pc-compound"
+      }
+     ]
+    }
+   ],
+   "need": 4,
+   "kinds": [
+    "pc-compound"
+   ]
+  },
+  "complex-sentences": {
+   "title": "Adding Ideas with a Middle Connecting Word",
+   "passages": [
+    {
+     "t": "Adding Ideas with a Middle Connecting Word",
+     "x": "The cat hid when the dog barked. Mia read her book until the lights went out. The garden grew because it rained all week. Ana wore her boots because the mud was deep. The team cheered because they won the game. Leo ran to the door when he heard the bell. Leo brushed his teeth before he went to bed. Sam got better because he practiced every day.",
+     "g": 1,
+     "m": [
+      {
+       "a": 2,
+       "b": 4,
+       "w": "hid. When",
+       "k": "sx-fragment"
+      },
+      {
+       "a": 10,
+       "b": 12,
+       "w": "book. Until",
+       "k": "sx-fragment"
+      },
+      {
+       "a": 18,
+       "b": 20,
+       "w": "grew. Because",
+       "k": "sx-fragment"
+      },
+      {
+       "a": 35,
+       "b": 37,
+       "w": "cheered. Because",
+       "k": "sx-fragment"
+      },
+      {
+       "a": 54,
+       "b": 56,
+       "w": "teeth. Before",
+       "k": "sx-fragment"
+      }
+     ]
+    }
+   ],
+   "need": 4,
+   "kinds": [
+    "sx-fragment"
+   ]
+  },
+  "avoiding-run-ons": {
+   "title": "Avoiding Run-Ons",
+   "passages": [
+    {
+     "t": "Avoiding Run-Ons",
+     "x": "Leo ran fast, and he won the race. The cake burned, so we made a new one. Sam wanted to play, but it started to rain. We can walk, or we can ride our bikes. The dog barked, and the cat ran away. It was late, so we went to bed. The baby cried, so her mom picked her up. Ana likes apples, but she does not like pears.",
+     "g": 1,
+     "m": [
+      {
+       "a": 7,
+       "b": 9,
+       "w": "race, the",
+       "k": "sx-splice"
+      },
+      {
+       "a": 25,
+       "b": 27,
+       "w": "rain, we",
+       "k": "sx-splice"
+      },
+      {
+       "a": 34,
+       "b": 36,
+       "w": "bikes the",
+       "k": "sx-runon"
+      },
+      {
+       "a": 42,
+       "b": 44,
+       "w": "away, it",
+       "k": "sx-splice"
+      },
+      {
+       "a": 50,
+       "b": 52,
+       "w": "bed the",
+       "k": "sx-runon"
+      }
+     ]
+    }
+   ],
+   "need": 4,
+   "kinds": [
+    "sx-runon",
+    "sx-splice"
+   ]
+  },
+  "tense-shifts": {
+   "title": "Correcting Shifts in Verb Tense",
+   "passages": [
+    {
+     "t": "Correcting Shifts in Verb Tense",
+     "x": "Tom plays soccer and scores a goal. Sam eats lunch and drinks milk. Mia baked cookies and ate one. We planted seeds and covered them with soil. Ana will read her book and write a note. Leo built a tower and knocked it down. Sam walked to school and bought lunch. The dog barked and chased the cat.",
+     "g": 1,
+     "m": [
+      {
+       "a": 14,
+       "b": 15,
+       "w": "bakes",
+       "k": "gr-tense"
+      },
+      {
+       "a": 20,
+       "b": 21,
+       "w": "plants",
+       "k": "gr-tense"
+      },
+      {
+       "a": 45,
+       "b": 46,
+       "w": "walks",
+       "k": "gr-tense"
+      },
+      {
+       "a": 55,
+       "b": 56,
+       "w": "chases",
+       "k": "gr-tense"
+      }
+     ]
+    }
+   ],
+   "need": 4,
+   "kinds": [
+    "gr-tense"
    ]
   }
  }

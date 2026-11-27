@@ -1,7 +1,8 @@
 {
-  "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title, its parts (each an ordered list of topic ids, with an optional part title; a topic opens when the one before it in the unit is mastered) and optional marks ({ topic id: 'checkpoint' | 'review' }). topics: each topic once, by id, however many units use it: where its text is in source/course.md (the band section and the topic heading), its quiz format (tap, capfix, gaps or choice, with choices.kind for a choice), the line that asks the question, its levels (questions per level) and, for a topic with a Mistake Hunt room, the room's mistake kinds. scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
+  "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title, its parts (each an ordered list of topic ids, with an optional part title; a topic opens when the one before it in the unit is mastered) and optional marks ({ topic id: 'checkpoint' | 'review' }). topics: each topic once, by id, however many units use it: where its text is in source/course.md (the band section and the topic heading), an optional display title, its quiz format (tap, capfix, gaps, choice with choices.kind, passage, or fix with fix.kind; choices.cycle shows a choice as press-to-cycle), the line that asks the question, its levels (questions per level) and, for a topic with a Mistake Hunt room, the room's mistake kinds. scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
   "bands": [
-    { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] }
+    { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] },
+    { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] }
   ],
   "pathways": {
     "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] },
@@ -22,7 +23,33 @@
     "verbs-and-time": { "title": "Verbs and Time", "parts": [
       { "title": "Action Verbs", "topics": ["identifying-action-verbs"] },
       { "title": "Past, Present, and Future", "topics": ["using-simple-tenses"] }
-    ] }
+    ] },
+    "building-sentences": { "title": "Building Sentences", "parts": [
+      { "title": "Compound Sentences", "topics": ["compound-sentences"] },
+      { "title": "Complex Sentences", "topics": ["complex-sentences"] }
+    ] },
+    "titles": { "title": "Titles", "parts": [{ "topics": ["capitalizing-titles"] }] },
+    "joining-words": { "title": "Joining Words", "parts": [{ "topics": ["coordinating-conjunctions"] }] },
+    "evidence-that-informs": { "title": "Evidence That Informs", "parts": [{ "topics": ["evidence-for-informing"] }] },
+    "evidence-for-an-opinion": { "title": "Evidence for an Opinion", "parts": [{ "topics": ["evidence-for-opinions"] }] },
+    "quotes-and-dialogue": { "title": "Quotes and Dialogue", "parts": [
+      { "title": "Dialogue", "topics": ["quotation-marks-in-dialogue"] },
+      { "title": "Quotes", "topics": ["quotation-marks-around-quotes"] }
+    ] },
+    "fixing-sentences": { "title": "Fixing Sentences", "parts": [
+      { "title": "Subjects and Verbs", "topics": ["identifying-action-verbs"] },
+      { "title": "Fragments", "topics": ["recognizing-fragments"] },
+      { "title": "Run-ons", "topics": ["avoiding-run-ons"] }
+    ] },
+    "more-kinds-of-words": { "title": "More Kinds of Words", "parts": [
+      { "title": "Conjunctions", "topics": ["coordinating-conjunctions"] }
+    ] },
+    "evidence-basics": { "title": "Evidence Basics", "parts": [{ "topics": ["evidence-that-supports"] }] },
+    "showing-not-telling": { "title": "Showing, Not Telling", "parts": [{ "topics": ["showing-with-actions"] }] },
+    "more-verbs-and-time": { "title": "More Verbs and Time", "parts": [
+      { "title": "Progressive Verbs", "topics": ["progressive-verbs"] },
+      { "title": "Tense Shifts", "topics": ["tense-shifts"] }
+    ], "marks": { "tense-shifts": "review" } }
   },
   "topics": {
     "identifying-adjectives": {
@@ -86,6 +113,98 @@
       "choices": { "kind": "tense" },
       "ask": "Choose the verb that fits.",
       "levels": [4, 4, 4]
+    },
+    "compound-sentences": {
+      "source": { "band": "3-5", "title": "Combining Ideas to Make Compound Sentences" },
+      "format": "choice",
+      "choices": { "kind": "join" },
+      "ask": "Choose the sentence that joins the two thoughts the right way.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["pc-compound"] }
+    },
+    "complex-sentences": {
+      "source": { "band": "3-5", "title": "Adding Ideas with a Middle Connecting Word" },
+      "format": "choice",
+      "choices": { "kind": "connect" },
+      "ask": "Choose the sentence that adds the extra idea the right way.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["sx-fragment"] }
+    },
+    "coordinating-conjunctions": {
+      "source": { "band": "3-5", "title": "Identifying Coordinating Conjunctions" },
+      "format": "tap",
+      "ask": "Tap the coordinating conjunction.",
+      "levels": [4, 4, 4]
+    },
+    "evidence-for-informing": {
+      "source": { "band": "3-5", "title": "Selecting Evidence for Informational Writing" },
+      "format": "passage",
+      "ask": "Tap the sentence that answers the question.",
+      "levels": [4, 4, 4]
+    },
+    "evidence-for-opinions": {
+      "source": { "band": "3-5", "title": "Selecting Evidence for Opinion Writing" },
+      "format": "passage",
+      "ask": "Tap the sentence that best supports the opinion.",
+      "levels": [4, 4, 4]
+    },
+    "quotation-marks-in-dialogue": {
+      "source": { "band": "3-5", "title": "Using Quotation Marks with Dialogue" },
+      "format": "fix",
+      "fix": { "kind": "dialogue" },
+      "ask": "Fix the sentence: add the marks and capital that the spoken words need.",
+      "levels": [4, 4, 4]
+    },
+    "quotation-marks-around-quotes": {
+      "source": { "band": "3-5", "title": "Using Quotation Marks around Quotes" },
+      "format": "fix",
+      "fix": { "kind": "quote" },
+      "ask": "Fix the sentence: add the marks and capital that the copied words need.",
+      "levels": [4, 4, 4]
+    },
+    "recognizing-fragments": {
+      "source": { "band": "3-5", "title": "Recognizing Fragments" },
+      "format": "choice",
+      "choices": { "kind": "label", "labels": [{ "text": "Complete sentence", "answer": "Sentence" }, { "text": "Fragment", "answer": "Fragment" }] },
+      "ask": "Is it a complete sentence or a fragment?",
+      "levels": [4, 4, 4]
+    },
+    "avoiding-run-ons": {
+      "source": { "band": "3-5", "title": "Avoiding Run-Ons" },
+      "format": "fix",
+      "fix": { "kind": "runon" },
+      "ask": "Fix the run-on. Any right fix counts.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["sx-runon", "sx-splice"] }
+    },
+    "evidence-that-supports": {
+      "source": { "band": "3-5", "title": "Which Pieces of Evidence Support the Opinion?" },
+      "format": "passage",
+      "ask": "Tap the sentence that supports the opinion.",
+      "levels": [4, 4, 4]
+    },
+    "showing-with-actions": {
+      "source": { "band": "3-5", "title": "Using Actions to Show Character Responses" },
+      "format": "choice",
+      "choices": { "kind": "ab" },
+      "ask": "Choose the sentence that shows instead of telling.",
+      "levels": [4, 4, 4]
+    },
+    "progressive-verbs": {
+      "source": { "band": "3-5", "title": "Using Progressive Verbs" },
+      "format": "choice",
+      "choices": { "kind": "given", "cycle": true },
+      "ask": "Press the verb to choose the form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "tense-shifts": {
+      "source": { "band": "3-5", "title": "Review: Correcting Shifts in Verb Tense" },
+      "title": "Correcting Shifts in Verb Tense",
+      "format": "choice",
+      "choices": { "kind": "shift", "cycle": true },
+      "ask": "Press the verb to make it match the time the first verb sets.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["gr-tense"] }
     }
   }
 }

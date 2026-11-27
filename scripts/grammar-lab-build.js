@@ -33,6 +33,23 @@
 //                         a comma after a short starting phrase is accepted with or without (content review)
 //           kind 'tense'  a blank with its base verb in parentheses (a K-2 open blank becomes a choice): the right form
 //                         for the time word (today, yesterday, will), and the two other forms of the same verb
+//           Grades 3-5 add (the code is under "grades 3-5" below):
+//           kind 'join'    compound sentences: two thoughts as the prompt; the joined sentence, a comma splice, a run-on
+//                          and (for and, but, so, yet) the same thoughts joined by "or", a choice they do not offer
+//           kind 'connect' complex sentences: the sentence with its connecting word, the extra idea cut off as a
+//                          fragment, a comma splice, and for "because" its opposite, "although"
+//           kind 'label'   sentence or fragment: two pills (choices.labels), the sentence shown as it is
+//           kind 'ab'      showing vs. telling: the two sentences the item gives, its own question
+//           kind 'given'   "(is reading/reads)": the two forms the item gives
+//           kind 'shift'   a tense shift: the verb that jumped tense is the blank; its past, present and base forms
+//           choices.cycle  shows the choice as press-to-cycle in the blank (opens on "Press to choose", never an option)
+//   passage judge the sentence in a short passage: "Passage: "..." Which ...? Answer: the second sentence." The passage's
+//           sentences are the choices, the item's question asks. Writing cards have three sections (parseSections).
+//   fix     an error-fixing box: the student types the fix; after a wrong answer the box turns into press-to-cycle through
+//           whole versions of the sentence. fix.kind 'runon' accepts any valid fix (a period and a capital, a semicolon,
+//           or a comma and a joining word that fits the hint's relation); 'dialogue' and 'quote' accept the fix as
+//           written (quotes straight or curly). The versions' wrong ones break a rule: a splice, the run-on itself, a
+//           missing capital; a missing comma, an end mark outside the marks, a small letter to start the quote.
 // No option is ever pre-selected: the page opens every question with nothing chosen and Submit off.
 //
 // Mistake Hunt rooms (phase0.md): a topic whose pathways.json entry has room.kinds gets a passage built from its own
@@ -107,8 +124,9 @@ export function parseCourse(md) {
       return;
     }
     if (!topic) return;
-    if (/^(\*\*Teaching Card\*\*|Teaching card:)\s*$/i.test(line.trim())) { mode = 'card'; return; }
-    if (/^(\*\*Quiz\*\*|Quiz:)\s*$/i.test(line.trim())) { mode = 'quiz'; return; }
+    // "**Teaching Card**", "Teaching card:" or "Teaching card, three sections:"; "**Quiz**", "Quiz:" or "Quiz (tap the adjective):"
+    if (/^(\*\*Teaching Card\*\*|Teaching card(?:, [a-z ]+)?:)\s*$/i.test(line.trim())) { mode = 'card'; return; }
+    if (/^(\*\*Quiz\*\*|Quiz(?: \([^)]*\))?:)\s*$/i.test(line.trim())) { mode = 'quiz'; return; }
     if (!mode && /\bSee\b.+\babove\b/.test(line)) { topic.ref = line.trim(); return; }
     if (mode === 'card' && /^- /.test(line)) topic.cardLines.push({ text: line.slice(2).trim(), line: i + 1 });
     if (mode === 'quiz' && /^\d+\. /.test(line)) topic.quizLines.push({ text: line.trim(), line: i + 1 });
@@ -136,6 +154,8 @@ function rolesIn(text) {
   const out = [];
   for (const m of String(text).matchAll(/(?:^|[.!?]\s+)([\p{L}'-]+) is (?:the|a|an) (adjective|noun|verb|adverb|pronoun|subject|article|conjunction|preposition)\b/gu)) out.push({ word: m[1], role: m[2] });
   for (const m of String(text).matchAll(/(?:^|[.!?]\s+)((?:[Ww]ill )?[\p{L}'-]+) is (?:now|past|later)\b/gu)) out.push({ word: m[1], role: 'verb' });
+  // "But joins the two thoughts." -> a conjunction
+  for (const m of String(text).matchAll(/(?:^|[.!?]\s+)([\p{L}'-]+) joins\b/gu)) out.push({ word: m[1], role: 'conjunction' });
   return out;
 }
 
@@ -189,7 +209,7 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
     const l = cardLines.find(x => x.text.toLowerCase().startsWith(name.toLowerCase() + ':'));
     return l ? l.text.slice(name.length + 1).trim() : '';
   };
-  const definition = field('Definition'), worked = field('Worked example'), how = field('How it works'), tip = field('Tip box');
+  const definition = field('Definition'), worked = field('Worked example'), how = field('How it works') || field('Explanation'), tip = field('Tip box');
   for (const [k, v] of [['Definition', definition], ['Worked example', worked], ['How it works', how], ['Tip box', tip]]) if (!v) problems.push(`${where}: the teaching card has no ${k}`);
   const units = unitsOf(worked);
   let example = null;
@@ -275,7 +295,7 @@ const IRREGULAR_PAST = Object.freeze({ draw: 'drew', fly: 'flew', eat: 'ate', si
   go: 'went', see: 'saw', make: 'made', take: 'took', give: 'gave', write: 'wrote', drive: 'drove', come: 'came', sit: 'sat',
   get: 'got', read: 'read', build: 'built', find: 'found', tell: 'told', throw: 'threw', grow: 'grew', know: 'knew', blow: 'blew',
   dig: 'dug', hide: 'hid', bring: 'brought', catch: 'caught', buy: 'bought', think: 'thought', teach: 'taught', sleep: 'slept',
-  keep: 'kept', feel: 'felt', hold: 'held', win: 'won', fall: 'fell', break: 'broke', wake: 'woke', drink: 'drank', swing: 'swung' });
+  keep: 'kept', feel: 'felt', hold: 'held', win: 'won', fall: 'fell', break: 'broke', wake: 'woke', drink: 'drank', swing: 'swung', feed: 'fed' });
 const MADE_UP_PASTS = new Set(['runned', 'goed', 'eated', 'catched', 'bringed', 'thinked', 'teached', 'swimmed', 'beginned', 'comed', 'builded',
   'finded', 'telled', 'sitted', 'hided', 'freezed', 'drawed', 'throwed', 'growed', 'knowed', 'flyed', 'blowed', 'writed', 'rided', 'drived',
   'gived', 'taked', 'maked', 'keeped', 'sleeped', 'digged', 'standed', 'buyed', 'fighted', 'selled', 'feeled', 'holded', 'speaked', 'breaked',
@@ -309,6 +329,8 @@ const QUOTED_ITEM = /^(\d+)\.\s+"(.+?)"\s+Answer:\s+(.+?)\.\s+Hint:\s+(.+)$/;
 /** A hint may name the rule's words, but never single out the answer: naming the right choice is a leak unless the hint
  *  names every other choice too. */
 function hintLeaks(hint, answer, others = []) {
+  // "Look for the small word ..." uses "for" as a plain word, not the answer "for"
+  hint = String(hint).replace(/\blook for\b/gi, 'look');
   if (!hasWord(hint, answer)) return false;
   return !others.length || !others.every(o => hasWord(hint, o));
 }
@@ -358,6 +380,7 @@ const FORMATS = {
   /** A choice, by the topic's kind (see the head of this file). -> { text: before ___ after, options, answer: [right
    *  indexes], right (the whole right sentence), italic? }. */
   choice(line, problems, where, def) {
+    if (def.choices && Object.hasOwn(MORE_CHOICES, def.choices.kind)) return MORE_CHOICES[def.choices.kind](line, problems, where, def);
     const m = QUOTED_ITEM.exec(line.text);
     if (!m) { problems.push(`${where} line ${line.line}: not a choice item ("N. "Sentence." Answer: ... Hint: ...")`); return null; }
     const [, n, textRaw, answerRaw, hint] = m;
@@ -423,7 +446,7 @@ const FORMATS = {
       wrong = time === 'future' ? [present, past] : time === 'past' ? [present, base] : plural ? [present, past] : [past, base];
       options = seededShuffle([right, ...wrong], `${where}|${n}`);
       if (hintLeaks(hint, right)) problems.push(`${at}: the hint names the answer "${right}"`);
-    } else { problems.push(`${where}: a choice topic needs choices.kind (pair, title, comma or tense)`); return null; }
+    } else { problems.push(`${where}: a choice topic needs choices.kind (pair, title, comma, tense, ${Object.keys(MORE_CHOICES).join(', ')})`); return null; }
     if (new Set(options).size !== options.length) problems.push(`${at}: two options read the same`);
     if (wrong.some(w => w === right)) problems.push(`${at}: a wrong option is the right one`);
     const full = whole ? right : `${before}${right}${after}`;
@@ -431,6 +454,254 @@ const FORMATS = {
       ...(whole ? { whole: true } : {}), ...(italic ? { italic: true } : {}) };
   },
 };
+
+// ------------------------------------------------------------------------------------------------- grades 3-5
+// Items whose answer is a whole sentence: 1. "The dog barked. The cat hid." Answer: The dog barked, and the cat hid. Hint: ...
+const FIX_ITEM = /^(\d+)\.\s+"(.+?)"\s+Answer:\s+(.+?)\s+Hint:\s+(.+)$/;
+// Two given sentences: 1. "A) Ana was sad. B) Ana wiped her eyes." Which sentence shows how Ana feels? Answer: B. Hint: ...
+const AB_ITEM = /^(\d+)\.\s+"A\)\s+(.+?)\s+B\)\s+(.+?)"\s+(.+?\?)\s+Answer:\s+([AB])\.\s+Hint:\s+(.+)$/;
+// A short passage: 1. Passage: "S1 S2 S3" Which sentence ...? Answer: the second sentence. Hint: ...
+const PASSAGE_ITEM = /^(\d+)\.\s+Passage:\s+"(.+?)"\s+(.+?\?)\s+Answer:\s+the (first|second|third|fourth|fifth) sentence\.\s+Hint:\s+(.+)$/;
+const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth'];
+export const FANBOYS = Object.freeze(['and', 'but', 'or', 'so', 'yet', 'for', 'nor']);
+export const SUBORDINATORS = Object.freeze(['because', 'when', 'after', 'before', 'until', 'while', 'since', 'although', 'if', 'unless']);
+const PREPOSITIONS = new Set(['under', 'over', 'in', 'on', 'at', 'by', 'near', 'behind', 'beside', 'across', 'into', 'with', 'from', 'during', 'after', 'before', 'around', 'through']);
+const HELPERS = new Set(['will', 'is', 'are', 'was', 'were', 'am', 'can', 'has', 'have', 'had', 'did', 'does', 'do']);
+const PAST_FORMS = () => new Set(Object.values(IRREGULAR_PAST));
+const capFirst = x => x.charAt(0).toUpperCase() + x.slice(1);
+const lowFirst = x => x.charAt(0).toLowerCase() + x.slice(1);
+const lowWords = text => words(text).map(w => w.toLowerCase());
+const sameWords = (a, b) => lowWords(a).join(' ') === lowWords(b).join(' ');
+const sameBag = (a, b) => lowWords(a).sort().join(' ') === lowWords(b).sort().join(' ');
+/** Split a passage into its sentences ("50,000 bees." stays one). */
+export const sentencesOf = text => String(text).trim().split(/(?<=[.!?])\s+(?=[A-Z"])/).filter(Boolean);
+/** Is the word a verb form in the past (a listed irregular past, or a regular -ed)? */
+const isPast = w => PAST_FORMS().has(w) || (/ed$/.test(w) && !/eed$/.test(w) && w.length > 3);   // not feed, need
+
+// Compound sentences (choices.kind 'join'): the two thoughts joined with a comma and a joining word. The wrong options
+// break the rule a compound sentence follows: a comma splice (the comma with no joining word), a run-on (no comma and no
+// joining word), and, where the joining word adds, gives a result or shows a difference, "or", which offers a choice the
+// two thoughts do not give. ("and" and "so" can both read right for two events, so they are never each other's wrong.)
+export const JOIN_CONFLICT = Object.freeze({ and: 'or', but: 'or', so: 'or', yet: 'or' });
+// Complex sentences (choices.kind 'connect'): the extra idea joined by its connecting word. Wrong: the extra idea cut off
+// as a fragment, a comma splice with the connecting word dropped, and for "because" the opposite, "although". The time
+// words get no opposite: "before" and "after" can both be true of two events the item does not order.
+export const CONNECT_OPPOSITE = Object.freeze({ because: 'although' });
+// Run-ons (fix kind 'runon'): any valid fix is right. A fix splits the two thoughts with a period (and a capital) or a
+// semicolon, or joins them with a comma and a joining word that fits how the thoughts relate (the hint says how).
+export const RUNON_JOINERS = Object.freeze({ add: ['and', 'so'], result: ['so', 'and'], contrast: ['but', 'yet'], choice: ['or'], split: ['and'] });
+const relationOf = hint => (/adds one thought/i.test(hint) ? 'add' : /result/i.test(hint) ? 'result' : /difference/i.test(hint) ? 'contrast'
+  : /choice/i.test(hint) ? 'choice' : /stand alone/i.test(hint) ? 'split' : null);
+
+/** A verb's base form from two of its forms ("bought", "buys" -> "buy"), or null. */
+export function baseOf(a, b) {
+  const cands = w => {
+    const out = [w];
+    for (const [base, past] of Object.entries(IRREGULAR_PAST)) if (past === w) out.push(base);
+    if (/ies$/.test(w)) out.push(`${w.slice(0, -3)}y`);
+    if (/es$/.test(w)) out.push(w.slice(0, -2));
+    if (/s$/.test(w)) out.push(w.slice(0, -1));
+    if (/ied$/.test(w)) out.push(`${w.slice(0, -3)}y`);
+    if (/ed$/.test(w)) { out.push(w.slice(0, -2), w.slice(0, -1)); if (/(.)\1ed$/.test(w)) out.push(w.slice(0, -3)); }
+    return out;
+  };
+  return [...cands(a), ...cands(b)].find(x => { const f = [x, presentOf(x), pastOf(x)]; return f.includes(a) && f.includes(b); }) || null;
+}
+
+const MORE_CHOICES = {
+  /** Compound sentences: pick the sentence that joins the two thoughts the right way. */
+  join(line, problems, where) {
+    const m = FIX_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not a whole-sentence item ("N. "Two thoughts." Answer: Sentence. Hint: ...")`); return null; }
+    const [, n, text, rightRaw, hint] = m, at = `${where} item ${n}`, right = rightRaw.trim();
+    const j = /^(.+?), (and|but|or|so|yet) (.+[.!?])$/.exec(right);
+    if (!j) { problems.push(`${at}: the answer is not two thoughts joined by a comma and and, but, or, so or yet`); return null; }
+    const [, A, conj, b] = j;
+    if (!sameWords(text, `${A} ${b}`)) problems.push(`${at}: the answer's words are not the two thoughts`);
+    const wrong = [`${A}, ${b}`, `${A} ${b}`, ...(JOIN_CONFLICT[conj] ? [`${A}, ${JOIN_CONFLICT[conj]} ${b}`] : [])];
+    if (hintLeaks(hint, conj)) problems.push(`${at}: the hint names the joining word "${conj}"`);
+    const options = seededShuffle([right, ...wrong], `${where}|${n}`);
+    return { n: +n, text, prompt: text, options, answer: [options.indexOf(right)], right, hint: hint.trim(), whole: true };
+  },
+  /** Complex sentences: pick the sentence that adds the extra idea with its connecting word. */
+  connect(line, problems, where) {
+    const m = FIX_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not a whole-sentence item`); return null; }
+    const [, n, text, rightRaw, hint] = m, at = `${where} item ${n}`, right = rightRaw.trim();
+    const toks = tokenize(right);
+    const k = toks.findIndex((w, i) => i > 0 && SUBORDINATORS.includes(w.t.toLowerCase()) && !w.pre);
+    if (k < 0 || toks[k - 1].post) { problems.push(`${at}: the answer has no connecting word (${SUBORDINATORS.join(', ')}) in the middle`); return null; }
+    const main = joinTokens(toks.slice(0, k)), conn = toks[k].t, dep = joinTokens(toks.slice(k + 1));
+    if (!sameBag(text, `${main} ${dep}`)) problems.push(`${at}: the answer's words are not the two thoughts`);
+    const wrong = [`${main}. ${capFirst(conn)} ${dep}`, `${main}, ${dep}`, ...(CONNECT_OPPOSITE[conn] ? [`${main} ${CONNECT_OPPOSITE[conn]} ${dep}`] : [])];
+    if (hintLeaks(hint, conn)) problems.push(`${at}: the hint names the connecting word "${conn}"`);
+    const options = seededShuffle([right, ...wrong], `${where}|${n}`);
+    return { n: +n, text, prompt: text, options, answer: [options.indexOf(right)], right, hint: hint.trim(), whole: true };
+  },
+  /** Sentence or fragment: two pills from the topic's labels (choices.labels: [{ text, answer }]), in a fixed order. */
+  label(line, problems, where, def) {
+    const m = QUOTED_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not a label item`); return null; }
+    const [, n, text, answerRaw, hint] = m, at = `${where} item ${n}`;
+    const labels = def.choices.labels || [];
+    const k = labels.findIndex(l => norm(l.answer) === norm(unquote(answerRaw)));
+    if (k < 0) { problems.push(`${at}: the answer "${answerRaw}" is not one of the labels`); return null; }
+    if (labels.some(l => hasWord(hint, l.text))) problems.push(`${at}: the hint names a label`);
+    return { n: +n, text, options: labels.map(l => l.text), answer: [k], right: text, label: labels[k].text, hint: hint.trim(), plain: true };
+  },
+  /** Showing vs. telling: the two sentences the item gives, in its order (the page never opens on either). */
+  ab(line, problems, where) {
+    const m = AB_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not an A) B) item`); return null; }
+    const [, n, a, b, ask, ans, hint] = m;
+    const options = [a.trim(), b.trim()], k = ans === 'A' ? 0 : 1;
+    if (options.some(o => hint.includes(o))) problems.push(`${where} item ${n}: the hint quotes an option`);
+    return { n: +n, text: ask.trim(), ask: ask.trim(), options, answer: [k], right: options[k], hint: hint.trim(), whole: true };
+  },
+  /** Progressive verbs: "Sam (is reading/reads) a book." -> a blank and the two forms the item gives (seeded order). */
+  given(line, problems, where) {
+    const m = QUOTED_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not a choice item`); return null; }
+    const [, n, textRaw, answerRaw, hint] = m, at = `${where} item ${n}`;
+    const g = /^(.*?)\(([^()/]+)\/([^()/]+)\)(.*)$/.exec(textRaw);
+    if (!g) { problems.push(`${at}: no (one/other) choice in the sentence`); return null; }
+    const [, before, x, y, after] = g, answer = unquote(answerRaw);
+    const given = [x.trim(), y.trim()];
+    if (!given.includes(answer)) { problems.push(`${at}: the answer "${answer}" is not one of ${given.join(' / ')}`); return null; }
+    const wrong = given.filter(o => o !== answer);
+    if (hintLeaks(hint, answer, wrong)) problems.push(`${at}: the hint names the answer "${answer}"`);
+    const options = seededShuffle(given, `${where}|${n}`);
+    return { n: +n, text: `${before}___${after}`, options, answer: [options.indexOf(answer)], right: `${before}${answer}${after}`, hint: hint.trim() };
+  },
+  /** A tense shift: the verb that jumped tense becomes a blank; its three forms (past, present, base) are the choices. */
+  shift(line, problems, where) {
+    const m = FIX_ITEM.exec(line.text);
+    if (!m) { problems.push(`${where} line ${line.line}: not a whole-sentence item`); return null; }
+    const [, n, text, rightRaw, hint] = m, at = `${where} item ${n}`, right = rightRaw.trim();
+    const A = tokenize(text), B = tokenize(right);
+    const diff = A.length === B.length ? A.flatMap((w, i) => (w.t !== B[i].t || w.pre !== B[i].pre || w.post !== B[i].post ? [i] : [])) : [];
+    if (diff.length !== 1 || A[diff[0]].pre !== B[diff[0]].pre || A[diff[0]].post !== B[diff[0]].post) { problems.push(`${at}: the fix is not one verb changed`); return null; }
+    const p = diff[0], was = A[p].t, want = B[p].t;
+    const base = baseOf(want, was);
+    if (!base) { problems.push(`${at}: "${was}" and "${want}" are not two forms of one verb: add it to the irregular verbs`); return null; }
+    if (MADE_UP_PASTS.has(pastOf(base))) problems.push(`${at}: "${pastOf(base)}" is not a real past form of "${base}"`);
+    const forms = [...new Set([pastOf(base), presentOf(base), base])];
+    if (forms.length < 3) problems.push(`${at}: "${base}" has fewer than three forms to choose from`);
+    if (hintLeaks(hint, want)) problems.push(`${at}: the hint names the answer "${want}"`);
+    const options = seededShuffle(forms, `${where}|${n}`);
+    return { n: +n, text: joinTokens(A.map((w, i) => (i === p ? { ...w, t: '___' } : w))), prompt: text, options, answer: [options.indexOf(want)], right, hint: hint.trim() };
+  },
+};
+
+/** Judge the sentence in a short passage: the passage's sentences are the choices. */
+FORMATS.passage = function passage(line, problems, where) {
+  const m = PASSAGE_ITEM.exec(line.text);
+  if (!m) { problems.push(`${where} line ${line.line}: not a passage item ("N. Passage: "..." Which ...? Answer: the second sentence. Hint: ...")`); return null; }
+  const [, n, text, ask, ord, hint] = m, at = `${where} item ${n}`;
+  const options = sentencesOf(text), k = ORDINALS.indexOf(ord);
+  if (options.length < 2 || k >= options.length) { problems.push(`${at}: the passage has ${options.length} sentences, so no ${ord} one`); return null; }
+  if (new RegExp(`\\b(${ORDINALS.join('|')})\\b`, 'i').test(hint) || options.some(o => hint.includes(o.replace(/[.!?]$/, '')))) problems.push(`${at}: the hint points at a sentence`);
+  return { n: +n, text, ask: ask.trim(), options, answer: [k], right: options[k], hint: hint.trim() };
+};
+
+/** Fix the sentence: an error-fixing box (the student types the fix), turned into press-to-cycle through whole-sentence
+ *  versions after a wrong answer. accept: every typed fix that is right (kind 'runon': any valid fix); options and
+ *  answer: the cycle's versions, the right one among wrong ones made by the kind's rules. */
+FORMATS.fix = function fix(line, problems, where, def) {
+  const m = FIX_ITEM.exec(line.text);
+  if (!m) { problems.push(`${where} line ${line.line}: not a fix item ("N. "Sentence." Answer: Fixed sentence. Hint: ...")`); return null; }
+  const [, n, text, rightRaw, hint] = m, at = `${where} item ${n}`, right = rightRaw.trim();
+  const kind = def.fix && def.fix.kind;
+  let accept = [right], wrong = [];
+  if (kind === 'runon') {
+    const j = /^(.+?), (and|but|or|so|yet) (.+)$/.exec(right) || /^(.+?[^.!?])\. (\S.+)$/.exec(right);
+    if (!j) { problems.push(`${at}: the fix neither joins with a comma and a joining word nor splits with a period`); return null; }
+    const A = j[1], conj = j.length === 4 ? j[2] : null;
+    const T = tokenize(text), nA = tokenize(A).length;
+    const first = joinTokens(T.slice(0, nA)), second = joinTokens(T.slice(nA));
+    if (first !== A || !sameWords(second, j[j.length - 1])) { problems.push(`${at}: the fix is not the run-on's two thoughts`); return null; }
+    const rel = relationOf(hint);
+    if (!rel) { problems.push(`${at}: the hint does not say how the thoughts relate (adds, result, difference, choice, stand alone)`); return null; }
+    const extra = ((def.notes || {})[n] || {}).accept || [];
+    const joiners = [...new Set([...RUNON_JOINERS[rel], ...extra])];
+    if (conj && !joiners.includes(conj)) problems.push(`${at}: "${conj}" does not fit a thought that ${rel === 'add' ? 'adds' : `shows a ${rel}`}`);
+    accept = [...new Set([right, `${A}. ${capFirst(second)}`, `${A}; ${second}`, ...joiners.map(c => `${A}, ${c} ${second}`)])];
+    wrong = [`${A}, ${second}`, text, /^[a-z]/.test(second) ? `${A}. ${second}` : `${A}, or ${second}`].filter(w => !accept.includes(w));
+    // "a comma and a word" uses "and" as a plain word; naming the fix's word is ", and", "the word and" or "and" in quotes
+    if (conj && new RegExp(`(, ${conj} |\\bword ${conj}\\b|"${conj}")`, 'i').test(hint)) problems.push(`${at}: the hint names the joining word "${conj}"`);
+  } else if (kind === 'dialogue' || kind === 'quote') {
+    const q = /^(.*?)([,:]?) "(.+?)([.!?])"$/.exec(right);
+    if (!q) { problems.push(`${at}: the fix is not words leading into a quote that ends inside its marks`); return null; }
+    const [, tag, lead, body, end] = q;
+    if (!sameWords(text, right)) problems.push(`${at}: the fix changes words, not only marks and capitals`);
+    const noQuotes = `${tag}${lead} ${body}${end}`;
+    wrong = [lead ? `${tag} "${body}${end}"` : noQuotes, `${tag}${lead} "${body}"${end}`,
+      /^[A-Z]/.test(body) && !/^I\b/.test(body) ? `${tag}${lead} "${lowFirst(body)}${end}"` : noQuotes];
+    wrong = [...new Set(wrong)];
+  } else { problems.push(`${where}: a fix topic needs fix.kind (runon, dialogue or quote)`); return null; }
+  if (wrong.length < 2) problems.push(`${at}: fewer than 2 wrong versions`);
+  if (hint.includes(right) || hint.includes(right.replace(/[.!?"]+$/, ''))) problems.push(`${at}: the hint gives the fix`);
+  const options = seededShuffle([right, ...wrong], `${where}|${n}`);
+  return { n: +n, text, right, accept, options, answer: [options.indexOf(right)], hint: hint.trim() };
+};
+
+/** Is a two-thought sentence put together right (the second, independent rule for run-on fixes)? first: the first
+ *  thought's words as written. Right: a period and a capital, a semicolon, or a comma and a joining word. */
+export function joinsRight(sentence, first) {
+  if (!sentence.startsWith(first)) return false;
+  const rest = sentence.slice(first.length);
+  return /^\. [A-Z]/.test(rest) || /^; [a-zA-Z]/.test(rest) || new RegExp(`^, (${FANBOYS.join('|')}) [a-zA-Z]`).test(rest);
+}
+/** The quotation rules (the second, independent rule for dialogue and quotes): two marks, the end mark inside them, a
+ *  capital to start the quoted words, and the same mark (comma, colon or none) before the opening mark as the fix. */
+export function quoteRules(sentence, right) {
+  const marks = (sentence.match(/"/g) || []).length;
+  const open = sentence.indexOf('"'), close = sentence.lastIndexOf('"');
+  const leadOf = s => { const i = s.indexOf('"'); const c = s.slice(0, i).trim().slice(-1); return /[,:]/.test(c) ? c : ''; };
+  return { marks: marks === 2, endInside: close > 0 && /[.!?]/.test(sentence.charAt(close - 1)) && close === sentence.length - 1,
+    capital: open >= 0 && /^[A-Z]/.test(sentence.slice(open + 1)), lead: open >= 0 && leadOf(sentence) === leadOf(right) };
+}
+/** A fragment by its shape (the second, independent rule for sentence-or-fragment): it starts with a connecting word,
+ *  starts with a verb (no subject), or has no verb at all. */
+export function looksLikeFragment(text) {
+  const w = lowWords(text);
+  const verb = x => isPast(x) || HELPERS.has(x);
+  if (SUBORDINATORS.includes(w[0])) return true;
+  if (isPast(w[0])) return true;
+  if (PREPOSITIONS.has(w[0]) && !w.slice(1).some(verb)) return true;
+  return !w.some(verb);
+}
+const TELLING = /^(?:the )?[\p{L}']+ (?:was|is|were|are|felt|seemed) [a-z]+\.$/iu;
+const PROGRESSIVE = /^(?:is|are|was|were|am|will be) [a-z]+ing$/;
+
+// ------------------------------------------------------------------------------------------------- three-section cards
+/** A writing topic's card: "Section 1, Facts. Guiding question: What is a fact? Worked passage: "S1 S2" Note." ->
+ *  { sections: [{ title, question, passage: [{ label?, text, hl }], note }] }. Which sentences the card highlights is
+ *  Oomba's own note (overrides.json card.sections[i].highlight: indexes of the section's sentences). */
+export function parseSections(cardLines, problems, where, notes = {}) {
+  const hl = ((notes.card || {}).sections || []);
+  const sections = cardLines.map((l, i) => {
+    const m = /^Section (\d+), (.+?)\. Guiding question: (.+?\?) Worked passage: (.+)$/.exec(l.text);
+    if (!m) { problems.push(`${where}: card line ${l.line} is not "Section N, Title. Guiding question: ...? Worked passage: ..."`); return null; }
+    const [, , title, question, rest] = m;
+    const bits = rest.split(/"([^"]+)"/);
+    const passage = [];
+    let label = bits[0].trim().replace(/:$/, '');
+    for (let k = 1; k < bits.length; k += 2) {
+      for (const text of sentencesOf(bits[k])) { passage.push({ ...(label ? { label } : {}), text, hl: false }); label = ''; }
+      const after = (bits[k + 1] || '').trim();
+      if (k + 2 < bits.length) label = after.replace(/:$/, '');
+    }
+    const note = (bits[bits.length - 1] || '').trim();
+    const want = (hl[i] || {}).highlight;
+    if (!Array.isArray(want) || !want.length || want.some(x => !passage[x])) problems.push(`${where}: section ${i + 1} needs overrides card.sections[${i}].highlight (sentences 0 to ${passage.length - 1})`);
+    else for (const x of want) passage[x].hl = true;
+    if (!passage.length) problems.push(`${where}: section ${i + 1} has no worked passage`);
+    return { title, question, passage, note };
+  }).filter(Boolean);
+  if (sections.length !== 3) problems.push(`${where}: a writing card has 3 sections, not ${sections.length}`);
+  return { sections };
+}
 
 /** A second, independent look at every generated wrong option: is it really wrong by the topic's rule? -> problems. */
 export function checkOptions(topic) {
@@ -453,6 +724,36 @@ export function checkOptions(topic) {
         if (o === plain) problems.push(`${at}: the sentence with no comma is accepted, so it cannot be a wrong option`);
         if (o.indexOf(',') === right.indexOf(',')) problems.push(`${at}: wrong option "${o}" has the comma in the right place`);
       }
+      if (kind === 'join') {
+        // two thoughts need a joining word after the comma; "or" offers a choice, which the right sentence does not
+        const c = (/, (and|but|or|so|yet) /.exec(o) || [])[1], rc = (/, (and|but|or|so|yet) /.exec(right) || [])[1];
+        if (!rc) problems.push(`${at}: the right sentence has no comma and joining word`);
+        if (c && !(c === 'or' && rc !== 'or')) problems.push(`${at}: wrong option "${o}" joins the thoughts with a fitting word`);
+      }
+      if (kind === 'connect') {
+        const fragment = new RegExp(`[.!?] (${SUBORDINATORS.join('|')}) `, 'i').test(o);
+        const has = SUBORDINATORS.find(w => hasWord(o, w)), rw = SUBORDINATORS.find(w => hasWord(right, w));
+        const splice = !has && /, /.test(o);
+        if (!fragment && !splice && !(rw === 'because' && has === 'although')) problems.push(`${at}: wrong option "${o}" adds the idea in a way that can read right`);
+      }
+      if (kind === 'label' && looksLikeFragment(it.text) !== (norm(right) === 'fragment')) problems.push(`${at}: "${it.text}" does not look like a ${right.toLowerCase()} by its shape`);
+      if (kind === 'ab') {
+        if (!TELLING.test(o)) problems.push(`${at}: the other option "${o}" is not a telling sentence`);
+        if (TELLING.test(right)) problems.push(`${at}: the right option "${right}" names the feeling instead of showing it`);
+      }
+      if (kind === 'given') {
+        if (!PROGRESSIVE.test(right)) problems.push(`${at}: the right form "${right}" is not progressive`);
+        if (PROGRESSIVE.test(o)) problems.push(`${at}: wrong option "${o}" is progressive too`);
+      }
+      if (kind === 'shift') {
+        // the time the first verb sets, read from the words before the blank, against each form's time
+        const before = lowWords(it.text.split('___')[0]);
+        const time = before.includes('will') ? 'future' : before.some(isPast) ? 'past' : 'present';
+        const timeOf2 = w => (isPast(w) ? 'past' : /s$/.test(w) ? 'present' : 'base');
+        const fits = w => (time === 'future' ? timeOf2(w) === 'base' : timeOf2(w) === time);
+        if (!fits(right)) problems.push(`${at}: the right form "${right}" does not keep the ${time} time`);
+        if (fits(o)) problems.push(`${at}: wrong option "${o}" keeps the ${time} time too`);
+      }
       if (kind === 'tense') {
         const time = timeOf(it.text.split('___')[0]);
         if (time === 'future' && !/s$|ed$/.test(o) && !Object.values(IRREGULAR_PAST).includes(o)) problems.push(`${at}: "${o}" after will reads right`);
@@ -460,6 +761,23 @@ export function checkOptions(topic) {
         if (time === 'present' && /s$/.test(o) && !/ed$/.test(o) && /s$/.test(right)) problems.push(`${at}: "${o}" reads as a present form`);
       }
     });
+  }
+  // Fix items: every typed fix accepted follows the rules, and no wrong version of the cycle does.
+  for (const it of topic.items) {
+    if (topic.format !== 'fix') break;
+    const right = it.options[it.answer[0]], fk = topic.fix && topic.fix.kind;
+    if (!it.accept.includes(right)) problems.push(`${it.id}: the cycle's right version is not an accepted fix`);
+    if (fk === 'runon') {
+      const first = (/^(.+?)(?:, (?:and|but|or|so|yet) |\. |; )/.exec(right) || [])[1] || '';
+      for (const a of it.accept) if (!joinsRight(a, first)) problems.push(`${it.id}: accepted fix "${a}" does not join the thoughts right`);
+      for (const o of it.options) if (o !== right && (joinsRight(o, first) && /^\. |^; /.test(o.slice(first.length)))) problems.push(`${it.id}: wrong version "${o}" splits the thoughts right`);
+      for (const o of it.options) if (o !== right && it.accept.includes(o)) problems.push(`${it.id}: wrong version "${o}" is an accepted fix`);
+    }
+    if (fk === 'dialogue' || fk === 'quote') {
+      const ok = r => Object.values(r).every(Boolean);
+      if (!ok(quoteRules(right, right))) problems.push(`${it.id}: the fix "${right}" breaks the quotation rules`);
+      for (const o of it.options) if (o !== right && ok(quoteRules(o, right))) problems.push(`${it.id}: wrong version "${o}" follows every quotation rule`);
+    }
   }
   return problems;
 }
@@ -520,21 +838,26 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     if (!src) { problems.push(`${where}: no full topic with that title in that band of the source`); continue; }
     const fmt = FORMATS[def.format];
     if (!fmt) { problems.push(`${where}: format "${def.format}" is not built yet`); continue; }
-    const card = parseCard(src.cardLines, problems, where, def.format, def.choices && def.choices.pair);
     const notes = (overrides.topics || {})[id] || {};
-    const items = src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, def)).filter(Boolean)
+    const sectioned = src.cardLines.length && /^Section \d+,/.test(src.cardLines[0].text);
+    const card = sectioned ? parseSections(src.cardLines, problems, where, notes) : parseCard(src.cardLines, problems, where, def.format, def.choices && def.choices.pair);
+    const items = src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, { ...def, notes })).filter(Boolean)
       .map(it => { const { n, ...rest } = it; return { id: `${id}-${n}`, ...rest }; });
     const levels = Array.isArray(def.levels) && def.levels.length ? def.levels : [4, 4, 4];
     if (items.length < 12) problems.push(`${where}: ${items.length} quiz items, at least 12 needed`);
     for (const it of items) {
       lint(it.text, problems, `${it.id} sentence`); lint(it.hint, problems, `${it.id} hint`);
       for (const o of it.options || []) lint(o, problems, `${it.id} option`);
+      for (const k of ['ask', 'prompt', 'right']) if (it[k]) lint(it[k], problems, `${it.id} ${k}`);
+      for (const a of it.accept || []) lint(a, problems, `${it.id} accepted fix`);
     }
-    for (const [k, v] of Object.entries({ definition: card.definition, how: card.how, ask: def.ask, title: src.title })) lint(v || '', problems, `${id} ${k}`);
+    for (const [k, v] of Object.entries({ definition: card.definition, how: card.how, ask: def.ask, title: def.title || src.title })) lint(v || '', problems, `${id} ${k}`);
+    for (const sec of card.sections || []) lint([sec.title, sec.question, sec.note, ...sec.passage.map(x => `${x.label || ''} ${x.text}`)].join(' '), problems, `${id} card section`);
     if (card.example) for (const u of [card.example, ...(card.example.more || [])]) lint(unitText(u), problems, `${id} worked example`);
-    for (const t of card.tips) lint(unitText(t), problems, `${id} tip`);
-    const topic = { id, title: src.title, band: bandOf[id] || def.source.band, format: def.format, ask: def.ask, levels, source: { line: src.line },
-      ...(def.choices ? { choices: def.choices } : {}), ...(def.choices && def.choices.kind === 'title' ? { italic: true } : {}), card, items };
+    for (const t of card.tips || []) lint(unitText(t), problems, `${id} tip`);
+    const topic = { id, title: def.title || src.title, band: bandOf[id] || def.source.band, format: def.format, ask: def.ask, levels, source: { line: src.line },
+      ...(def.choices ? { choices: def.choices } : {}), ...(def.choices && def.choices.kind === 'title' ? { italic: true } : {}),
+      ...(def.choices && def.choices.cycle ? { cycle: true } : {}), ...(def.fix ? { fix: def.fix } : {}), card, items };
     problems.push(...checkOptions(topic));
     topics[id] = topic;
     if (def.room) { const r = buildRoom(topic, def, problems); if (r) { rooms[id] = r; topic.room = true; } }

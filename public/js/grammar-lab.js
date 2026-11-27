@@ -6,8 +6,13 @@
 // Pictures and animations: public/js/grammar-lab-art.js (they respect reduced motion and never block a control).
 import { api, pageData, $, $$, t, toast } from '/js/app.js';
 // A question's kind (services/grammar-lab.js questionFor): 'tap' (mark words), 'gaps' (tap the gap between two words
-// where a comma goes; it shows the comma) or 'choice' (pick one option, which fills the sentence's blank; whole: the
-// options are whole sentences). Nothing is ever chosen when a question opens, and Submit stays off until something is.
+// where a comma goes; it shows the comma), 'choice' (pick one option, which fills the sentence's blank; whole: the
+// options are whole sentences; prompt: what they are about, shown above; plain: the sentence with no blank; passage:
+// the options are a short passage's sentences, tapped where they stand; cycle: press-to-cycle, one control in the blank
+// that shows the next option on each press) or 'fix' (an error-fixing box: the student edits the sentence and submits
+// it; after a wrong answer the box turns into press-to-cycle through whole versions of the sentence). Nothing is ever
+// chosen when a question opens (a cycle opens on "Press to choose", never on an option), and Submit stays off until the
+// student acts (a fix box: until the sentence is changed).
 import { mountWelcome, mountGreeting, mountMastery, mountTapTip } from '/js/grammar-lab-art.js';
 
 const d = pageData();
@@ -16,7 +21,13 @@ const TIP_KEY = 'gl:tip-seen';
 const screens = ['gl-welcome', 'gl-quiz', 'gl-done'];
 let summary = null, question = null, busy = false, picked = null;
 const marked = new Set();
-const ready = () => (question && question.kind === 'choice' ? picked !== null : marked.size > 0);
+const fixBox = () => $('#gl-fix');
+const typing = () => !!question && question.kind === 'fix' && !question.options;
+const ready = () => {
+  if (!question) return false;
+  if (typing()) { const v = fixBox().value.replace(/\s+/g, ' ').trim(); return !!v && v !== question.text; }
+  return question.kind === 'choice' || question.kind === 'fix' ? picked !== null : marked.size > 0;
+};
 const scenes = {};
 
 const show = id => { for (const s of screens) $(`#${s}`).hidden = s !== id; $('#gl-meter').hidden = id === 'gl-welcome'; };
@@ -66,13 +77,29 @@ function renderQuestion() {
   marked.clear(); picked = null;
   const q = question;
   renderAsk(q.ask);
-  const box = $('#gl-sentence'), opts = $('#gl-options');
+  const box = $('#gl-sentence'), opts = $('#gl-options'), prompt = $('#gl-prompt');
   box.textContent = ''; opts.textContent = '';
-  opts.hidden = q.kind !== 'choice';
-  box.hidden = q.kind === 'choice' && q.whole;
+  prompt.hidden = !q.prompt; prompt.textContent = q.prompt || '';
+  $('#gl-fixbox').hidden = !typing();
+  opts.hidden = q.kind !== 'choice' || !!q.passage || !!q.cycle;
+  box.hidden = q.kind === 'choice' && q.whole && !q.passage;
   box.classList.toggle('gl-gaps', q.kind === 'gaps');
-  if (q.kind === 'choice') {
-    if (!q.whole) {
+  box.classList.toggle('gl-passage-q', !!q.passage);
+  if (q.passage) { box.setAttribute('role', 'radiogroup'); box.setAttribute('aria-labelledby', 'gl-ask'); } else { box.removeAttribute('role'); box.removeAttribute('aria-labelledby'); }
+  if (q.kind === 'fix') renderFix();
+  else if (q.passage) {
+    // the passage itself: each sentence a choice, where it stands
+    q.options.forEach((o, k) => {
+      if (k) box.append(' ');
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'gl-sent'; b.dataset.k = String(k); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false'); b.textContent = o;
+      box.append(b);
+    });
+  } else if (q.kind === 'choice' && q.cycle) {
+    box.append(q.before, cycleButton(q.options, false), q.after);
+  } else if (q.kind === 'choice') {
+    if (q.plain) box.append(q.before);
+    else if (!q.whole) {
       box.append(q.before);
       const blank = document.createElement('span');
       blank.className = `gl-blank${q.italic ? ' gl-title' : ''}`; blank.id = 'gl-blank'; blank.setAttribute('aria-label', t('js.grammar-lab.blank'));
@@ -110,6 +137,50 @@ function renderQuestion() {
   $('#gl-submit').disabled = true;
   renderHeader();
 }
+/** A press-to-cycle control: opens on "Press to choose" (never on an option); each press shows the next option. */
+function cycleButton(options, whole) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.id = 'gl-cycle'; b.className = `gl-cycle${whole ? ' gl-cycle-whole' : ''}`;
+  const label = document.createElement('span'); label.className = 'gl-cycle-t'; label.textContent = t('js.grammar-lab.cyclePress');
+  const dots = document.createElement('span'); dots.className = 'gl-cycle-dots'; dots.setAttribute('aria-hidden', 'true');
+  for (let k = 0; k < options.length; k++) dots.append(document.createElement('i'));
+  b.append(label, dots);
+  b.setAttribute('aria-label', t('js.grammar-lab.cyclePress'));
+  return b;
+}
+$('#gl-sentence').addEventListener('click', e => {
+  const c = e.target.closest('.gl-cycle');
+  if (c && !busy) {
+    const opts = question.options;
+    picked = picked === null ? 0 : (picked + 1) % opts.length;
+    c.querySelector('.gl-cycle-t').textContent = opts[picked];
+    c.classList.add('gl-filled');
+    c.querySelectorAll('.gl-cycle-dots i').forEach((i, k) => i.classList.toggle('on', k === picked));
+    c.setAttribute('aria-label', t('js.grammar-lab.cycleOf', { option: opts[picked], n: picked + 1, total: opts.length }));
+    $('#gl-submit').disabled = !ready();
+    return;
+  }
+  const s = e.target.closest('.gl-sent');
+  if (s && !busy) {
+    picked = +s.dataset.k;
+    for (const o of $$('#gl-sentence .gl-sent')) o.setAttribute('aria-checked', String(o === s));
+    $('#gl-submit').disabled = !ready();
+  }
+});
+/** A fix: the box holding the sentence to edit; once missed, press-to-cycle through whole versions of it. */
+function renderFix() {
+  const q = question, box = $('#gl-sentence');
+  picked = null;
+  if (!q.options) {
+    box.hidden = true;
+    fixBox().value = q.text;
+    return;
+  }
+  $('#gl-fixbox').hidden = true;
+  box.hidden = false; box.textContent = '';
+  box.append(cycleButton(q.options, true));
+}
+$('#gl-fix').addEventListener('input', () => { if (!busy) $('#gl-submit').disabled = !ready(); });
 function notice(kind, text = '') {
   const n = $('#gl-notice');
   n.hidden = !kind; n.className = `gl-notice${kind ? ` gl-notice-${kind}` : ''}`; n.textContent = text;
@@ -163,9 +234,9 @@ $('#gl-submit').addEventListener('click', async () => {
   if (busy || !ready() || !question) return;
   busy = true; $('#gl-submit').disabled = true;
   let r;
-  const sent = question.kind === 'choice' ? [picked] : [...marked].sort((a, b) => a - b);
+  const sent = typing() ? fixBox().value : question.kind === 'choice' || question.kind === 'fix' ? [picked] : [...marked].sort((a, b) => a - b);
   try {
-    r = await api(`${base}/answer`, { method: 'POST', body: { unit: d.unit, id: question.id, marked: sent } });
+    r = await api(`${base}/answer`, { method: 'POST', body: { unit: d.unit, band: d.band, id: question.id, marked: sent } });
   } catch (e) {
     busy = false;
     // The question moved on elsewhere (another tab): pick up where the server is.
@@ -177,7 +248,10 @@ $('#gl-submit').addEventListener('click', async () => {
   if (r.kind === 'near') { busy = false; notice('near', t(question.kind === 'gaps' ? 'js.grammar-lab.nearGaps' : 'js.grammar-lab.near')); $('#gl-submit').disabled = !ready(); return; }
   if (r.kind === 'wrong' || r.kind === 'again') {
     busy = false;
-    notice('wrong', t(r.kind === 'wrong' ? 'js.grammar-lab.wrong' : 'js.grammar-lab.again'));
+    // A fix missed for the first time: the box turns into press-to-cycle through versions of the sentence.
+    const toCycle = typing() && r.question && r.question.options;
+    if (toCycle) { question = r.question; renderFix(); }
+    notice('wrong', t(toCycle ? 'js.grammar-lab.wrongFix' : r.kind === 'wrong' ? 'js.grammar-lab.wrong' : 'js.grammar-lab.again'));
     hint(r.hint);
     renderHeader();
     $('#gl-submit').disabled = !ready();
@@ -217,7 +291,7 @@ function levelDone(level) {
 }
 $('#gl-level-next').addEventListener('click', () => {
   $('#gl-level').hidden = true; renderQuestion();
-  const first = $('#gl-sentence .gl-w, #gl-sentence .gl-gap, #gl-options .gl-opt'); if (first) first.focus();
+  const first = $('#gl-sentence .gl-w, #gl-sentence .gl-gap, #gl-sentence .gl-sent, #gl-sentence .gl-cycle, #gl-options .gl-opt') || (typing() && fixBox()); if (first) first.focus();
 });
 
 function done(closing) {
@@ -244,7 +318,7 @@ function welcome() {
 async function start() {
   for (const k of ['door', 'greet']) if (scenes[k]) { scenes[k].destroy(); delete scenes[k]; }
   let r;
-  try { r = await api(`${base}/start`, { method: 'POST', body: { unit: d.unit, again: !!d.again } }); }
+  try { r = await api(`${base}/start`, { method: 'POST', body: { unit: d.unit, band: d.band, again: !!d.again } }); }
   catch { return toast(t('js.grammar-lab.wentWrong'), { bad: true }); }
   d.again = false;
   enter(r);
@@ -277,7 +351,7 @@ $('#gl-flag').addEventListener('click', () => $('#gl-flagbox').showModal());
 $('#gl-flag-no').addEventListener('click', () => $('#gl-flagbox').close());
 $('#gl-flag-yes').addEventListener('click', async () => {
   $('#gl-flagbox').close();
-  try { await api(`${base}/flag`, { method: 'POST', body: { unit: d.unit, id: question && question.id } }); toast(t('js.grammar-lab.flagSent')); }
+  try { await api(`${base}/flag`, { method: 'POST', body: { unit: d.unit, band: d.band, id: question && question.id } }); toast(t('js.grammar-lab.flagSent')); }
   catch { toast(t('js.grammar-lab.wentWrong'), { bad: true }); }
 });
 

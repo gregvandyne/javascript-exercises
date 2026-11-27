@@ -84,7 +84,8 @@ test('flag on: the admin and the listed accounts get in, through the COURSES gat
 test('the parser: the K-2 Identifying Adjectives topic from the reviewed course, its card and its 12 items', () => {
   const md = fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/source/course.md'), 'utf8');
   const plan = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/pathways.json'), 'utf8'));
-  const { topics, problems } = B.buildTopics(md, plan);
+  const overrides = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/overrides.json'), 'utf8'));
+  const { topics, problems } = B.buildTopics(md, plan, overrides);
   assert.deepEqual(problems, []);
   const t = topics[TOPIC];
   assert.equal(t.title, 'Identifying Adjectives'); assert.equal(t.band, 'k-2'); assert.equal(t.format, 'tap'); assert.deepEqual(t.levels, [4, 4, 4]);
@@ -121,7 +122,7 @@ test('the parser fails loudly: an answer not in its sentence, a hint naming its 
   assert.ok(problems.some(p => /em or en dash/.test(p)));
   assert.ok(problems.some(p => /reference product/.test(p)));
   assert.ok(B.buildTopics(md(items.slice(0, 11)), plan).problems.some(p => /11 quiz items/.test(p)));
-  assert.ok(B.buildTopics(md(items), { ...plan, topics: { x: { ...plan.topics.x, format: 'fix' } } }).problems.some(p => /format "fix" is not built yet/.test(p)));
+  assert.ok(B.buildTopics(md(items), { ...plan, topics: { x: { ...plan.topics.x, format: 'drag' } } }).problems.some(p => /format "drag" is not built yet/.test(p)));
 });
 
 // ------------------------------------------------------------------------------------------------- mastery math

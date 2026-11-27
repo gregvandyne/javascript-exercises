@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { q, now } from '../db.js';
 import { onAccountMerge } from './schools.js';
 import { stashPendingFact, isGuestUser, onPendingWin } from './courses.js';
-import { tokenize } from './grammar-lab-text.js';
+import { tokenize, normTyped } from './grammar-lab-text.js';
 import * as M from './grammar-lab-mastery.js';
 import * as PS from './proof-steps.js';
 
@@ -50,8 +50,13 @@ export function pathway(id, bandId = null) {
 /** Every unit that uses a topic (in every band): [unit]. */
 export const unitsWith = id => data().bands.flatMap(b => b.pathways.map(p => pathway(p, b.id)).filter(p => p && p.topics.includes(id)));
 export const pathwaysOf = bandId => (band(bandId) ? band(bandId).pathways.map(id => pathway(id, bandId)) : []);
-/** Is this topic's card read aloud (the K-2 band)? */
-export const readsAloud = t => !!(t && band(t.band) && band(t.band).readAloud);
+const BAND_ID = /^(k-2|3-5|6-8|9-12)$/;
+/** A unit as a request names it: its id, and the band it was opened in when that is one of the unit's bands (a unit
+ *  shared by two bands, like Kinds of Words in K-2 and 3-5, suggests its next topic in the band the student is in). */
+export const unitFor = (id, bandId) => pathway(id, typeof bandId === 'string' && BAND_ID.test(bandId) ? bandId : null) || pathway(id);
+/** Is this topic's card read aloud (the K-2 band)? With a unit: only in a band that reads aloud, so a K-2 topic shared
+ *  into a 3-5 unit is not read aloud there. */
+export const readsAloud = (t, p = null) => !!(t && band(t.band) && band(t.band).readAloud && (!p || (band(p.band) && band(p.band).readAloud)));
 
 // ------------------------------------------------------------------------------------------------- progress
 /** The topics this player has mastered: Set of ids (a guest has none: theirs are pending wins). */
@@ -136,18 +141,26 @@ export function startRun(user, t, { again = false } = {}) {
   saveRun(user, t.id, s);
   return s;
 }
-/** What the page marks a question with: 'tap' (word places: tap, capfix), 'gaps' (the gaps after word i) or 'choice'. */
-export const kindOf = t => (t.format === 'gaps' ? 'gaps' : t.format === 'choice' ? 'choice' : 'tap');
+/** What the page marks a question with: 'tap' (word places: tap, capfix), 'gaps' (the gaps after word i), 'choice' (the
+ *  option picked: choice, and passage, whose options are the passage's sentences) or 'fix' (a typed sentence, or after
+ *  a wrong answer the version picked). */
+export const kindOf = t => (t.format === 'gaps' ? 'gaps' : t.format === 'choice' || t.format === 'passage' ? 'choice' : t.format === 'fix' ? 'fix' : 'tap');
 /** A question as the page gets it, never its answer: the line that asks it, and its words (tap, capfix, gaps) or the
  *  sentence around its blank and its choices in a fixed order (choice; whole: the choices are whole sentences). */
 export function questionFor(t, s) {
   if (!s || !s.cur) return null;
   const it = t.items[s.cur.item], kind = kindOf(t);
-  const base = { id: it.id, n: s.presented, ask: t.ask, kind };
+  const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind };
+  if (t.format === 'passage') return { ...base, before: '', after: '', options: it.options, whole: true, italic: false, passage: true };
   if (kind === 'choice') {
-    const [before, after] = it.whole ? ['', ''] : it.text.split('___');
-    return { ...base, before, after, options: it.options, whole: !!it.whole, italic: !!it.italic };
+    const [before, after] = it.whole || it.plain ? [it.plain ? it.text : '', ''] : it.text.split('___');
+    // prompt: what the choice is about, shown above it (two thoughts to join, the sentence with its verb to fix);
+    // plain: the sentence itself, with no blank (sentence or fragment); cycle: press-to-cycle in the blank.
+    return { ...base, before, after, options: it.options, whole: !!it.whole, italic: !!it.italic,
+      ...(it.prompt ? { prompt: it.prompt } : {}), ...(it.plain ? { plain: true } : {}), ...(t.cycle ? { cycle: true } : {}) };
   }
+  // A fix: the sentence to fix in a box; once missed, the versions to press through (the right one among them, unsaid).
+  if (kind === 'fix') return { ...base, text: it.text, ...(s.cur.missed ? { options: it.options } : {}) };
   return { ...base, words: tokenize(it.text), need: it.answer.length };
 }
 /** A list of distinct whole numbers below n, or null. */
@@ -163,8 +176,21 @@ const places = (marked, n) => {
  *    gaps: the gaps a comma went in; right when every needed one is there and the rest are optional ones (a list's last
  *          comma: with or without it is a valid fix).
  *    choice: [the option picked]; right when it is a right one. */
-export function grade(item, marked, kind = 'tap') {
+export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   const n = tokenize(item.text).length;
+  if (kind === 'fix') {
+    // typed: right when it is one of the accepted fixes (a run-on: any valid fix); unchanged or empty is nothing sent.
+    if (typeof marked === 'string') {
+      const typed = normTyped(marked);
+      if (!typed || typed.length > 400 || typed === normTyped(item.text)) return null;
+      return item.accept.some(a => normTyped(a) === typed) ? 'right' : 'wrong';
+    }
+    // a version picked: only once the versions were shown (after a wrong answer)
+    if (!missed) return null;
+    const set = places(marked, item.options.length);
+    if (!set || set.size !== 1) return null;
+    return item.answer.includes(marked[0]) ? 'right' : 'wrong';
+  }
   if (kind === 'choice') {
     const set = places(marked, item.options.length);
     if (!set || set.size !== 1) return null;
@@ -188,7 +214,7 @@ export function answerRun(user, t, marked) {
   const s = readRun(user, t.id);
   if (!s || s.mastered || !s.cur) return null;
   const item = t.items[s.cur.item];
-  const result = grade(item, marked, kindOf(t));
+  const result = grade(item, marked, kindOf(t), { missed: !!s.cur.missed });
   if (!result) return null;
   const out = M.answer(s, result);
   saveRun(user, t.id, s);
@@ -208,6 +234,8 @@ export function rightOf(t, it) {
   }
   if (t.format === 'capfix') return { text: it.right, marks: it.answer.map(i => ({ i, role: 'capital' })) };
   if (t.format === 'gaps') return { text: it.right, marks: [...it.answer, ...(it.optional || [])].sort((a, b) => a - b).map(i => ({ i, role: 'comma' })) };
+  // sentence or fragment: the sentence and its label; a passage or a pick of two: the sentence that does the job
+  if (it.label) return { text: it.text, marks: [], note: it.label };
   return { text: it.right, marks: [], ...(it.italic ? { italic: it.options[it.answer[0]] } : {}) };
 }
 /** The questions of this player's last run, after mastery, for "look back": [{ text, marks, italic?, ok }]. */
@@ -274,13 +302,19 @@ export function roomSave(user, id, edits, { handIn = false, hint = null } = {}) 
   saveRun(user, ROOM_KEY(id), st);
   return { ok: true, view: roomViewOf(id, st), ...(h !== undefined ? { hint: h } : {}), ...(handIn ? { passed: st.passed } : {}) };
 }
-/** The link that opens a topic's room in the Mistake Hunt game. */
-export const roomHref = (unitId, id) => `/play/mistake-hunt?glroom=${encodeURIComponent(id)}&unit=${encodeURIComponent(unitId)}`;
+/** The link that opens a topic's room in the Mistake Hunt game (the band too when the unit is opened in a band other
+ *  than its first, so "back" returns there). */
+export const roomHref = (unitId, id, bandId = null) => {
+  const first = pathway(unitId);
+  return `/play/mistake-hunt?glroom=${encodeURIComponent(id)}&unit=${encodeURIComponent(unitId)}${bandId && first && first.band !== bandId ? `&band=${encodeURIComponent(bandId)}` : ''}`;
+};
 
 // ------------------------------------------------------------------------------------------------- read aloud
 /** The teaching card as one spoken text (services/tts.js reads it; the page never sends text). */
 export function cardSpoken(t) {
   const c = t.card;
+  // a writing card: each section's question, its passage and its note
+  if (c.sections) return c.sections.flatMap(x => [x.title, x.question, ...x.passage.map(y => y.text), x.note]).filter(Boolean).map(x => (/[.!?]$/.test(x) ? x : `${x}.`)).join(' ');
   // a lead or a note that runs into its quote ("The title is") is read with it, as one sentence
   const unit = u => (u ? [[u.lead, u.text].filter(Boolean).join(' '), u.then ? [u.note, u.then.text].filter(Boolean).join(' ') : u.note, u.then && u.then.note] : []);
   const end = x => (/[.!?]$/.test(x) ? x : `${x}.`);

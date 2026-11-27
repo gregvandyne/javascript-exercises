@@ -5782,7 +5782,10 @@
       "wentWrong": "Un problème est survenu. Réessaie.",
       "gap": "Virgule après {word}",
       "blank": "trou",
-      "nearGaps": "Tu as mis trop de virgules. Enlève celles en trop, puis valide encore."
+      "nearGaps": "Tu as mis trop de virgules. Enlève celles en trop, puis valide encore.",
+      "cyclePress": "Appuie pour choisir",
+      "cycleOf": "{option}, choix {n} sur {total}. Appuie pour voir le suivant.",
+      "wrongFix": "Pas tout à fait. Appuie maintenant sur la phrase pour voir des corrections, arrête-toi sur la bonne et valide. Réussis deux fois de suite pour finir ce niveau."
     }
   },
   "favorites": {
@@ -16198,7 +16201,8 @@
       "submit": "Valider",
       "flag": "Signaler un problème avec cette question",
       "correct": "Bravo !",
-      "levelNext": "Niveau suivant"
+      "levelNext": "Niveau suivant",
+      "fixLabel": "Corrige la phrase ici"
     },
     "levels": {
       "heading": "Niveaux et maîtrise",
@@ -16232,7 +16236,8 @@
       "tips": "Autres exemples",
       "listen": "Lis-le-moi",
       "stop": "Arrêter",
-      "practice": "Commencer l'entraînement"
+      "practice": "Commencer l'entraînement",
+      "question": "Demande-toi"
     },
     "review": {
       "heading": "Revois tes questions",

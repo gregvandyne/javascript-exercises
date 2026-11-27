@@ -215,3 +215,40 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-mk-comma{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press);padding:0 .12em}
 .gl-mk-key{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
 .gl-opt.gl-title,.gl-blank.gl-title,.gl-title .gl-mk{font-style:italic}
+
+/* Grades 3-5: the band's own size, the prompt above a choice, passage sentences, press-to-cycle and the fix box. */
+.gl-band-3-5 .gl-sentence{font-size:clamp(20px,4.8vw,26px)}
+.gl-prompt{margin:16px 0 0;padding:10px 14px;border-radius:var(--r-sm);background:var(--card-2);font-size:clamp(19px,4.4vw,23px);font-weight:600;box-shadow:inset 4px 0 0 var(--edge)}
+.gl-prompt + .gl-sentence{margin-top:14px}
+.gl-passage-q{line-height:1.6;font-size:clamp(19px,4.4vw,23px)}
+.gl-sent{font:inherit;color:inherit;display:inline;text-align:start;background:transparent;border:0;margin:0;padding:.1em .2em;border-radius:10px;cursor:pointer;
+  box-shadow:inset 0 -2px 0 var(--line);touch-action:manipulation;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.gl-sent:hover{background:var(--hover)}
+.gl-sent:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-sent[aria-checked="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-cycle{font:inherit;color:var(--text);display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;gap:2px;min-height:48px;min-width:5em;
+  margin:0 .1em;padding:4px 14px 6px;border:0;border-radius:var(--r-sm);cursor:pointer;touch-action:manipulation;
+  background:var(--card-2);box-shadow:inset 0 0 0 2px var(--accent-line),inset 0 -4px 0 var(--accent-line);line-height:1.25}
+.gl-cycle:hover{background:var(--hover)}
+.gl-cycle:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-cycle:not(.gl-filled) .gl-cycle-t{color:var(--muted);font-weight:700;font-size:.8em}
+.gl-cycle.gl-filled{background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark-press),inset 0 -4px 0 var(--spark-press)}
+.gl-cycle-dots{display:flex;gap:4px}
+.gl-cycle-dots i{display:block;width:8px;height:8px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--edge)}
+.gl-cycle-dots i.on{background:var(--text);box-shadow:none}
+.gl-cycle-whole{display:flex;width:100%;align-items:flex-start;text-align:start;padding:10px 16px;font-weight:600}
+.gl-cycle-whole .gl-cycle-dots{align-self:center}
+.gl-fixbox{margin:18px 0}
+.gl-fix{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:clamp(20px,4.8vw,24px);font-weight:600;line-height:1.4;padding:12px 14px;
+  border:0;border-radius:var(--r-sm);color:var(--text);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--edge);resize:vertical}
+.gl-fix:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+/* A writing card: three sections, each with its guiding question and its passage, the sentence that does the job marked. */
+.gl-section{margin:0 0 14px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2)}
+.gl-card-small .gl-section{background:var(--card);padding:8px 12px;margin-bottom:8px}
+.gl-section-h{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:20px}
+.gl-section-n{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line);font-size:16px}
+.gl-guide{margin:0 0 8px;font-weight:600}
+.gl-guide .gl-label{display:inline;margin-inline-end:6px}
+.gl-passage{margin:0 0 8px;font-size:19px;line-height:1.6}
+.gl-hl{background:var(--spark-soft);color:var(--text);padding:.05em .15em;border-radius:6px;box-shadow:inset 0 -3px 0 var(--spark-press);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.gl-sections .gl-how{margin:0;color:var(--text-2)}

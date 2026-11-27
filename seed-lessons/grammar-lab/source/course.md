@@ -452,7 +452,7 @@ Teaching card:
 - Tip box: "Sam likes apples and oranges." And joins two things. "We can walk or ride." Or joins a choice.
 
 Quiz (tap the coordinating conjunction):
-1. "The cat slept and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did and what the dog did.
+1. "The cat slept and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did with what the dog did.
 2. "We can swim or we can hike." Answer: or. Hint: Look for the small word that gives a choice.
 3. "It was late, so we went home." Answer: so. Hint: Look for the small word that joins a cause with what happened next.
 4. "Leo likes soccer, but he does not like tennis." Answer: but. Hint: Look for the small word that joins two different thoughts.
