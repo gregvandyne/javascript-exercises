@@ -565,20 +565,22 @@ button{font:inherit;color:inherit}
 /* /teachers hero: the collage's phone is a student's screen. */
 .lp-t-phone{width:150px;inset-inline-end:-14px;bottom:-40px;padding:6px;background:#141414;border:0;border-radius:24px;transform:rotate(2deg)}
 .lp-t-phone img{aspect-ratio:390/700;border-radius:18px;object-fit:cover;object-position:top}
-/* /teachers/live hero: the board with phones in front of it, the one-minute video under them. */
-.lp-devices{max-width:980px;margin:48px auto 0}
-.lp-devices-in{position:relative;padding:0 70px 40px}
-.lp-devices-in>.lp-shot img{aspect-ratio:16/10;object-fit:cover;object-position:top left}
-.lp-phone{position:absolute;bottom:0;width:150px;border-radius:26px;padding:7px;background:#141414;box-shadow:var(--shadow-lg)}
-.lp-phone img{border-radius:20px;aspect-ratio:390/760;object-fit:cover;object-position:top}
-.lp-phone-a{inset-inline-start:0;transform:rotate(-4deg)}
-.lp-phone-b{inset-inline-end:0;transform:rotate(3deg)}
-.lp-devices figcaption{margin:22px auto 0;max-width:760px;text-align:center;display:grid;justify-items:center;gap:14px}
+/* /teachers/live hero: the board with a phone either side of it (never over the board: its code, names and buttons
+   stay whole), the one-minute video under them. Phones: the board on its own row, the two phones under it. */
+.lp-devices{max-width:1040px;margin:48px auto 0}
+.lp-devices-in{display:grid;grid-template-columns:clamp(84px,15%,150px) minmax(0,1fr) clamp(84px,15%,150px);grid-template-areas:"a board b";gap:clamp(12px,2vw,24px);align-items:end}
+.lp-devices-in>.lp-shot{grid-area:board}
+.lp-devices-in>.lp-shot img{aspect-ratio:16/10;object-fit:contain}
+.lp-phone{border-radius:24px;padding:6px;background:#141414;box-shadow:var(--shadow-lg)}
+.lp-phone img{border-radius:18px;aspect-ratio:390/760;object-fit:cover;object-position:top}
+.lp-phone-a{grid-area:a;transform:rotate(-3deg)}
+.lp-phone-b{grid-area:b;transform:rotate(3deg)}
+.lp-devices figcaption{margin:26px auto 0;max-width:760px;text-align:center;display:grid;justify-items:center;gap:14px}
 .lp-devices .lp-playbtn{position:static;transform:none}
 @media (max-width:700px){
-  .lp-devices-in{padding:0 0 56px}
-  .lp-phone{width:96px;border-radius:18px;padding:4px}.lp-phone img{border-radius:14px}
-  .lp-phone-a{inset-inline-start:-6px}.lp-phone-b{inset-inline-end:-6px}
+  .lp-devices-in{grid-template-columns:1fr 1fr;grid-template-areas:"board board" "a b";row-gap:18px}
+  .lp-phone{width:min(132px,40vw);border-radius:20px;padding:5px}.lp-phone img{border-radius:15px}
+  .lp-phone-a{justify-self:end}.lp-phone-b{justify-self:start}
 }
 /* /teachers/live: the tools and the safety rules side by side, then the rest of Oomba as the dark band. */
 .lp-sec-pair{padding-top:clamp(48px,6vw,80px)}

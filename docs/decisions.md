@@ -16377,7 +16377,7 @@ The owner approved a mockup of /teachers and /teachers/live in the homepage's de
   the start block (the homepage's dark last call, with setupBlock unchanged inside; a form or thank-you sits on its own
   light card). "Try a lesson now" moved from the hero to the start block.
 - **/teachers/live, in order:** the hero about live games on every device (the board's code, a phone joining with it, a
-  phone answering; "See it in one minute" under the picture, never over the board); the modes as cards; How it works
+  phone answering, beside the board and never over it, so its code, names and buttons stay whole; on a phone, under it; "See it in one minute" under the picture, never over the board); the modes as cards; How it works
   (the tour); your own questions; the tools and the safety rules side by side; "More than a quiz" as the dark band; the
   questions; the last call.
 - How it works on /parents keeps views/how.js `howSteps` and its script and styles.

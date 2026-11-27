@@ -555,12 +555,12 @@ router.get('/teachers/live', (req, res, next) => {
   // The picture: the board with its code, a phone joining with that code and a phone answering (scripts/how-shots.js
   // --only live), and under it the one-minute video (its description, for anyone who can't watch it, as the caption).
   const phone = (slug, cls) => (fs.existsSync(new URL(`${slug}-p-390.webp`, HOW_DIR)) ? html`<div class="lp-phone ${cls}">${raw(themedPicture({ scheme: shotScheme(req),
-    img: { src: `/img/how/${slug}-p-390.webp`, srcset: `/img/how/${slug}-p-390.webp 390w, /img/how/${slug}-p-780.webp 780w`, sizes: '(min-width: 700px) 150px, 96px', width: 390, height: 844, alt: '', type: 'image/webp',
+    img: { src: `/img/how/${slug}-p-390.webp`, srcset: `/img/how/${slug}-p-390.webp 390w, /img/how/${slug}-p-780.webp 780w`, sizes: '(min-width: 700px) 150px, 132px', width: 390, height: 844, alt: '', type: 'image/webp',
       dark: fs.existsSync(new URL(`${slug}-dark-p-390.webp`, HOW_DIR)) ? { srcset: `/img/how/${slug}-dark-p-390.webp 390w, /img/how/${slug}-dark-p-780.webp 780w` } : null } }))}</div>` : '');
   const board = how('live-lobby');
   const devices = board.ok() ? html`<figure class="lp-devices" id="demo"${hasDemo ? raw(' aria-describedby="demo-note"') : ''}>
       <div class="lp-devices-in" aria-hidden="true">
-        <div class="lp-shot">${toolPic(req, { pic: board }, '(min-width: 1000px) 840px, 92vw', { lazy: false })}</div>
+        <div class="lp-shot">${toolPic(req, { pic: board }, '(min-width: 1040px) 700px, (min-width: 700px) 66vw, 92vw', { lazy: false })}</div>
         ${phone('live-join', 'lp-phone-a')}${phone('live-play', 'lp-phone-b')}
       </div>
       ${hasDemo ? html`<figcaption>${videoLink(t, 'demo', html`<i aria-hidden="true"></i><span${fb(t, 'teachersLive.demo.h')}>${t('teachersLive.demo.h')}</span>`, 'lp-playbtn', t('teachersLive.demo.h'))}
