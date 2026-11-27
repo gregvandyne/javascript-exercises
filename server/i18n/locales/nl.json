@@ -8798,7 +8798,7 @@
         },
         "grades": {
           "need": "Leerjaren",
-          "oomba": "Van de kleuterklas tot grade 8 (K-8), in drie groepen: {bands}."
+          "oomba": "Van de kleuterklas tot grade 12 (K-12), in vier groepen: {bands}."
         },
         "readAloud": {
           "need": "Voorlezen voor de jongsten",
@@ -11248,7 +11248,7 @@
       "classScreen": "{count} widgets, een scherm voor elke leerling, punten met redenen en de tafels van de Hub één tabblad verder.",
       "mathTools": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub.",
       "grammarUs": "Wat Grammar Lab van Oomba biedt",
-      "grammar": "{topics} grammatica-onderwerpen van de kleuterklas tot grade 8, elk te beheersen in drie niveaus, met voorgelezen kaarten in K-2 en Mistake Hunt-kamers om teksten te verbeteren. Geen opstellen en geen feedback op schrijfwerk: de AI van Oomba leest nooit werk van leerlingen."
+      "grammar": "{topics} grammatica-onderwerpen van de kleuterklas tot grade 12, elk te beheersen in drie niveaus, met voorgelezen kaarten in K-2 en Mistake Hunt-kamers om teksten te verbeteren. Geen opstellen en geen feedback op schrijfwerk: de AI van Oomba leest nooit werk van leerlingen."
     },
     "tour": {
       "kicker": "Klik-rondleiding",

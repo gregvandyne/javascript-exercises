@@ -149,14 +149,14 @@ export const GRAMMAR_CELLS = (() => {
   return {
     practice: { noredink: { s: 'yes', src: premium } },
     grades: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/', checked: GRAMMAR_CHECKED, quote: 'building strong writers and critical thinkers in Grades 3–12' } } },
-    essays: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/about/product', checked: GRAMMAR_CHECKED, quote: 'Guided Drafts provide scaffolding to students throughout the writing cycle.' } } },
+    essays: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/about/product', checked: GRAMMAR_CHECKED, quote: 'Meet students where they are with adaptive exercises and scaffolded writing activities that deliver differentiated support when students get stuck at various points of the writing cycle.' } } },
     feedback: { noredink: { s: 'yes', src: premium } },
     classes: { noredink: { s: 'yes', src: premium } },
     free: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/product/elementary-grades-3-5/', checked: GRAMMAR_CHECKED, quote: 'a new version of our free online writing curriculum that\'s designed specifically for elementary learners' } } },
   };
 })();
 
-/** Grammar Lab's numbers, from its data: { topics, units, rooms (topics with a Mistake Hunt room), bands: ['K-2', '3-5', '6-8'] }. */
+/** Grammar Lab's numbers, from its data: { topics, units, rooms (topics with a Mistake Hunt room), bands: ['K-2', '3-5', '6-8', '9-12'] }. */
 export function grammarFacts() {
   const bands = GLAB.bands();
   const units = [...new Set(bands.flatMap(b => b.pathways))].map(id => GLAB.pathway(id)).filter(Boolean);

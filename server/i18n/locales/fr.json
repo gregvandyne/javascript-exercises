@@ -8797,7 +8797,7 @@
         },
         "grades": {
           "need": "Niveaux couverts",
-          "oomba": "De la maternelle à la 8e année (K-8), en trois tranches : {bands}."
+          "oomba": "De la maternelle à la 12e année (K-12), en quatre tranches : {bands}."
         },
         "readAloud": {
           "need": "Lecture à voix haute pour les plus jeunes",
@@ -11247,7 +11247,7 @@
       "classScreen": "{count} widgets, un écran pour chaque élève, des points avec des raisons, et les pupitres du Hub à un onglet.",
       "mathTools": "{tools} manipulables et {tasks} tâches de la maternelle à la 4e, plus les fiches Figures, Oomba qui modifie le tableau à la demande, et chaque outil distribué sur les pupitres du Hub.",
       "grammarUs": "Ce que couvre Grammar Lab d'Oomba",
-      "grammar": "{topics} notions de grammaire de la maternelle à la 8e année, chacune à maîtriser en trois niveaux, avec des fiches lues à voix haute en K-2 et des salles de correction Mistake Hunt. Pas de rédaction ni de retours sur l'écriture : l'IA d'Oomba ne lit jamais le travail des élèves."
+      "grammar": "{topics} notions de grammaire de la maternelle à la 12e année, chacune à maîtriser en trois niveaux, avec des fiches lues à voix haute en K-2 et des salles de correction Mistake Hunt. Pas de rédaction ni de retours sur l'écriture : l'IA d'Oomba ne lit jamais le travail des élèves."
     },
     "tour": {
       "kicker": "Visite guidée",

@@ -8798,7 +8798,7 @@
         },
         "grades": {
           "need": "Classi coperte",
-          "oomba": "Dalla scuola dell'infanzia alla classe 8 (K-8), in tre fasce: {bands}."
+          "oomba": "Dalla scuola dell'infanzia alla classe 12 (K-12), in quattro fasce: {bands}."
         },
         "readAloud": {
           "need": "Lettura ad alta voce per i più piccoli",
@@ -11248,7 +11248,7 @@
       "classScreen": "{count} widget, uno schermo per ogni alunno, punti con motivi e i banchi dell’Hub a una scheda di distanza.",
       "mathTools": "{tools} manipolabili e {tasks} attività dalla materna alla terza media, più le schede di Figures, Oomba che cambia la lavagna quando lo chiedi e ogni strumento distribuito ai banchi dell’Hub.",
       "grammarUs": "Cosa copre Grammar Lab di Oomba",
-      "grammar": "{topics} argomenti di grammatica dalla scuola dell'infanzia alla classe 8, ognuno da padroneggiare in tre livelli, con schede lette ad alta voce in K-2 e stanze di correzione di Mistake Hunt. Niente temi né commenti sulla scrittura: l'IA di Oomba non legge mai il lavoro degli studenti."
+      "grammar": "{topics} argomenti di grammatica dalla scuola dell'infanzia alla classe 12, ognuno da padroneggiare in tre livelli, con schede lette ad alta voce in K-2 e stanze di correzione di Mistake Hunt. Niente temi né commenti sulla scrittura: l'IA di Oomba non legge mai il lavoro degli studenti."
     },
     "tour": {
       "kicker": "Tour interattivo",
