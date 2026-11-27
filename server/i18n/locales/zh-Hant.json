@@ -5782,7 +5782,10 @@
       "wentWrong": "出了點問題，再試一次。",
       "gap": "{word}後面的逗號",
       "blank": "空格",
-      "nearGaps": "你加了太多逗號。拿掉多的，再送出一次。"
+      "nearGaps": "你加了太多逗號。拿掉多的，再送出一次。",
+      "cyclePress": "按一下來選擇",
+      "cycleOf": "{option}，第 {n} 個，共 {total} 個。再按一下看下一個。",
+      "wrongFix": "還差一點。現在按這個句子看幾種改法，停在正確的那一個，再送出。連續答對兩題就完成這一關。"
     }
   },
   "favorites": {
@@ -16196,7 +16199,8 @@
       "submit": "送出",
       "flag": "回報這題的問題",
       "correct": "答對了！",
-      "levelNext": "下一關"
+      "levelNext": "下一關",
+      "fixLabel": "在這裡改正句子"
     },
     "levels": {
       "heading": "關卡與精通",
@@ -16230,7 +16234,8 @@
       "tips": "更多例子",
       "listen": "唸給我聽",
       "stop": "停止",
-      "practice": "開始練習"
+      "practice": "開始練習",
+      "question": "問問自己"
     },
     "review": {
       "heading": "回顧你的題目",

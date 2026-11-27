@@ -362,7 +362,7 @@ router.get('/play/:slug', (req, res) => {
   // player in (GRAMMAR_LAB), for a topic of that unit that is open to them; anything else plays the game as usual.
   const glRoom = !lesson && !inMatch && u && !isGrownup(u) && typeof req.query.glroom === 'string' && typeof req.query.unit === 'string' && g.slug === PS.SLUG && g.source === 'seed' && mayOpenGrammarLab(u)
     ? (() => {
-      const tp = GLAB.topic(req.query.glroom), p = tp && GLAB.room(tp.id) ? GLAB.pathway(req.query.unit, tp.band) : null;
+      const tp = GLAB.topic(req.query.glroom), p = tp && GLAB.room(tp.id) ? GLAB.unitFor(req.query.unit, req.query.band) : null;
       const st = p && p.topics.includes(tp.id) ? GLAB.unitStates(u, p).find(x => x.topic.id === tp.id) : null;
       return st && st.open ? { topic: tp.id, unit: p.id, back: `/courses/grammar-lab/${p.band}/${p.id}#gl-topic-${tp.id}`, title: tp.title } : null;
     })() : null;

@@ -5783,7 +5783,10 @@
       "wentWrong": "Qualcosa è andato storto. Riprova.",
       "gap": "Virgola dopo {word}",
       "blank": "spazio vuoto",
-      "nearGaps": "Hai messo troppe virgole. Togli quelle in più, poi invia di nuovo."
+      "nearGaps": "Hai messo troppe virgole. Togli quelle in più, poi invia di nuovo.",
+      "cyclePress": "Premi per scegliere",
+      "cycleOf": "{option}, scelta {n} di {total}. Premi per la prossima.",
+      "wrongFix": "Non proprio. Ora premi la frase per vedere alcune correzioni, fermati su quella giusta e invia. Rispondi giusto due volte di fila per finire questo livello."
     }
   },
   "favorites": {
@@ -16197,7 +16200,8 @@
       "submit": "Invia",
       "flag": "Segnala un problema con questa domanda",
       "correct": "Giusto!",
-      "levelNext": "Livello successivo"
+      "levelNext": "Livello successivo",
+      "fixLabel": "Correggi la frase qui"
     },
     "levels": {
       "heading": "Livelli e padronanza",
@@ -16231,7 +16235,8 @@
       "tips": "Altri esempi",
       "listen": "Leggimelo",
       "stop": "Ferma",
-      "practice": "Inizia a esercitarti"
+      "practice": "Inizia a esercitarti",
+      "question": "Chiediti"
     },
     "review": {
       "heading": "Rivedi le tue domande",

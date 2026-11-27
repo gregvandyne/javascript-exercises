@@ -5782,7 +5782,10 @@
       "wentWrong": "Algo salió mal. Inténtalo de nuevo.",
       "gap": "Coma después de {word}",
       "blank": "espacio en blanco",
-      "nearGaps": "Pusiste demasiadas comas. Quita las que sobran y vuelve a enviar."
+      "nearGaps": "Pusiste demasiadas comas. Quita las que sobran y vuelve a enviar.",
+      "cyclePress": "Pulsa para elegir",
+      "cycleOf": "{option}, opción {n} de {total}. Pulsa para ver la siguiente.",
+      "wrongFix": "Casi. Ahora pulsa la oración para ver algunas correcciones, quédate en la correcta y envíala. Acierta dos seguidas para terminar este nivel."
     }
   },
   "favorites": {
@@ -16196,7 +16199,8 @@
       "submit": "Enviar",
       "flag": "Informar de un problema con esta pregunta",
       "correct": "¡Correcto!",
-      "levelNext": "Siguiente nivel"
+      "levelNext": "Siguiente nivel",
+      "fixLabel": "Corrige la oración aquí"
     },
     "levels": {
       "heading": "Niveles y dominio",
@@ -16230,7 +16234,8 @@
       "tips": "Más ejemplos",
       "listen": "Léemelo",
       "stop": "Parar",
-      "practice": "Empezar a practicar"
+      "practice": "Empezar a practicar",
+      "question": "Pregúntate"
     },
     "review": {
       "heading": "Repasa tus preguntas",

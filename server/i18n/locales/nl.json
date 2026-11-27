@@ -5783,7 +5783,10 @@
       "wentWrong": "Er ging iets mis. Probeer het opnieuw.",
       "gap": "Komma na {word}",
       "blank": "open plek",
-      "nearGaps": "Je hebt te veel komma’s gezet. Haal de extra’s weg en stuur opnieuw."
+      "nearGaps": "Je hebt te veel komma’s gezet. Haal de extra’s weg en stuur opnieuw.",
+      "cyclePress": "Druk om te kiezen",
+      "cycleOf": "{option}, keuze {n} van {total}. Druk voor de volgende.",
+      "wrongFix": "Bijna. Druk nu op de zin om een paar verbeteringen te zien, stop bij de goede en verstuur. Twee keer achter elkaar goed maakt dit niveau af."
     }
   },
   "favorites": {
@@ -16197,7 +16200,8 @@
       "submit": "Versturen",
       "flag": "Een probleem met deze vraag melden",
       "correct": "Goed zo!",
-      "levelNext": "Volgend level"
+      "levelNext": "Volgend level",
+      "fixLabel": "Verbeter de zin hier"
     },
     "levels": {
       "heading": "Levels en beheersen",
@@ -16231,7 +16235,8 @@
       "tips": "Meer voorbeelden",
       "listen": "Lees het voor",
       "stop": "Stop",
-      "practice": "Begin met oefenen"
+      "practice": "Begin met oefenen",
+      "question": "Vraag jezelf af"
     },
     "review": {
       "heading": "Kijk je vragen terug",

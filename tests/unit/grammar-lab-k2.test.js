@@ -31,6 +31,9 @@ if (!q.get("SELECT 1 FROM games WHERE slug='mistake-hunt'")) {
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const MD = fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/source/course.md'), 'utf8');
 const PLAN = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/pathways.json'), 'utf8'));
+const OVERRIDES = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/overrides.json'), 'utf8'));
+// The K-2 topics (the band that defines them; grades 3-5 reference some of them and add their own).
+const K2_IDS = Object.keys(PLAN.topics).filter(id => PLAN.topics[id].source.band === 'k-2');
 let server, base;
 test.before(async () => { config.grammarLab = true; config.grammarLabUsers = ['*']; server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(() => { server.close(); config.grammarLab = false; config.grammarLabUsers = []; });
@@ -68,8 +71,10 @@ async function playTopic(u, unit, topic, { wrongFirst = false } = {}) {
 
 // ------------------------------------------------------------------------------------------------- the build
 test('K-2 in full: 6 units, 11 topic slots, 9 topics (shared ones defined once), 12 items each, every source slot placed', () => {
-  const { topics, rooms, problems } = B.buildTopics(MD, PLAN, { topics: {} });
+  const { topics: all, rooms: allRooms, problems } = B.buildTopics(MD, PLAN, OVERRIDES);
   assert.deepEqual(problems, []);
+  const topics = Object.fromEntries(K2_IDS.map(id => [id, all[id]]));
+  const rooms = Object.fromEntries(Object.entries(allRooms).filter(([id]) => K2_IDS.includes(id)));
   const band = PLAN.bands.find(b => b.id === 'k-2');
   assert.equal(band.pathways.length, 6);
   const slots = band.pathways.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics));
@@ -81,12 +86,13 @@ test('K-2 in full: 6 units, 11 topic slots, 9 topics (shared ones defined once),
   const sections = B.parseCourse(MD).filter(s => s.band === 'k-2');
   const srcTitles = sections.flatMap(s => s.pathways.flatMap(p => p.topics.map(t => t.title)));
   assert.equal(srcTitles.length, 11, 'the source has 11 K-2 topic slots');
-  const byTitle = Object.fromEntries(Object.values(PLAN.topics).map(d => [d.source.title, d]));
+  const byTitle = Object.fromEntries(K2_IDS.map(id => [PLAN.topics[id].source.title, PLAN.topics[id]]));
   for (const title of srcTitles) assert.ok(byTitle[title], `"${title}" is placed`);
   // The two shared topics are cross-references in the source and one id in every unit that uses them.
   assert.deepEqual(B.slotsOf(B.parseCourse(MD), 'k-2', 'Identifying Action Verbs').map(s => s.full), [true, false]);
-  assert.deepEqual(GL.unitsWith('identifying-action-verbs').map(p => p.id), ['kinds-of-words', 'verbs-and-time']);
-  assert.deepEqual(GL.unitsWith('identifying-adjectives').map(p => p.id), ['adjectives-and-adverbs', 'kinds-of-words']);
+  const k2Units = id => GL.unitsWith(id).filter(p => p.band === 'k-2').map(p => p.id);
+  assert.deepEqual(k2Units('identifying-action-verbs'), ['kinds-of-words', 'verbs-and-time']);
+  assert.deepEqual(k2Units('identifying-adjectives'), ['adjectives-and-adverbs', 'kinds-of-words']);
   assert.deepEqual(Object.fromEntries(Object.values(topics).map(t => [t.id, t.format])), {
     'identifying-adjectives': 'tap', 'capitalizing-names-and-dates': 'capfix', 'capitalizing-titles': 'choice', 'commas-in-a-series': 'gaps',
     'commas-after-starting-phrases': 'choice', 'your-and-youre': 'choice', 'identifying-common-nouns': 'tap', 'identifying-action-verbs': 'tap', 'using-simple-tenses': 'choice' });
@@ -135,7 +141,7 @@ test('the parser, topic by topic: answers placed in their sentences, cards read,
   assert.deepEqual(tense.card.example.marks.map(m => tokenize(tense.card.example.text)[m.i].t), ['walks', 'walked', 'will', 'walk']);
   // Read aloud: the K-2 cards, as one text.
   assert.match(GL.cardSpoken(titles), /We read the book the brave little fox\. The title is The Brave Little Fox\./);
-  for (const id of Object.keys(PLAN.topics)) assert.equal(GL.readsAloud(GL.topic(id)), true, `${id} is read aloud`);
+  for (const id of K2_IDS) assert.equal(GL.readsAloud(GL.topic(id)), true, `${id} is read aloud`);
 });
 
 test('generated wrong options: 1 for a word pair, 2 otherwise, never a second right answer (checked by an independent rule)', () => {

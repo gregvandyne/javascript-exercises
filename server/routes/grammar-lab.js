@@ -87,7 +87,7 @@ router.get('/courses/grammar-lab/:band/:unit/:topic/card', (req, res) => {
   const x = loadTopic(req, res); if (!x) return;
   const { p, tp } = x, t = req.t;
   page(req, res, { title: `${tp.title} · ${t('grammarLab.card.heading')}`, active: 'learn', mid: true, head: V.HEAD,
-    body: V.cardPage({ t, p, tp, listen: GL.readsAloud(tp) }), scripts: ['/js/grammar-lab-card.js'] });
+    body: V.cardPage({ t, p, tp, listen: GL.readsAloud(tp, p) }), scripts: ['/js/grammar-lab-card.js'] });
 });
 
 router.get('/courses/grammar-lab/:band/:unit/:topic/review', (req, res) => {
@@ -103,7 +103,8 @@ router.get('/courses/grammar-lab/:band/:unit/:topic/review', (req, res) => {
 const api = [rateLimit('grammar-lab', 240, 60e3)];
 function apiTopic(req, res) {
   const tp = ID.test(req.params.topic) ? GL.topic(req.params.topic) : null;
-  const p = tp && typeof (req.body || {}).unit === 'string' && ID.test(req.body.unit) ? GL.pathway(req.body.unit, tp.band) : null;
+  // The unit the page names, in the band it was opened in (a topic shared from K-2 into a 3-5 unit answers there too).
+  const p = tp && typeof (req.body || {}).unit === 'string' && ID.test(req.body.unit) ? GL.unitFor(req.body.unit, req.body.band) : null;
   if (!tp || !p || !p.topics.includes(tp.id)) { res.status(404).json({ error: req.t('errors.api.notFound') }); return null; }
   const u = req.user;
   if (!u || isGrownup(u)) { res.status(401).json({ error: req.t('errors.api.signInFirst') }); return null; }
@@ -117,7 +118,8 @@ router.post('/api/courses/grammar-lab/topic/:topic/start', ...api, (req, res) =>
   const run = GL.startRun(x.u, x.tp, { again: (req.body || {}).again === true });
   res.json({ summary: GL.summaryOf(run), question: GL.questionFor(x.tp, run) });
 });
-/** One try: { unit, marked: [word places] }. Graded here; the answer never goes to the page. */
+/** One try: { unit, band?, id, marked }: word places, gaps, [the option picked], or for a fix the typed sentence (a
+ *  string) or, once missed, [the version picked]. Graded here; the answer never goes to the page. */
 router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) => {
   const x = apiTopic(req, res); if (!x) return;
   const b = req.body || {};
@@ -133,7 +135,7 @@ router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) =
     // The next topic, worked out now: never a mastered one (this unit first, then the band's other units).
     const nxt = GL.nextTopic(x.u, x.p, x.tp.id);
     out.closing = { answered: r.summary.counter, next: nxt ? { title: nxt.topic.title, href: V.topicHref(nxt.unit, nxt.topic.id) } : null, win: r.win,
-      ...(GL.room(x.tp.id) ? { room: GL.roomHref(x.p.id, x.tp.id) } : {}) };
+      ...(GL.room(x.tp.id) ? { room: GL.roomHref(x.p.id, x.tp.id, x.p.band) } : {}) };
   }
   res.json(out);
 });
