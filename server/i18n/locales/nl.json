@@ -8780,6 +8780,51 @@
     "detail": {
       "link": "Hun pagina openen",
       "notStated": "Niet vermeld op hun site"
+    },
+    "grammar": {
+      "h": "Grammatica oefenen, naast elkaar",
+      "lead": "Grammar Lab is de grammaticacursus van Oomba voor de groepen {bands}: {topics} onderwerpen in {units} eenheden. Dit doet hij wel, en dit niet.",
+      "caption": "Wat Grammar Lab en {name} bieden om grammatica en schrijven te oefenen. De vakjes van {name} komen van zijn eigen openbare website.",
+      "checked": "De vakjes van {name} komen van zijn eigen openbare website, gelezen op {date}.",
+      "try": "Grammar Lab openen",
+      "rows": {
+        "practice": {
+          "need": "Grammatica oefenen, één vaardigheid tegelijk",
+          "oomba": "{topics} onderwerpen, elk met een korte uitlegkaart en vragen: de juiste woorden aantikken, komma's en andere tekens zetten, het juiste woord of de juiste zin kiezen, of de verbeterde zin typen. Onze server controleert elk antwoord."
+        },
+        "mastery": {
+          "need": "Eerst beheersen, dan verder",
+          "oomba": "Elk onderwerp heeft drie niveaus. Een niveau eindigt met twee goede antwoorden op rij; een fout antwoord toont een hint en voegt een vraag toe. Het volgende onderwerp gaat open zodra dit onderwerp beheerst is."
+        },
+        "grades": {
+          "need": "Leerjaren",
+          "oomba": "Van de kleuterklas tot grade 8 (K-8), in drie groepen: {bands}."
+        },
+        "readAloud": {
+          "need": "Voorlezen voor de jongsten",
+          "oomba": "In K-2 kan de uitlegkaart van elk onderwerp worden voorgelezen."
+        },
+        "proofread": {
+          "need": "Teksten om te verbeteren",
+          "oomba": "{rooms} onderwerpen openen een Mistake Hunt-kamer: een tekst met fouten van dat soort om te vinden en te verbeteren."
+        },
+        "essays": {
+          "need": "Begeleid opstellen schrijven",
+          "oomba": "Niet in Grammar Lab. Schrijfvaardigheden zoals een stelling, bewijs en overgangen worden geoefend met vragen, niet met opstellen."
+        },
+        "feedback": {
+          "need": "Feedback op wat leerlingen schrijven",
+          "oomba": "Nee. De AI van Oomba leest bewust nooit werk van leerlingen, en Grammar Lab heeft geen opstellen om feedback op te geven."
+        },
+        "classes": {
+          "need": "Aan een klas toewijzen, met klasoverzichten",
+          "oomba": "Nog niet. Elke leerling ziet de eigen voortgang in elke eenheid en kan de vragen van een beheerst onderwerp terugkijken."
+        },
+        "free": {
+          "need": "Een gratis optie",
+          "oomba": "Grammar Lab is gratis. Gasten kunnen zonder account oefenen, en de onderwerpen die ze beheersen blijven bewaard als ze zich aanmelden."
+        }
+      }
     }
   },
   "connections": {
@@ -11201,7 +11246,9 @@
       "more": "Bekijk de hele vergelijking",
       "liveGames": "Live spellen draaien in de Hub: leerlingen aan hun tafel krijgen een uitnodiging en doen met één tik mee, zonder code.",
       "classScreen": "{count} widgets, een scherm voor elke leerling, punten met redenen en de tafels van de Hub één tabblad verder.",
-      "mathTools": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub."
+      "mathTools": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub.",
+      "grammarUs": "Wat Grammar Lab van Oomba biedt",
+      "grammar": "{topics} grammatica-onderwerpen van de kleuterklas tot grade 8, elk te beheersen in drie niveaus, met voorgelezen kaarten in K-2 en Mistake Hunt-kamers om teksten te verbeteren. Geen opstellen en geen feedback op schrijfwerk: de AI van Oomba leest nooit werk van leerlingen."
     },
     "tour": {
       "kicker": "Klik-rondleiding",

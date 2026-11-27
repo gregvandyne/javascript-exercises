@@ -8780,6 +8780,51 @@
     "detail": {
       "link": "Ihre Seite öffnen",
       "notStated": "Auf ihrer Website nicht angegeben"
+    },
+    "grammar": {
+      "h": "Grammatik üben, im Vergleich",
+      "lead": "Grammar Lab ist Oombas Grammatikkurs für die Stufen {bands}: {topics} Themen in {units} Einheiten. Das deckt er ab, und das nicht.",
+      "caption": "Was Grammar Lab und {name} zum Üben von Grammatik und Schreiben bieten. Die Angaben zu {name} stammen von seiner eigenen öffentlichen Website.",
+      "checked": "Die Angaben zu {name} stammen von seiner eigenen öffentlichen Website, gelesen am {date}.",
+      "try": "Grammar Lab öffnen",
+      "rows": {
+        "practice": {
+          "need": "Grammatik üben, eine Fähigkeit nach der anderen",
+          "oomba": "{topics} Themen, jedes mit einer kurzen Erklärkarte und Fragen: die richtigen Wörter antippen, Kommas und andere Zeichen setzen, das richtige Wort oder den richtigen Satz wählen oder den Satz korrigiert eintippen. Unser Server prüft jede Antwort."
+        },
+        "mastery": {
+          "need": "Erst sicher, dann weiter",
+          "oomba": "Jedes Thema hat drei Stufen. Eine Stufe endet mit zwei richtigen Antworten hintereinander; eine falsche Antwort zeigt einen Tipp und fügt eine Frage hinzu. Das nächste Thema öffnet sich, sobald dieses gemeistert ist."
+        },
+        "grades": {
+          "need": "Klassenstufen",
+          "oomba": "Vom Kindergarten bis Klasse 8, in drei Stufen: {bands}."
+        },
+        "readAloud": {
+          "need": "Vorlesen für die Jüngsten",
+          "oomba": "In K-2 kann die Erklärkarte jedes Themas vorgelesen werden."
+        },
+        "proofread": {
+          "need": "Texte zum Korrigieren",
+          "oomba": "{rooms} Themen öffnen einen Mistake-Hunt-Raum: einen Text mit Fehlern dieser Art zum Finden und Korrigieren."
+        },
+        "essays": {
+          "need": "Angeleitetes Aufsatzschreiben",
+          "oomba": "Nicht in Grammar Lab. Schreibfertigkeiten wie These, Belege und Übergänge werden mit Fragen geübt, nicht mit Aufsätzen."
+        },
+        "feedback": {
+          "need": "Rückmeldung zu Schülertexten",
+          "oomba": "Nein. Oombas KI liest grundsätzlich nie Arbeiten der Kinder, und Grammar Lab hat keine Aufsätze, zu denen es Rückmeldung gäbe."
+        },
+        "classes": {
+          "need": "Einer Klasse zuweisen, mit Klassenberichten",
+          "oomba": "Noch nicht. Jedes Kind sieht seinen eigenen Fortschritt in jeder Einheit und kann sich die Fragen eines gemeisterten Themas noch einmal ansehen."
+        },
+        "free": {
+          "need": "Ein kostenloses Angebot",
+          "oomba": "Grammar Lab ist kostenlos. Gäste können ohne Konto üben, und die gemeisterten Themen bleiben erhalten, wenn sie sich registrieren."
+        }
+      }
     }
   },
   "connections": {
@@ -11201,7 +11246,9 @@
       "more": "Zum ganzen Vergleich",
       "liveGames": "Live-Spiele laufen im Hub: Die Kinder an ihren Plätzen bekommen eine Einladung und machen mit einem Tipp mit, ohne Code.",
       "classScreen": "{count} Widgets, ein Bildschirm für jedes Kind, Punkte mit Gründen und die Plätze des Hubs nur einen Tab entfernt.",
-      "mathTools": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen."
+      "mathTools": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen.",
+      "grammarUs": "Was Oombas Grammar Lab abdeckt",
+      "grammar": "{topics} Grammatikthemen vom Kindergarten bis Klasse 8, jedes in drei Stufen zu meistern, mit vorgelesenen Karten in K-2 und Mistake-Hunt-Korrekturräumen. Kein Aufsatzschreiben und keine Rückmeldung zu Texten: Oombas KI liest nie Arbeiten der Kinder."
     },
     "tour": {
       "kicker": "Zum Durchklicken",

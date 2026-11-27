@@ -8779,6 +8779,51 @@
     "detail": {
       "link": "Ouvrir leur page",
       "notStated": "Non indiqué sur leur site"
+    },
+    "grammar": {
+      "h": "La grammaire, côte à côte",
+      "lead": "Grammar Lab est le cours de grammaire d'Oomba pour les niveaux {bands} : {topics} notions dans {units} unités. Voici ce qu'il couvre, et ce qu'il ne couvre pas.",
+      "caption": "Ce que Grammar Lab et {name} proposent pour pratiquer la grammaire et l'écriture. Les cases de {name} viennent de son propre site web public.",
+      "checked": "Les cases de {name} viennent de son propre site web public, lu le {date}.",
+      "try": "Ouvrir Grammar Lab",
+      "rows": {
+        "practice": {
+          "need": "La grammaire, une notion à la fois",
+          "oomba": "{topics} notions, chacune avec une courte fiche et des questions : toucher les bons mots, placer les virgules et d'autres signes, choisir le bon mot ou la bonne phrase, ou taper la phrase corrigée. Notre serveur vérifie chaque réponse."
+        },
+        "mastery": {
+          "need": "Maîtriser avant d'avancer",
+          "oomba": "Chaque notion a trois niveaux. Un niveau se termine par deux bonnes réponses de suite ; une erreur affiche un indice et ajoute une question. La notion suivante s'ouvre une fois celle-ci maîtrisée."
+        },
+        "grades": {
+          "need": "Niveaux couverts",
+          "oomba": "De la maternelle à la 8e année (K-8), en trois tranches : {bands}."
+        },
+        "readAloud": {
+          "need": "Lecture à voix haute pour les plus jeunes",
+          "oomba": "En K-2, la fiche de chaque notion peut être lue à voix haute."
+        },
+        "proofread": {
+          "need": "Textes à corriger",
+          "oomba": "{rooms} notions ouvrent une salle Mistake Hunt : un texte avec des erreurs de ce type à trouver et corriger."
+        },
+        "essays": {
+          "need": "Rédaction guidée",
+          "oomba": "Pas dans Grammar Lab. Les savoir-faire d'écriture comme la thèse, les preuves et les transitions se travaillent par des questions, pas par des rédactions."
+        },
+        "feedback": {
+          "need": "Retours sur les écrits des élèves",
+          "oomba": "Non. Par principe, l'IA d'Oomba ne lit jamais le travail des élèves, et Grammar Lab n'a pas de rédactions à commenter."
+        },
+        "classes": {
+          "need": "Donner à une classe, avec des bilans de classe",
+          "oomba": "Pas encore. Chaque élève voit ses propres progrès dans chaque unité et peut revoir les questions d'une notion maîtrisée."
+        },
+        "free": {
+          "need": "Une option gratuite",
+          "oomba": "Grammar Lab est gratuit. Les invités peuvent s'entraîner sans compte, et les notions maîtrisées sont gardées quand ils s'inscrivent."
+        }
+      }
     }
   },
   "connections": {
@@ -11200,7 +11245,9 @@
       "more": "Voir la comparaison complète",
       "liveGames": "Les jeux en direct se déroulent dans le Hub : les élèves à leur pupitre reçoivent une invitation et rejoignent en un geste, sans code.",
       "classScreen": "{count} widgets, un écran pour chaque élève, des points avec des raisons, et les pupitres du Hub à un onglet.",
-      "mathTools": "{tools} manipulables et {tasks} tâches de la maternelle à la 4e, plus les fiches Figures, Oomba qui modifie le tableau à la demande, et chaque outil distribué sur les pupitres du Hub."
+      "mathTools": "{tools} manipulables et {tasks} tâches de la maternelle à la 4e, plus les fiches Figures, Oomba qui modifie le tableau à la demande, et chaque outil distribué sur les pupitres du Hub.",
+      "grammarUs": "Ce que couvre Grammar Lab d'Oomba",
+      "grammar": "{topics} notions de grammaire de la maternelle à la 8e année, chacune à maîtriser en trois niveaux, avec des fiches lues à voix haute en K-2 et des salles de correction Mistake Hunt. Pas de rédaction ni de retours sur l'écriture : l'IA d'Oomba ne lit jamais le travail des élèves."
     },
     "tour": {
       "kicker": "Visite guidée",

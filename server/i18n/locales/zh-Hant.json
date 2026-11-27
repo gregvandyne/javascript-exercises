@@ -8779,6 +8779,51 @@
     "detail": {
       "link": "開啟他們的頁面",
       "notStated": "其網站上未說明"
+    },
+    "grammar": {
+      "h": "文法練習，並排比較",
+      "lead": "Grammar Lab 是 Oomba 的文法課程，適用 {bands} 年級：{units} 個單元共 {topics} 個主題。以下是它涵蓋的內容，以及沒有涵蓋的部分。",
+      "caption": "Grammar Lab 與 {name} 在文法和寫作練習上提供什麼。{name} 的欄位來自其官方公開網站。",
+      "checked": "{name} 的欄位來自其官方公開網站，於 {date} 閱讀。",
+      "try": "開啟 Grammar Lab",
+      "rows": {
+        "practice": {
+          "need": "文法練習，一次一項技能",
+          "oomba": "{topics} 個主題，每個都有簡短的教學卡和題目：點選正確的字詞、加上逗號和其他標點、選出正確的字詞或句子，或打出改正後的句子。每個答案都由我們的伺服器批改。"
+        },
+        "mastery": {
+          "need": "先熟練再前進",
+          "oomba": "每個主題有三個關卡。連續答對兩題就完成一關；答錯會顯示提示並多加一題。熟練這個主題後，下一個主題才會開啟。"
+        },
+        "grades": {
+          "need": "涵蓋的年級",
+          "oomba": "從幼兒園到八年級，分成三個階段：{bands}。"
+        },
+        "readAloud": {
+          "need": "為低年級朗讀",
+          "oomba": "在 K-2，每個主題的教學卡都可以朗讀。"
+        },
+        "proofread": {
+          "need": "校對文章",
+          "oomba": "{rooms} 個主題會開啟 Mistake Hunt 房間：一篇有這類錯誤的文章，讓學生找出並改正。"
+        },
+        "essays": {
+          "need": "引導式作文寫作",
+          "oomba": "Grammar Lab 沒有。論點、證據和轉折語等寫作技巧以題目練習，而不是寫作文。"
+        },
+        "feedback": {
+          "need": "對學生寫作的回饋",
+          "oomba": "沒有。依設計，Oomba 的 AI 從不閱讀學生的作品，Grammar Lab 也沒有需要回饋的作文。"
+        },
+        "classes": {
+          "need": "指派給班級，附班級報告",
+          "oomba": "目前還沒有。每位學生可以看到自己在每個單元的進度，並回顧已熟練主題的題目。"
+        },
+        "free": {
+          "need": "免費選項",
+          "oomba": "Grammar Lab 免費。訪客不用帳號就能練習，註冊後會保留他們已熟練的主題。"
+        }
+      }
     }
   },
   "connections": {
@@ -11200,7 +11245,9 @@
       "more": "看完整比較",
       "liveGames": "即時遊戲就在 Hub 裡進行：學生在桌上收到邀請，點一下就加入，不用代碼。",
       "classScreen": "{count} 個小工具、每位學生自己的畫面、有理由的點數，而且 Hub 的桌子只差一個分頁。",
-      "mathTools": "{tools} 種教具和幼兒園到八年級的 {tasks} 個任務，加上 Figures 學習單、你一開口就改白板的 Oomba，而且每個工具都能發到 Hub 的桌上。"
+      "mathTools": "{tools} 種教具和幼兒園到八年級的 {tasks} 個任務，加上 Figures 學習單、你一開口就改白板的 Oomba，而且每個工具都能發到 Hub 的桌上。",
+      "grammarUs": "Oomba 的 Grammar Lab 涵蓋什麼",
+      "grammar": "從幼兒園到八年級的 {topics} 個文法主題，每個主題分三關熟練，K-2 有朗讀的教學卡，還有 Mistake Hunt 校對房間。沒有作文寫作或寫作回饋：Oomba 的 AI 從不閱讀學生的作品。"
     },
     "tour": {
       "kicker": "點選導覽",
