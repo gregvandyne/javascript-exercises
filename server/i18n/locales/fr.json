@@ -7829,6 +7829,10 @@
         "title": "Tableau de bord de la classe",
         "p": "Minuteurs, responsabilités, météo des émotions et outils de maths pour toute la journée de classe, sur un seul écran."
       },
+      "hub-promo": {
+        "title": "Le Hub en 60 secondes",
+        "p": "Chaque pupitre en direct sur un seul tableau : distribuez un jeu, répondez à une main levée, lancez un jeu en direct et demandez à Oomba."
+      },
       "hub": {
         "title": "Le Hub en 2 minutes",
         "p": "Distribuez le travail, suivez chaque pupitre en direct, répondez aux mains levées et menez le plan de la journée, depuis un seul tableau."
@@ -10856,7 +10860,7 @@
       "trustCancel": "Sans engagement",
       "trustStudents": "Élèves illimités",
       "tour": "Faire la visite",
-      "watch": "Voir la présentation en 2 minutes",
+      "watch": "Voir la vidéo d’une minute",
       "watchSub": "Le Hub : toute votre classe sur un seul tableau",
       "collageAlt": "De vrais écrans d’Oomba Academy : un tableau de bord de classe, des réglettes de fractions sur un tableau de maths, une fiche avec des figures à l’échelle, la bibliothèque d’albums et un jeu de classe en direct."
     },

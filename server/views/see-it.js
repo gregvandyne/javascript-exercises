@@ -17,10 +17,12 @@ import { plansOn } from '../services/teacher-tools.js';
 
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 /** The videos, in order. Adding one is one entry here, its three files in public/video/oomba-<id>.*, and its title and
- *  line under teachers.videos.<id> in the locale files. overview: the two-minute overview of the Hub (scripts/hub-video.mjs),
- *  on the homepage's video strip and behind its hero (routes/landing.js HERO_VIDEO) but not in the "a minute each"
- *  section of the new tools on /teachers, whose heading and plan note are about the four tools below. */
+ *  line under teachers.videos.<id> in the locale files. overview: the Hub's own videos, on the homepage's video strip but
+ *  not in the "a minute each" section of the new tools on /teachers, whose heading and plan note are about the four tools
+ *  below: the 60-second promo (scripts/hub-promo.mjs, behind the homepage's hero: routes/landing.js HERO_VIDEO) and the
+ *  two-minute overview (scripts/hub-video.mjs). */
 export const VIDEOS = [
+  { id: 'hub-promo', emoji: '🏫', overview: true },
   { id: 'hub', emoji: '🏫', overview: true },
   { id: 'manipulatives', emoji: '🧮' },
   { id: 'figures', emoji: '📐' },

@@ -7830,6 +7830,10 @@
         "title": "Bacheca di classe",
         "p": "Timer, incarichi, appelli dell’umore e strumenti di matematica per tutta la giornata di classe, su un solo schermo."
       },
+      "hub-promo": {
+        "title": "L’Hub in 60 secondi",
+        "p": "Ogni banco in diretta su una sola bacheca: distribuisci un gioco, rispondi a una mano alzata, avvia un gioco dal vivo e chiedi a Oomba."
+      },
       "hub": {
         "title": "L’Hub in 2 minuti",
         "p": "Distribuisci il lavoro, guarda ogni banco in diretta, rispondi alle mani alzate e segui il piano del giorno, tutto da una sola bacheca."
@@ -10857,7 +10861,7 @@
       "trustCancel": "Disdici quando vuoi",
       "trustStudents": "Studenti illimitati",
       "tour": "Fai il tour",
-      "watch": "Guarda la presentazione di 2 minuti",
+      "watch": "Guarda il video di 1 minuto",
       "watchSub": "L’Hub: tutta la classe su una sola bacheca",
       "collageAlt": "Schermate reali di Oomba Academy: una dashboard di classe, strisce delle frazioni su una lavagna di matematica, una scheda con figure in scala, la biblioteca di albi illustrati e un gioco di classe dal vivo."
     },

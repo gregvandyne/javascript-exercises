@@ -10,6 +10,7 @@ real licence).
 |---|---|---|---|
 | `public/video/oomba-demo.mp4` (`/teachers/live`), `public/video/oomba-parents.mp4` (`/parents`) | Background music | Background music: AtlasAudio via Pixabay (Pixabay Content License), supplied by the site owner. File: `atlasaudio-background-594872.mp3` (Pixabay track 594872). | Not required by the Pixabay Content License; no on-video credit. |
 | `public/video/oomba-manipulatives.mp4`, `public/video/oomba-figures.mp4`, `public/video/oomba-room.mp4`, `public/video/oomba-dashboard.mp4` ("See it in action" on `/` and `/teachers`) | Background music | Background music: AtlasAudio via Pixabay (Pixabay Content License), supplied by the site owner. File: `atlasaudio-background-594872.mp3` (Pixabay track 594872). | Not required by the Pixabay Content License; no on-video credit. |
+| `public/video/oomba-hub-promo.mp4` (the Hub in 60 seconds, behind the homepage's hero; `scripts/hub-promo.mjs`) | Background music | Background music: AtlasAudio via Pixabay (Pixabay Content License), supplied by the site owner. File: `atlasaudio-background-594872.mp3` (Pixabay track 594872). | Not required by the Pixabay Content License; no on-video credit. |
 
 Everything else in the videos is the site itself (recorded from the real app with made-up names, see
 `scripts/demo-video/README.md`). The original synthesized track (`scripts/demo-video/compose-music.py`) is ours.
