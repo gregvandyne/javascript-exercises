@@ -16336,7 +16336,7 @@
       "noStudents": "Nog geen leerlingen in deze klas.",
       "noneFit": "Geen onderdeel past bij deze filters.",
       "counts": "Leerlingen",
-      "count": "{mastered} beheerst · {started} bezig",
+      "count": "{mastered} beheerst · {started} bezig",
       "studentTitle": "{name} in Grammar Lab",
       "placeH": "Startgroepen",
       "placeTeacher": "Groepen {grades}, gekozen door een leerkracht.",
@@ -16406,7 +16406,9 @@
       "levelNext": "Volgend level",
       "fixLabel": "Verbeter de zin hier",
       "chips": "Tekens om te plaatsen",
-      "asIs": "Het klopt zoals het is"
+      "asIs": "Het klopt zoals het is",
+      "listen": "Lees de vraag voor",
+      "listenHint": "Lees de hint voor"
     },
     "levels": {
       "heading": "Levels en beheersen",
@@ -16483,9 +16485,9 @@
     },
     "loading": "Je les wordt klaargezet",
     "progress": {
-      "band": "{mastered} beheerst · {started} bezig",
+      "band": "{mastered} beheerst · {started} bezig",
       "unit": "{started} bezig",
-      "unitHead": "{mastered} van {total} beheerst · {started} bezig"
+      "unitHead": "{mastered} van {total} beheerst · {started} bezig"
     }
   }
 }

@@ -118,6 +118,6 @@ export function studentBody({ t, f, c, v }) {
 export function progressPanel({ t, c, g }) {
   const started = g.students.filter(s => Object.values(s.cells).some(x => x.state !== 'none')).length;
   return html`<section class="panel coursepanel glt-panel" id="course-grammar-lab"><h2>🔤 ${t('grammarLab.title')}</h2>
-    <p class="small muted">${t('progress.courses.started', { started, total: g.students.length })} · ${t('grammarLab.teach.unitsGiven', { count: g.all.length })}</p>
+    <p class="small muted">${t('progress.courses.started', { started, total: g.students.length })}&nbsp;· ${t('grammarLab.teach.unitsGiven', { count: g.all.length })}</p>
     <p><a class="btn" href="/class/${c.id}/grammar-lab" id="glt-progress-link">📊 ${t('grammarLab.teach.progressLink')}</a></p></section>`;
 }

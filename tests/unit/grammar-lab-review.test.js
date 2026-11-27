@@ -141,9 +141,9 @@ test('the first-try line and partial progress: a topic\'s level, a unit\'s and a
   // a topic in progress: its level on its tile, and the unit and band count it
   let unit = await get(`/courses/grammar-lab/k-2/${U}`, kid);
   assert.match(unit.text, /id="gl-topic-capitalizing-names-and-dates">[\s\S]*?<span class="gl-tile-state">Level 1 of 3<\/span>/);
-  assert.match(unit.text, /id="gl-unitprog">0 of 2 mastered · 1 in progress</);
+  assert.match(unit.text, /id="gl-unitprog">0 of 2 mastered\u00a0· 1 in progress</);
   let course = await get('/courses/grammar-lab?band=k-2', kid);
-  assert.match(course.text, /id="gl-bandprog-k-2">0 mastered · 1 in progress</);
+  assert.match(course.text, /id="gl-bandprog-k-2">0 mastered\u00a0· 1 in progress</);
   assert.match(course.text, /id="gl-unit-capital-letters">[\s\S]*?<span class="gl-unit-going">1 in progress<\/span>/);
   // to level 2: the tile says so
   let qn = r.json.question;
@@ -160,12 +160,12 @@ test('the first-try line and partial progress: a topic\'s level, a unit\'s and a
   assert.equal(c.of, c.answered); assert.equal(c.firstTry, c.of - 1); assert.equal(c.base, 12); assert.ok(c.added >= 1);
   assert.ok(!/rank|place|best/i.test(JSON.stringify(c)), 'nothing about others');
   unit = await get(`/courses/grammar-lab/k-2/${U}`, kid);
-  assert.match(unit.text, /id="gl-unitprog">1 of 2 mastered · 0 in progress</);
+  assert.match(unit.text, /id="gl-unitprog">1 of 2 mastered\u00a0· 0 in progress</);
   course = await get('/courses/grammar-lab?band=k-2', kid);
-  assert.match(course.text, /id="gl-bandprog-k-2">1 mastered · 0 in progress</);
+  assert.match(course.text, /id="gl-bandprog-k-2">1 mastered\u00a0· 0 in progress</);
   // the band folded under "Other grades" says its counts in its summary too
   course = await get('/courses/grammar-lab?band=3-5', kid);
-  assert.match(course.text, /id="gl-sec-k-2"><summary>[\s\S]*?1 mastered · 0 in progress<\/span><\/summary>/);
+  assert.match(course.text, /id="gl-sec-k-2"><summary>[\s\S]*?1 mastered\u00a0· 0 in progress<\/span><\/summary>/);
 });
 
 // ------------------------------------------------------------------------------------------------- locks
@@ -189,10 +189,10 @@ test('locks are consistent: every unit of every band opens its topics in order; 
   assert.match(unit.text, /class="gl-tile gl-locked" id="gl-topic-recognizing-fragments">[\s\S]*?Master the one before first/);
   assert.equal((await post(`${API('recognizing-fragments')}/start`, kid, { unit: 'fixing-sentences', band: '3-5' })).status, 403);
   // a topic shared with other units: "Also counts in" on its tile (the other units, by name) and on the mastery screen
-  assert.match(unit.text, /id="gl-topic-identifying-action-verbs">[\s\S]*?<span class="gl-tile-also">Also counts in: Kinds of Words, Verbs and Time<\/span>/);
+  assert.match(unit.text, /id="gl-topic-identifying-action-verbs">[\s\S]*?<span class="gl-tile-also"><span>Also counts in: <span lang="en" dir="ltr">Kinds of Words, Verbs and Time<\/span><\/span><\/span>/);
   assert.doesNotMatch(unit.text.slice(unit.text.indexOf('id="gl-topic-recognizing-fragments"')), /gl-tile-also/, 'a topic in one unit only has no note');
   const page = await get('/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs', kid);
-  assert.match(page.text, /id="gl-done-also">Also counts in: Kinds of Words, Verbs and Time</);
+  assert.match(page.text, /id="gl-done-also"><span>Also counts in: <span lang="en" dir="ltr">Kinds of Words, Verbs and Time<\/span><\/span></);
   assert.deepEqual(GL.alsoIn('identifying-adjectives', GL.pathway('adjectives-and-adverbs', 'k-2')).map(x => x.title), ['Kinds of Words']);
 });
 

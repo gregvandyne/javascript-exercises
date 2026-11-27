@@ -36,6 +36,8 @@ function inView(el, block = 'nearest') {
   el.scrollIntoView({ block, behavior: reduced() ? 'auto' : 'smooth' });
 }
 let summary = null, question = null, busy = false, picked = null, asIs = false, chip = ',';
+/** K-2 read-aloud: the listen button playing now, its audio and its object URL (see "read aloud" below). */
+let say = { btn: null, audio: null, url: null };
 const marked = new Set();
 /** Punctuation chips: the mark in each gap now (gap -> mark), opened with the marks as written. */
 let gapMarks = new Map();
@@ -113,6 +115,7 @@ function glued(box, before, el, after) {
   box.append((before || '').slice(0, (before || '').length - b.length), tok(b, el, a), (after || '').slice(a.length));
 }
 function renderQuestion() {
+  if (say.btn) sayStop();
   marked.clear(); picked = null; asIs = false;
   gapMarks = new Map(question.start || []);
   const q = question;
@@ -188,7 +191,8 @@ function renderQuestion() {
     });
   }
   notice(null);
-  hint(null);
+  // (a question missed before the page was opened again keeps its hint)
+  hint(q.hint || null);
   $('#gl-submit').disabled = true;
   renderHeader();
   // a new question starts at its line: never under the sticky top bar after the page was scrolled down to Submit
@@ -329,6 +333,8 @@ $('#gl-hint-btn').addEventListener('click', () => {
   box.hidden = !box.hidden;
   btn.setAttribute('aria-expanded', String(!box.hidden));
   btn.textContent = box.hidden ? t('js.grammar-lab.hint') : t('js.grammar-lab.hideHint');
+  // (a hint being read stops when it is hidden)
+  if (box.hidden && say.btn && box.contains(say.btn)) sayStop();
   // (the hint opens above Submit; on a phone it is brought into view, smoothly)
   if (!box.hidden) inView(box);
 });
@@ -398,7 +404,7 @@ $('#gl-submit').addEventListener('click', async () => {
     return resync(e);
   }
   summary = r.summary;
-  if (r.kind === 'near') { busy = false; notice('near', t(question.kind === 'gaps' ? 'js.grammar-lab.nearGaps' : 'js.grammar-lab.near')); $('#gl-submit').disabled = !ready(); return; }
+  if (r.kind === 'near') { busy = false; notice('near', t(question.kind === 'gaps' ? 'js.grammar-lab.nearGaps' : 'js.grammar-lab.near')); $('#gl-submit').disabled = !ready(); inView($('.gl-actions')); return; }
   if (r.kind === 'wrong' || r.kind === 'again') {
     busy = false;
     // A fix missed for the first time: the box turns into press-to-cycle through versions of the sentence.
@@ -409,6 +415,9 @@ $('#gl-submit').addEventListener('click', async () => {
     hint(r.hint);
     renderHeader();
     $('#gl-submit').disabled = !ready();
+    // (on a short phone the notice and the Hint button come into view, above the bottom nav: the notice sits just
+    // above them)
+    inView($('.gl-actions'));
     return;
   }
   // Right (or a missed question fixed): the green confirmation, then what comes next. The header and the question
@@ -601,6 +610,48 @@ document.addEventListener('keydown', e => {
   if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); showMeaning(el); }
 });
 window.addEventListener('scroll', hideMeaning, { passive: true });
+
+// ---------------------------------------------------------------------------------------------- read aloud (K-2)
+// A K-2 question has a listen button, and so does its hint once it shows (students who may not read well yet). Only the
+// shared speak path (POST /api/tts ctx 'grammar', public/js/tts.js): the server reads the question on this player's
+// screen by its id, never text from the page, and never the device's own voice. The page has the buttons only when the
+// English voice is on at /admin/voices (d.listen); this device's choice of device voices (or Data Saver) hides them too.
+// Nothing is fetched otherwise: tts.js itself is loaded only here.
+const SILENT = 'data:audio/wav;base64,UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRAAAACAgICAgICAgICAgICAgICA';
+function sayStop() {
+  const { btn, audio, url } = say;
+  say = { btn: null, audio: null, url: null };
+  if (audio) { try { audio.pause(); } catch { /* none */ } }
+  if (url) URL.revokeObjectURL(url);
+  if (btn) { btn.setAttribute('aria-pressed', 'false'); btn.querySelector('.lbl').textContent = btn.dataset.label; }
+}
+if (d.listen) import('/js/tts.js').then(T => {
+  if (T.voiceMode() !== 'ai') return;
+  for (const [sel, part] of [['#gl-say', 'question'], ['#gl-hint-say', 'hint']]) {
+    const b = $(sel);
+    if (!b) continue;
+    b.dataset.label = b.querySelector('.lbl').textContent;
+    b.hidden = false;
+    b.addEventListener('click', async () => {
+      if (say.btn === b) return sayStop();
+      sayStop();
+      if (!question) return;
+      // (inside the tap: an iPhone plays the audio only from an element first played in a tap)
+      const audio = new Audio(SILENT);
+      try { const p = audio.play(); if (p && p.catch) p.catch(() => {}); } catch { /* no audio */ }
+      say = { btn: b, audio, url: null };
+      b.setAttribute('aria-pressed', 'true'); b.querySelector('.lbl').textContent = d.listen.stop;
+      try {
+        const blob = await T.ttsBlob({ ctx: 'grammar', topic: d.topic, unit: d.unit, band: d.band, part, id: question.id });
+        if (say.audio !== audio) return;
+        say.url = URL.createObjectURL(blob);
+        audio.onended = () => { if (say.audio === audio) sayStop(); };
+        audio.src = say.url;
+        await audio.play();
+      } catch { if (say.audio === audio) sayStop(); }
+    });
+  }
+}, () => { /* stays silent */ });
 
 // ---------------------------------------------------------------------------------------------- go
 if (d.run && d.run.question) enter(d.run); else welcome();

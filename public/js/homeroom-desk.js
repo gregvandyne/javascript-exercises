@@ -136,7 +136,7 @@ function cardHtml(x) {
   const kind = x.grammar ? (x.what === 'room' ? td('grammarRoom') : td('grammarKind', { done: x.got || 0, count: x.n || 0 })) : x.page ? td('pageKind', { count: x.n || 0 }) : x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : x.unit === 'cards' ? 'worksheetCards' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
   const sub = [kind, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
-  const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
+  const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct"${x.grammar && x.what !== 'room' ? ' lang="en"' : ''} dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
   const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
   const card = x.reading ? readCardHtml(x, cls, badge, x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : '') : x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`

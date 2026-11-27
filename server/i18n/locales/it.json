@@ -16336,7 +16336,7 @@
       "noStudents": "Ancora nessuno studente in questa classe.",
       "noneFit": "Nessuna unità corrisponde a questi filtri.",
       "counts": "Studenti",
-      "count": "{mastered} padroneggiato · {started} in corso",
+      "count": "{mastered} padroneggiato · {started} in corso",
       "studentTitle": "{name} in Grammar Lab",
       "placeH": "Classi di partenza",
       "placeTeacher": "Classi {grades}, scelte da un insegnante.",
@@ -16406,7 +16406,9 @@
       "levelNext": "Livello successivo",
       "fixLabel": "Correggi la frase qui",
       "chips": "Segni da mettere",
-      "asIs": "Va bene così"
+      "asIs": "Va bene così",
+      "listen": "Leggimi la domanda",
+      "listenHint": "Leggimi il suggerimento"
     },
     "levels": {
       "heading": "Livelli e padronanza",
@@ -16483,9 +16485,9 @@
     },
     "loading": "Sto preparando la tua lezione",
     "progress": {
-      "band": "{mastered} padroneggiati · {started} in corso",
+      "band": "{mastered} padroneggiati · {started} in corso",
       "unit": "{started} in corso",
-      "unitHead": "{mastered} su {total} padroneggiati · {started} in corso"
+      "unitHead": "{mastered} su {total} padroneggiati · {started} in corso"
     }
   }
 }

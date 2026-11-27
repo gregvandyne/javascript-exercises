@@ -16380,3 +16380,22 @@ and the family onboarding's own files are left to that work.
 - **Greeted by name:** a teacher who sets up their own school gets the teachers' welcome after the name they typed is
   saved (`setUpOwnSchool`), so it says "Hi Ms Rivera!", not their username.
 - The three team welcomes stay under the team message limit (1,000 characters).
+
+## Grammar Lab Phase 4: translated around English lessons, and K-2 read-aloud (27 Nov 2026)
+
+- **The user interface is translated, the lessons stay English** (owner: "Keep the lessons in English, just translate
+  the UI"). Every Grammar Lab string (grammarLab.*, js.grammar-lab.*, its Hub and lesson-step strings) is in all 13
+  locales (en-GB only where British spelling differs). Course text (unit and topic names, cards, questions, hints, the
+  band covers' drawn sentences, a proofread room's title) is marked lang="en", so screen readers and voices read it as
+  English; a translated line with a name in it (`views/grammar-lab.js` tIn) marks just the name.
+- **K-2 read-aloud through the shared speak path only** (`POST /api/tts` ctx 'grammar'): the teaching card, the
+  question on screen (by its id: the line that asks, the sentence, the choices) and its hint once a wrong answer shows
+  it. The server reads the course text; the page never sends text, and nothing the student typed or their name is ever
+  read. Never the device's own voice.
+- **Gated by the English switch at /admin/voices**, whatever the page's language: the text is English, so it is read
+  with the English voice, as course slides, placement and Brain Breaks are. With the switch off (or TTS off) the page
+  has no speaker button and loads no voice code, and the server refuses the request. A device set to device voices (or
+  Data Saver) shows no button either. 3-5 and up are not read aloud (the build prompt asks for K-2).
+- Tests: tests/unit/grammar-lab-polish.test.js, grammar-lab-voice-browser.test.js, grammar-lab-phone-browser.test.js
+  (every band at 320 and 390 px, light and dark), grammar-lab-locale-browser.test.js (German and Arabic) and
+  grammar-lab-playthrough-browser.test.js (one whole unit per band).

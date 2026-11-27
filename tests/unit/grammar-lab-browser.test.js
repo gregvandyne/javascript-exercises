@@ -145,7 +145,7 @@ async function playToMastery(page, tag, { guest = false } = {}) {
   assert.equal(levels, 2, 'two level overlays, then mastery');
   await page.waitForSelector('#gl-done:not([hidden])');
   assert.match(await page.textContent('#gl-done-h'), /You mastered Identifying Adjectives!/);
-  assert.match(await page.textContent('.gl-done-where'), /Adjectives and Adverbs · Identifying Adjectives/);
+  assert.match(await page.textContent('.gl-done-where'), /Adjectives and Adverbs\u00a0· Identifying Adjectives/);
   assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions. That is 12 questions, plus 1 for a miss.');
   assert.equal(await page.textContent('#gl-done-acc'), '12 of 13 right on the first try');
   assert.equal(await page.locator('#gl-bar .gl-seg-right').count(), 12);

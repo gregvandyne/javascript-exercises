@@ -16336,7 +16336,7 @@
       "noStudents": "لا يوجد طلاب في هذا الصف بعد.",
       "noneFit": "لا توجد وحدات تطابق هذه المرشحات.",
       "counts": "الطلاب",
-      "count": "أتقن: {mastered} · قيد العمل: {started}",
+      "count": "أتقن: {mastered} · قيد العمل: {started}",
       "studentTitle": "{name} في Grammar Lab",
       "placeH": "صفوف البداية",
       "placeTeacher": "الصفوف {grades}، اختارها معلم.",
@@ -16406,7 +16406,9 @@
       "levelNext": "المستوى التالي",
       "fixLabel": "صحّح الجملة هنا",
       "chips": "علامات لوضعها",
-      "asIs": "الجملة صحيحة كما هي"
+      "asIs": "الجملة صحيحة كما هي",
+      "listen": "اقرأ لي السؤال",
+      "listenHint": "اقرأ لي التلميح"
     },
     "levels": {
       "heading": "المستويات والإتقان",
@@ -16483,9 +16485,9 @@
     },
     "loading": "نُجهّز درسك",
     "progress": {
-      "band": "أتقن: {mastered} · قيد العمل: {started}",
+      "band": "أتقن: {mastered} · قيد العمل: {started}",
       "unit": "قيد العمل: {started}",
-      "unitHead": "أتقن: {mastered} من {total} · قيد العمل: {started}"
+      "unitHead": "أتقن: {mastered} من {total} · قيد العمل: {started}"
     }
   }
 }

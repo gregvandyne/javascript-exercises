@@ -210,11 +210,11 @@ test('partial progress on the course and unit pages, locks in order, "Also count
     await page.goto(`${base}/courses/grammar-lab/k-2/kinds-of-words`);
     assert.equal(await page.textContent('#gl-topic-identifying-action-verbs .gl-tile-state'), 'Level 2 of 3');
     assert.equal(await page.textContent('#gl-topic-identifying-action-verbs .gl-tile-also'), 'Also counts in: Verbs and Time');
-    assert.equal(await page.textContent('#gl-unitprog'), '1 of 3 mastered · 1 in progress');
+    assert.equal(await page.textContent('#gl-unitprog'), '1 of 3 mastered\u00a0· 1 in progress');
     assert.match(await page.textContent('#gl-topic-identifying-adjectives .gl-tile-state'), /Master the one before first/);
     await shot(page, '09-unit-progress-locks', dark);
     await page.goto(`${base}/courses/grammar-lab?band=k-2`);
-    assert.equal(await page.textContent('#gl-bandprog-k-2'), '1 mastered · 1 in progress');
+    assert.equal(await page.textContent('#gl-bandprog-k-2'), '1 mastered\u00a0· 1 in progress');
     assert.match(await page.textContent('#gl-unit-kinds-of-words'), /1 in progress/);
     await shot(page, '10-course-progress', dark);
     assert.deepEqual(errors, []);

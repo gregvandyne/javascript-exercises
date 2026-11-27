@@ -235,7 +235,8 @@ export function questionFor(t, s) {
   if (!s || !s.cur) return null;
   const it = t.items[s.cur.item], kind = kindOf(t, it), f = formatOf(t, it);
   // again: a missed question back for another try; seen: one answered right before (only when a run needs it)
-  const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind, ...(s.cur.retry ? { again: true } : {}), ...(s.cur.seen ? { seen: true } : {}) };
+  // hint: a question already missed keeps its hint (a page opened again, another tab, a re-sync: the hint is not lost)
+  const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind, ...(s.cur.retry ? { again: true } : {}), ...(s.cur.seen ? { seen: true } : {}), ...(s.cur.missed && it.hint ? { hint: it.hint } : {}) };
   if (f === 'passage') return { ...base, before: '', after: '', options: it.options, whole: true, italic: false, passage: true };
   if (kind === 'choice') {
     const [before, after] = it.whole || it.plain ? [it.plain ? it.text : '', ''] : it.text.split('___');
@@ -451,15 +452,41 @@ export const roomHref = (unitId, id, bandId = null) => {
 
 // ------------------------------------------------------------------------------------------------- read aloud
 /** The teaching card as one spoken text (services/tts.js reads it; the page never sends text). */
-export function cardSpoken(t) {
+export function cardSpoken(t, { small = false } = {}) {
   const c = t.card;
-  // a writing card: each section's question, its passage and its note
-  if (c.sections) return c.sections.flatMap(x => [x.title, x.question, ...x.passage.map(y => y.text), x.note]).filter(Boolean).map(x => (/[.!?]$/.test(x) ? x : `${x}.`)).join(' ');
+  // a writing card: each section's question, its passage and its note (the hint's small card: no passage)
+  if (c.sections) return c.sections.flatMap(x => [x.title, x.question, ...(small ? [] : x.passage.map(y => y.text)), x.note]).filter(Boolean).map(x => (/[.!?]$/.test(x) ? x : `${x}.`)).join(' ');
   // a lead or a note that runs into its quote ("The title is") is read with it, as one sentence
   const unit = u => (u ? [[u.lead, u.text].filter(Boolean).join(' '), u.then ? [u.note, u.then.text].filter(Boolean).join(' ') : u.note, u.then && u.then.note] : []);
   const end = x => (/[.!?]$/.test(x) ? x : `${x}.`);
-  return [c.definition, ...unit(c.example), ...((c.example && c.example.more) || []).flatMap(unit), c.how, ...c.tips.flatMap(unit)]
+  return [c.definition, ...unit(c.example), ...((c.example && c.example.more) || []).flatMap(unit), c.how, ...(small ? [] : c.tips.flatMap(unit))]
     .filter(Boolean).map(x => end(String(x).trim())).join(' ');
+}
+const said = x => { const v = String(x || '').replace(/\s+/g, ' ').trim(); return !v ? '' : /[.!?]["'\u201d\u2019)]*$/.test(v) ? v : `${v}.`; };
+/** The question on screen as it is read aloud (a K-2 question's listen button; routes/tts.js ctx 'grammar'): the line
+ *  that asks, then the sentence (its blank read as "blank") and the choices, exactly as the page shows them. Course text
+ *  only, never anything the student typed or their name. '' with no question on screen. */
+export function questionSpoken(t, s) {
+  const qn = questionFor(t, s);
+  if (!qn) return '';
+  const it = t.items[s.cur.item];
+  const parts = [qn.ask];
+  if (qn.kind === 'choice') {
+    if (qn.prompt) parts.push(qn.prompt);
+    if (!qn.whole) parts.push(it.plain ? it.text : String(it.text).replace(/_{3,}/g, 'blank'));
+    parts.push(...qn.options);
+  } else if (qn.kind === 'marks') {
+    const at = new Map(qn.start || []);
+    parts.push(qn.words.map((w, i) => `${w}${at.get(i) || ''}`).join(' '));
+  } else parts.push(it.text);
+  return parts.map(said).filter(Boolean).join(' ');
+}
+/** The hint as it is read aloud, only once it shows (after a wrong answer): the hint's line, then the small card under
+ *  it. '' when no hint is showing. */
+export function hintSpoken(t, s) {
+  if (!s || !s.cur || !s.cur.missed) return '';
+  const it = t.items[s.cur.item];
+  return [said(it.hint), cardSpoken(t, { small: true })].filter(Boolean).join(' ');
 }
 
 // ------------------------------------------------------------------------------------------------- grade store

@@ -16,6 +16,13 @@ export const HEAD = raw(`<link rel="stylesheet" href="/css/grammar-lab-art.css?v
  *  area waited. */
 export const PRACTICE_HEAD = raw(`${HEAD}<link rel="modulepreload" href="/js/grammar-lab.js?v=${VERSION}"><link rel="modulepreload" href="/js/app.js"><link rel="modulepreload" href="/js/grammar-lab-art.js">`);
 const en = raw(' lang="en" dir="ltr"');
+/** A translated line with one English piece of course text in it (a topic or unit name): the piece is marked lang="en"
+ *  (and isolated, so it reads the right way round inside a right-to-left line), the rest is the page's language. */
+export function tIn(t, key, vars, name) {
+  const [a, b = ''] = t(key, { ...vars, [name]: '\u0001' }).split('\u0001');
+  // (one piece: inside a flex button the parts would otherwise be spaced apart by its gap)
+  return html`<span>${a}<span lang="en" dir="ltr">${vars[name]}</span>${b}</span>`;
+}
 export const ROLES = Object.freeze(['adjective', 'noun', 'verb', 'adverb', 'pronoun', 'subject', 'article', 'conjunction', 'preposition', 'capital', 'comma']);
 export const GLOSSARY = Object.freeze(['adjective', 'noun']);
 const base = '/courses/grammar-lab';
@@ -99,9 +106,9 @@ function bandSection(t, { band, units, counts }, { yours = false, folded = false
       ${counts ? html`<p class="gl-bandprog muted" id="gl-bandprog-${band.id}">${line}</p>` : ''}
       <ul class="gl-units">${units.map(({ p, prog, assigned }) => html`<li><a class="gl-unit" href="${unitHref(p)}" id="gl-unit-${p.id}">
         ${ring(t, prog)}
-        <span class="gl-unit-t"><span class="gl-unit-name"${en}>${p.title}</span><span class="muted">${t('grammarLab.topicsN', { count: prog.total })}${prog.started ? html` · <span class="gl-unit-going">${t('grammarLab.progress.unit', { started: prog.started })}</span>` : ''}${assigned ? html` · ${t('grammarLab.assigned.badge')}` : ''}</span></span>
+        <span class="gl-unit-t"><span class="gl-unit-name"${en}>${p.title}</span><span class="muted">${t('grammarLab.topicsN', { count: prog.total })}${prog.started ? html`&nbsp;· <span class="gl-unit-going">${t('grammarLab.progress.unit', { started: prog.started })}</span>` : ''}${assigned ? html`&nbsp;· ${t('grammarLab.assigned.badge')}` : ''}</span></span>
         <span class="gl-go flip" aria-hidden="true">→</span></a></li>`)}</ul>`;
-  return folded ? html`<details class="gl-bandsec gl-bandfold ${bandClass(band.id)}" id="gl-sec-${band.id}"><summary><span class="gl-fold-h">${t('grammarLab.band', { grades: band.grades })}</span><span class="muted">${t('grammarLab.unitsN', { count: units.length })}${counts && (counts.mastered || counts.started) ? html` · ${line}` : ''}</span></summary>${inner}</details>`
+  return folded ? html`<details class="gl-bandsec gl-bandfold ${bandClass(band.id)}" id="gl-sec-${band.id}"><summary><span class="gl-fold-h">${t('grammarLab.band', { grades: band.grades })}</span><span class="muted">${t('grammarLab.unitsN', { count: units.length })}${counts && (counts.mastered || counts.started) ? html`&nbsp;· ${line}` : ''}</span></summary>${inner}</details>`
     : html`<section class="gl-bandsec ${bandClass(band.id)}" id="gl-sec-${band.id}" aria-labelledby="gl-band-${band.id}">${inner}</section>`;
 }
 /** The course page: each band with its cover and its units (rings from live topic states). The student's band (a
@@ -132,7 +139,7 @@ export function unitPage({ t, p, states, guest }) {
   const pending = states.some(s => s.pending);
   return html`<div class="gl ${bandClass(p.band)}">
     <p class="gl-crumb"><a href="${base}">${t('grammarLab.allUnits')}</a></p>
-    <header class="gl-unithead">${ring(t, prog)}<div><h1${en}>${p.title}</h1><p class="muted">${t('grammarLab.band', { grades: (GL.band(p.band) || {}).grades || '' })} · ${t('grammarLab.topicsN', { count: states.length })}</p>
+    <header class="gl-unithead">${ring(t, prog)}<div><h1${en}>${p.title}</h1><p class="muted">${t('grammarLab.band', { grades: (GL.band(p.band) || {}).grades || '' })}&nbsp;· ${t('grammarLab.topicsN', { count: states.length })}</p>
       <p class="muted gl-unitprog" id="gl-unitprog">${t('grammarLab.progress.unitHead', { mastered: prog.done, total: prog.total, started })}</p></div></header>
     ${guest && pending ? guestBox(t, unitHref(p), { won: true }) : ''}
     <ol class="gl-topics">${states.map((s, i) => html`${s.part ? html`<li class="gl-part"><h2 class="gl-part-h"${en}>${s.part}</h2></li>` : ''}${tile(t, p, s, i)}`)}</ol>
@@ -149,7 +156,7 @@ function tile(t, p, s, i) {
       <span class="gl-tile-n" aria-hidden="true">${s.mastered ? '✓' : i + 1}</span>
       <span class="gl-tile-t"><span class="gl-tile-name"${en}>${tp.title}</span>
         <span class="gl-tile-state">${state === 'started' && s.level ? t('grammarLab.topic.levelOf', { level: s.level.level, levels: s.level.levels }) : t(`grammarLab.topic.${state}`)}</span>
-        ${s.also && s.also.length ? html`<span class="gl-tile-also">${t('grammarLab.topic.also', { units: s.also.map(x => x.title).join(', ') })}</span>` : ''}
+        ${s.also && s.also.length ? html`<span class="gl-tile-also">${tIn(t, 'grammarLab.topic.also', { units: s.also.map(x => x.title).join(', ') }, 'units')}</span>` : ''}
         ${s.mark || (s.room && s.room.passed) || s.assigned ? html`<span class="gl-tile-marks">${s.assigned ? html`<span class="gl-badge gl-badge-yours">${t('grammarLab.assigned.badge')}</span>` : ''}${s.mark ? html`<span class="gl-badge gl-badge-${s.mark}">${t(`grammarLab.mark.${s.mark}`)}</span>` : ''}${s.room && s.room.passed ? html`<span class="gl-badge gl-badge-room">${t('grammarLab.room.passed')}</span>` : ''}</span>` : ''}</span>
     ${s.open ? raw('</a>') : raw('</span>')}
     <details class="gl-menu"><summary aria-label="${t('grammarLab.topic.options', { topic: tp.title })}"><span aria-hidden="true">⋯</span></summary>
@@ -178,7 +185,10 @@ export function learnCard({ t, staff = false, done = 0, total = 0, begun = false
 }
 
 /** A topic's practice: every screen of the flow, shown one at a time by public/js/grammar-lab.js. */
-export function practicePage({ t, p, tp, data, guest }) {
+export function practicePage({ t, p, tp, data, guest, listen = false }) {
+  // K-2 read-aloud (only when the English voice is on: routes/grammar-lab.js voiceOn): a listen button for the question
+  // and one in the hint, shown by public/js/grammar-lab.js when this device uses the AI voice
+  const say = (id, label) => (listen ? html`<button type="button" class="btn btn-sm gl-say" id="${id}" hidden aria-pressed="false"><span aria-hidden="true">🔊</span> <span class="lbl">${label}</span></button>` : '');
   const tipWord = t('grammarLab.glossaryWord.adjective');
   // the counts the intro, the header and the mastery screen all say the same way: N questions, plus one for each miss
   const per = tp.levels.every(n => n === tp.levels[0]) ? tp.levels[0] : null;
@@ -187,7 +197,7 @@ export function practicePage({ t, p, tp, data, guest }) {
   return html`<div class="gl gl-practice ${bandClass(p.band)}" data-band="${p.band}">
     <header class="gl-qhead">
       <a class="gl-qback" href="${unitHref(p)}" aria-label="${t('grammarLab.backTo', { unit: p.title })}"><span class="flip" aria-hidden="true">←</span></a>
-      <div class="gl-qtitle"><span class="gl-qunit"${en}>${p.title}</span><span class="gl-qtopic"${en}>${tp.title}</span></div>
+      <div class="gl-qtitle"><span class="gl-qunit"${en}>${p.title}</span><span class="gl-qtopic" id="gl-qtopic"${en}>${tp.title}</span></div>
       <span class="gl-dots" id="gl-dots" role="img" aria-label="" hidden><i></i><i></i><i></i></span>
       <button type="button" class="btn btn-sm gl-hbtn" id="gl-levels-btn" aria-haspopup="dialog" hidden></button>
       <button type="button" class="btn btn-sm gl-hbtn gl-ibtn" id="gl-tip-btn" aria-label="${t('grammarLab.practice.tip')}" title="${t('grammarLab.practice.tip')}"><span aria-hidden="true">?</span></button>
@@ -203,16 +213,17 @@ export function practicePage({ t, p, tp, data, guest }) {
     <section class="gl-screen gl-welcome" id="gl-welcome" hidden aria-labelledby="gl-welcome-h">
       <button type="button" class="btn btn-ghost btn-sm gl-skip" id="gl-skip">${t('grammarLab.welcome.skip')}</button>
       <div class="gl-welcome-art"><div class="gl-stage gl-stage-door" id="gl-door"></div><div class="gl-stage gl-stage-greet" id="gl-greet"></div></div>
-      <h1 id="gl-welcome-h">${t('grammarLab.welcome.heading', { topic: tp.title })}</h1>
+      <h1 id="gl-welcome-h">${tIn(t, 'grammarLab.welcome.heading', { topic: tp.title }, 'topic')}</h1>
       <p class="gl-lead gl-rule" id="gl-rule">${per ? t('grammarLab.welcome.rule', { per }) : t('grammarLab.levels.rule')}</p>
       <p class="gl-count" id="gl-count">${t('grammarLab.welcome.count', { total })}</p>
       <button type="button" class="btn btn-primary btn-big" id="gl-go">${t('grammarLab.welcome.go')}</button>
     </section>
 
-    <section class="gl-screen gl-quiz" id="gl-quiz" hidden aria-label="${tp.title}">
+    <section class="gl-screen gl-quiz" id="gl-quiz" hidden aria-labelledby="gl-qtopic">
       <p class="gl-again" id="gl-again" hidden></p>
       <div class="gl-qtop"><p class="gl-ask" id="gl-ask"${en}></p>
         <p class="gl-streak" id="gl-streak"><span class="gl-pips" aria-hidden="true"><i></i><i></i></span><span class="gl-streak-t" id="gl-streak-t"></span></p></div>
+      ${say('gl-say', t('grammarLab.practice.listen'))}
       <p class="gl-prompt" id="gl-prompt" hidden${en}></p>
       <div class="gl-chips" id="gl-chips" role="radiogroup" aria-label="${t('grammarLab.practice.chips')}" hidden></div>
       <p class="gl-sentence" id="gl-sentence"${en}></p>
@@ -223,6 +234,7 @@ export function practicePage({ t, p, tp, data, guest }) {
       <aside class="gl-hint" id="gl-hint" hidden aria-labelledby="gl-hint-h">
         <p class="gl-hint-h" id="gl-hint-h">${t('grammarLab.practice.hintTitle')}</p>
         <p class="gl-hint-text" id="gl-hint-text"${en}></p>
+        ${say('gl-hint-say', t('grammarLab.practice.listenHint'))}
         ${cardBody(t, tp, { small: true })}
       </aside>
       <div class="gl-actions">
@@ -248,13 +260,13 @@ export function practicePage({ t, p, tp, data, guest }) {
 
     <section class="gl-screen gl-done" id="gl-done" hidden aria-labelledby="gl-done-h">
       <div class="gl-stage gl-stage-mastery" id="gl-mastery"></div>
-      <p class="gl-done-where"${en}>${p.title} · ${tp.title}</p>
-      <h1 id="gl-done-h">${t('grammarLab.done.heading', { topic: tp.title })}</h1>
+      <p class="gl-done-where"${en}>${p.title}&nbsp;· ${tp.title}</p>
+      <h1 id="gl-done-h">${tIn(t, 'grammarLab.done.heading', { topic: tp.title }, 'topic')}</h1>
       <p class="gl-lead" id="gl-done-n"></p>
       <p class="gl-done-acc" id="gl-done-acc" hidden></p>
-      <p class="gl-done-also muted" id="gl-done-also"${also.length ? '' : raw(' hidden')}>${also.length ? t('grammarLab.topic.also', { units: also.join(', ') }) : ''}</p>
+      <p class="gl-done-also muted" id="gl-done-also"${also.length ? '' : raw(' hidden')}>${also.length ? tIn(t, 'grammarLab.topic.also', { units: also.join(', ') }, 'units') : ''}</p>
       ${guest ? guestBox(t, topicHref(p, tp.id), { id: 'gl-done-guest', hidden: true, won: true }) : ''}
-      <p class="gl-done-go"><a class="btn btn-primary btn-big" id="gl-done-back" href="${unitHref(p)}">${t('grammarLab.done.back', { unit: p.title })}</a>
+      <p class="gl-done-go"><a class="btn btn-primary btn-big" id="gl-done-back" href="${unitHref(p)}">${tIn(t, 'grammarLab.done.back', { unit: p.title }, 'unit')}</a>
         <a class="btn gl-done-next" id="gl-done-next" href="#" hidden><span class="gl-next-k">${t('grammarLab.done.nextLabel')}</span><span class="gl-next-t"${en}></span></a>
         <a class="btn" id="gl-done-room" href="#" hidden>${t('grammarLab.room.open')}</a></p>
     </section>

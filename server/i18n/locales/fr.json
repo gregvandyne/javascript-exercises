@@ -16335,7 +16335,7 @@
       "noStudents": "Pas encore d'élèves dans cette classe.",
       "noneFit": "Aucune unité ne correspond à ces filtres.",
       "counts": "Élèves",
-      "count": "{mastered} maîtrisé · {started} en cours",
+      "count": "{mastered} maîtrisé · {started} en cours",
       "studentTitle": "{name} dans Grammar Lab",
       "placeH": "Niveaux de départ",
       "placeTeacher": "Niveaux {grades}, choisis par un enseignant.",
@@ -16405,7 +16405,9 @@
       "levelNext": "Niveau suivant",
       "fixLabel": "Corrige la phrase ici",
       "chips": "Signes à placer",
-      "asIs": "C’est juste tel quel"
+      "asIs": "C’est juste tel quel",
+      "listen": "Lis-moi la question",
+      "listenHint": "Lis-moi l’indice"
     },
     "levels": {
       "heading": "Niveaux et maîtrise",
@@ -16482,9 +16484,9 @@
     },
     "loading": "Préparation de ta leçon",
     "progress": {
-      "band": "{mastered} maîtrisés · {started} en cours",
+      "band": "{mastered} maîtrisés · {started} en cours",
       "unit": "{started} en cours",
-      "unitHead": "{mastered} sur {total} maîtrisés · {started} en cours"
+      "unitHead": "{mastered} sur {total} maîtrisés · {started} en cours"
     }
   }
 }

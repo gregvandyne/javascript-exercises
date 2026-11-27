@@ -16335,7 +16335,7 @@
       "noStudents": "このクラスにはまだ生徒がいません。",
       "noneFit": "この条件に合うユニットはありません。",
       "counts": "生徒",
-      "count": "マスター {mastered} · とちゅう {started}",
+      "count": "マスター {mastered} · とちゅう {started}",
       "studentTitle": "Grammar Lab の {name}",
       "placeH": "スタートの学年",
       "placeTeacher": "{grades} 年生、先生がえらびました。",
@@ -16405,7 +16405,9 @@
       "levelNext": "次のレベルへ",
       "fixLabel": "ここで文をなおそう",
       "chips": "入れる記号",
-      "asIs": "このままで正しい"
+      "asIs": "このままで正しい",
+      "listen": "問題を読んで",
+      "listenHint": "ヒントを読んで"
     },
     "levels": {
       "heading": "レベルとマスター",
@@ -16482,9 +16484,9 @@
     },
     "loading": "レッスンを準備中",
     "progress": {
-      "band": "マスター {mastered} · とちゅう {started}",
+      "band": "マスター {mastered} · とちゅう {started}",
       "unit": "とちゅう {started}",
-      "unitHead": "マスター {mastered} / {total} · とちゅう {started}"
+      "unitHead": "マスター {mastered} / {total} · とちゅう {started}"
     }
   }
 }

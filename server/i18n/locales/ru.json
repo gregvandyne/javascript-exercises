@@ -16335,7 +16335,7 @@
       "noStudents": "В этом классе пока нет учеников.",
       "noneFit": "Под эти фильтры не подходит ни один раздел.",
       "counts": "Ученики",
-      "count": "освоили: {mastered} · в процессе: {started}",
+      "count": "освоили: {mastered} · в процессе: {started}",
       "studentTitle": "{name} в Grammar Lab",
       "placeH": "Стартовые классы",
       "placeTeacher": "Классы {grades}, выбрал учитель.",
@@ -16405,7 +16405,9 @@
       "levelNext": "Следующий уровень",
       "fixLabel": "Исправь предложение здесь",
       "chips": "Знаки для вставки",
-      "asIs": "Здесь всё верно"
+      "asIs": "Здесь всё верно",
+      "listen": "Прочитай мне вопрос",
+      "listenHint": "Прочитай мне подсказку"
     },
     "levels": {
       "heading": "Уровни и освоение",
@@ -16482,9 +16484,9 @@
     },
     "loading": "Готовим твой урок",
     "progress": {
-      "band": "освоили: {mastered} · в процессе: {started}",
+      "band": "освоили: {mastered} · в процессе: {started}",
       "unit": "в процессе: {started}",
-      "unitHead": "освоили: {mastered} из {total} · в процессе: {started}"
+      "unitHead": "освоили: {mastered} из {total} · в процессе: {started}"
     }
   }
 }
