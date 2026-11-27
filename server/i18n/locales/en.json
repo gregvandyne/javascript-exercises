@@ -5471,6 +5471,69 @@
             "ask": "Take “{title}” off {class}?",
             "done": "Took “{title}” off {class}."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Students will see this: the game opens for the class.",
+            "end": "The game ends on every screen in it."
+          },
+          "host": {
+            "ask": "Start a live game for {class}?",
+            "what": "{count, plural, one {# ready question} other {# ready questions}} from the question bank.",
+            "done": "The live game for {class} is open: students join from their class page.",
+            "open": "Open the host screen"
+          },
+          "end": {
+            "ask": "End the live game “{title}”?",
+            "players": "{count, plural, =0 {Nobody has joined yet.} one {# player is in it.} other {# players are in it.}}",
+            "done": "Ended the live game “{title}”.",
+            "results": "See the results"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Students will see this on their screens.",
+            "off": "It goes from the students' screens."
+          },
+          "timer": {
+            "startAsk": "Start the timer on the {class} dashboard?",
+            "pauseAsk": "Pause the timer on the {class} dashboard?",
+            "resetAsk": "Reset the timer on the {class} dashboard?",
+            "startDone": "The timer on the {class} dashboard is running.",
+            "pauseDone": "Paused the timer on the {class} dashboard.",
+            "resetDone": "Reset the timer on the {class} dashboard.",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "eyes": {
+            "onAsk": "Turn on Eyes up for {class}?",
+            "offAsk": "Turn off Eyes up for {class}?",
+            "lasts": "It ends by itself after 3 minutes.",
+            "onDone": "Eyes up is on for {class}.",
+            "offDone": "Eyes up is off for {class}."
+          },
+          "check": {
+            "ask": "Send a quick check to {class}?",
+            "done": "Sent a quick check to {class}.",
+            "thumbs": "Thumbs up, sideways or down",
+            "fist": "Fist to five",
+            "scale": "A scale from 1 to 5",
+            "choice": "Choices: {options}",
+            "endAsk": "End the quick check on the {class} dashboard?",
+            "ended": "Ended the quick check on the {class} dashboard."
+          },
+          "pick": {
+            "ask": "Pick a student at random in {class}?",
+            "only": "Only you see the name, here on this card.",
+            "done": "Picked: {name}"
+          },
+          "push": {
+            "ask": "Send “{title}” to the screens of {class}?",
+            "game": "A game",
+            "link": "A link",
+            "done": "Sent “{title}” to the screens of {class}.",
+            "endAsk": "Take “{title}” off the screens of {class}?",
+            "ended": "Took “{title}” off the screens of {class}."
+          }
         }
       }
     },

@@ -16603,6 +16603,18 @@ card and tap (assign, createClass, givePoint...). From here on every other teach
   name, grade, subject; Undo), `changeDue` (L.updateAssignment: due and open day, or "none"; Undo), `unassign` (risk
   delete; L.unassign, students' work kept; Undo is L.assign of the same lesson, which brings it back with its work).
   How-to answers for add-students and due-dates now tell the AI it can do it with doAction.
+- **Live games and the class dashboard** (`live.js`, `dashboard.js`). A live room is in memory, so `hostLive` and
+  `endLive` have `dry: false` and `check()`. `hostLive` (risk students) opens the same quick room as POST /api/live/quick:
+  the room-opening code moved to services/quick-live.js (`quickPlan`, `openQuick`), which the route and the action both
+  call; its modes are `quickModes()`, so a hidden game is never offered (Brain Board while Quest Race and Question Battle
+  are hidden). The change links the host page; Undo ends the room only while nobody has started it. `endLive` ends the
+  teacher's open room (LS.endSession, as the host page's End), no Undo. The dashboard's (routes/dash.js services, the
+  class's own teacher only): `startTimer` (optionally at some minutes) / `pauseTimer` / `resetTimer` (D.timerAction, the
+  timers of the layout on the teacher's screen, "timer 2" when there are several), `eyesUp` on or off (Undo puts it back),
+  `quickCheck` (Undo ends it) and `endCheck`, `pickName` (D.pickerAction: the name is only on the teacher's card, from the
+  student's id kept on the change; the AI is told only that one was picked), `pushToScreens` an official game that is not
+  hidden (game-focus.js gameHidden) or an approved link (Undo ends the push) and `endPush`. Params that two actions share
+  have one meaning (`title`), and no new param reuses an older one's name (`topic`, `checkKind`, `send`).
 
 ### How to add an action
 

@@ -5013,6 +5013,69 @@
             "ask": "„{title}“ aus {class} nehmen?",
             "done": "„{title}“ aus {class} genommen."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Die Kinder sehen das: Das Spiel öffnet sich für die Klasse.",
+            "end": "Das Spiel endet auf jedem Bildschirm, der dabei ist."
+          },
+          "host": {
+            "ask": "Ein Live-Spiel für {class} starten?",
+            "what": "{count, plural, one {# fertige Frage} other {# fertige Fragen}} aus der Fragensammlung.",
+            "done": "Das Live-Spiel für {class} ist offen: Die Kinder treten über ihre Klassenseite bei.",
+            "open": "Spielleitung öffnen"
+          },
+          "end": {
+            "ask": "Das Live-Spiel „{title}“ beenden?",
+            "players": "{count, plural, =0 {Noch niemand ist beigetreten.} one {# Kind spielt mit.} other {# Kinder spielen mit.}}",
+            "done": "Das Live-Spiel „{title}“ ist beendet.",
+            "results": "Ergebnisse ansehen"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Die Kinder sehen das auf ihren Bildschirmen.",
+            "off": "Es verschwindet von den Bildschirmen der Kinder."
+          },
+          "timer": {
+            "startAsk": "Den Timer auf dem Dashboard von {class} starten?",
+            "pauseAsk": "Den Timer auf dem Dashboard von {class} anhalten?",
+            "resetAsk": "Den Timer auf dem Dashboard von {class} zurücksetzen?",
+            "startDone": "Der Timer auf dem Dashboard von {class} läuft.",
+            "pauseDone": "Der Timer auf dem Dashboard von {class} ist angehalten.",
+            "resetDone": "Der Timer auf dem Dashboard von {class} ist zurückgesetzt.",
+            "minutes": "{count, plural, one {# Minute} other {# Minuten}}"
+          },
+          "eyes": {
+            "onAsk": "Augen nach vorn für {class} einschalten?",
+            "offAsk": "Augen nach vorn für {class} ausschalten?",
+            "lasts": "Es endet nach 3 Minuten von selbst.",
+            "onDone": "Augen nach vorn ist für {class} an.",
+            "offDone": "Augen nach vorn ist für {class} aus."
+          },
+          "check": {
+            "ask": "Eine schnelle Abfrage an {class} senden?",
+            "done": "Schnelle Abfrage an {class} gesendet.",
+            "thumbs": "Daumen hoch, zur Seite oder runter",
+            "fist": "Faust bis fünf",
+            "scale": "Eine Skala von 1 bis 5",
+            "choice": "Antworten: {options}",
+            "endAsk": "Die schnelle Abfrage auf dem Dashboard von {class} beenden?",
+            "ended": "Die schnelle Abfrage auf dem Dashboard von {class} ist beendet."
+          },
+          "pick": {
+            "ask": "Ein Kind aus {class} zufällig auswählen?",
+            "only": "Nur Sie sehen den Namen, hier auf dieser Karte.",
+            "done": "Ausgewählt: {name}"
+          },
+          "push": {
+            "ask": "„{title}“ an die Bildschirme von {class} senden?",
+            "game": "Ein Spiel",
+            "link": "Ein Link",
+            "done": "„{title}“ an die Bildschirme von {class} gesendet.",
+            "endAsk": "„{title}“ von den Bildschirmen von {class} nehmen?",
+            "ended": "„{title}“ von den Bildschirmen von {class} genommen."
+          }
         }
       }
     },

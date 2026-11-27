@@ -5013,6 +5013,69 @@
             "ask": "Tirar “{title}” de {class}?",
             "done": "“{title}” saiu de {class}."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Os alunos vão ver isso: o jogo abre para a turma.",
+            "end": "O jogo termina em todas as telas que estão nele."
+          },
+          "host": {
+            "ask": "Começar um jogo ao vivo para {class}?",
+            "what": "{count, plural, one {# pergunta pronta} other {# perguntas prontas}} do banco de perguntas.",
+            "done": "O jogo ao vivo de {class} está aberto: os alunos entram pela página da turma.",
+            "open": "Abrir a tela de quem conduz"
+          },
+          "end": {
+            "ask": "Encerrar o jogo ao vivo “{title}”?",
+            "players": "{count, plural, =0 {Ninguém entrou ainda.} one {Há # jogador.} other {Há # jogadores.}}",
+            "done": "O jogo ao vivo “{title}” foi encerrado.",
+            "results": "Ver os resultados"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Os alunos vão ver isso nas telas.",
+            "off": "Isso sai das telas dos alunos."
+          },
+          "timer": {
+            "startAsk": "Iniciar o timer no painel de {class}?",
+            "pauseAsk": "Pausar o timer no painel de {class}?",
+            "resetAsk": "Zerar o timer no painel de {class}?",
+            "startDone": "O timer no painel de {class} está correndo.",
+            "pauseDone": "O timer no painel de {class} foi pausado.",
+            "resetDone": "O timer no painel de {class} foi zerado.",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "eyes": {
+            "onAsk": "Ligar Olhos para a frente para {class}?",
+            "offAsk": "Desligar Olhos para a frente para {class}?",
+            "lasts": "Desliga sozinho depois de 3 minutos.",
+            "onDone": "Olhos para a frente está ligado para {class}.",
+            "offDone": "Olhos para a frente está desligado para {class}."
+          },
+          "check": {
+            "ask": "Enviar uma checagem rápida para {class}?",
+            "done": "Checagem rápida enviada para {class}.",
+            "thumbs": "Polegar para cima, de lado ou para baixo",
+            "fist": "Do punho ao cinco",
+            "scale": "Uma escala de 1 a 5",
+            "choice": "Opções: {options}",
+            "endAsk": "Encerrar a checagem rápida no painel de {class}?",
+            "ended": "A checagem rápida no painel de {class} foi encerrada."
+          },
+          "pick": {
+            "ask": "Sortear um aluno de {class}?",
+            "only": "Só você vê o nome, aqui neste cartão.",
+            "done": "Sorteado: {name}"
+          },
+          "push": {
+            "ask": "Enviar “{title}” para as telas de {class}?",
+            "game": "Um jogo",
+            "link": "Um link",
+            "done": "“{title}” enviado para as telas de {class}.",
+            "endAsk": "Tirar “{title}” das telas de {class}?",
+            "ended": "“{title}” saiu das telas de {class}."
+          }
         }
       }
     },
