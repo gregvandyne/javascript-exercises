@@ -5135,6 +5135,69 @@
             "onDone": "La vue des parents de {class} est activée.",
             "offDone": "La vue des parents de {class} est désactivée."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Les élèves verront ceci : le jeu s’ouvre pour la classe.",
+            "end": "Le jeu se termine sur tous les écrans qui y participent."
+          },
+          "host": {
+            "ask": "Lancer un jeu en direct pour {class} ?",
+            "what": "{count, plural, one {# question prête} other {# questions prêtes}} de la banque de questions.",
+            "done": "Le jeu en direct de {class} est ouvert : les élèves le rejoignent depuis la page de leur classe.",
+            "open": "Ouvrir l’écran de l’animateur"
+          },
+          "end": {
+            "ask": "Terminer le jeu en direct « {title} » ?",
+            "players": "{count, plural, =0 {Personne n’a encore rejoint.} one {# joueur y participe.} other {# joueurs y participent.}}",
+            "done": "Le jeu en direct « {title} » est terminé.",
+            "results": "Voir les résultats"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Les élèves verront ceci sur leur écran.",
+            "off": "Cela disparaît de l’écran des élèves."
+          },
+          "timer": {
+            "startAsk": "Démarrer le minuteur du tableau de bord de {class} ?",
+            "pauseAsk": "Mettre en pause le minuteur du tableau de bord de {class} ?",
+            "resetAsk": "Remettre à zéro le minuteur du tableau de bord de {class} ?",
+            "startDone": "Le minuteur du tableau de bord de {class} tourne.",
+            "pauseDone": "Le minuteur du tableau de bord de {class} est en pause.",
+            "resetDone": "Le minuteur du tableau de bord de {class} est remis à zéro.",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "eyes": {
+            "onAsk": "Activer Les yeux vers l’avant pour {class} ?",
+            "offAsk": "Désactiver Les yeux vers l’avant pour {class} ?",
+            "lasts": "Cela s’arrête tout seul après 3 minutes.",
+            "onDone": "Les yeux vers l’avant est activé pour {class}.",
+            "offDone": "Les yeux vers l’avant est désactivé pour {class}."
+          },
+          "check": {
+            "ask": "Envoyer une vérification rapide à {class} ?",
+            "done": "Vérification rapide envoyée à {class}.",
+            "thumbs": "Pouce en haut, sur le côté ou en bas",
+            "fist": "Du poing à cinq",
+            "scale": "Une échelle de 1 à 5",
+            "choice": "Choix : {options}",
+            "endAsk": "Terminer la vérification rapide du tableau de bord de {class} ?",
+            "ended": "La vérification rapide du tableau de bord de {class} est terminée."
+          },
+          "pick": {
+            "ask": "Tirer un élève au sort dans {class} ?",
+            "only": "Toi seul vois le nom, ici sur cette carte.",
+            "done": "Élève tiré au sort : {name}"
+          },
+          "push": {
+            "ask": "Envoyer « {title} » sur les écrans de {class} ?",
+            "game": "Un jeu",
+            "link": "Un lien",
+            "done": "« {title} » envoyé sur les écrans de {class}.",
+            "endAsk": "Retirer « {title} » des écrans de {class} ?",
+            "ended": "« {title} » retiré des écrans de {class}."
+          }
         }
       }
     },

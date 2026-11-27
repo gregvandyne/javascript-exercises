@@ -5135,6 +5135,69 @@
             "onDone": "{class} 的家長檢視已開啟。",
             "offDone": "{class} 的家長檢視已關閉。"
           }
+        },
+        "live": {
+          "warn": {
+            "host": "學生會看到這個：遊戲會為班級開啟。",
+            "end": "遊戲會在所有參與的畫面上結束。"
+          },
+          "host": {
+            "ask": "要為 {class} 開始即時遊戲嗎？",
+            "what": "來自題庫的 {count} 道現成題目。",
+            "done": "{class} 的即時遊戲已開啟：學生從班級頁面加入。",
+            "open": "開啟主持人畫面"
+          },
+          "end": {
+            "ask": "要結束即時遊戲「{title}」嗎？",
+            "players": "{count, plural, =0 {還沒有人加入。} other {有 # 位玩家在遊戲中。}}",
+            "done": "已結束即時遊戲「{title}」。",
+            "results": "查看結果"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "學生會在畫面上看到這個。",
+            "off": "這會從學生的畫面上移除。"
+          },
+          "timer": {
+            "startAsk": "要啟動 {class} 儀表板上的計時器嗎？",
+            "pauseAsk": "要暫停 {class} 儀表板上的計時器嗎？",
+            "resetAsk": "要重設 {class} 儀表板上的計時器嗎？",
+            "startDone": "{class} 儀表板上的計時器正在計時。",
+            "pauseDone": "已暫停 {class} 儀表板上的計時器。",
+            "resetDone": "已重設 {class} 儀表板上的計時器。",
+            "minutes": "{count} 分鐘"
+          },
+          "eyes": {
+            "onAsk": "要為 {class} 開啟「眼睛看前面」嗎？",
+            "offAsk": "要為 {class} 關閉「眼睛看前面」嗎？",
+            "lasts": "3 分鐘後會自動結束。",
+            "onDone": "{class} 的「眼睛看前面」已開啟。",
+            "offDone": "{class} 的「眼睛看前面」已關閉。"
+          },
+          "check": {
+            "ask": "要傳送快速檢核給 {class} 嗎？",
+            "done": "已傳送快速檢核給 {class}。",
+            "thumbs": "大拇指向上、向旁或向下",
+            "fist": "從拳頭到五根手指",
+            "scale": "1 到 5 的量表",
+            "choice": "選項：{options}",
+            "endAsk": "要結束 {class} 儀表板上的快速檢核嗎？",
+            "ended": "已結束 {class} 儀表板上的快速檢核。"
+          },
+          "pick": {
+            "ask": "要從 {class} 隨機抽一位學生嗎？",
+            "only": "只有你看得到名字，就在這張卡片上。",
+            "done": "抽到：{name}"
+          },
+          "push": {
+            "ask": "要把「{title}」傳到 {class} 的畫面嗎？",
+            "game": "遊戲",
+            "link": "連結",
+            "done": "已把「{title}」傳到 {class} 的畫面。",
+            "endAsk": "要把「{title}」從 {class} 的畫面移除嗎？",
+            "ended": "已把「{title}」從 {class} 的畫面移除。"
+          }
         }
       }
     },

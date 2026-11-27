@@ -5136,6 +5136,69 @@
             "onDone": "De oudersweergave van {class} staat aan.",
             "offDone": "De oudersweergave van {class} staat uit."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Leerlingen zien dit: het spel gaat open voor de klas.",
+            "end": "Het spel stopt op elk scherm dat meedoet."
+          },
+          "host": {
+            "ask": "Een livespel starten voor {class}?",
+            "what": "{count, plural, one {# kant-en-klare vraag} other {# kant-en-klare vragen}} uit de vragenbank.",
+            "done": "Het livespel voor {class} is open: leerlingen doen mee via hun klaspagina.",
+            "open": "Het scherm voor de spelleider openen"
+          },
+          "end": {
+            "ask": "Het livespel “{title}” stoppen?",
+            "players": "{count, plural, =0 {Er doet nog niemand mee.} one {Er doet # speler mee.} other {Er doen # spelers mee.}}",
+            "done": "Het livespel “{title}” is gestopt.",
+            "results": "De uitslag bekijken"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Leerlingen zien dit op hun scherm.",
+            "off": "Het verdwijnt van de schermen van de leerlingen."
+          },
+          "timer": {
+            "startAsk": "De timer op het dashboard van {class} starten?",
+            "pauseAsk": "De timer op het dashboard van {class} pauzeren?",
+            "resetAsk": "De timer op het dashboard van {class} terugzetten?",
+            "startDone": "De timer op het dashboard van {class} loopt.",
+            "pauseDone": "De timer op het dashboard van {class} is gepauzeerd.",
+            "resetDone": "De timer op het dashboard van {class} is teruggezet.",
+            "minutes": "{count, plural, one {# minuut} other {# minuten}}"
+          },
+          "eyes": {
+            "onAsk": "Ogen naar voren aanzetten voor {class}?",
+            "offAsk": "Ogen naar voren uitzetten voor {class}?",
+            "lasts": "Het gaat na 3 minuten vanzelf uit.",
+            "onDone": "Ogen naar voren staat aan voor {class}.",
+            "offDone": "Ogen naar voren staat uit voor {class}."
+          },
+          "check": {
+            "ask": "Een snelle check sturen naar {class}?",
+            "done": "Snelle check gestuurd naar {class}.",
+            "thumbs": "Duim omhoog, opzij of omlaag",
+            "fist": "Vuist tot vijf",
+            "scale": "Een schaal van 1 tot 5",
+            "choice": "Keuzes: {options}",
+            "endAsk": "De snelle check op het dashboard van {class} stoppen?",
+            "ended": "De snelle check op het dashboard van {class} is gestopt."
+          },
+          "pick": {
+            "ask": "Willekeurig een leerling kiezen in {class}?",
+            "only": "Alleen jij ziet de naam, hier op deze kaart.",
+            "done": "Gekozen: {name}"
+          },
+          "push": {
+            "ask": "“{title}” naar de schermen van {class} sturen?",
+            "game": "Een spel",
+            "link": "Een link",
+            "done": "“{title}” naar de schermen van {class} gestuurd.",
+            "endAsk": "“{title}” van de schermen van {class} halen?",
+            "ended": "“{title}” van de schermen van {class} gehaald."
+          }
         }
       }
     },

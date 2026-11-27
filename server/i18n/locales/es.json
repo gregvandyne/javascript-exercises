@@ -5135,6 +5135,69 @@
             "onDone": "La vista de familias de {class} está activada.",
             "offDone": "La vista de familias de {class} está desactivada."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Los estudiantes verán esto: el juego se abre para la clase.",
+            "end": "El juego termina en todas las pantallas que están en él."
+          },
+          "host": {
+            "ask": "¿Empezar un juego en vivo para {class}?",
+            "what": "{count, plural, one {# pregunta lista} other {# preguntas listas}} del banco de preguntas.",
+            "done": "El juego en vivo de {class} está abierto: los estudiantes entran desde la página de su clase.",
+            "open": "Abrir la pantalla del anfitrión"
+          },
+          "end": {
+            "ask": "¿Terminar el juego en vivo «{title}»?",
+            "players": "{count, plural, =0 {Todavía no ha entrado nadie.} one {Hay # jugador.} other {Hay # jugadores.}}",
+            "done": "Terminó el juego en vivo «{title}».",
+            "results": "Ver los resultados"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Los estudiantes verán esto en sus pantallas.",
+            "off": "Desaparece de las pantallas de los estudiantes."
+          },
+          "timer": {
+            "startAsk": "¿Iniciar el temporizador del panel de {class}?",
+            "pauseAsk": "¿Pausar el temporizador del panel de {class}?",
+            "resetAsk": "¿Reiniciar el temporizador del panel de {class}?",
+            "startDone": "El temporizador del panel de {class} está en marcha.",
+            "pauseDone": "Se pausó el temporizador del panel de {class}.",
+            "resetDone": "Se reinició el temporizador del panel de {class}.",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "eyes": {
+            "onAsk": "¿Activar Ojos al frente para {class}?",
+            "offAsk": "¿Desactivar Ojos al frente para {class}?",
+            "lasts": "Se apaga solo a los 3 minutos.",
+            "onDone": "Ojos al frente está activado para {class}.",
+            "offDone": "Ojos al frente está desactivado para {class}."
+          },
+          "check": {
+            "ask": "¿Enviar una comprobación rápida a {class}?",
+            "done": "Se envió una comprobación rápida a {class}.",
+            "thumbs": "Pulgar arriba, de lado o abajo",
+            "fist": "Del puño a cinco",
+            "scale": "Una escala del 1 al 5",
+            "choice": "Opciones: {options}",
+            "endAsk": "¿Terminar la comprobación rápida del panel de {class}?",
+            "ended": "Terminó la comprobación rápida del panel de {class}."
+          },
+          "pick": {
+            "ask": "¿Elegir a un estudiante al azar en {class}?",
+            "only": "Solo tú ves el nombre, aquí en esta tarjeta.",
+            "done": "Elegido: {name}"
+          },
+          "push": {
+            "ask": "¿Enviar «{title}» a las pantallas de {class}?",
+            "game": "Un juego",
+            "link": "Un enlace",
+            "done": "Se envió «{title}» a las pantallas de {class}.",
+            "endAsk": "¿Quitar «{title}» de las pantallas de {class}?",
+            "ended": "Se quitó «{title}» de las pantallas de {class}."
+          }
         }
       }
     },

@@ -5136,6 +5136,69 @@
             "onDone": "La vista genitori di {class} è attiva.",
             "offDone": "La vista genitori di {class} è disattivata."
           }
+        },
+        "live": {
+          "warn": {
+            "host": "Gli studenti lo vedranno: il gioco si apre per la classe.",
+            "end": "Il gioco finisce su tutti gli schermi collegati."
+          },
+          "host": {
+            "ask": "Avviare un gioco dal vivo per {class}?",
+            "what": "{count, plural, one {# domanda pronta} other {# domande pronte}} dalla banca delle domande.",
+            "done": "Il gioco dal vivo di {class} è aperto: gli studenti entrano dalla pagina della loro classe.",
+            "open": "Apri lo schermo di chi conduce"
+          },
+          "end": {
+            "ask": "Chiudere il gioco dal vivo “{title}”?",
+            "players": "{count, plural, =0 {Non è ancora entrato nessuno.} one {C’è # giocatore.} other {Ci sono # giocatori.}}",
+            "done": "Il gioco dal vivo “{title}” è chiuso.",
+            "results": "Vedi i risultati"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Gli studenti lo vedranno sui loro schermi.",
+            "off": "Sparisce dagli schermi degli studenti."
+          },
+          "timer": {
+            "startAsk": "Avviare il timer sulla dashboard di {class}?",
+            "pauseAsk": "Mettere in pausa il timer sulla dashboard di {class}?",
+            "resetAsk": "Azzerare il timer sulla dashboard di {class}?",
+            "startDone": "Il timer sulla dashboard di {class} è partito.",
+            "pauseDone": "Il timer sulla dashboard di {class} è in pausa.",
+            "resetDone": "Il timer sulla dashboard di {class} è azzerato.",
+            "minutes": "{count, plural, one {# minuto} other {# minuti}}"
+          },
+          "eyes": {
+            "onAsk": "Attivare Occhi qui per {class}?",
+            "offAsk": "Disattivare Occhi qui per {class}?",
+            "lasts": "Si spegne da solo dopo 3 minuti.",
+            "onDone": "Occhi qui è attivo per {class}.",
+            "offDone": "Occhi qui è spento per {class}."
+          },
+          "check": {
+            "ask": "Inviare una verifica veloce a {class}?",
+            "done": "Verifica veloce inviata a {class}.",
+            "thumbs": "Pollice su, di lato o giù",
+            "fist": "Dal pugno al cinque",
+            "scale": "Una scala da 1 a 5",
+            "choice": "Scelte: {options}",
+            "endAsk": "Chiudere la verifica veloce sulla dashboard di {class}?",
+            "ended": "La verifica veloce sulla dashboard di {class} è chiusa."
+          },
+          "pick": {
+            "ask": "Estrarre a sorte uno studente di {class}?",
+            "only": "Solo tu vedi il nome, qui su questa scheda.",
+            "done": "Estratto: {name}"
+          },
+          "push": {
+            "ask": "Inviare “{title}” agli schermi di {class}?",
+            "game": "Un gioco",
+            "link": "Un link",
+            "done": "“{title}” inviato agli schermi di {class}.",
+            "endAsk": "Togliere “{title}” dagli schermi di {class}?",
+            "ended": "“{title}” tolto dagli schermi di {class}."
+          }
         }
       }
     },
