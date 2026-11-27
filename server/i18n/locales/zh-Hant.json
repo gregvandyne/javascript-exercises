@@ -4436,7 +4436,8 @@
       "boardOf": "{tool} 板",
       "liveRoom": "直播教室",
       "greetLine": "告訴我你想在這個{tool}板子上做什麼課。",
-      "greetLineHas": "告訴我要改你{tool}板子上的什麼。"
+      "greetLineHas": "告訴我要改你{tool}板子上的什麼。",
+      "notYet": "還沒放到你的板上。"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4645,7 +4646,9 @@
         "book_repaint": "已要求重新繪製「{q}」",
         "week": "已擬好一週計畫（{n} 天）",
         "needs": "看了「需要關心」({n})",
-        "needsNo": "無法打開「需要關心」"
+        "needsNo": "無法打開「需要關心」",
+        "assign": "準備好指派讓你確認",
+        "assignNo": "無法指派"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4779,6 +4782,19 @@
         "denied": "在你的學校，只有學校管理員可以建立班級。",
         "done": "已建立班級 {name}，目前還沒有學生。",
         "openDash": "開啟它的儀表板"
+      },
+      "asg": {
+        "which": "要指派給哪個班？",
+        "ask": "要把「{title}」指派給 {class} 嗎？",
+        "all": "全班",
+        "some": "{count} 位學生",
+        "due": "截止：{day}",
+        "assign": "指派",
+        "notNow": "先不要",
+        "assigned": "已指派",
+        "declined": "未指派",
+        "done": "已把「{title}」指派給 {class}。",
+        "open": "查看班上的遊戲"
       },
       "book": {
         "adding": "正在加入你的書",

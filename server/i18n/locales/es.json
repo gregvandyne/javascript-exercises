@@ -4436,7 +4436,8 @@
       "boardOf": "Tablero de {tool}",
       "liveRoom": "Sala en vivo",
       "greetLine": "Dime qué clase quieres en este tablero de {tool}.",
-      "greetLineHas": "Dime qué cambio en tu tablero de {tool}."
+      "greetLineHas": "Dime qué cambio en tu tablero de {tool}.",
+      "notYet": "Todavía no está en tu tablero."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4645,7 +4646,9 @@
         "book_repaint": "Pidió volver a pintar «{q}»",
         "week": "Plan semanal preparado ({n} días)",
         "needs": "Miré Revisar ({n})",
-        "needsNo": "No pude abrir Revisar"
+        "needsNo": "No pude abrir Revisar",
+        "assign": "Preparé una asignación para que la revises",
+        "assignNo": "No se pudo asignar"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4779,6 +4782,19 @@
         "denied": "En tu escuela solo un administrador puede crear clases.",
         "done": "Clase {name} creada. Aún no tiene estudiantes.",
         "openDash": "Abrir su panel"
+      },
+      "asg": {
+        "which": "¿Para qué clase es?",
+        "ask": "¿Asignar «{title}» a {class}?",
+        "all": "Toda la clase",
+        "some": "{count, plural, one {# estudiante} other {# estudiantes}}",
+        "due": "Entrega: {day}",
+        "assign": "Asignar",
+        "notNow": "Ahora no",
+        "assigned": "Asignado",
+        "declined": "No asignado",
+        "done": "«{title}» asignado a {class}.",
+        "open": "Ver los juegos de la clase"
       },
       "book": {
         "adding": "Añadiendo a tu libro",

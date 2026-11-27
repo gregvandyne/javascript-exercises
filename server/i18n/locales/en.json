@@ -4794,6 +4794,7 @@
       "changed": "{n, plural, one {# problem} other {# problems}}, {steps, plural, one {# step} other {# steps}}",
       "undoneTitle": "Change undone. Your board is as it was.",
       "notPut": "This couldn’t be put on your board, so nothing changed. Try again.",
+      "notYet": "Not on your board yet.",
       "undo": "Undo Oomba’s change",
       "redo": "Put it back",
       "use": "Put it on my board",
@@ -5056,7 +5057,9 @@
         "simplerNo": "Couldn't save that wording",
         "week": "Drafted a week plan ({n} days)",
         "needs": "Looked at Needs a look ({n})",
-        "needsNo": "Couldn't open Needs a look"
+        "needsNo": "Couldn't open Needs a look",
+        "assign": "Got an assignment ready for you to check",
+        "assignNo": "Couldn't assign that"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5196,6 +5199,19 @@
         "denied": "At your school only a school admin can make classes.",
         "done": "Made the class {name}. It has no students yet.",
         "openDash": "Open its dashboard"
+      },
+      "asg": {
+        "which": "Which class is it for?",
+        "ask": "Assign “{title}” to {class}?",
+        "all": "The whole class",
+        "some": "{count, plural, one {# student} other {# students}}",
+        "due": "Due {day}",
+        "assign": "Assign",
+        "notNow": "Not now",
+        "assigned": "Assigned",
+        "declined": "Not assigned",
+        "done": "Assigned “{title}” to {class}.",
+        "open": "See the class's games"
       },
       "book": {
         "adding": "Adding to your book",

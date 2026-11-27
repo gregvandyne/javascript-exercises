@@ -163,8 +163,13 @@ test('paint again from the chat, and teachers only: a grown-up gets no book tool
     const row = SB.ownBook(u, kip);
     assert.ok(D.fallbacks(row).length > 0, 'made without the picture maker: every picture is the art pack');
     const want = D.fallbacks(row).length;
-    const ok = CO.runTool('repaintBook', { bookId: kip }, tctx(u));
-    assert.equal(ok.result.done, true); assert.equal(ok.result.queued, want);
+    const c = tctx(u), ok = CO.runTool('repaintBook', { bookId: kip }, c);
+    // checked in a dry run: what would be queued, never "done"; nothing is queued until the answer is saved
+    assert.equal(ok.result.done, undefined); assert.equal(ok.result.queued, want); assert.equal(ok.result.painted, 0);
+    assert.match(ok.result.note, /not painted yet/);
+    assert.equal(D.fallbacks(SB.ownBook(u, kip)).length, want, 'nothing queued by the tool itself');
+    const real = c.out.later.run();   // what the answer's apply() runs, in the engine's transaction
+    assert.equal(real.ok, true); assert.equal(real.result.queued, want);
     await D.settle(); await new Promise(res => setTimeout(res, 30)); await D.settle();
     assert.ok(fake.calls.length >= 1);
   } finally { G.hooks.generate = null; D.hooks.screenImage = null; }

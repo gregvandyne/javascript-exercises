@@ -4437,7 +4437,8 @@
       "boardOf": "Quadro de {tool}",
       "liveRoom": "Sala ao vivo",
       "greetLine": "Me diga a aula que você quer neste quadro de {tool}.",
-      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}."
+      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}.",
+      "notYet": "Ainda não está no seu quadro."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4646,7 +4647,9 @@
         "book_repaint": "Pediu para pintar “{q}” de novo",
         "week": "Plano da semana preparado ({n} dias)",
         "needs": "Olhei Dar uma olhada ({n})",
-        "needsNo": "Não consegui abrir Dar uma olhada"
+        "needsNo": "Não consegui abrir Dar uma olhada",
+        "assign": "Preparei uma atribuição para você conferir",
+        "assignNo": "Não foi possível atribuir"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4780,6 +4783,19 @@
         "denied": "Na sua escola, só um administrador pode criar turmas.",
         "done": "Turma {name} criada. Ainda não tem alunos.",
         "openDash": "Abrir o painel dela"
+      },
+      "asg": {
+        "which": "Para qual turma?",
+        "ask": "Atribuir “{title}” a {class}?",
+        "all": "A turma toda",
+        "some": "{count, plural, one {# aluno} other {# alunos}}",
+        "due": "Prazo: {day}",
+        "assign": "Atribuir",
+        "notNow": "Agora não",
+        "assigned": "Atribuído",
+        "declined": "Não atribuído",
+        "done": "“{title}” atribuído a {class}.",
+        "open": "Ver os jogos da turma"
       },
       "book": {
         "adding": "Adicionando ao seu livro",

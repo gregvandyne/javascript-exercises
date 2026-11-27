@@ -4437,7 +4437,8 @@
       "boardOf": "Bord {tool}",
       "liveRoom": "Live-ruimte",
       "greetLine": "Vertel welke les je op dit bord {tool} wilt.",
-      "greetLineHas": "Vertel wat ik op je bord {tool} moet aanpassen."
+      "greetLineHas": "Vertel wat ik op je bord {tool} moet aanpassen.",
+      "notYet": "Nog niet op je bord."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4646,7 +4647,9 @@
         "book_repaint": "Gevraagd om ‘{q}’ opnieuw te schilderen",
         "week": "Weekplan gemaakt ({n} dagen)",
         "needs": "Even kijken bekeken ({n})",
-        "needsNo": "Kon Even kijken niet openen"
+        "needsNo": "Kon Even kijken niet openen",
+        "assign": "Een toewijzing klaargezet om te controleren",
+        "assignNo": "Dat kon niet worden toegewezen"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4780,6 +4783,19 @@
         "denied": "Op jouw school kan alleen een schoolbeheerder klassen maken.",
         "done": "De klas {name} is gemaakt. Er zitten nog geen leerlingen in.",
         "openDash": "Het dashboard openen"
+      },
+      "asg": {
+        "which": "Voor welke klas?",
+        "ask": "“{title}” toewijzen aan {class}?",
+        "all": "De hele klas",
+        "some": "{count, plural, one {# leerling} other {# leerlingen}}",
+        "due": "Inleveren op {day}",
+        "assign": "Toewijzen",
+        "notNow": "Nu niet",
+        "assigned": "Toegewezen",
+        "declined": "Niet toegewezen",
+        "done": "“{title}” is toegewezen aan {class}.",
+        "open": "Spellen van de klas bekijken"
       },
       "book": {
         "adding": "Toevoegen aan je boek",
