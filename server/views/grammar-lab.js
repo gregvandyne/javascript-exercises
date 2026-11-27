@@ -41,9 +41,22 @@ function exampleUnit(t, u, { italic = false, tag = 'p' } = {}) {
   const inner = html`${u.lead ? html`<span class="gl-ex-lead">${u.lead}</span> ` : ''}<span class="gl-ex-text">${sent(u.text, u.marks)}</span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}${u.then ? html` <span class="gl-ex-text gl-ex-then">${sent(u.then.text, u.then.marks)}</span>${u.then.note ? html` <span class="gl-ex-note">${u.then.note}</span>` : ''}` : ''}`;
   return tag === 'li' ? html`<li class="gl-ex">${inner}</li>` : html`<p class="gl-ex">${inner}</p>`;
 }
+/** A writing topic's card (grades 3-5 up): three sections, each with its guiding question, a worked passage with the
+ *  sentence that does the job highlighted, and a note on how it works. small: the hint's short form (questions and notes). */
+function sectionsBody(t, c, small) {
+  return html`<div class="gl-card-body gl-sections${small ? ' gl-card-small' : ''}"${en}>
+    ${c.sections.map((x, i) => html`<section class="gl-section" aria-labelledby="gl-sec-${small ? 'h' : 'c'}${i}">
+      <h2 class="gl-section-h" id="gl-sec-${small ? 'h' : 'c'}${i}"><span class="gl-section-n" aria-hidden="true">${i + 1}</span> ${x.title}</h2>
+      <p class="gl-guide"><span class="gl-label">${t('grammarLab.card.question')}</span> ${x.question}</p>
+      ${small ? '' : html`<p class="gl-passage">${x.passage.map((y, k) => html`${k ? ' ' : ''}${y.label ? html`<span class="gl-ex-lead">${y.label}:</span> ` : ''}${y.hl ? html`<mark class="gl-hl">${y.text}</mark>` : y.text}`)}</p>`}
+      <p class="gl-how">${x.note}</p>
+    </section>`)}
+  </div>`;
+}
 /** The teaching card's body (the card page and the hint's small card share it). small: the hint's short form. */
 export function cardBody(t, tp, { small = false } = {}) {
   const c = tp.card, italic = !!tp.italic;
+  if (c.sections) return sectionsBody(t, c, small);
   return html`<div class="gl-card-body${small ? ' gl-card-small' : ''}"${en}>
     <p class="gl-def">${c.definition}</p>
     ${c.example ? html`<div class="gl-example"><p class="gl-label">${t('grammarLab.card.example')}</p>
@@ -111,7 +124,7 @@ function tile(t, p, s, i) {
         ${item(topicHref(p, id, 'card'), t('grammarLab.topic.card'), false)}
         ${item(`${topicHref(p, id)}?again=1`, t('grammarLab.topic.again'), after)}
         ${item(topicHref(p, id, 'review'), t('grammarLab.topic.review'), after)}
-        ${s.room ? item(GL.roomHref(p.id, id), t('grammarLab.room.open'), !s.open, 'grammarLab.room.locked') : ''}
+        ${s.room ? item(GL.roomHref(p.id, id, p.band), t('grammarLab.room.open'), !s.open, 'grammarLab.room.locked') : ''}
       </div></details>
   </li>`;
 }
@@ -142,7 +155,10 @@ export function practicePage({ t, p, tp, data, guest }) {
     <section class="gl-screen gl-quiz" id="gl-quiz" hidden aria-label="${tp.title}">
       <div class="gl-qtop"><p class="gl-ask" id="gl-ask"${en}></p>
         <p class="gl-streak" id="gl-streak"><span class="gl-pips" aria-hidden="true"><i></i><i></i></span><span class="gl-streak-t" id="gl-streak-t"></span></p></div>
+      <p class="gl-prompt" id="gl-prompt" hidden${en}></p>
       <p class="gl-sentence" id="gl-sentence"${en}></p>
+      <div class="gl-fixbox" id="gl-fixbox" hidden><label class="gl-label" for="gl-fix">${t('grammarLab.practice.fixLabel')}</label>
+        <textarea class="gl-fix" id="gl-fix" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"${en}></textarea></div>
       <div class="gl-options" id="gl-options" role="radiogroup" aria-labelledby="gl-ask" hidden${en}></div>
       <div class="gl-notice" id="gl-notice" role="status" aria-live="polite" hidden></div>
       <div class="gl-actions">
@@ -230,7 +246,7 @@ export function reviewPage({ t, p, tp, list }) {
     <p class="gl-crumb"><a href="${unitHref(p)}"${en}>${p.title}</a></p>
     <h1>${t('grammarLab.review.heading')}</h1><p class="muted"${en}>${tp.title}</p>
     ${list.length ? html`<ol class="gl-review">${list.map(r => html`<li class="${r.ok ? 'gl-ok' : 'gl-fixed'}">
-      <p class="gl-ex-text"${en}>${r.italic ? italicIn(r.text, r.italic) : marked(r.text, r.marks, t)}</p>
+      <p class="gl-ex-text"${en}>${r.italic ? italicIn(r.text, r.italic) : marked(r.text, r.marks, t)}${r.note ? html` <span class="gl-badge"${en}>${r.note}</span>` : ''}</p>
       <p class="gl-review-s">${t(r.ok ? 'grammarLab.review.firstTry' : 'grammarLab.review.fixed')}</p></li>`)}</ol>`
       : html`<p>${t('grammarLab.review.none')}</p>`}
   </div>`;

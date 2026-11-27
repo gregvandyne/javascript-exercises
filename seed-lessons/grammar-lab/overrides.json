@@ -1,4 +1,10 @@
 {
-  "_about": "Per-item notes for scripts/grammar-lab-build.js where the source text alone does not say enough, keyed by topic id, then item number: { \"format\": ..., \"answer\": ... }. Empty while every item reads cleanly.",
-  "topics": {}
+  "_about": "Per-item and per-card notes for scripts/grammar-lab-build.js where the source text alone does not say enough, keyed by topic id. An item number holds { text } (the line to read instead) or, for a run-on, { accept: [joining words] } (more valid fixes); card.sections[i].highlight lists which sentences of a writing card's worked passage are highlighted (0 is the first).",
+  "topics": {
+    "evidence-for-informing": { "card": { "sections": [{ "highlight": [0, 1] }, { "highlight": [2] }, { "highlight": [2] }] } },
+    "evidence-for-opinions": { "card": { "sections": [{ "highlight": [1] }, { "highlight": [1] }, { "highlight": [1] }] } },
+    "evidence-that-supports": { "card": { "sections": [{ "highlight": [1] }, { "highlight": [1] }, { "highlight": [1] }] } },
+    "showing-with-actions": { "card": { "sections": [{ "highlight": [1] }, { "highlight": [1] }, { "highlight": [1] }] } },
+    "avoiding-run-ons": { "4": { "accept": ["so"] } }
+  }
 }

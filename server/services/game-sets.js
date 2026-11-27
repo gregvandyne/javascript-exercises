@@ -350,10 +350,12 @@ const PROOF_KEYS = ['t', 'x', 'g', 'm', 'o'], PROOF_M_KEYS = ['a', 'b', 'w', 'k'
 const plainObject = v => !!v && typeof v === 'object' && !Array.isArray(v);
 /** A passage set's options -> { h, s, n } or null. */
 function cleanProofOptions(o) {
-  if (!plainObject(o) || Object.keys(o).some(k => !['h', 's', 'n'].includes(k))) return null;
+  if (!plainObject(o) || Object.keys(o).some(k => !['h', 's', 'n', 'tap'].includes(k))) return null;
   if ((o.h !== undefined && typeof o.h !== 'boolean') || (o.s !== undefined && typeof o.s !== 'boolean')) return null;
   if (o.n !== undefined && !PROOF_TELL.includes(o.n)) return null;
-  return { h: o.h !== false, s: o.s !== false, n: o.n || 'total' };
+  // tap: the teacher's "Tap to fix, no typing" (K-2 tap-only); left out, the game decides by the set's grade
+  if (o.tap !== undefined && typeof o.tap !== 'boolean') return null;
+  return { h: o.h !== false, s: o.s !== false, n: o.n || 'total', ...(typeof o.tap === 'boolean' ? { tap: o.tap } : {}) };
 }
 /** Mistake Hunt: the clean list of passages, or null when it isn't one. Strict: an unknown key, a text the filter
  *  refuses or would change, or a mistake the game's rules don't keep, and the whole set is turned down. */

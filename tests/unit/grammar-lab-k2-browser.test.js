@@ -189,9 +189,9 @@ async function playRoom(page, tag, L) {
   const k = P.key(p.x, p.m);
   assert.equal(await f.evaluate(() => JSON.stringify(window.__brbTest.mhGraded()).includes('"key"')), false, 'no key in the frame');
   await f.click(`#mh-ptext [data-a="${k[0].a}"]`);
-  await f.waitForSelector('#mh-sheet');
-  await f.fill('#mh-fixin', k[0].right);
-  await f.click('#mh-fixok');
+  // a K-2 room is tap-only: the sound-alike word's big choice buttons, no typing
+  await f.waitForSelector('#mh-sheet .pick');
+  await f.locator('#mh-sheet .pick').filter({ hasText: new RegExp(`^${k[0].right}$`) }).click();
   await f.waitForFunction(() => /Saved/.test(document.getElementById('mh-saved').textContent));
   for (const x of k.slice(1)) await f.evaluate(([a, b, s]) => window.__brbTest.mhFix(a, b, s), [x.a, x.b, x.right]);
   await f.click('#mh-handin');

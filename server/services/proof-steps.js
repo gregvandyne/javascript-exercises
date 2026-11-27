@@ -46,7 +46,7 @@ export const proofGame = () => { const g = games.getGameBySlug(SLUG); return g &
 export function snapshotOf(items, { hints = false } = {}) {
   const passages = items.map(it => ({ t: it.t || '', x: it.x, g: it.g, m: it.m.map(m => ({ a: m.a, b: m.b, w: m.w, k: m.k, ...(m.y ? { y: m.y } : {}) })) }));
   const o = (items[0] && items[0].o) || {};
-  return { tell: o.n === 'type' || o.n === 'none' ? o.n : 'total', ...(hints ? { hints: true } : {}), passages };
+  return { tell: o.n === 'type' || o.n === 'none' ? o.n : 'total', ...(hints ? { hints: true } : {}), ...(typeof o.tap === 'boolean' ? { tap: o.tap } : {}), passages };
 }
 /** The teacher's own saved set, or null. */
 export function ownSet(u, setId) {
@@ -94,7 +94,7 @@ export function assignSet(u, setId, classId, { opensAt = null, dueAt = null, sho
 export function snapOf(step) {
   let x = null; try { x = JSON.parse((step && step.items) || 'null'); } catch { x = null; }
   if (!x || typeof x !== 'object' || !Array.isArray(x.passages)) return { tell: 'total', hints: false, passages: [] };
-  return { tell: x.tell === 'type' || x.tell === 'none' ? x.tell : 'total', hints: x.hints === true, passages: x.passages.filter(p => p && typeof p.x === 'string' && Array.isArray(p.m)) };
+  return { tell: x.tell === 'type' || x.tell === 'none' ? x.tell : 'total', hints: x.hints === true, ...(typeof x.tap === 'boolean' ? { tap: x.tap } : {}), passages: x.passages.filter(p => p && typeof p.x === 'string' && Array.isArray(p.m)) };
 }
 /** Did the teacher allow hints on this step? */
 export const hintsOn = step => snapOf(step).hints;
@@ -194,6 +194,9 @@ export function viewFor(step, cl, row, { teacher = false, t } = {}) {
       return { t: p.t || '', w, n: p.m.length, ...(snap.tell === 'type' ? { groups: P.byGroup(p.m) } : {}) };
     }),
     total: snap.passages.reduce((n, p) => n + p.m.length, 0), found: 0, score: done ? row.score : null,
+    // K-2 tap-only (proof-core tapOf): on for a grade K-2 set (or the teacher's choice) whose every mistake a tap can
+    // fix, with the set's kinds so the game offers only those taps (never where the mistakes are)
+    tap: P.tapOf(snap.passages, snap.tap),
   };
   if (done) {
     const r = markAll(step, edits);

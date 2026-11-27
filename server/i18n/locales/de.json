@@ -5783,7 +5783,10 @@
       "wentWrong": "Etwas ist schiefgelaufen. Versuch es noch einmal.",
       "gap": "Komma nach {word}",
       "blank": "Lücke",
-      "nearGaps": "Du hast zu viele Kommas gesetzt. Nimm die überzähligen weg und schick es noch einmal."
+      "nearGaps": "Du hast zu viele Kommas gesetzt. Nimm die überzähligen weg und schick es noch einmal.",
+      "cyclePress": "Zum Auswählen drücken",
+      "cycleOf": "{option}, Auswahl {n} von {total}. Drück für die nächste.",
+      "wrongFix": "Nicht ganz. Drück jetzt auf den Satz, um ein paar Verbesserungen zu sehen, bleib bei der richtigen stehen und schick sie ab. Zwei richtige Antworten hintereinander beenden diese Stufe."
     }
   },
   "favorites": {
@@ -11238,7 +11241,9 @@
       "lead": "Jedes Video hat Untertitel, und der Ton bleibt aus, bis Sie ihn einschalten.",
       "howH": "So geht's, ein Video pro Mathe-Material",
       "play": "Video abspielen: {title}",
-      "close": "Video schließen"
+      "close": "Video schließen",
+      "more": "Alle {count} Videos zeigen",
+      "less": "Weniger zeigen"
     }
   },
   "teach": {
@@ -16201,7 +16206,8 @@
       "submit": "Abschicken",
       "flag": "Ein Problem mit dieser Frage melden",
       "correct": "Richtig!",
-      "levelNext": "Nächstes Level"
+      "levelNext": "Nächstes Level",
+      "fixLabel": "Verbessere den Satz hier"
     },
     "levels": {
       "heading": "Level und Meistern",
@@ -16235,7 +16241,8 @@
       "tips": "Mehr Beispiele",
       "listen": "Vorlesen",
       "stop": "Stopp",
-      "practice": "Üben starten"
+      "practice": "Üben starten",
+      "question": "Frag dich"
     },
     "review": {
       "heading": "Sieh dir deine Fragen an",

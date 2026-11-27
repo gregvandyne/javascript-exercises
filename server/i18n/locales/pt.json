@@ -5783,7 +5783,10 @@
       "wentWrong": "Algo deu errado. Tente de novo.",
       "gap": "Vírgula depois de {word}",
       "blank": "lacuna",
-      "nearGaps": "Você colocou vírgulas demais. Tire as que sobram e envie de novo."
+      "nearGaps": "Você colocou vírgulas demais. Tire as que sobram e envie de novo.",
+      "cyclePress": "Toque para escolher",
+      "cycleOf": "{option}, opção {n} de {total}. Toque para ver a próxima.",
+      "wrongFix": "Quase. Agora toque na frase para ver algumas correções, pare na certa e envie. Acerte duas seguidas para terminar este nível."
     }
   },
   "favorites": {
@@ -11239,7 +11242,9 @@
       "lead": "Todo vídeo tem legendas, e o som fica desligado até você ligar.",
       "howH": "Como funciona, um vídeo por manipulável",
       "play": "Assistir ao vídeo: {title}",
-      "close": "Fechar o vídeo"
+      "close": "Fechar o vídeo",
+      "more": "Ver todos os {count} vídeos",
+      "less": "Ver menos"
     }
   },
   "teach": {
@@ -16202,7 +16207,8 @@
       "submit": "Enviar",
       "flag": "Avisar um problema com esta pergunta",
       "correct": "Certo!",
-      "levelNext": "Próximo nível"
+      "levelNext": "Próximo nível",
+      "fixLabel": "Corrija a frase aqui"
     },
     "levels": {
       "heading": "Níveis e domínio",
@@ -16236,7 +16242,8 @@
       "tips": "Mais exemplos",
       "listen": "Leia para mim",
       "stop": "Parar",
-      "practice": "Começar a praticar"
+      "practice": "Começar a praticar",
+      "question": "Pergunte a si mesmo"
     },
     "review": {
       "heading": "Reveja suas perguntas",
