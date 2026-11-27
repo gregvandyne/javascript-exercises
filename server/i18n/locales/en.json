@@ -5604,7 +5604,7 @@
       "pictures": "Pictures",
       "undo": "Undo",
       "waitSecs": "Try again in {n} seconds.",
-      "welcome": "Welcome, {name}!"
+      "welcome": "You're in! Your desk is ready."
     },
     "homeroom-signin-panel": {
       "closed": "Sign-in is closed",
@@ -6903,7 +6903,9 @@
       "allDone": "All done! Nothing to do right now.",
       "more": "Done for today?",
       "pick": "Your classes"
-    }
+    },
+    "welcome": "You're in {name}! The games your teacher gives you show up here.",
+    "welcomeDesk": "You're in {name}! Tap My desk to see what your teacher hands out."
   },
   "school": {
     "nav": {},
@@ -7012,7 +7014,9 @@
       "lastActivity": "Last activity",
       "noActivity": "none yet",
       "noStudentsPick": "Pick students already at {school} below, or make new accounts and login cards for new students.",
-      "selectShown": "Select all shown"
+      "selectShown": "Select all shown",
+      "made": "{name} is ready. Add your students here, or share the class code with students who have their own account.",
+      "madeHub": "{name} is ready. Add your students here, then open the Hub and hand out your first lesson, live game or math tool."
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -7453,7 +7457,7 @@
         "someone": "A colleague",
         "hi": "Hello,",
         "intro": "{name} invited you to join {school} on Oomba Academy as {role}.",
-        "what": "Oomba Academy is a website where children learn by playing and making games, and teachers run their classes, lessons and live games.",
+        "what": "Oomba Academy is the one classroom tool for everything: live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper, with one login, one class list and one plan.",
         "button": "See the invite",
         "how": "Sign in, or create a teacher account, with this email address, then accept. The link works once, for {days} days.",
         "ignore": "Not expecting this? You can ignore this email. Nothing happens unless you accept.",
@@ -12008,7 +12012,7 @@
       "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
       "openLive": "Open live lesson",
-      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below and add your students, then open its Hub to hand out your first lesson. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
     "loop": {
@@ -13661,7 +13665,7 @@
       "step3": "Add your students: paste their names, one per line. Each one gets a printable login card.",
       "step4": "Check your school's rules on the Settings tab. Chat between students is off unless you turn it on.",
       "teachersH": "How your teachers start",
-      "teachersText": "Teachers sign in and land on their Classroom page. The quickest first win is a live game: tap \"Host a live game\", put the code on the board, and the class joins from any device. They can also turn a lesson they already teach into a quiz with \"Turn a lesson into a game\".",
+      "teachersText": "Teachers sign in and land on their Classroom page. Good first steps: open a class's Hub, hand out a lesson, a live game or a math tool to every desk, try a manipulative on the board, and ask Oomba to plan the day. The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan. The Classroom Dashboard is free for every class.",
       "google": "If your school uses Google Classroom, teachers can connect it from their class page to bring in their rosters and send grades back.",
       "help": "Questions? Just reply to this email. A real person answers, usually within one school day.",
       "bye": "Welcome aboard,",

@@ -5144,7 +5144,7 @@
       "pictures": "Plaatjes",
       "undo": "Ongedaan maken",
       "waitSecs": "Probeer het over {n} seconden opnieuw.",
-      "welcome": "Welkom, {name}!"
+      "welcome": "Je bent binnen! Je tafel staat klaar."
     },
     "homeroom-signin-panel": {
       "closed": "Inloggen is gesloten",
@@ -5840,7 +5840,9 @@
       "allDone": "Alles klaar! Er is nu niets te doen.",
       "more": "Klaar voor vandaag?",
       "pick": "Je klassen"
-    }
+    },
+    "welcome": "Je zit in {name}! De games van je leerkracht verschijnen hier.",
+    "welcomeDesk": "Je zit in {name}! Tik op Mijn tafel om te zien wat je leerkracht uitdeelt."
   },
   "school": {
     "tabs": {
@@ -5948,7 +5950,9 @@
       "lastActivity": "Laatst actief",
       "noActivity": "nog niets",
       "noStudentsPick": "Kies hieronder leerlingen die al op {school} zitten, of maak accounts en inlogkaarten voor nieuwe leerlingen.",
-      "selectShown": "Alles selecteren wat zichtbaar is"
+      "selectShown": "Alles selecteren wat zichtbaar is",
+      "made": "{name} is klaar. Voeg hier je leerlingen toe, of deel de klascode met leerlingen die al een eigen account hebben.",
+      "madeHub": "{name} is klaar. Voeg hier je leerlingen toe, open dan de Hub en deel je eerste les, een live spel of een rekenhulpmiddel uit."
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -6389,7 +6393,7 @@
         "someone": "Een collega",
         "hi": "Hallo,",
         "intro": "{name} nodigt je uit om lid te worden van {school} op Oomba Academy als {role}.",
-        "what": "Oomba Academy is een website waar kinderen leren door games te spelen en te maken, en waar leerkrachten hun klassen, lessen en live games leiden.",
+        "what": "Oomba Academy is het ene klassenhulpmiddel voor alles: live spellen, rekenmateriaal, werkbladen, prentenboeken, een klasdashboard en een AI-helper. Eén login, één klassenlijst, één abonnement.",
         "button": "Uitnodiging bekijken",
         "how": "Log in, of maak een leerkrachtaccount, met dit e-mailadres en accepteer dan. De link werkt één keer, {days} dagen lang.",
         "ignore": "Had je dit niet verwacht? Je kunt deze e-mail negeren. Er gebeurt niets tenzij je accepteert.",
@@ -11333,7 +11337,7 @@
       "lessonFolder": "Lessenmap",
       "openClass": "Klas openen",
       "openLive": "Liveles openen",
-      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg je leerlingen toe, open dan de Hub om je eerste les uit te delen. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
       "allClasses": "Alle klassen"
     },
     "loop": {
@@ -12182,7 +12186,7 @@
       "step3": "Voeg je leerlingen toe: plak hun namen, één per regel. Iedere leerling krijgt een inlogkaart om te printen.",
       "step4": "Bekijk de regels van je school op het tabblad Instellingen. Chatten tussen leerlingen staat uit, tenzij je het aanzet.",
       "teachersH": "Zo beginnen je leraren",
-      "teachersText": "Leraren loggen in en komen op hun pagina Klaslokaal. Het snelste eerste succes is een live spel: tik op \"Een live spel leiden\", zet de code op het bord en de klas doet mee vanaf elk apparaat. Ze kunnen ook een les die ze al geven omzetten in een quiz met \"Van een les een spel maken\".",
+      "teachersText": "Leerkrachten loggen in en komen op hun pagina Klaslokaal. Goede eerste stappen: open de Hub van een klas, deel een les, een live spel of een rekenhulpmiddel uit aan elke tafel, probeer rekenmateriaal op het bord en vraag Oomba om de dag te plannen. De Hub, Vraag het Oomba, het rekenmateriaal en Figures zijn beschikbaar met het Leerkrachtabonnement. Het klasdashboard is gratis voor elke klas.",
       "google": "Gebruikt je school Google Classroom? Dan kunnen leraren het koppelen vanaf de pagina van hun klas om hun klassenlijsten op te halen en cijfers terug te sturen.",
       "help": "Vragen? Beantwoord gewoon deze e-mail. Een echt mens antwoordt, meestal binnen één schooldag.",
       "bye": "Welkom aan boord,",

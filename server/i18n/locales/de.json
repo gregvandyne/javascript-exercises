@@ -5144,7 +5144,7 @@
       "pictures": "Bilder",
       "undo": "Rückgängig",
       "waitSecs": "Versuche es in {n} Sekunden noch einmal.",
-      "welcome": "Willkommen, {name}!"
+      "welcome": "Du bist drin! Dein Platz ist bereit."
     },
     "homeroom-signin-panel": {
       "closed": "Die Anmeldung ist geschlossen",
@@ -5840,7 +5840,9 @@
       "allDone": "Alles erledigt! Gerade gibt es nichts zu tun.",
       "more": "Fertig für heute?",
       "pick": "Deine Klassen"
-    }
+    },
+    "welcome": "Du bist in {name}! Die Spiele von deiner Lehrkraft erscheinen hier.",
+    "welcomeDesk": "Du bist in {name}! Tippe auf Mein Platz, um zu sehen, was deine Lehrkraft austeilt."
   },
   "school": {
     "tabs": {
@@ -5948,7 +5950,9 @@
       "lastActivity": "Zuletzt aktiv",
       "noActivity": "noch nichts",
       "noStudentsPick": "Wähle unten Schüler, die schon an {school} sind, oder lege für neue Schüler Konten und Anmeldekarten an.",
-      "selectShown": "Alle angezeigten auswählen"
+      "selectShown": "Alle angezeigten auswählen",
+      "made": "{name} ist bereit. Fügen Sie hier Ihre Schüler hinzu oder geben Sie den Klassencode an Schüler, die schon ein eigenes Konto haben.",
+      "madeHub": "{name} ist bereit. Fügen Sie hier Ihre Schüler hinzu, öffnen Sie dann den Hub und teilen Sie Ihre erste Lektion, ein Live-Spiel oder ein Mathe-Werkzeug aus."
     },
     "requests": {
       "title": "{count, plural, one {# Schüler möchte beitreten} other {# Schüler möchten beitreten}}",
@@ -6389,7 +6393,7 @@
         "someone": "Eine Kollegin oder ein Kollege",
         "hi": "Hallo,",
         "intro": "{name} lädt dich ein, {school} bei Oomba Academy als {role} beizutreten.",
-        "what": "Oomba Academy ist eine Website, auf der Kinder lernen, indem sie Spiele spielen und selbst bauen, und Lehrkräfte ihre Klassen, Lektionen und Live-Spiele leiten.",
+        "what": "Oomba Academy ist das eine Werkzeug für alles im Unterricht: Live-Spiele, Mathe-Material, Arbeitsblätter, Bilderbücher, ein Klassen-Dashboard und ein KI-Helfer. Ein Login, eine Klassenliste, ein Plan.",
         "button": "Einladung ansehen",
         "how": "Melde dich mit dieser E-Mail-Adresse an oder erstelle damit ein Lehrkraft-Konto und nimm dann an. Der Link funktioniert einmal, {days} Tage lang.",
         "ignore": "Nicht erwartet? Du kannst diese E-Mail ignorieren. Es passiert nichts, solange du nicht annimmst.",
@@ -11333,7 +11337,7 @@
       "lessonFolder": "Lektionsordner",
       "openClass": "Klasse öffnen",
       "openLive": "Live-Lektion öffnen",
-      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
+      "schoolReady": "{school} ist bereit, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge deine Schülerinnen und Schüler hinzu, dann öffne ihren Hub, um deine erste Lektion auszuteilen. Wir sehen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
       "allClasses": "Alle Klassen"
     },
     "loop": {
@@ -12182,7 +12186,7 @@
       "step3": "Füge deine Schülerinnen und Schüler hinzu: Namen einfügen, einer pro Zeile. Jedes Kind bekommt eine Anmeldekarte zum Ausdrucken.",
       "step4": "Prüfe die Regeln deiner Schule im Tab Einstellungen. Der Chat zwischen Schülerinnen und Schülern ist aus, solange du ihn nicht einschaltest.",
       "teachersH": "So starten deine Lehrkräfte",
-      "teachersText": "Lehrkräfte melden sich an und landen auf ihrer Seite Klassenraum. Der schnellste erste Erfolg ist ein Live-Spiel: auf „Live-Spiel leiten“ tippen, den Code an die Tafel bringen, und die Klasse macht von jedem Gerät aus mit. Außerdem können sie mit „Aus einer Stunde ein Spiel machen“ eine Stunde, die sie schon unterrichten, in ein Quiz verwandeln.",
+      "teachersText": "Lehrkräfte melden sich an und landen auf ihrer Seite Klassenraum. Gute erste Schritte: den Hub einer Klasse öffnen, eine Lektion, ein Live-Spiel oder ein Mathe-Werkzeug an alle Plätze austeilen, ein Mathe-Material an der Tafel ausprobieren und Oomba den Tag planen lassen. Der Hub, Frag Oomba, das Mathe-Material und Figures sind im Lehrkräfte-Plan enthalten. Das Klassen-Dashboard ist für jede Klasse kostenlos.",
       "google": "Wenn deine Schule Google Classroom nutzt, können Lehrkräfte es auf der Seite ihrer Klasse verbinden, um ihre Klassenlisten zu übernehmen und Noten zurückzuschicken.",
       "help": "Fragen? Antworte einfach auf diese E-Mail. Ein echter Mensch antwortet, meist innerhalb eines Schultags.",
       "bye": "Herzlich willkommen,",

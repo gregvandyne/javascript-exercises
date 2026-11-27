@@ -5143,7 +5143,7 @@
       "pictures": "Imágenes",
       "undo": "Deshacer",
       "waitSecs": "Inténtalo de nuevo en {n} segundos.",
-      "welcome": "¡Bienvenido, {name}!"
+      "welcome": "¡Ya entraste! Tu pupitre está listo."
     },
     "homeroom-signin-panel": {
       "closed": "El inicio de sesión está cerrado",
@@ -5839,7 +5839,9 @@
       "allDone": "¡Todo hecho! No hay nada pendiente ahora.",
       "more": "¿Terminaste por hoy?",
       "pick": "Tus clases"
-    }
+    },
+    "welcome": "¡Ya estás en {name}! Los juegos que te dé tu profe aparecen aquí.",
+    "welcomeDesk": "¡Ya estás en {name}! Toca Mi pupitre para ver lo que reparte tu profe."
   },
   "school": {
     "tabs": {
@@ -5947,7 +5949,9 @@
       "lastActivity": "Última actividad",
       "noActivity": "nada aún",
       "noStudentsPick": "Elige abajo estudiantes que ya están en {school}, o crea cuentas y tarjetas de acceso para estudiantes nuevos.",
-      "selectShown": "Seleccionar todos los visibles"
+      "selectShown": "Seleccionar todos los visibles",
+      "made": "{name} está lista. Agregue a sus estudiantes aquí o comparta el código de la clase con los estudiantes que ya tienen su propia cuenta.",
+      "madeHub": "{name} está lista. Agregue a sus estudiantes aquí, luego abra el Hub y reparta su primera lección, un juego en vivo o una herramienta de matemáticas."
     },
     "requests": {
       "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
@@ -6388,7 +6392,7 @@
         "someone": "Un compañero",
         "hi": "Hola:",
         "intro": "{name} te invitó a unirte a {school} en Oomba Academy como {role}.",
-        "what": "Oomba Academy es un sitio web donde los niños aprenden jugando y creando juegos, y los docentes dirigen sus clases, lecciones y juegos en vivo.",
+        "what": "Oomba Academy es la única herramienta de clase para todo: juegos en vivo, manipulativos de matemáticas, fichas, libros ilustrados, un tablero de clase y un asistente de IA. Un inicio de sesión, una lista de clase, un plan.",
         "button": "Ver la invitación",
         "how": "Inicia sesión, o crea una cuenta de docente, con esta dirección de correo y luego acepta. El enlace funciona una vez, durante {days} días.",
         "ignore": "¿No lo esperabas? Puedes ignorar este correo. No pasa nada a menos que aceptes.",
@@ -11332,7 +11336,7 @@
       "lessonFolder": "Carpeta de lecciones",
       "openClass": "Abrir la clase",
       "openLive": "Abrir la lección en vivo",
-      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo.",
+      "schoolReady": "{school} está lista y tú eres su administrador escolar. Crea tu primera clase abajo y añade a tus alumnos; luego abre su Hub para repartir tu primera lección. Revisaremos tu escuela en 1 día escolar y te enviaremos una guía breve por correo.",
       "allClasses": "Todas las clases"
     },
     "loop": {
@@ -12181,7 +12185,7 @@
       "step3": "Añade a tus alumnos: pega sus nombres, uno por línea. Cada uno recibe una tarjeta de acceso para imprimir.",
       "step4": "Revisa las normas de tu colegio en la pestaña Configuración. El chat entre alumnos está desactivado salvo que lo actives.",
       "teachersH": "Cómo empiezan tus docentes",
-      "teachersText": "Los docentes inician sesión y llegan a su página Mi aula. El primer éxito más rápido es un juego en vivo: tocan «Dirigir un juego en vivo», ponen el código en la pizarra y la clase se une desde cualquier dispositivo. También pueden convertir una lección que ya enseñan en un cuestionario con «Convertir una lección en un juego».",
+      "teachersText": "Los docentes inician sesión y llegan a su página Mi aula. Buenos primeros pasos: abrir el Hub de una clase, repartir una lección, un juego en vivo o una herramienta de matemáticas a cada pupitre, probar un manipulativo en la pizarra y pedirle a Oomba que planifique el día. El Hub, Pregúntale a Oomba, los manipulativos y Figures están disponibles con el plan Docente. El tablero de clase es gratis para cada clase.",
       "google": "Si tu colegio usa Google Classroom, los docentes pueden conectarlo desde la página de su clase para traer sus listas de alumnos y devolver las calificaciones.",
       "help": "¿Preguntas? Responde a este correo. Te contesta una persona real, normalmente en un día lectivo.",
       "bye": "¡Bienvenido!",

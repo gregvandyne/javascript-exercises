@@ -47,7 +47,9 @@ export const dateWords = (t, dateLocale = 'en-US') => new Date(t).toLocaleDateSt
 /** The features a line of copy may depend on (a block's or a list item's `when` / `unless`: a name or a list of
  *  names). The sender (services/nudges.js renderFor) says which are true for this teacher today; anything not given is
  *  false, so a line about a feature that may be off is left out rather than promised. */
-export const FEATURES = Object.freeze(['hasClass', 'classroom', 'tools', 'chat']);
+// hub (welcome refresh, Nov 2026): this teacher can open the Hub now (services/homeroom.js canUse: HOMEROOM on, on
+// HOMEROOM_USERS, the Teacher plan), so the welcome may send them there.
+export const FEATURES = Object.freeze(['hasClass', 'classroom', 'tools', 'chat', 'hub']);
 const names = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
 /** Does a block or list item apply, given the features? */
 export function applies(b, features = {}) {
@@ -58,7 +60,7 @@ export function applies(b, features = {}) {
 /**
  * One email of the trial sequence.
  * vars: { firstName, trialStart, trialEnd (ms), base (the site's origin), unsubscribeUrl, postalAddress, locale,
- *   features ({ hasClass, classroom, tools, chat }: see FEATURES) }
+ *   features ({ hasClass, classroom, tools, chat, hub }: see FEATURES) }
  * -> { subject, preview, html, text, locale }
  */
 export function renderTrial(step, vars = {}) {

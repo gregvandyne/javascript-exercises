@@ -5143,7 +5143,7 @@
       "pictures": "Images",
       "undo": "Annuler",
       "waitSecs": "Réessaie dans {n} secondes.",
-      "welcome": "Bienvenue, {name} !"
+      "welcome": "C'est parti ! Ton bureau est prêt."
     },
     "homeroom-signin-panel": {
       "closed": "La connexion est fermée",
@@ -5839,7 +5839,9 @@
       "allDone": "Tout est fait ! Rien à faire pour le moment.",
       "more": "Fini pour aujourd’hui ?",
       "pick": "Tes classes"
-    }
+    },
+    "welcome": "Tu es dans {name} ! Les jeux que ton prof te donne apparaissent ici.",
+    "welcomeDesk": "Tu es dans {name} ! Touche Mon pupitre pour voir ce que ton prof distribue."
   },
   "school": {
     "tabs": {
@@ -5947,7 +5949,9 @@
       "lastActivity": "Dernière activité",
       "noActivity": "rien encore",
       "noStudentsPick": "Choisis ci-dessous des élèves déjà à {school}, ou crée des comptes et des cartes de connexion pour les nouveaux élèves.",
-      "selectShown": "Tout sélectionner (affichés)"
+      "selectShown": "Tout sélectionner (affichés)",
+      "made": "{name} est prête. Ajoutez vos élèves ici, ou donnez le code de la classe aux élèves qui ont déjà leur propre compte.",
+      "madeHub": "{name} est prête. Ajoutez vos élèves ici, puis ouvrez le Hub et distribuez votre première leçon, un jeu en direct ou un outil de maths."
     },
     "requests": {
       "title": "{count, plural, one {# élève veut rejoindre la classe} other {# élèves veulent rejoindre la classe}}",
@@ -6388,7 +6392,7 @@
         "someone": "Un collègue",
         "hi": "Bonjour,",
         "intro": "{name} vous invite à rejoindre {school} sur Oomba Academy en tant que {role}.",
-        "what": "Oomba Academy est un site où les enfants apprennent en jouant et en créant des jeux, et où les enseignants gèrent leurs classes, leurs leçons et leurs jeux en direct.",
+        "what": "Oomba Academy est l’outil de classe unique pour tout faire : jeux en direct, manipulables de maths, fiches d’exercices, albums illustrés, un tableau de bord de classe et un assistant IA. Un compte, une liste de classe, un forfait.",
         "button": "Voir l'invitation",
         "how": "Connectez-vous, ou créez un compte enseignant, avec cette adresse e-mail, puis acceptez. Le lien fonctionne une fois, pendant {days} jours.",
         "ignore": "Vous ne vous attendiez pas à cet e-mail ? Vous pouvez l'ignorer. Rien ne se passe tant que vous n'acceptez pas.",
@@ -11332,7 +11336,7 @@
       "lessonFolder": "Dossier de leçons",
       "openClass": "Ouvrir la classe",
       "openLive": "Ouvrir la leçon en direct",
-      "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous, puis ajoutez vos élèves. Nous examinerons votre école sous 1 jour d'école et vous enverrons un court guide par e-mail.",
+      "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous et ajoutez vos élèves, puis ouvrez son Hub pour distribuer votre première leçon. Nous examinerons votre école sous 1 jour d'école et vous enverrons un petit guide par e-mail.",
       "allClasses": "Toutes les classes"
     },
     "loop": {
@@ -12181,7 +12185,7 @@
       "step3": "Ajoutez vos élèves : collez leurs noms, un par ligne. Chacun reçoit une carte de connexion à imprimer.",
       "step4": "Vérifiez les règles de votre école dans l'onglet Paramètres. Le chat entre élèves est désactivé, sauf si vous l'activez.",
       "teachersH": "Comment vos enseignants démarrent",
-      "teachersText": "Les enseignants se connectent et arrivent sur leur page Ma classe. La réussite la plus rapide est un jeu en direct : appuyer sur « Animer un jeu en direct », afficher le code au tableau, et la classe rejoint depuis n'importe quel appareil. Ils peuvent aussi transformer une leçon qu'ils enseignent déjà en quiz avec « Transformer une leçon en jeu ».",
+      "teachersText": "Les enseignants se connectent et arrivent sur leur page Ma classe. Bons premiers pas : ouvrir le Hub d'une classe, distribuer une leçon, un jeu en direct ou un outil de maths à chaque pupitre, essayer un manipulable au tableau et demander à Oomba de planifier la journée. Le Hub, Demander à Oomba, les manipulables et Figures sont disponibles avec le forfait Enseignant. Le tableau de bord de classe est gratuit pour chaque classe.",
       "google": "Si votre école utilise Google Classroom, les enseignants peuvent le connecter depuis la page de leur classe pour importer leurs listes d'élèves et renvoyer les notes.",
       "help": "Des questions ? Répondez simplement à cet e-mail. Une vraie personne vous répond, en général sous un jour d'école.",
       "bye": "Bienvenue !",

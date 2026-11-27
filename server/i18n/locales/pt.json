@@ -5144,7 +5144,7 @@
       "pictures": "Figuras",
       "undo": "Desfazer",
       "waitSecs": "Tente de novo em {n} segundos.",
-      "welcome": "Bem-vindo, {name}!"
+      "welcome": "Você entrou! Sua mesa está pronta."
     },
     "homeroom-signin-panel": {
       "closed": "A entrada está fechada",
@@ -5840,7 +5840,9 @@
       "allDone": "Tudo feito! Não há nada para fazer agora.",
       "more": "Terminaste por hoje?",
       "pick": "As tuas turmas"
-    }
+    },
+    "welcome": "Você entrou em {name}! Os jogos que seu professor passar aparecem aqui.",
+    "welcomeDesk": "Você entrou em {name}! Toque em Minha carteira para ver o que seu professor entrega."
   },
   "school": {
     "nav": {},
@@ -5949,7 +5951,9 @@
       "lastActivity": "Última atividade",
       "noActivity": "nada ainda",
       "noStudentsPick": "Escolha abaixo alunos que já estão em {school}, ou crie contas e cartões de acesso para alunos novos.",
-      "selectShown": "Selecionar todos os mostrados"
+      "selectShown": "Selecionar todos os mostrados",
+      "made": "{name} está pronta. Adicione seus alunos aqui ou compartilhe o código da turma com os alunos que já têm conta própria.",
+      "madeHub": "{name} está pronta. Adicione seus alunos aqui, depois abra o Hub e distribua sua primeira aula, um jogo ao vivo ou uma ferramenta de matemática."
     },
     "requests": {
       "title": "{count, plural, one {# aluno quer entrar} other {# alunos querem entrar}}",
@@ -6390,7 +6394,7 @@
         "someone": "Um colega",
         "hi": "Olá,",
         "intro": "{name} convidou você para entrar em {school} no Oomba Academy como {role}.",
-        "what": "O Oomba Academy é um site onde as crianças aprendem jogando e criando jogos, e os professores conduzem suas turmas, aulas e jogos ao vivo.",
+        "what": "O Oomba Academy é a única ferramenta de sala de aula para tudo: jogos ao vivo, materiais manipuláveis de matemática, fichas, livros ilustrados, um painel da turma e um assistente de IA. Um login, uma lista de turma, um plano.",
         "button": "Ver o convite",
         "how": "Faça login, ou crie uma conta de professor, com este endereço de e-mail e depois aceite. O link funciona uma vez, por {days} dias.",
         "ignore": "Não esperava por isso? Pode ignorar este e-mail. Nada acontece a menos que você aceite.",
@@ -11334,7 +11338,7 @@
       "lessonFolder": "Pasta de aulas",
       "openClass": "Abrir a turma",
       "openLive": "Abrir a aula ao vivo",
-      "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
+      "schoolReady": "{school} está pronta, e você é o administrador da escola. Crie sua primeira turma abaixo e adicione seus alunos, depois abra o Hub dela para distribuir sua primeira lição. Vamos analisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
       "allClasses": "Todas as turmas"
     },
     "loop": {
@@ -12183,7 +12187,7 @@
       "step3": "Adicione seus alunos: cole os nomes, um por linha. Cada um recebe um cartão de acesso para imprimir.",
       "step4": "Confira as regras da sua escola na aba Configurações. O chat entre alunos fica desligado, a menos que você o ligue.",
       "teachersH": "Como seus professores começam",
-      "teachersText": "Os professores entram e chegam à página Minha sala. A primeira vitória mais rápida é um jogo ao vivo: tocar em \"Conduzir um jogo ao vivo\", colocar o código no quadro, e a turma entra de qualquer aparelho. Eles também podem transformar uma aula que já dão em um questionário com \"Transformar uma aula em jogo\".",
+      "teachersText": "Os professores entram e chegam à página Minha sala. Bons primeiros passos: abrir o Hub de uma turma, distribuir uma aula, um jogo ao vivo ou uma ferramenta de matemática para cada carteira, testar um manipulável no quadro e pedir ao Oomba que planeje o dia. O Hub, Pergunte ao Oomba, os manipuláveis e Figures estão disponíveis com o plano Professor. O painel da turma é gratuito para toda turma.",
       "google": "Se sua escola usa o Google Classroom, os professores podem conectá-lo na página da turma para trazer as listas de alunos e devolver as notas.",
       "help": "Dúvidas? É só responder a este e-mail. Uma pessoa de verdade responde, normalmente em até um dia letivo.",
       "bye": "Boas-vindas!",
