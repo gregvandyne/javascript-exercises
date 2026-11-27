@@ -178,6 +178,23 @@ test('every icon on "/" keeps its shape (rendered width/height within 3% of the 
   }
 });
 
+test('the how-it-works videos: six show, Show all opens the rest and Show fewer folds them again (phone)', { skip }, async () => {
+  const { ctx, page, errors } = await open({ viewport: { width: 390, height: 844 } });
+  const shown = () => page.evaluate(() => [...document.querySelectorAll('.lp-how')].filter(a => a.checkVisibility() && a.getClientRects().length).length);
+  const sum = page.locator('.lp-howmore > summary');
+  await sum.scrollIntoViewIfNeeded();
+  assert.equal(await shown(), 6);
+  assert.equal((await sum.innerText()).trim(), 'Show all 18 videos');
+  await sum.click();
+  assert.equal(await shown(), 18);
+  assert.equal((await sum.innerText()).trim(), 'Show fewer');
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no sideways scroll');
+  await sum.click();
+  assert.equal(await shown(), 6);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
 test('the video player: opens with the poster and captions, muted; Escape closes it, stops it and returns the focus', { skip }, async () => {
   const { ctx, page, errors } = await open({ viewport: { width: 1280, height: 800 } });
   const link = page.locator('.lp-how').first();

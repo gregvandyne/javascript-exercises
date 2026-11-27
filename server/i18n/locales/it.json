@@ -11234,7 +11234,9 @@
       "lead": "Ogni video ha i sottotitoli, e l’audio resta spento finché non lo accendi.",
       "howH": "Come funziona, un video per ogni manipolabile",
       "play": "Guarda il video: {title}",
-      "close": "Chiudi il video"
+      "close": "Chiudi il video",
+      "more": "Mostra tutti i {count} video",
+      "less": "Mostra meno"
     }
   },
   "teach": {
