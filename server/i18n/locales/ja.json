@@ -4999,7 +4999,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "クラスから外します。児童の取り組みは残ります。"
+            "unassign": "クラスから外します。児童の取り組みは残ります。",
+            "students": "児童に表示されます。",
+            "classroom": "Google Classroom に投稿します。そこの児童に表示されます。",
+            "deleteSheet": "ワークシートを完全に削除します。すでに出したレッスンの問題は残ります。",
+            "deleteBoard": "ボードを完全に削除します。",
+            "deleteLesson": "レッスンを完全に削除します。クラスへの課題と、その中の児童の取り組みも削除されます。"
           },
           "due": {
             "ask": "{class}の「{title}」の日付を変更しますか？",
@@ -5011,6 +5016,68 @@
           "unassign": {
             "ask": "{class}から「{title}」を外しますか？",
             "done": "{class}から「{title}」を外しました。"
+          },
+          "seeWork": "取り組みを見る",
+          "lesson": {
+            "ask": "レッスン「{title}」を{class}に出しますか？",
+            "done": "レッスン「{title}」を{class}に出しました。"
+          },
+          "sheet": {
+            "ask": "ワークシート「{title}」を{class}に出しますか？",
+            "done": "ワークシート「{title}」を{class}に出しました。"
+          },
+          "practice": {
+            "ask": "ボード「{title}」の練習を{class}に出しますか？",
+            "tasks": "{tool}：{tasks}",
+            "count": "各課題 {count} 問",
+            "done": "「{title}」を{class}に出しました（{count} 問）。"
+          },
+          "unit": {
+            "ask": "{class}に単元「{name}」を追加しますか？",
+            "done": "{class}に単元「{name}」を追加しました。"
+          },
+          "renameUnit": {
+            "ask": "{class}の単元「{old}」の名前を「{name}」に変えますか？",
+            "done": "単元の名前を「{name}」にしました。"
+          },
+          "move": {
+            "up": "{class}で「{title}」を1つ上に移動しますか？",
+            "down": "{class}で「{title}」を1つ下に移動しますか？",
+            "movedUp": "「{title}」を1つ上に移動しました。",
+            "movedDown": "「{title}」を1つ下に移動しました。"
+          },
+          "classroom": {
+            "ask": "{class}の「{title}」を Google Classroom に投稿しますか？",
+            "course": "Classroom のクラス：{course}",
+            "done": "「{title}」を Google Classroom に投稿しました。",
+            "scheduled": "{day}に公開されるまで Classroom では下書きのままです。",
+            "pastDue": "提出日が過ぎているため、提出日なしで投稿しました。",
+            "open": "Classroom で開く",
+            "page": "Google Classroom のページ"
+          },
+          "made": {
+            "renameSheet": "ワークシート「{old}」の名前を「{title}」に変えますか？",
+            "renamedSheet": "ワークシートの名前を「{title}」にしました。",
+            "deleteSheet": "ワークシート「{title}」を削除しますか？",
+            "deletedSheet": "ワークシート「{title}」を削除しました。",
+            "openSheet": "ワークシートを開く",
+            "allSheets": "自分のワークシート",
+            "renameBoard": "ボード「{old}」の名前を「{title}」に変えますか？",
+            "renamedBoard": "ボードの名前を「{title}」にしました。",
+            "copyBoard": "ボード「{title}」のコピーを作りますか？",
+            "copiedBoard": "コピーを作りました：「{title}」",
+            "deleteBoard": "ボード「{title}」を削除しますか？",
+            "deletedBoard": "ボード「{title}」を削除しました。",
+            "openBoard": "ボードを開く",
+            "allBoards": "自分のボード",
+            "copyLesson": "レッスン「{title}」のコピーを作りますか？",
+            "copiedLesson": "コピーを作りました：「{title}」",
+            "deleteLesson": "レッスン「{title}」を削除しますか？",
+            "inClasses": "{count} クラスに出しています。",
+            "withWork": "{count} 人の児童が取り組んでいます。",
+            "deletedLesson": "レッスン「{title}」を削除しました。",
+            "openLesson": "レッスンを開く",
+            "allLessons": "自分のレッスン"
           }
         }
       }

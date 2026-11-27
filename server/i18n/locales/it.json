@@ -5000,7 +5000,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Questo lo toglie dalla classe. Il lavoro degli studenti resta."
+            "unassign": "Questo lo toglie dalla classe. Il lavoro degli studenti resta.",
+            "students": "Gli studenti lo vedranno.",
+            "classroom": "Questo pubblica su Google Classroom: lì gli studenti lo vedranno.",
+            "deleteSheet": "Questo elimina la scheda per sempre. Le lezioni già assegnate tengono le loro domande.",
+            "deleteBoard": "Questo elimina la lavagna per sempre.",
+            "deleteLesson": "Questo elimina la lezione per sempre, con le sue assegnazioni e il lavoro degli studenti."
           },
           "due": {
             "ask": "Cambiare le date di «{title}» in {class}?",
@@ -5012,6 +5017,68 @@
           "unassign": {
             "ask": "Togliere «{title}» da {class}?",
             "done": "«{title}» tolto da {class}."
+          },
+          "seeWork": "Vedi il lavoro",
+          "lesson": {
+            "ask": "Assegnare la lezione «{title}» a {class}?",
+            "done": "Lezione «{title}» assegnata a {class}."
+          },
+          "sheet": {
+            "ask": "Assegnare la scheda «{title}» a {class}?",
+            "done": "Scheda «{title}» assegnata a {class}."
+          },
+          "practice": {
+            "ask": "Assegnare esercizi dalla lavagna «{title}» a {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# domanda} other {# domande}} per esercizio",
+            "done": "«{title}» assegnato a {class}: {count, plural, one {# domanda} other {# domande}}."
+          },
+          "unit": {
+            "ask": "Aggiungere l’unità «{name}» a {class}?",
+            "done": "Unità «{name}» aggiunta a {class}."
+          },
+          "renameUnit": {
+            "ask": "Rinominare l’unità «{old}» di {class} in «{name}»?",
+            "done": "Ora l’unità si chiama «{name}»."
+          },
+          "move": {
+            "up": "Spostare «{title}» su di un posto in {class}?",
+            "down": "Spostare «{title}» giù di un posto in {class}?",
+            "movedUp": "«{title}» è salito di un posto.",
+            "movedDown": "«{title}» è sceso di un posto."
+          },
+          "classroom": {
+            "ask": "Pubblicare «{title}» di {class} su Google Classroom?",
+            "course": "Corso di Classroom: {course}",
+            "done": "«{title}» pubblicato su Google Classroom.",
+            "scheduled": "In Classroom resta una bozza finché non si apre il {day}.",
+            "pastDue": "La scadenza è passata, quindi è uscito senza scadenza.",
+            "open": "Apri in Classroom",
+            "page": "Pagina di Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Rinominare la scheda «{old}» in «{title}»?",
+            "renamedSheet": "Ora la scheda si chiama «{title}».",
+            "deleteSheet": "Eliminare la scheda «{title}»?",
+            "deletedSheet": "Scheda «{title}» eliminata.",
+            "openSheet": "Apri la scheda",
+            "allSheets": "Le mie schede",
+            "renameBoard": "Rinominare la lavagna «{old}» in «{title}»?",
+            "renamedBoard": "Ora la lavagna si chiama «{title}».",
+            "copyBoard": "Fare una copia della lavagna «{title}»?",
+            "copiedBoard": "Copia fatta: «{title}».",
+            "deleteBoard": "Eliminare la lavagna «{title}»?",
+            "deletedBoard": "Lavagna «{title}» eliminata.",
+            "openBoard": "Apri la lavagna",
+            "allBoards": "Le mie lavagne",
+            "copyLesson": "Fare una copia della lezione «{title}»?",
+            "copiedLesson": "Copia fatta: «{title}».",
+            "deleteLesson": "Eliminare la lezione «{title}»?",
+            "inClasses": "{count, plural, one {È assegnata a # classe.} other {È assegnata a # classi.}}",
+            "withWork": "{count, plural, one {# studente ci ha lavorato.} other {# studenti ci hanno lavorato.}}",
+            "deletedLesson": "Lezione «{title}» eliminata.",
+            "openLesson": "Apri la lezione",
+            "allLessons": "Le mie lezioni"
           }
         }
       }

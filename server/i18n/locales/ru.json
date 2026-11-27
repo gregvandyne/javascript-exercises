@@ -4999,7 +4999,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Это уберёт задание из класса. Работы учеников сохранятся."
+            "unassign": "Это уберёт задание из класса. Работы учеников сохранятся.",
+            "students": "Ученики это увидят.",
+            "classroom": "Это публикуется в Google Classroom: ученики там это увидят.",
+            "deleteSheet": "Это удалит лист заданий навсегда. Уже выданные уроки сохранят свои вопросы.",
+            "deleteBoard": "Это удалит доску навсегда.",
+            "deleteLesson": "Это удалит урок навсегда, вместе с заданиями в классах и работами учеников в них."
           },
           "due": {
             "ask": "Изменить даты «{title}» в {class}?",
@@ -5011,6 +5016,68 @@
           "unassign": {
             "ask": "Убрать «{title}» из {class}?",
             "done": "«{title}» убрано из {class}."
+          },
+          "seeWork": "Посмотреть работы",
+          "lesson": {
+            "ask": "Выдать урок «{title}» классу {class}?",
+            "done": "Урок «{title}» выдан классу {class}."
+          },
+          "sheet": {
+            "ask": "Выдать лист заданий «{title}» классу {class}?",
+            "done": "Лист заданий «{title}» выдан классу {class}."
+          },
+          "practice": {
+            "ask": "Выдать упражнения с доски «{title}» классу {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}} по каждому заданию",
+            "done": "«{title}» выдано классу {class}: {count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}."
+          },
+          "unit": {
+            "ask": "Добавить раздел «{name}» в {class}?",
+            "done": "Раздел «{name}» добавлен в {class}."
+          },
+          "renameUnit": {
+            "ask": "Переименовать раздел «{old}» в {class} в «{name}»?",
+            "done": "Теперь раздел называется «{name}»."
+          },
+          "move": {
+            "up": "Поднять «{title}» на одно место в {class}?",
+            "down": "Опустить «{title}» на одно место в {class}?",
+            "movedUp": "«{title}» поднято на одно место.",
+            "movedDown": "«{title}» опущено на одно место."
+          },
+          "classroom": {
+            "ask": "Опубликовать «{title}» из {class} в Google Classroom?",
+            "course": "Курс в Classroom: {course}",
+            "done": "«{title}» опубликовано в Google Classroom.",
+            "scheduled": "В Classroom это останется черновиком до открытия {day}.",
+            "pastDue": "Срок сдачи уже прошёл, поэтому задание ушло без срока.",
+            "open": "Открыть в Classroom",
+            "page": "Страница Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Переименовать лист заданий «{old}» в «{title}»?",
+            "renamedSheet": "Теперь лист заданий называется «{title}».",
+            "deleteSheet": "Удалить лист заданий «{title}»?",
+            "deletedSheet": "Лист заданий «{title}» удалён.",
+            "openSheet": "Открыть лист заданий",
+            "allSheets": "Мои листы заданий",
+            "renameBoard": "Переименовать доску «{old}» в «{title}»?",
+            "renamedBoard": "Теперь доска называется «{title}».",
+            "copyBoard": "Сделать копию доски «{title}»?",
+            "copiedBoard": "Копия готова: «{title}».",
+            "deleteBoard": "Удалить доску «{title}»?",
+            "deletedBoard": "Доска «{title}» удалена.",
+            "openBoard": "Открыть доску",
+            "allBoards": "Мои доски",
+            "copyLesson": "Сделать копию урока «{title}»?",
+            "copiedLesson": "Копия готова: «{title}».",
+            "deleteLesson": "Удалить урок «{title}»?",
+            "inClasses": "{count, plural, one {Он выдан # классу.} few {Он выдан # классам.} many {Он выдан # классам.} other {Он выдан # класса.}}",
+            "withWork": "{count, plural, one {У # ученика есть работа в нём.} few {У # учеников есть работа в нём.} many {У # учеников есть работа в нём.} other {У # ученика есть работа в нём.}}",
+            "deletedLesson": "Урок «{title}» удалён.",
+            "openLesson": "Открыть урок",
+            "allLessons": "Мои уроки"
           }
         }
       }

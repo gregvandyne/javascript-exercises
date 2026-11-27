@@ -29,13 +29,17 @@
 //     view(u, data, t) -> { title, lines, value? }                     the open card (page only)
 //     run(u, data, value, { dry }) -> { ok: true, landed, done, undo? } | { ok: false, code, count? }
 //     doneView(u, done, t) -> { lines, links: [{ href, label, primary? }] }   the change card (page only)
-//     undo?(u, undoData) -> { ok: true, skipped } | { ok: false, code } }
+//     undo?(u, undoData) -> { ok: true, skipped } | { ok: false, code }
+//     send?(u, data) -> Promise<{ ok: true, ... } | { ok: false, code }>   a call outside the site (Google Classroom),
+//                                       awaited on the tap only (never in plan() or a dry run), before run(..., { sent })
+//                                       writes its change card in the transaction and reads it back }
 import { uid } from '../../db.js';
 import * as S from '../schools.js';
 import * as VC from '../verify-change.js';
 import { no } from './shared.js';
 import classes from './classes.js';
 import assignments from './assignments.js';
+import made from './made.js';
 
 export { idsOfToken, fold } from './shared.js';
 const RISKS = ['normal', 'child', 'delete', 'students', 'external'];
@@ -52,6 +56,7 @@ export function register(list) {
 }
 register(classes);
 register(assignments);
+register(made);
 export const ACTIONS = registry;
 export const actionIds = () => Object.keys(registry);
 
@@ -109,12 +114,24 @@ export function tryAction(u, p, value) {
   return { fail: WHY.includes(r && r.code) ? r.code : 'other', count: (r && r.count) || 0 };
 }
 /** The real change (inside the engine's transaction), read back. -> { verify, change, undo? } | { code, verify } */
-export function runAction(u, p, value) {
+export function runAction(u, p, value, sent) {
   const a = registry[p.action]; if (!a) return { code: 'notFound' };
-  const r = a.run(u, p.data, value, { dry: false });
+  const r = a.run(u, p.data, value, { dry: false, ...(sent ? { sent } : {}) });
   if (!r || !r.ok) return { code: r && r.code === 'notFound' ? 'notFound' : 'error', verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] } };
   if (!r.landed) return { code: 'error', verify: { ok: false, landed: 0, notLanded: [{ code: 'other' }] } };
   return { verify: { ok: true, landed: 1, notLanded: [] }, change: { kind: 'action', id: a.id, done: r.done }, ...(r.undo && a.undo ? { undo: { kind: 'action', id: a.id, ...r.undo } } : {}) };
+}
+/** Does this card's action reach outside the site (send())? */
+export const sends = p => !!(p && registry[p.action] && registry[p.action].send);
+const sending = new Set();
+/** The call outside the site, on Do it only (after tryAction), once per card at a time. -> { ok: true, sent } | { fail } */
+export async function sendAction(u, p) {
+  const a = registry[p.action]; if (!a || !a.send) return { fail: 'other' };
+  if (sending.has(p.id)) return { fail: 'other' };
+  sending.add(p.id);
+  try { const r = await a.send(u, p.data); return r && r.ok ? { ok: true, sent: r } : { fail: 'other', code: (r && r.code) || 'error' }; }
+  catch { return { fail: 'other', code: 'error' }; }
+  finally { sending.delete(p.id); }
 }
 export function undoAction(u, data) {
   const a = registry[data && data.id]; if (!a || !a.undo) return { ok: false, code: 'notFound' };

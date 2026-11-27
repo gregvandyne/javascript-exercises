@@ -904,14 +904,20 @@ function actionAct(u, row, turn, a, value) {
   const tried = AC.tryAction(u, p, value);
   if (tried.fail === 'needText') return { ok: false, code: 'needText' };
   if (tried.fail) return markNote(u, row, turn.id, { ...turn.note, action: { ...p, state: 'failed', why: tried.fail, ...(tried.count ? { count: tried.count } : {}) } });
-  return C.addTurn(u, SURFACE, KEY, {
+  const finish = sent => C.addTurn(u, SURFACE, KEY, {
     mark: { id: turn.id, fields: { note: { ...turn.note, action: { ...p, state: 'done' } } } }, text: '',
     apply: () => {
-      const r = AC.runAction(u, p, value);
+      const r = AC.runAction(u, p, value, sent);
       audit(u.id, 'companion.action', (p.data && p.data.classId) || '', { action: p.action, ok: !r.code });
       return r;
     },
   });
+  // An action that posts outside the site (Google Classroom): the call is made now, awaited, and only then is the change
+  // written and read back; a call that did not work leaves the card "Not done" and nothing is changed here.
+  if (AC.sends(p)) {
+    return AC.sendAction(u, p).then(s => (s.ok ? finish(s.sent) : markNote(u, row, turn.id, { ...turn.note, action: { ...p, state: 'failed', why: 'other' } })));
+  }
+  return finish();
 }
 /** Undo: the assignment comes off the class (lessons.js unassign; students' work is kept). */
 function undoAssign(u, data) {

@@ -7,6 +7,7 @@
 //   (the Assign pages' list: game-folders.js assignClasses); several and none named: an ask card. -> { c } | { ask } | { error }
 // - Students: only "[student N]" placeholders (idsOfToken, studentIn, someStudents); a name is never accepted.
 // - assignmentIn(ctx, c, ref): one of the class's assignments by id or title words. -> { cl } | { error }
+// - ownIn(ctx, all, ref, what, here): one of the teacher's own worksheets, boards or lessons (ownLessons) the same way.
 // - Dates: dayParam (the AI's 'YYYY-MM-DD' | 'none'), isoDay (a stored day), fmtDay (the card, in the teacher's language).
 // - clean(ctx, s): words with the teacher's students' names taken out (builder/lesson.js scrub), for anything the AI reads.
 import { q, uid } from '../../db.js';
@@ -95,3 +96,23 @@ export const clNow = id => q.get('SELECT * FROM class_lessons WHERE id=? AND rem
 // Links for a change card.
 export const classLink = (classId, t, view = '') => ({ href: `/class/${encodeURIComponent(classId)}${view}`, label: t('js.companion.act.openClass') });
 export const assignedLink = (classId, t) => ({ href: `/class/${encodeURIComponent(classId)}?view=assigned`, label: t('js.companion.asg.open') });
+
+// ---------------------------------------------------------------- the teacher's own things (worksheets, boards, lessons)
+/** One of the teacher's own things ({ id, title }) by its id or words of its title; with no words, `here` (the page's
+ *  own) when it is one of them. what: 'worksheet' | 'board' | 'lesson' (the AI's words). -> { it } | { error } */
+export function ownIn(ctx, all, ref, what, here = '') {
+  const list = xs => xs.slice(0, 12).map(x => `"${clean(ctx, x.title, 60)}"`).join(', ');
+  const r = String(ref || '').trim();
+  if (!r && here) { const h = all.find(x => x.id === here); if (h) return { it: h }; }
+  if (!all.length) return no(`The teacher has no ${what}s of their own.`);
+  if (!r) return no(`Say which ${what}. The teacher's ${what}s: ${list(all)}.`);
+  let hit = all.filter(x => x.id === r);
+  if (!hit.length) hit = all.filter(x => fold(x.title) === fold(r));
+  if (!hit.length) hit = all.filter(x => fold(x.title).includes(fold(r)));
+  if (hit.length === 1) return { it: hit[0] };
+  if (!hit.length) return no(`None of the teacher's ${what}s has that name. Their ${what}s: ${list(all)}.`);
+  return no(`More than one ${what} fits: ${list(hit)}. Ask the teacher which one.`);
+}
+/** The teacher's own lessons (they may edit) at every school they are staff of, or at one school; not archived. */
+export const ownLessons = (u, schoolId = '') => S.schoolsOf(u.id).filter(s => s.role !== 'student' && (!schoolId || s.id === schoolId))
+  .flatMap(s => L.allLessonsOf(u.id, s.id)).filter(l => L.canEditLesson(u, l));

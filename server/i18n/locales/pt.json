@@ -5000,7 +5000,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Isso tira da turma. O trabalho dos alunos é mantido."
+            "unassign": "Isso tira da turma. O trabalho dos alunos é mantido.",
+            "students": "Os alunos vão ver isso.",
+            "classroom": "Isso publica no Google Classroom: os alunos de lá vão ver.",
+            "deleteSheet": "Isso apaga a folha de atividades para sempre. As aulas já atribuídas mantêm as perguntas.",
+            "deleteBoard": "Isso apaga o quadro para sempre.",
+            "deleteLesson": "Isso apaga a aula para sempre, com as atribuições e o trabalho dos alunos nelas."
           },
           "due": {
             "ask": "Mudar as datas de “{title}” em {class}?",
@@ -5012,6 +5017,68 @@
           "unassign": {
             "ask": "Tirar “{title}” de {class}?",
             "done": "“{title}” saiu de {class}."
+          },
+          "seeWork": "Ver o trabalho",
+          "lesson": {
+            "ask": "Atribuir a aula “{title}” a {class}?",
+            "done": "A aula “{title}” foi atribuída a {class}."
+          },
+          "sheet": {
+            "ask": "Atribuir a folha de atividades “{title}” a {class}?",
+            "done": "A folha de atividades “{title}” foi atribuída a {class}."
+          },
+          "practice": {
+            "ask": "Atribuir prática do quadro “{title}” a {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# pergunta} other {# perguntas}} de cada tarefa",
+            "done": "“{title}” foi atribuído a {class}: {count, plural, one {# pergunta} other {# perguntas}}."
+          },
+          "unit": {
+            "ask": "Adicionar a unidade “{name}” a {class}?",
+            "done": "Unidade “{name}” adicionada a {class}."
+          },
+          "renameUnit": {
+            "ask": "Renomear a unidade “{old}” de {class} para “{name}”?",
+            "done": "A unidade agora se chama “{name}”."
+          },
+          "move": {
+            "up": "Subir “{title}” um lugar em {class}?",
+            "down": "Descer “{title}” um lugar em {class}?",
+            "movedUp": "“{title}” subiu um lugar.",
+            "movedDown": "“{title}” desceu um lugar."
+          },
+          "classroom": {
+            "ask": "Publicar “{title}” de {class} no Google Classroom?",
+            "course": "Turma do Classroom: {course}",
+            "done": "“{title}” foi publicado no Google Classroom.",
+            "scheduled": "Fica como rascunho no Classroom até abrir em {day}.",
+            "pastDue": "A data de entrega já passou, então foi sem data.",
+            "open": "Abrir no Classroom",
+            "page": "Página do Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Renomear a folha de atividades “{old}” para “{title}”?",
+            "renamedSheet": "A folha de atividades agora se chama “{title}”.",
+            "deleteSheet": "Apagar a folha de atividades “{title}”?",
+            "deletedSheet": "A folha de atividades “{title}” foi apagada.",
+            "openSheet": "Abrir a folha de atividades",
+            "allSheets": "Ver minhas folhas de atividades",
+            "renameBoard": "Renomear o quadro “{old}” para “{title}”?",
+            "renamedBoard": "O quadro agora se chama “{title}”.",
+            "copyBoard": "Fazer uma cópia do quadro “{title}”?",
+            "copiedBoard": "Cópia feita: “{title}”.",
+            "deleteBoard": "Apagar o quadro “{title}”?",
+            "deletedBoard": "O quadro “{title}” foi apagado.",
+            "openBoard": "Abrir o quadro",
+            "allBoards": "Ver meus quadros",
+            "copyLesson": "Fazer uma cópia da aula “{title}”?",
+            "copiedLesson": "Cópia feita: “{title}”.",
+            "deleteLesson": "Apagar a aula “{title}”?",
+            "inClasses": "{count, plural, one {Está atribuída a # turma.} other {Está atribuída a # turmas.}}",
+            "withWork": "{count, plural, one {# aluno tem trabalho nela.} other {# alunos têm trabalho nela.}}",
+            "deletedLesson": "A aula “{title}” foi apagada.",
+            "openLesson": "Abrir a aula",
+            "allLessons": "Ver minhas aulas"
           }
         }
       }
