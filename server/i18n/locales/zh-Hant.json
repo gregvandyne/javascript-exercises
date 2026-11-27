@@ -5056,6 +5056,85 @@
             "ask": "要把「{title}」從 {class} 移除嗎？",
             "done": "已把「{title}」從 {class} 移除。"
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "這會送到學生的桌面。",
+            "takeBack": "這會從學生的桌面拿走。學生的作業會保留。",
+            "live": "這會改變學生螢幕上顯示的內容。",
+            "parents": "家長檢視開啟時，家長會看到這個班級。"
+          },
+          "who": "學生：{names}",
+          "openHub": "開啟 Hub",
+          "att": {
+            "absent": "把 {class} 的 {count} 位學生標為今天缺席？",
+            "home": "把 {class} 的 {count} 位學生標為今天在家？",
+            "here": "把 {class} 的 {count} 位學生標為今天出席？",
+            "everyone": "把 {class} 的所有人標為今天出席？",
+            "doneAbsent": "已把 {count} 位學生標為今天缺席。",
+            "doneHome": "已把 {count} 位學生標為今天在家。",
+            "doneHere": "已把 {count} 位學生標為今天出席。",
+            "doneEveryone": "{class} 的所有人今天都已標為出席。"
+          },
+          "sup": {
+            "ask": "要更改 {class} 中 {name} 的支援嗎？",
+            "done": "已更改 {name} 的支援。",
+            "timeOff": "沒有延長時間",
+            "time150": "延長時間：1.5 倍",
+            "time200": "延長時間：兩倍",
+            "read": "朗讀",
+            "simple": "較簡單的用詞",
+            "big": "較大的文字",
+            "none": "沒有支援"
+          },
+          "groups": {
+            "ask": "要在 {class} 分成 {count} 組嗎？",
+            "done": "已在 {class} 分成 {count} 組。",
+            "name": "第 {n} 組",
+            "line": "{group}：{names}",
+            "empty": "{group}：還沒有人",
+            "rest": "有 {count} 位學生不在任何一組。"
+          },
+          "hand": {
+            "ask": "要在 {class} 把「{title}」發給{who}嗎？",
+            "done": "已把「{title}」發給{who}。",
+            "everyone": "每個桌面",
+            "group": "小組「{group}」"
+          },
+          "back": {
+            "askAll": "要從 {class} 的每個桌面拿走「{title}」嗎？",
+            "askOne": "要從 {name} 的桌面拿走「{title}」嗎？",
+            "doneAll": "已從每個桌面拿走「{title}」。",
+            "doneOne": "已從 {name} 的桌面拿走「{title}」。"
+          },
+          "needs": {
+            "seen": "要在「需要關心」把 {name} 標為已看過嗎？",
+            "snooze": "要在「需要關心」把 {name} 延後到下一個上學日嗎？",
+            "seenDone": "已把 {name} 標為已看過。",
+            "snoozeDone": "已把 {name} 延後到下一個上學日。",
+            "rule": {
+              "stuck": "卡在一份作業上",
+              "hand": "舉手一段時間了",
+              "ask": "在家提出的問題還在等",
+              "tries": "試了好幾次還沒做到",
+              "reading": "閱讀測驗低於百分之 60",
+              "overdue": "過了期限的作業越積越多"
+            }
+          },
+          "live": {
+            "start": "要在 {class} 開始即時上課嗎？",
+            "startLine": "每個桌面都會被叫到 Hub，班級登入也會開啟。",
+            "end": "要結束 {class} 的即時上課嗎？",
+            "endLine": "班級登入會關閉，班級共用的裝置會登出。",
+            "started": "已在 {class} 開始即時上課。",
+            "ended": "已結束 {class} 的即時上課。"
+          },
+          "parents": {
+            "on": "要開啟 {class} 的家長檢視嗎？",
+            "off": "要關閉 {class} 的家長檢視嗎？",
+            "onDone": "{class} 的家長檢視已開啟。",
+            "offDone": "{class} 的家長檢視已關閉。"
+          }
         }
       }
     },

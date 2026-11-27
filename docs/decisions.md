@@ -16603,6 +16603,18 @@ card and tap (assign, createClass, givePoint...). From here on every other teach
   name, grade, subject; Undo), `changeDue` (L.updateAssignment: due and open day, or "none"; Undo), `unassign` (risk
   delete; L.unassign, students' work kept; Undo is L.assign of the same lesson, which brings it back with its work).
   How-to answers for add-students and due-dates now tell the AI it can do it with doAction.
+- **The Hub's actions** (`companion-actions/homeroom.js`, strings `js.companion.act.homeroom.*`): only on a class the
+  teacher may run the Hub for (H.canUseClass; the Hub off for them: refused with the reason). `takeAttendance` (AT.mark:
+  here, absent, at home, or everyone here; there is no Late; Undo restores the marks), `setSupport` (SUP.setSupport:
+  only what was asked changes; Undo), `makeGroups` (H.saveGroups: from placeholders or "N mixed groups"; Undo),
+  `handOut` (risk students; HO.handOut of an official, not hidden Oomba lesson or HL.handOutLesson of their own lesson
+  plan, to every desk, a group or one desk; Undo takes it back), `takeBack` (risk delete; HO.removeHandout, work kept;
+  Undo hands it out again with L.assign / L.setStudents), `needsSeen` / `needsSnooze` (NL.mark, by Needs a look's
+  "Student A"; Undo restores the student's marks), `startClass` (H.setLive, no dry run since live class has memory
+  state; Undo ends it), `endClass` (no Undo: it signs out shared devices), `parentsView` (PV.setParents; Undo). The AI
+  is told counts and what was asked: never a name, a student's work, their current supports, why they are on Needs a
+  look or who is absent. A class named that is not the teacher's is refused even when they have only one class
+  (whichClass no longer falls back to the only class when a name was given).
 
 ### How to add an action
 

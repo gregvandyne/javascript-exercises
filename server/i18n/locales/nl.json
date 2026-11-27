@@ -5057,6 +5057,85 @@
             "ask": "‘{title}’ uit {class} halen?",
             "done": "‘{title}’ uit {class} gehaald."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Dit komt op de tafels van de leerlingen.",
+            "takeBack": "Dit haalt het van de tafels van de leerlingen. Hun werk blijft bewaard.",
+            "live": "Dit verandert wat de schermen van de leerlingen tonen.",
+            "parents": "Ouders zien deze klas zolang de oudersweergave aan staat."
+          },
+          "who": "Leerlingen: {names}",
+          "openHub": "De Hub openen",
+          "att": {
+            "absent": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als afwezig noteren in {class}?",
+            "home": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als thuis noteren in {class}?",
+            "here": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als aanwezig noteren in {class}?",
+            "everyone": "Iedereen in {class} vandaag als aanwezig noteren?",
+            "doneAbsent": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als afwezig genoteerd.",
+            "doneHome": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als thuis genoteerd.",
+            "doneHere": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als aanwezig genoteerd.",
+            "doneEveryone": "Iedereen in {class} staat vandaag als aanwezig."
+          },
+          "sup": {
+            "ask": "De hulp voor {name} in {class} aanpassen?",
+            "done": "De hulp voor {name} is aangepast.",
+            "timeOff": "Geen extra tijd",
+            "time150": "Extra tijd: 1,5 keer",
+            "time200": "Extra tijd: dubbel",
+            "read": "Voorlezen",
+            "simple": "Eenvoudiger woorden",
+            "big": "Grotere tekst",
+            "none": "Geen hulp"
+          },
+          "groups": {
+            "ask": "{count, plural, one {# groep} other {# groepen}} maken in {class}?",
+            "done": "{count, plural, one {# groep} other {# groepen}} gemaakt in {class}.",
+            "name": "Groep {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: nog niemand",
+            "rest": "{count, plural, one {# leerling zit} other {# leerlingen zitten}} in geen enkele groep."
+          },
+          "hand": {
+            "ask": "“{title}” uitdelen aan {who} in {class}?",
+            "done": "“{title}” uitgedeeld aan {who}.",
+            "everyone": "alle tafels",
+            "group": "de groep {group}"
+          },
+          "back": {
+            "askAll": "“{title}” van alle tafels halen in {class}?",
+            "askOne": "“{title}” van de tafel van {name} halen?",
+            "doneAll": "“{title}” van alle tafels gehaald.",
+            "doneOne": "“{title}” van de tafel van {name} gehaald."
+          },
+          "needs": {
+            "seen": "{name} bij Even kijken als gezien markeren?",
+            "snooze": "{name} bij Even kijken uitstellen tot de volgende schooldag?",
+            "seenDone": "{name} als gezien gemarkeerd.",
+            "snoozeDone": "{name} uitgesteld tot de volgende schooldag.",
+            "rule": {
+              "stuck": "Zit vast op een opdracht",
+              "hand": "Steekt al een tijdje een hand op",
+              "ask": "Een vraag van thuis wacht",
+              "tries": "Meerdere pogingen zonder dat het lukt",
+              "reading": "Een leesquiz onder 60 procent",
+              "overdue": "Werk stapelt zich op na de deadline"
+            }
+          },
+          "live": {
+            "start": "Live les starten in {class}?",
+            "startLine": "Elke tafel wordt naar de Hub geroepen en het inloggen van de klas gaat open.",
+            "end": "Live les stoppen in {class}?",
+            "endLine": "Het inloggen van de klas sluit en de gedeelde apparaten van de klas worden uitgelogd.",
+            "started": "Live les gestart in {class}.",
+            "ended": "Live les gestopt in {class}."
+          },
+          "parents": {
+            "on": "Oudersweergave van {class} aanzetten?",
+            "off": "Oudersweergave van {class} uitzetten?",
+            "onDone": "De oudersweergave van {class} staat aan.",
+            "offDone": "De oudersweergave van {class} staat uit."
+          }
         }
       }
     },

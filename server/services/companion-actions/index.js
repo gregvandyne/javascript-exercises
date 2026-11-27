@@ -36,6 +36,7 @@ import * as VC from '../verify-change.js';
 import { no } from './shared.js';
 import classes from './classes.js';
 import assignments from './assignments.js';
+import homeroom from './homeroom.js';
 
 export { idsOfToken, fold } from './shared.js';
 const RISKS = ['normal', 'child', 'delete', 'students', 'external'];
@@ -52,6 +53,7 @@ export function register(list) {
 }
 register(classes);
 register(assignments);
+register(homeroom);
 export const ACTIONS = registry;
 export const actionIds = () => Object.keys(registry);
 

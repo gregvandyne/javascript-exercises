@@ -5056,6 +5056,85 @@
             "ask": "¿Quitar «{title}» de {class}?",
             "done": "Se quitó «{title}» de {class}."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Esto va a los pupitres de los alumnos.",
+            "takeBack": "Esto lo quita de los pupitres de los alumnos. Su trabajo se guarda.",
+            "live": "Esto cambia lo que muestran las pantallas de los alumnos.",
+            "parents": "Las familias verán esta clase mientras la vista de familias esté activada."
+          },
+          "who": "Alumnos: {names}",
+          "openHub": "Abrir el Hub",
+          "att": {
+            "absent": "¿Marcar {count, plural, one {# alumno} other {# alumnos}} como ausente hoy en {class}?",
+            "home": "¿Marcar {count, plural, one {# alumno} other {# alumnos}} en casa hoy en {class}?",
+            "here": "¿Marcar {count, plural, one {# alumno} other {# alumnos}} como presente hoy en {class}?",
+            "everyone": "¿Marcar a todos en {class} como presentes hoy?",
+            "doneAbsent": "{count, plural, one {# alumno marcado} other {# alumnos marcados}} como ausente hoy.",
+            "doneHome": "{count, plural, one {# alumno marcado} other {# alumnos marcados}} en casa hoy.",
+            "doneHere": "{count, plural, one {# alumno marcado} other {# alumnos marcados}} como presente hoy.",
+            "doneEveryone": "Todos en {class} están marcados como presentes hoy."
+          },
+          "sup": {
+            "ask": "¿Cambiar los apoyos de {name} en {class}?",
+            "done": "Se cambiaron los apoyos de {name}.",
+            "timeOff": "Sin tiempo extra",
+            "time150": "Tiempo extra: 1,5 veces",
+            "time200": "Tiempo extra: el doble",
+            "read": "Lectura en voz alta",
+            "simple": "Palabras más sencillas",
+            "big": "Texto más grande",
+            "none": "Sin apoyos"
+          },
+          "groups": {
+            "ask": "¿Hacer {count, plural, one {# grupo} other {# grupos}} en {class}?",
+            "done": "{count, plural, one {Se hizo # grupo} other {Se hicieron # grupos}} en {class}.",
+            "name": "Grupo {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: nadie todavía",
+            "rest": "{count, plural, one {# alumno no está} other {# alumnos no están}} en ningún grupo."
+          },
+          "hand": {
+            "ask": "¿Repartir «{title}» a {who} en {class}?",
+            "done": "Se repartió «{title}» a {who}.",
+            "everyone": "todos los pupitres",
+            "group": "el grupo {group}"
+          },
+          "back": {
+            "askAll": "¿Quitar «{title}» de todos los pupitres en {class}?",
+            "askOne": "¿Quitar «{title}» del pupitre de {name}?",
+            "doneAll": "Se quitó «{title}» de todos los pupitres.",
+            "doneOne": "Se quitó «{title}» del pupitre de {name}."
+          },
+          "needs": {
+            "seen": "¿Marcar a {name} como visto en Revisar?",
+            "snooze": "¿Posponer a {name} en Revisar hasta el próximo día de clase?",
+            "seenDone": "{name} quedó marcado como visto.",
+            "snoozeDone": "{name} quedó pospuesto hasta el próximo día de clase.",
+            "rule": {
+              "stuck": "Atascado en una actividad",
+              "hand": "Una mano levantada hace rato",
+              "ask": "Una pregunta desde casa esperando",
+              "tries": "Varios intentos sin lograrlo",
+              "reading": "Un cuestionario de lectura por debajo del 60 por ciento",
+              "overdue": "Trabajo acumulado después de la fecha"
+            }
+          },
+          "live": {
+            "start": "¿Empezar la clase en vivo en {class}?",
+            "startLine": "Se llama a cada pupitre al Hub y se abre el acceso de la clase.",
+            "end": "¿Terminar la clase en vivo en {class}?",
+            "endLine": "Se cierra el acceso de la clase y se cierra la sesión en los dispositivos compartidos de la clase.",
+            "started": "La clase en vivo empezó en {class}.",
+            "ended": "La clase en vivo terminó en {class}."
+          },
+          "parents": {
+            "on": "¿Activar la vista de familias de {class}?",
+            "off": "¿Desactivar la vista de familias de {class}?",
+            "onDone": "La vista de familias de {class} está activada.",
+            "offDone": "La vista de familias de {class} está desactivada."
+          }
         }
       }
     },

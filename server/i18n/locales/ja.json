@@ -5056,6 +5056,85 @@
             "ask": "{class}から「{title}」を外しますか？",
             "done": "{class}から「{title}」を外しました。"
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "児童の机に届きます。",
+            "takeBack": "児童の机から外します。児童の取り組みは残ります。",
+            "live": "児童の画面に表示される内容が変わります。",
+            "parents": "保護者ビューがオンの間、保護者はこのクラスを見られます。"
+          },
+          "who": "児童: {names}",
+          "openHub": "ハブを開く",
+          "att": {
+            "absent": "{class}の{count}人を今日の欠席にしますか？",
+            "home": "{class}の{count}人を今日の在宅にしますか？",
+            "here": "{class}の{count}人を今日の出席にしますか？",
+            "everyone": "{class}の全員を今日の出席にしますか？",
+            "doneAbsent": "{count}人を今日の欠席にしました。",
+            "doneHome": "{count}人を今日の在宅にしました。",
+            "doneHere": "{count}人を今日の出席にしました。",
+            "doneEveryone": "{class}の全員を今日の出席にしました。"
+          },
+          "sup": {
+            "ask": "{class}の{name}さんのサポートを変えますか？",
+            "done": "{name}さんのサポートを変えました。",
+            "timeOff": "時間の延長なし",
+            "time150": "時間の延長: 1.5倍",
+            "time200": "時間の延長: 2倍",
+            "read": "読み上げ",
+            "simple": "やさしい言葉",
+            "big": "大きな文字",
+            "none": "サポートなし"
+          },
+          "groups": {
+            "ask": "{class}に{count}つのグループを作りますか？",
+            "done": "{class}に{count}つのグループを作りました。",
+            "name": "グループ{n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: まだだれもいません",
+            "rest": "{count}人はどのグループにも入っていません。"
+          },
+          "hand": {
+            "ask": "{class}で「{title}」を{who}に配りますか？",
+            "done": "「{title}」を{who}に配りました。",
+            "everyone": "すべての机",
+            "group": "グループ「{group}」"
+          },
+          "back": {
+            "askAll": "{class}のすべての机から「{title}」を外しますか？",
+            "askOne": "{name}さんの机から「{title}」を外しますか？",
+            "doneAll": "すべての机から「{title}」を外しました。",
+            "doneOne": "{name}さんの机から「{title}」を外しました。"
+          },
+          "needs": {
+            "seen": "見てあげてで{name}さんを確認済みにしますか？",
+            "snooze": "見てあげてで{name}さんを次の登校日まで後回しにしますか？",
+            "seenDone": "{name}さんを確認済みにしました。",
+            "snoozeDone": "{name}さんを次の登校日まで後回しにしました。",
+            "rule": {
+              "stuck": "課題で止まっている",
+              "hand": "しばらく手を挙げている",
+              "ask": "家からの質問が待っている",
+              "tries": "何度やってもうまくいかない",
+              "reading": "読書クイズが60パーセント未満",
+              "overdue": "期限後の課題がたまっている"
+            }
+          },
+          "live": {
+            "start": "{class}でライブ授業を始めますか？",
+            "startLine": "すべての机がハブに呼ばれ、クラスのサインインが開きます。",
+            "end": "{class}のライブ授業を終えますか？",
+            "endLine": "クラスのサインインが閉じ、クラスの共有端末はサインアウトされます。",
+            "started": "{class}でライブ授業を始めました。",
+            "ended": "{class}のライブ授業を終えました。"
+          },
+          "parents": {
+            "on": "{class}の保護者ビューをオンにしますか？",
+            "off": "{class}の保護者ビューをオフにしますか？",
+            "onDone": "{class}の保護者ビューはオンです。",
+            "offDone": "{class}の保護者ビューはオフです。"
+          }
         }
       }
     },

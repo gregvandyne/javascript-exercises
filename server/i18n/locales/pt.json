@@ -5057,6 +5057,85 @@
             "ask": "Tirar “{title}” de {class}?",
             "done": "“{title}” saiu de {class}."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Isto vai para as mesas dos alunos.",
+            "takeBack": "Isto tira das mesas dos alunos. O trabalho deles é mantido.",
+            "live": "Isto muda o que aparece nas telas dos alunos.",
+            "parents": "Os pais verão esta turma enquanto a visão dos pais estiver ligada."
+          },
+          "who": "Alunos: {names}",
+          "openHub": "Abrir o Hub",
+          "att": {
+            "absent": "Marcar {count, plural, one {# aluno} other {# alunos}} como ausente hoje em {class}?",
+            "home": "Marcar {count, plural, one {# aluno} other {# alunos}} como em casa hoje em {class}?",
+            "here": "Marcar {count, plural, one {# aluno} other {# alunos}} como presente hoje em {class}?",
+            "everyone": "Marcar todos de {class} como presentes hoje?",
+            "doneAbsent": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como ausente hoje.",
+            "doneHome": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como em casa hoje.",
+            "doneHere": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como presente hoje.",
+            "doneEveryone": "Todos de {class} estão marcados como presentes hoje."
+          },
+          "sup": {
+            "ask": "Mudar os apoios de {name} em {class}?",
+            "done": "Os apoios de {name} foram alterados.",
+            "timeOff": "Sem tempo extra",
+            "time150": "Tempo extra: 1,5 vez",
+            "time200": "Tempo extra: o dobro",
+            "read": "Leitura em voz alta",
+            "simple": "Palavras mais simples",
+            "big": "Texto maior",
+            "none": "Sem apoios"
+          },
+          "groups": {
+            "ask": "Fazer {count, plural, one {# grupo} other {# grupos}} em {class}?",
+            "done": "{count, plural, one {# grupo feito} other {# grupos feitos}} em {class}.",
+            "name": "Grupo {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: ninguém ainda",
+            "rest": "{count, plural, one {# aluno não está} other {# alunos não estão}} em nenhum grupo."
+          },
+          "hand": {
+            "ask": "Entregar “{title}” para {who} em {class}?",
+            "done": "“{title}” entregue para {who}.",
+            "everyone": "todas as mesas",
+            "group": "o grupo {group}"
+          },
+          "back": {
+            "askAll": "Tirar “{title}” de todas as mesas em {class}?",
+            "askOne": "Tirar “{title}” da mesa de {name}?",
+            "doneAll": "“{title}” foi tirado de todas as mesas.",
+            "doneOne": "“{title}” foi tirado da mesa de {name}."
+          },
+          "needs": {
+            "seen": "Marcar {name} como visto em Dar uma olhada?",
+            "snooze": "Adiar {name} em Dar uma olhada até o próximo dia de aula?",
+            "seenDone": "{name} marcado como visto.",
+            "snoozeDone": "{name} adiado até o próximo dia de aula.",
+            "rule": {
+              "stuck": "Travado em uma atividade",
+              "hand": "Mão levantada há um tempo",
+              "ask": "Uma pergunta de casa esperando",
+              "tries": "Várias tentativas sem conseguir",
+              "reading": "Um quiz de leitura abaixo de 60 por cento",
+              "overdue": "Trabalho acumulando depois do prazo"
+            }
+          },
+          "live": {
+            "start": "Começar a aula ao vivo em {class}?",
+            "startLine": "Todas as mesas são chamadas para o Hub, e o login da turma abre.",
+            "end": "Encerrar a aula ao vivo em {class}?",
+            "endLine": "O login da turma fecha e os aparelhos compartilhados da turma saem da conta.",
+            "started": "Aula ao vivo começou em {class}.",
+            "ended": "Aula ao vivo encerrada em {class}."
+          },
+          "parents": {
+            "on": "Ligar a visão dos pais de {class}?",
+            "off": "Desligar a visão dos pais de {class}?",
+            "onDone": "A visão dos pais de {class} está ligada.",
+            "offDone": "A visão dos pais de {class} está desligada."
+          }
         }
       }
     },

@@ -5056,6 +5056,85 @@
             "ask": "Retirer « {title} » de {class} ?",
             "done": "« {title} » retiré de {class}."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Cela va sur les bureaux des élèves.",
+            "takeBack": "Cela le retire des bureaux des élèves. Leur travail est conservé.",
+            "live": "Cela change ce que montrent les écrans des élèves.",
+            "parents": "Les parents verront cette classe tant que la vue des parents est activée."
+          },
+          "who": "Élèves : {names}",
+          "openHub": "Ouvrir le Hub",
+          "att": {
+            "absent": "Marquer {count, plural, one {# élève} other {# élèves}} absent aujourd’hui dans {class} ?",
+            "home": "Marquer {count, plural, one {# élève} other {# élèves}} à la maison aujourd’hui dans {class} ?",
+            "here": "Marquer {count, plural, one {# élève} other {# élèves}} présent aujourd’hui dans {class} ?",
+            "everyone": "Marquer tout le monde présent aujourd’hui dans {class} ?",
+            "doneAbsent": "{count, plural, one {# élève marqué} other {# élèves marqués}} absent aujourd’hui.",
+            "doneHome": "{count, plural, one {# élève marqué} other {# élèves marqués}} à la maison aujourd’hui.",
+            "doneHere": "{count, plural, one {# élève marqué} other {# élèves marqués}} présent aujourd’hui.",
+            "doneEveryone": "Tout le monde dans {class} est marqué présent aujourd’hui."
+          },
+          "sup": {
+            "ask": "Changer les aides de {name} dans {class} ?",
+            "done": "Les aides de {name} ont changé.",
+            "timeOff": "Pas de temps en plus",
+            "time150": "Temps en plus : 1,5 fois",
+            "time200": "Temps en plus : le double",
+            "read": "Lecture à voix haute",
+            "simple": "Mots plus simples",
+            "big": "Texte plus grand",
+            "none": "Aucune aide"
+          },
+          "groups": {
+            "ask": "Faire {count, plural, one {# groupe} other {# groupes}} dans {class} ?",
+            "done": "{count, plural, one {# groupe fait} other {# groupes faits}} dans {class}.",
+            "name": "Groupe {n}",
+            "line": "{group} : {names}",
+            "empty": "{group} : personne pour l’instant",
+            "rest": "{count, plural, one {# élève n’est} other {# élèves ne sont}} dans aucun groupe."
+          },
+          "hand": {
+            "ask": "Distribuer « {title} » à {who} dans {class} ?",
+            "done": "« {title} » distribué à {who}.",
+            "everyone": "tous les bureaux",
+            "group": "le groupe {group}"
+          },
+          "back": {
+            "askAll": "Retirer « {title} » de tous les bureaux dans {class} ?",
+            "askOne": "Retirer « {title} » du bureau de {name} ?",
+            "doneAll": "« {title} » retiré de tous les bureaux.",
+            "doneOne": "« {title} » retiré du bureau de {name}."
+          },
+          "needs": {
+            "seen": "Marquer {name} comme vu dans À regarder ?",
+            "snooze": "Mettre {name} de côté dans À regarder jusqu’au prochain jour de classe ?",
+            "seenDone": "{name} marqué comme vu.",
+            "snoozeDone": "{name} mis de côté jusqu’au prochain jour de classe.",
+            "rule": {
+              "stuck": "Bloqué sur un document",
+              "hand": "Une main levée depuis un moment",
+              "ask": "Une question de la maison en attente",
+              "tries": "Plusieurs essais sans y arriver",
+              "reading": "Un quiz de lecture sous 60 pour cent",
+              "overdue": "Du travail qui s’accumule après l’échéance"
+            }
+          },
+          "live": {
+            "start": "Commencer la classe en direct dans {class} ?",
+            "startLine": "Chaque bureau est invité à venir au Hub, et la connexion de la classe s’ouvre.",
+            "end": "Terminer la classe en direct dans {class} ?",
+            "endLine": "La connexion de la classe se ferme et les appareils partagés de la classe sont déconnectés.",
+            "started": "Classe en direct commencée dans {class}.",
+            "ended": "Classe en direct terminée dans {class}."
+          },
+          "parents": {
+            "on": "Activer la vue des parents de {class} ?",
+            "off": "Désactiver la vue des parents de {class} ?",
+            "onDone": "La vue des parents de {class} est activée.",
+            "offDone": "La vue des parents de {class} est désactivée."
+          }
         }
       }
     },

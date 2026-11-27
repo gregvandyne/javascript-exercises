@@ -5057,6 +5057,85 @@
             "ask": "„{title}“ aus {class} nehmen?",
             "done": "„{title}“ aus {class} genommen."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Das kommt auf die Pulte der Kinder.",
+            "takeBack": "Damit wird es von den Pulten der Kinder genommen. Ihre Arbeit bleibt erhalten.",
+            "live": "Das ändert, was die Bildschirme der Kinder zeigen.",
+            "parents": "Eltern sehen diese Klasse, solange die Elternansicht an ist."
+          },
+          "who": "Kinder: {names}",
+          "openHub": "Hub öffnen",
+          "att": {
+            "absent": "{count, plural, one {# Kind} other {# Kinder}} in {class} heute als abwesend eintragen?",
+            "home": "{count, plural, one {# Kind} other {# Kinder}} in {class} heute als zu Hause eintragen?",
+            "here": "{count, plural, one {# Kind} other {# Kinder}} in {class} heute als da eintragen?",
+            "everyone": "Alle in {class} heute als da eintragen?",
+            "doneAbsent": "{count, plural, one {# Kind} other {# Kinder}} heute als abwesend eingetragen.",
+            "doneHome": "{count, plural, one {# Kind} other {# Kinder}} heute als zu Hause eingetragen.",
+            "doneHere": "{count, plural, one {# Kind} other {# Kinder}} heute als da eingetragen.",
+            "doneEveryone": "Alle in {class} sind heute als da eingetragen."
+          },
+          "sup": {
+            "ask": "Die Hilfen von {name} in {class} ändern?",
+            "done": "Die Hilfen von {name} wurden geändert.",
+            "timeOff": "Keine zusätzliche Zeit",
+            "time150": "Zusätzliche Zeit: 1,5-mal",
+            "time200": "Zusätzliche Zeit: doppelt",
+            "read": "Vorlesen",
+            "simple": "Einfachere Worte",
+            "big": "Größere Schrift",
+            "none": "Keine Hilfen"
+          },
+          "groups": {
+            "ask": "{count, plural, one {# Gruppe} other {# Gruppen}} in {class} bilden?",
+            "done": "{count, plural, one {# Gruppe} other {# Gruppen}} in {class} gebildet.",
+            "name": "Gruppe {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: noch niemand",
+            "rest": "{count, plural, one {# Kind ist} other {# Kinder sind}} in keiner Gruppe."
+          },
+          "hand": {
+            "ask": "„{title}“ in {class} an {who} austeilen?",
+            "done": "„{title}“ an {who} ausgeteilt.",
+            "everyone": "alle Pulte",
+            "group": "die Gruppe {group}"
+          },
+          "back": {
+            "askAll": "„{title}“ in {class} von allen Pulten nehmen?",
+            "askOne": "„{title}“ vom Pult von {name} nehmen?",
+            "doneAll": "„{title}“ von allen Pulten genommen.",
+            "doneOne": "„{title}“ vom Pult von {name} genommen."
+          },
+          "needs": {
+            "seen": "{name} unter Mal nachsehen als gesehen markieren?",
+            "snooze": "{name} unter Mal nachsehen bis zum nächsten Schultag zurückstellen?",
+            "seenDone": "{name} als gesehen markiert.",
+            "snoozeDone": "{name} bis zum nächsten Schultag zurückgestellt.",
+            "rule": {
+              "stuck": "Hängt an einer Aufgabe fest",
+              "hand": "Meldet sich schon eine Weile",
+              "ask": "Eine Frage von zu Hause wartet",
+              "tries": "Mehrere Versuche ohne Erfolg",
+              "reading": "Ein Lesequiz unter 60 Prozent",
+              "overdue": "Arbeit stapelt sich nach dem Termin"
+            }
+          },
+          "live": {
+            "start": "Live-Unterricht in {class} starten?",
+            "startLine": "Alle Pulte werden in den Hub geholt, und die Klassenanmeldung öffnet sich.",
+            "end": "Live-Unterricht in {class} beenden?",
+            "endLine": "Die Klassenanmeldung schließt sich, und die geteilten Geräte der Klasse werden abgemeldet.",
+            "started": "Live-Unterricht in {class} gestartet.",
+            "ended": "Live-Unterricht in {class} beendet."
+          },
+          "parents": {
+            "on": "Elternansicht von {class} einschalten?",
+            "off": "Elternansicht von {class} ausschalten?",
+            "onDone": "Die Elternansicht von {class} ist an.",
+            "offDone": "Die Elternansicht von {class} ist aus."
+          }
         }
       }
     },

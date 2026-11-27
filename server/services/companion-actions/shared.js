@@ -52,7 +52,7 @@ export function whichClass(u, ctx, ref, { fit = null } = {}) {
   if (r) c = mine.find(x => x.id === r) || mine.find(x => fold(x.name) === fold(r)) || null;
   if (!c && r) { const near = mine.filter(x => fold(x.name).includes(fold(r))); if (near.length === 1) c = near[0]; }
   if (!c && !r && ctx.page && ctx.page.classId) c = mine.find(x => x.id === ctx.page.classId) || null;
-  if (!c && mine.length === 1) c = mine[0];
+  if (!c && !r && mine.length === 1) c = mine[0];
   if (c) return { c };
   if (r && !mine.some(x => fold(x.name).includes(fold(r)))) return no('That is not one of the teacher\'s classes.');
   return { ask: { id: uid(10), question: tFor(ctx.lang)('js.companion.act.whichClass'), options: mine.slice(0, 5).map(x => ({ label: clean(ctx, x.name, 60) })), state: 'open' } };
