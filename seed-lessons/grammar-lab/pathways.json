@@ -3,7 +3,7 @@
   "bands": [
     { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] },
     { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] },
-    { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8"] }
+    { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8", "parts-of-speech-2", "parts-of-speech-3", "sentences-and-fragments", "subjects-and-verbs", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "plurals-and-possessives", "prepositional-phrases", "pronoun-case", "pronoun-agreement", "punctuating-fanboys", "punctuating-subordinators", "restrictive-clauses", "capitalization-1", "capitalization-2", "singular-plural-possessives", "agreement-1", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "simple-tenses", "perfect-progressive", "verbals"] }
   ],
   "pathways": {
     "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] },
@@ -77,7 +77,33 @@
     "context-for-evidence": { "title": "Context for Evidence", "parts": [{ "title": "Context for Story Evidence", "topics": ["literary-context"] }, { "title": "Context for Nonfiction Evidence", "topics": ["nonfiction-context"] }] },
     "embedding-quotations": { "title": "Embedding Quotations", "parts": [{ "title": "Dialogue and Flow Quotes", "topics": ["capitalizing-quotes", "pause-before-quote", "dialogue-flow-quotes"] }, { "title": "Dialogue and Colon Quotes", "topics": ["dialogue-colon-quotes"] }] },
     "formal-and-informal": { "title": "Formal and Informal Language", "parts": [{ "topics": ["formal-informal"] }] },
-    "parts-of-speech-6-8": { "title": "Parts of Speech I", "parts": [{ "title": "Nouns", "topics": ["concrete-nouns"] }, { "title": "Common and Proper Nouns", "topics": ["common-nouns-6-8", "common-proper"] }, { "title": "Verbs", "topics": ["sentence-verb", "verb-tenses"] }], "marks": { "common-proper": "checkpoint" } }
+    "parts-of-speech-6-8": { "title": "Parts of Speech I", "parts": [{ "title": "Nouns", "topics": ["concrete-nouns"] }, { "title": "Common and Proper Nouns", "topics": ["common-nouns-6-8", "common-proper"] }, { "title": "Verbs", "topics": ["sentence-verb", "verb-tenses"] }], "marks": { "common-proper": "checkpoint" } },
+    "parts-of-speech-2": { "title": "Parts of Speech II", "parts": [{ "title": "Nouns", "topics": ["concrete-nouns"] }, { "title": "Common and Proper Nouns", "topics": ["common-nouns-6-8", "common-proper"] }, { "title": "Verbs", "topics": ["sentence-verb", "verb-tenses"] }, { "title": "Adjectives", "topics": ["adjective-describes", "adjectives-before-after"] }, { "title": "Adverbs", "topics": ["adverb-describes", "adverbs-time-place-manner"] }], "marks": { "common-proper": "checkpoint" } },
+    "parts-of-speech-3": { "title": "Parts of Speech III", "parts": [{ "title": "Adjectives", "topics": ["adjective-describes", "adjectives-before-after"] }, { "title": "Adverbs", "topics": ["adverb-describes", "adverbs-time-place-manner"] }, { "title": "Conjunctions", "topics": ["fanboys-identify", "subordinating-identify", "conj-adverbs-identify"] }, { "title": "Pronouns and Prepositions", "topics": ["identifying-pronouns", "prepositions"] }] },
+    "sentences-and-fragments": { "title": "Sentences and Fragments", "parts": [{ "title": "Dependent and Independent Clauses", "topics": ["complete-or-incomplete", "dependent-clauses"] }, { "title": "Simple Sentences and Fragments", "topics": ["fragments-in-dialogue", "pronoun-subject-sentences"] }, { "title": "Complex Sentences and Fragments", "topics": ["that-which-especially"] }] },
+    "subjects-and-verbs": { "title": "Subjects and Verbs", "parts": [{ "title": "Subjects", "topics": ["sentence-subject", "pronoun-subjects"] }, { "title": "Verbs", "topics": ["sentence-verb"] }] },
+    "introductions": { "title": "Introductory Paragraphs", "parts": [{ "title": "A Thesis You Can Argue", "topics": ["thesis-fact-opinion"] }, { "title": "Strong Hooks", "topics": ["hook-agreeing"] }, { "title": "Specific and Concise Language", "topics": ["redundant-wordy"] }] },
+    "mla-citations": { "title": "MLA Citations", "parts": [{ "title": "In-Text Citations", "topics": ["in-text-citations"] }, { "title": "Punctuating Citations", "topics": ["citation-end-marks"] }] },
+    "modifiers": { "title": "Misplaced and Dangling Modifiers", "parts": [{ "title": "Modifiers", "topics": ["identifying-modifiers"] }, { "title": "Reading Modifiers", "topics": ["misplaced-meaning", "dangling-meaning"] }, { "title": "Fixing Modifiers", "topics": ["fixing-misplaced", "fixing-dangling"] }] },
+    "phrases-and-clauses": { "title": "Phrases and Dependent Clauses", "parts": [{ "title": "Phrases and Clauses", "topics": ["appositive-refers", "participial-modifies"] }, { "title": "Punctuating Phrases and Clauses", "topics": ["commas-introductory", "dependent-fragments", "restrictive-clauses"] }, { "title": "Joining Clauses", "topics": ["splices-fused"] }] },
+    "plurals-and-possessives": { "title": "Plural and Possessive Nouns", "parts": [{ "title": "Plurals", "topics": ["regular-plurals"] }, { "title": "Singular Possessives", "topics": ["plural-or-possessive", "singular-possessives", "others-apostrophes"] }, { "title": "Shared and Unshared Possession", "topics": ["shared-unshared", "fixing-shared-possession"] }] },
+    "prepositional-phrases": { "title": "Prepositional Phrases", "parts": [{ "topics": ["prepositions"] }] },
+    "pronoun-case": { "title": "Pronoun Case", "parts": [{ "title": "Subject and Object Pronouns", "topics": ["subject-object-pronouns", "pronouns-in-compounds"] }, { "title": "Possessive Pronouns", "topics": ["gerund-pronouns"] }, { "title": "Reflexive Pronouns and Who or Whom", "topics": ["reflexive-pronouns", "who-whom"] }] },
+    "pronoun-agreement": { "title": "Pronoun-Antecedent Agreement", "parts": [{ "title": "Pronouns and Antecedents", "topics": ["identifying-pronouns"] }, { "title": "Pronouns That Agree", "topics": ["pronouns-agree", "indefinite-agreement"] }] },
+    "punctuating-fanboys": { "title": "Punctuating Coordinating Conjunctions", "parts": [{ "title": "Coordinating Conjunctions", "topics": ["fanboys-identify", "fanboys-function"] }, { "title": "Punctuating Coordinating Conjunctions", "topics": ["fanboys-punctuate"] }], "marks": { "fanboys-punctuate": "checkpoint" } },
+    "punctuating-subordinators": { "title": "Punctuating Subordinating Conjunctions", "parts": [{ "title": "Subordinating Conjunctions", "topics": ["subordinating-identify"] }, { "title": "Punctuating Subordinating Conjunctions", "topics": ["subordinating-start", "subordinating-middle"] }] },
+    "restrictive-clauses": { "title": "Restrictive and Nonrestrictive Clauses", "parts": [{ "topics": ["restrictive-clauses"] }] },
+    "capitalization-1": { "title": "Capitalization Rules I", "parts": [{ "title": "Basic Rules", "topics": ["cap-first-word"] }, { "title": "Days, Months, Holidays, and Seasons", "topics": ["cap-days-months", "cap-holidays", "cap-seasons"] }, { "title": "Names of People and Places", "topics": ["cap-places", "cap-family-titles"] }] },
+    "capitalization-2": { "title": "Capitalization Rules II", "parts": [{ "title": "Seasons", "topics": ["cap-seasons"] }, { "title": "Buildings and Schools", "topics": ["cap-buildings"] }, { "title": "Names and Titles", "topics": ["cap-social-titles", "cap-professional-titles", "cap-family-titles"] }, { "title": "Groups of People", "topics": ["cap-political-groups"] }, { "title": "Other Rules", "topics": ["cap-brands", "cap-space", "cap-subjects", "cap-hyphenated"] }] },
+    "singular-plural-possessives": { "title": "Singular and Plural Possessives", "parts": [{ "title": "Singular Possessives", "topics": ["singular-possessives", "others-apostrophes"] }, { "title": "Plural Possessives", "topics": ["plural-possessives"] }] },
+    "agreement-1": { "title": "Subject-Verb Agreement I", "parts": [{ "title": "Simple Subjects", "topics": ["agree-simple", "agree-doesnt-dont", "agree-here-there"] }, { "title": "Compound Subjects", "topics": ["agree-compound", "agree-or-nor"] }] },
+    "agreement-2": { "title": "Subject-Verb Agreement II", "parts": [{ "title": "Group Nouns", "topics": ["collective-which-part", "agree-collective"] }, { "title": "Numbers and Amounts", "topics": ["agree-parts-whole", "agree-amounts"] }, { "title": "Tricky Subjects", "topics": ["agree-tricky-nouns", "agree-indefinite"] }] },
+    "thesis-statements": { "title": "Thesis Statements", "parts": [{ "title": "A Thesis You Can Argue", "topics": ["thesis-fact-opinion"] }, { "title": "Vague Words and Phrases", "topics": ["vague-words"] }, { "title": "Wordiness", "topics": ["redundant-wordy"] }] },
+    "topic-sentences": { "title": "Topic Sentences", "parts": [{ "title": "Topic Sentences That Support a Thesis", "topics": ["strong-claims"] }, { "title": "Vague Words and Phrases", "topics": ["vague-words"] }, { "title": "Wordiness", "topics": ["redundant-wordy"] }] },
+    "vague-pronouns": { "title": "Vague Pronouns", "parts": [{ "topics": ["vague-antecedents", "fixing-vague-pronouns"] }] },
+    "simple-tenses": { "title": "Verb Tense I: Simple Tenses", "parts": [{ "topics": ["present-tense", "past-tense", "future-tense"] }] },
+    "perfect-progressive": { "title": "Verb Tense II: Perfect and Progressive Tenses", "parts": [{ "title": "Progressive Tenses", "topics": ["verb-tenses", "present-participles", "progressive-tenses"] }, { "title": "Perfect Tenses", "topics": ["past-participles", "perfect-tenses"] }] },
+    "verbals": { "title": "Verbals", "parts": [{ "topics": ["verb-tenses", "verb-or-verbal", "identifying-modifiers", "verbal-functions"] }], "marks": { "verbal-functions": "checkpoint" } }
   },
   "topics": {
     "identifying-adjectives": {
@@ -806,6 +832,468 @@
       "format": "items",
       "ask": "Which tense is the verb?",
       "levels": [4, 4, 4]
+    },
+    "identifying-pronouns": {
+      "source": { "band": "6-8", "title": "Identifying Pronouns" },
+      "format": "items",
+      "ask": "Tap the pronoun.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap" }
+    },
+    "fragments-in-dialogue": {
+      "source": { "band": "6-8", "title": "Recognizing Fragments in Dialogue" },
+      "format": "items",
+      "ask": "Tap every word of the fragment.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap", "whole": true }
+    },
+    "pronoun-subject-sentences": {
+      "source": { "band": "6-8", "title": "Recognizing Sentences with Pronoun Subjects" },
+      "format": "items",
+      "ask": "Tap the pronoun that is the subject.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap" }
+    },
+    "that-which-especially": {
+      "source": { "band": "6-8", "title": "Sentences and Fragments with \"That,\" \"Which,\" and \"Especially\"" },
+      "format": "items",
+      "ask": "Is it a sentence or a fragment?",
+      "levels": [4, 4, 4],
+      "read": { "bare": "label", "labels": ["Sentence", "Fragment"], "check": "fragment68" }
+    },
+    "thesis-fact-opinion": {
+      "source": { "band": "6-8", "title": "Is the Thesis a Fact or Opinion?", "line": 4784 },
+      "format": "items",
+      "ask": "Tap the sentence that does the job.",
+      "levels": [4, 4, 4]
+    },
+    "hook-agreeing": {
+      "source": { "band": "6-8", "title": "Selecting a Strong Hook 1: Agreeing" },
+      "format": "items",
+      "ask": "Tap the sentence that does the job.",
+      "levels": [4, 4, 4]
+    },
+    "redundant-wordy": {
+      "source": { "band": "6-8", "title": "Recognizing Redundant, Unnecessary, and Wordy Phrases", "line": 4826 },
+      "format": "items",
+      "ask": "Tap the sentence that does the job.",
+      "levels": [4, 4, 4]
+    },
+    "vague-words": {
+      "source": { "band": "6-8", "title": "Identifying Vague Words and Phrases 1" },
+      "format": "items",
+      "ask": "Tap the sentence that does the job.",
+      "levels": [4, 4, 4]
+    },
+    "citation-end-marks": {
+      "source": { "band": "6-8", "title": "Question Marks and Exclamation Points with Citations" },
+      "format": "items",
+      "ask": "Which sentence is punctuated correctly?",
+      "levels": [4, 4, 4],
+      "read": { "bare": "citemark" }
+    },
+    "identifying-modifiers": {
+      "source": { "band": "6-8", "title": "Identifying Modifiers", "line": 3470 },
+      "format": "items",
+      "ask": "Tap every word of the modifier.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap", "whole": true }
+    },
+    "misplaced-meaning": {
+      "source": { "band": "6-8", "title": "Interpreting Misplaced Modifiers" },
+      "format": "items",
+      "ask": "Tap the word.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "misplaced" }
+    },
+    "dangling-meaning": {
+      "source": { "band": "6-8", "title": "Interpreting Dangling Modifiers" },
+      "format": "items",
+      "ask": "Tap the word the opening phrase seems to describe.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "dangling" }
+    },
+    "fixing-misplaced": {
+      "source": { "band": "6-8", "title": "Correcting Misplaced Modifier Errors 1" },
+      "format": "items",
+      "ask": "Choose the sentence that puts the modifier next to the word it describes.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "movefix" }
+    },
+    "fixing-dangling": {
+      "source": { "band": "6-8", "title": "Correcting Dangling Modifier Errors" },
+      "format": "items",
+      "ask": "Choose the sentence that gives the modifier a word to describe.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "danglefix" }
+    },
+    "appositive-refers": {
+      "source": { "band": "6-8", "title": "What Does the Appositive Refer To?" },
+      "format": "items",
+      "ask": "Tap the noun the appositive renames.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap", "focus": "appositive" }
+    },
+    "participial-modifies": {
+      "source": { "band": "6-8", "title": "What Does the Participial Phrase Modify?" },
+      "format": "items",
+      "ask": "Tap the noun the participial phrase describes.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "tap" }
+    },
+    "dependent-fragments": {
+      "source": { "band": "6-8", "title": "Correcting Dependent Clause Fragments" },
+      "format": "items",
+      "ask": "Choose the sentence that fixes the fragment.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "depfrag" }
+    },
+    "restrictive-clauses": {
+      "source": { "band": "6-8", "title": "Punctuating Restrictive and Nonrestrictive Clauses", "line": 3672 },
+      "format": "items",
+      "ask": "Put commas around the clause if it only adds detail, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "restrictive", "asIs": true }
+    },
+    "regular-plurals": {
+      "source": { "band": "6-8", "title": "Forming Regular Plurals with \"-s\"" },
+      "format": "items",
+      "ask": "Choose the plural.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "plural" }
+    },
+    "plural-or-possessive": {
+      "source": { "band": "6-8", "title": "Recognizing Plurals and Possessives" },
+      "format": "items",
+      "ask": "Is the word in bold plural or possessive?",
+      "levels": [4, 4, 4],
+      "read": { "bare": "label", "labels": ["Plural", "Possessive"], "check": "pluralposs", "focus": "second" }
+    },
+    "singular-possessives": {
+      "source": { "band": "6-8", "title": "Forming Singular Possessives 1", "line": 4470 },
+      "format": "items",
+      "ask": "Choose the possessive.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["pc-possessive"] }
+    },
+    "others-apostrophes": {
+      "source": { "band": "6-8", "title": "Apostrophes with \"Others,\" \"Others',\" and \"Each Other's\"", "line": 4492 },
+      "format": "items",
+      "ask": "Choose the form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "shared-unshared": {
+      "source": { "band": "6-8", "title": "Is the Possession Shared or Unshared?" },
+      "format": "items",
+      "ask": "Is the possession shared or unshared?",
+      "levels": [4, 4, 4],
+      "read": { "bare": "label", "labels": ["Shared", "Unshared"], "check": "shared" }
+    },
+    "fixing-shared-possession": {
+      "source": { "band": "6-8", "title": "Correcting Errors with Shared and Unshared Possession" },
+      "format": "items",
+      "ask": "Fix the apostrophes.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "sharedfix" }
+    },
+    "plural-possessives": {
+      "source": { "band": "6-8", "title": "Forming Possessives from Regular Plurals" },
+      "format": "items",
+      "ask": "Choose the possessive.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["pc-possessive"] }
+    },
+    "subject-object-pronouns": {
+      "source": { "band": "6-8", "title": "Using Subject and Object Pronouns" },
+      "format": "items",
+      "ask": "Tap the pronoun.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "subjobj" },
+      "room": { "kinds": ["gr-pronoun"] }
+    },
+    "pronouns-in-compounds": {
+      "source": { "band": "6-8", "title": "Using \"He,\" \"She,\" \"Him,\" and \"Her\" in Compounds" },
+      "format": "items",
+      "ask": "Choose the pronoun that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "pair", "cycle": true },
+      "room": { "kinds": ["gr-pronoun"] }
+    },
+    "gerund-pronouns": {
+      "source": { "band": "6-8", "title": "Using Possessive Pronouns with Gerunds" },
+      "format": "items",
+      "ask": "Choose the pronoun that fits before the -ing word.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "gerund" }
+    },
+    "reflexive-pronouns": {
+      "source": { "band": "6-8", "title": "Using Reflexive Pronouns" },
+      "format": "items",
+      "ask": "Choose the pronoun that points back to the subject.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "reflexive", "cycle": true }
+    },
+    "pronouns-agree": {
+      "source": { "band": "6-8", "title": "Choosing Pronouns That Agree" },
+      "format": "items",
+      "ask": "Choose the pronoun that agrees with its antecedent.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "agree" }
+    },
+    "indefinite-agreement": {
+      "source": { "band": "6-8", "title": "Pronoun Agreement with Indefinite Antecedents" },
+      "format": "items",
+      "ask": "Choose a pronoun that agrees with the indefinite pronoun.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "indefinite" }
+    },
+    "cap-first-word": {
+      "source": { "band": "6-8", "title": "Capitalizing the First Word of a Sentence" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-start"] }
+    },
+    "cap-days-months": {
+      "source": { "band": "6-8", "title": "Capitalizing Days and Months" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"], "words": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "mondays", "tuesdays", "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december", "monday.", "tuesday.", "wednesday.", "thursday.", "friday.", "saturday.", "sunday.", "mondays.", "tuesdays.", "january.", "february.", "march.", "april.", "may.", "june.", "july.", "august.", "september.", "october.", "november.", "december."] }
+    },
+    "cap-holidays": {
+      "source": { "band": "6-8", "title": "Capitalizing Holidays" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-seasons": {
+      "source": { "band": "6-8", "title": "Capitalizing Seasons" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-stray"], "words": ["spring", "summer", "fall", "autumn", "winter", "spring.", "summer.", "fall.", "autumn.", "winter."] }
+    },
+    "cap-places": {
+      "source": { "band": "6-8", "title": "Capitalizing Streets, Cities, and Other Places" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-family-titles": {
+      "source": { "band": "6-8", "title": "Capitalizing Family Titles" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "cap-buildings": {
+      "source": { "band": "6-8", "title": "Capitalizing Buildings and Schools" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-social-titles": {
+      "source": { "band": "6-8", "title": "Capitalizing Names and Social Titles" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-professional-titles": {
+      "source": { "band": "6-8", "title": "Capitalizing Professional Titles" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "cap-political-groups": {
+      "source": { "band": "6-8", "title": "Capitalizing Political Groups" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-brands": {
+      "source": { "band": "6-8", "title": "Capitalizing Brand and Product Names" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true },
+      "room": { "kinds": ["pc-proper"] }
+    },
+    "cap-space": {
+      "source": { "band": "6-8", "title": "Capitalizing Things in Space" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "cap-subjects": {
+      "source": { "band": "6-8", "title": "Capitalizing Academic Subjects" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "cap-hyphenated": {
+      "source": { "band": "6-8", "title": "Capitalizing Hyphenated Words" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "agree-simple": {
+      "source": { "band": "6-8", "title": "Agreement with Simple Subjects" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4]
+    },
+    "agree-doesnt-dont": {
+      "source": { "band": "6-8", "title": "Agreement with \"Doesn't\" and \"Don't\"" },
+      "format": "items",
+      "ask": "Choose the word that agrees with the subject.",
+      "levels": [4, 4, 4]
+    },
+    "agree-here-there": {
+      "source": { "band": "6-8", "title": "Agreement with \"Here,\" \"There,\" and Questions" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["gr-agree"] }
+    },
+    "agree-compound": {
+      "source": { "band": "6-8", "title": "Which Part of the Compound Subject Agrees with the Verb?" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4]
+    },
+    "agree-or-nor": {
+      "source": { "band": "6-8", "title": "Agreement with \"Or\" and \"Nor\" Compounds" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4]
+    },
+    "collective-which-part": {
+      "source": { "band": "6-8", "title": "Which Part of the Collective Noun Subject Agrees with the Verb?" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "agree-collective": {
+      "source": { "band": "6-8", "title": "Agreement with Collective Nouns" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "agree-parts-whole": {
+      "source": { "band": "6-8", "title": "Agreement with Parts of a Whole" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "agree-amounts": {
+      "source": { "band": "6-8", "title": "Agreement with Math, Money, and Time" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "agree-tricky-nouns": {
+      "source": { "band": "6-8", "title": "Agreement with Tricky Nouns" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "agree-indefinite": {
+      "source": { "band": "6-8", "title": "Agreement with Indefinite Pronouns" },
+      "format": "items",
+      "ask": "Choose the verb that agrees with the subject.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "vague-antecedents": {
+      "source": { "band": "6-8", "title": "Identifying Antecedents of a Vague Pronoun" },
+      "format": "items",
+      "ask": "What does the pronoun stand for?",
+      "levels": [4, 4, 4]
+    },
+    "fixing-vague-pronouns": {
+      "source": { "band": "6-8", "title": "Correcting Pronouns with Multiple Antecedents" },
+      "format": "items",
+      "ask": "Fix the sentence.",
+      "levels": [4, 4, 4]
+    },
+    "present-tense": {
+      "source": { "band": "6-8", "title": "Forming the Regular Present Tense" },
+      "format": "items",
+      "ask": "Choose the verb form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "past-tense": {
+      "source": { "band": "6-8", "title": "Forming the Regular Past Tense" },
+      "format": "items",
+      "ask": "Choose the verb form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "future-tense": {
+      "source": { "band": "6-8", "title": "Forming the Future Tense" },
+      "format": "items",
+      "ask": "Choose the verb form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "present-participles": {
+      "source": { "band": "6-8", "title": "Forming Present Participles" },
+      "format": "items",
+      "ask": "Choose the present participle.",
+      "levels": [4, 4, 4]
+    },
+    "progressive-tenses": {
+      "source": { "band": "6-8", "title": "Identifying Progressive Tenses" },
+      "format": "items",
+      "ask": "Which tense is the verb in bold?",
+      "levels": [4, 4, 4]
+    },
+    "past-participles": {
+      "source": { "band": "6-8", "title": "Forming Past Participles" },
+      "format": "items",
+      "ask": "Choose the past participle.",
+      "levels": [4, 4, 4]
+    },
+    "perfect-tenses": {
+      "source": { "band": "6-8", "title": "Identifying Perfect Tenses" },
+      "format": "items",
+      "ask": "Which tense is the verb in bold?",
+      "levels": [4, 4, 4]
+    },
+    "verb-or-verbal": {
+      "source": { "band": "6-8", "title": "Is It a Verb or Not a Verb?" },
+      "format": "items",
+      "ask": "Verb or verbal?",
+      "levels": [4, 4, 4],
+      "read": { "check": "verbal" }
+    },
+    "verbal-functions": {
+      "source": { "band": "6-8", "title": "Identifying the Function of Verbals" },
+      "format": "items",
+      "ask": "What does the verbal in bold do?",
+      "levels": [4, 4, 4],
+      "read": { "verbals": true }
     }
   }
 }

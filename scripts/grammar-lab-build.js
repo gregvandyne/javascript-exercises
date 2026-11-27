@@ -129,7 +129,7 @@ export function parseCourse(md) {
     }
     if (!topic) return;
     // "**Teaching Card**", "Teaching card:" or "Teaching card, three sections:"; "**Quiz**", "Quiz:" or "Quiz (tap the adjective):"
-    if (/^(\*\*Teaching Card\*\*|Teaching card(?:, [a-z ]+)?:)\s*$/i.test(line.trim())) { mode = 'card'; return; }
+    if (/^(\*\*Teaching Card\*\*|Teaching card(?:, [a-z ]+| \([a-z ]+\))?:)\s*$/i.test(line.trim())) { mode = 'card'; return; }
     if (/^(\*\*Quiz\*\*|Quiz(?: \([^)]*\))?:)\s*$/i.test(line.trim())) { mode = 'quiz'; return; }
     if (!mode && /\bSee\b.+\babove\b/.test(line)) { topic.ref = line.trim(); return; }
     if (mode === 'card' && /^- /.test(line)) topic.cardLines.push({ text: line.slice(2).trim(), line: i + 1 });
@@ -139,9 +139,9 @@ export function parseCourse(md) {
 }
 
 /** The topic written in full with this title in this band (cross-references skipped), or null. */
-export function findTopic(sections, band, title) {
+export function findTopic(sections, band, title, line = null) {
   for (const s of sections.filter(x => x.band === band)) {
-    for (const p of s.pathways) for (const t of p.topics) if (t.title === title && t.cardLines.length && t.quizLines.length) return t;
+    for (const p of s.pathways) for (const t of p.topics) if (t.title === title && t.cardLines.length && t.quizLines.length && (!line || t.line === line)) return t;
   }
   return null;
 }
@@ -686,9 +686,9 @@ const PROGRESSIVE = /^(?:is|are|was|were|am|will be) [a-z]+ing$/;
 export function parseSections(cardLines, problems, where, notes = {}) {
   const hl = ((notes.card || {}).sections || []);
   const sections = cardLines.map((l, i) => {
-    const m = /^Section (\d+), (.+?)\. Guiding question: (.+?\?) (?:(.+?) )?Worked passage: (.+)$/.exec(l.text);
+    const m = /^Section (\d+), (.+?)([.?]) Guiding question: (.+?\?) (?:(.+?) )?Worked passage: (.+)$/.exec(l.text);
     if (!m) { problems.push(`${where}: card line ${l.line} is not "Section N, Title. Guiding question: ...? Worked passage: ..."`); return null; }
-    const [, , title, question, body, rest] = m;
+    const [, , name, end, question, body, rest] = m, title = end === '?' ? `${name}?` : name;
     const bits = rest.split(/"([^"]+)"/);
     const passage = [];
     let label = bits[0].trim().replace(/:$/, '');
@@ -944,15 +944,19 @@ const CITE_RIGHT = /[^.\s] \([A-Z][a-z]+ \d+\)\.$/;
 
 /** One quiz line of a 6-8 topic, read into its parts: { n, q, a, hint, text?, question? } (text and question: the
  *  sentence or passage the line quotes first, and what it asks about it; "Same passage." reuses the last one). */
-function rawOf(line, ctx) {
+function rawOf(line, ctx, def = {}) {
   const m = ITEM_LINE.exec(line.text);
   if (!m) return null;
   const [, n, q, a, hint] = m;
   const r = { n: +n, q, a: a.trim(), hint: hint.trim() };
   let x;
-  if ((x = /^(?:Passage|Original): "(.+)" (\S.+)$/.exec(q))) { r.text = x[1]; r.question = x[2]; r.passage = true; ctx.last = x[1]; }
+  // "Passage: "..." Ask: Which sentence ...?" asks like "Passage: "..." Which sentence ...?"
+  if ((x = /^(?:Passage|Original): "(.+)" (\S.+)$/.exec(q))) { r.text = x[1]; r.question = x[2].replace(/^Ask: /, ''); r.passage = true; ctx.last = x[1]; }
   else if ((x = /^Same (?:passage|original)\. (.+)$/.exec(q))) { r.text = ctx.last; r.question = x[1]; r.passage = true; }
+  else if ((x = /^Read the sentence: "([^"]+)" Ask: (.+)$/.exec(q))) { r.text = x[1]; r.question = x[2]; }
   else if ((x = /^"([^"]+)" (\S[^"]*)$/.exec(q))) { r.text = x[1]; r.question = x[2]; }
+  // only the sentence: the topic's read.bare says what it asks
+  else if ((x = /^"([^"]+)"$/.exec(q)) && def.read && def.read.bare) { r.text = x[1]; r.bare = true; }
   return r;
 }
 
@@ -1020,6 +1024,8 @@ const READERS = [
     if (!m) return null;
     const text = doubleQuotes(m[1]), right = doubleQuotes(unq(r.a));
     const diff = capitalDiff(text, right);
+    // nothing to fix: asked with "It's right as it is" (read.asIs)
+    if (diff && !diff.length && def.read && def.read.asIs) return { format: 'capfix', text, answer: [], fixed: [], right, rule: 'capital' };
     if (!diff || !diff.length) { problems.push(`${at}: the fix is not the sentence with capitals changed`); return false; }
     const toks = tokenize(right);
     return { format: 'capfix', text, answer: diff, fixed: diff.map(i => toks[i].t), right, rule: 'capital' };
@@ -1065,7 +1071,7 @@ const READERS = [
     else if ((x = /^Which voice is used(?:, and what does it emphasize)?\?$/.exec(q)) && text) { labels = ['active voice', 'passive voice']; ask = 'Which voice is used?'; }
     else if ((x = /^What kind of adverb is (\S+)\?$/.exec(q)) && text) { labels = ['adverb of time', 'adverb of place', 'adverb of manner']; focus = x[1]; }
     else return null;
-    const ans = r.a.split(',')[0].replace(/\.$/, '');
+    const ans = r.a.split(',')[0].replace(/\.$/, '').replace(/^(?:a|an) (?=\w)/i, '');
     const shown = labels.map(capFirst);
     const k = shown.findIndex(l => norm(l) === norm(ans));
     if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${shown.join(' / ')}`); return false; }
@@ -1313,19 +1319,505 @@ function fixItem(text, right, how, def, problems, at) {
   return { format: 'fix', text, right, accept: [...new Set(accept)], options, answer: [options.indexOf(right)], rule: `fix-${kind}`, ...(how ? { how } : {}) };
 }
 
+// ------------------------------------------------------------------------------------------------- grades 6-8, part 2
+// More quiz shapes for the second half of the 6-8 band. Every reader here keeps a format already built (tap, capfix,
+// marks, choice, passage, fix); none is new. A quiz line written as only the sentence ("1. "The dog's bone was buried."
+// Answer: possessive.") is read by the topic's read.bare reader, which says what the line asks (BARE below); the rest
+// are read by their own lead-in ("Choose the correct verb:", "Name the tense:", "Form the past participle:", "Write
+// the possessive:", "Fix the sentence so it is clear that ...:", "What is the antecedent of he?"). Every generated wrong
+// option has a rule name and a second, independent check in checkItems.
+const SUBJECT_PRONOUNS = new Set(['i', 'you', 'he', 'she', 'it', 'we', 'they']);
+const OBJECT_PRONOUNS = new Set(['me', 'you', 'him', 'her', 'it', 'us', 'them']);
+const POSSESSIVE_DETERMINERS = new Set(['my', 'your', 'his', 'her', 'its', 'our', 'their']);
+/** Reflexive pronouns by person and number; hisself, theirselves and itsself are never standard. */
+export const REFLEXIVE = Object.freeze({ myself: '1s', yourself: '2s', himself: '3s', herself: '3s', itself: '3s', ourselves: '1p', yourselves: '2p', themselves: '3p' });
+const REFLEXIVE_WRONG = { myself: ['yourself', 'ourselves'], yourself: ['myself', 'themselves'], himself: ['hisself', 'themselves'], herself: ['themselves', 'ourselves'],
+  itself: ['itsself', 'ourselves'], ourselves: ['myself', 'themselves'], themselves: ['theirselves', 'itself'] };
+const PERSON_OF = { i: '1s', we: '1p', you: '2', he: '3s', she: '3s', it: '3s', they: '3p' };
+/** Before a gerund: the possessive, never the object or subject form. */
+const GERUND_WRONG = { his: ['him', 'he'], her: ['she', 'hers'], their: ['them', 'they'], my: ['me', 'I'], our: ['us', 'we'], your: ['you', 'yours'] };
+/** A pronoun that agrees: the wrong number, or a form that is not a possessive (singular "their" is right for a person). */
+const AGREE_WRONG = { its: ['their', "it's"], their: ['its', 'his or her'], her: ['its', 'hers'], his: ['its', "he's"] };
+export const INDEFINITE_SINGULAR = Object.freeze(['everyone', 'everybody', 'someone', 'somebody', 'anyone', 'anybody', 'nobody', 'each', 'either', 'neither']);
+export const INDEFINITE_PLURAL = Object.freeze(['both', 'few', 'many', 'several']);
+const PERSON_NOUNS = new Set(['teacher', 'student', 'students', 'cook', 'coach', 'baker', 'chef', 'girl', 'boy', 'player', 'players', 'librarian', 'doctor', 'nurse']);
+const SUBORDINATORS_2 = [...SUBORDINATORS, 'as'];
+/** Past participles that are not the regular -ed form. */
+export const PAST_PARTICIPLE = Object.freeze({ sing: 'sung', write: 'written', eat: 'eaten', take: 'taken', break: 'broken', choose: 'chosen', give: 'given', see: 'seen',
+  drive: 'driven', ride: 'ridden', fall: 'fallen', fly: 'flown', go: 'gone', know: 'known', swim: 'swum', run: 'run', draw: 'drawn', grow: 'grown', speak: 'spoken' });
+const EXTRA_PAST = { choose: 'chose', speak: 'spoke' };
+/** Words that start a verb phrase (to find where a subject ends). */
+const VERBISH = new Set(['must', 'should', 'would', 'could', 'may', 'might', 'began', 'rang', 'felt', 'found', 'lost', 'heard', 'saw', 'fell', 'took', 'made']);
+const isVerbish = w => { const x = norm(w); return VERBISH.has(x) || HELPERS.has(x) || isPast(x); };
+const body = s => String(s).replace(/[.!?]$/, '');
+const esc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** A word's place in a text, with the article before it optional. */
+function wordAt(text, word) {
+  const toks = tokenize(text), at = findWords(toks, word);
+  if (at.length !== 1 || at[0].length !== 1) return null;
+  const i = at[0][0];
+  return { answer: [i], optional: i > 0 && ARTICLES.has(norm(toks[i - 1].t)) && !toks[i - 1].post ? [i - 1] : [] };
+}
+/** The sentence with the words at these places as one blank. */
+const blankAt = (text, places) => { const toks = tokenize(text); return joinTokens(toks.flatMap((w, i) => (i === places[0] ? [{ ...w, t: '___' }] : places.includes(i) ? [] : [w]))).replace(/___ (?=[,.!?])/, '___'); };
+const firstUp = (o, start) => (start ? capFirst(o) : o);
+
+/** The plural of a regular noun: -es after s, x, ch, sh or z, else -s. */
+export const pluralOf = base => (/(s|x|ch|sh|z)$/.test(base) ? `${base}es` : `${base}s`);
+/** The present participle: a silent e dropped, the last letter doubled after one short vowel, else -ing. */
+export function ingOf(base) {
+  if (/[^aeiou]e$/.test(base)) return `${base.slice(0, -1)}ing`;
+  if (/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(base)) return `${base}${base.slice(-1)}ing`;
+  return `${base}ing`;
+}
+const regularPast = base => (/e$/.test(base) ? `${base}d` : /[^aeiou]y$/.test(base) ? `${base.slice(0, -1)}ied` : /^[^aeiou]*[aeiou][^aeiouwxy]$/.test(base) && base.length <= 4 ? `${base}${base.slice(-1)}ed` : `${base}ed`);
+/** The past participle: the irregular form, else the regular -ed. */
+export const ppOf = base => PAST_PARTICIPLE[base] || regularPast(base);
+/** A progressive or perfect verb by its helpers: { name ('past progressive', ...), at: word places }, or null. */
+export function tense3Of(text) {
+  const w = lowWords(text);
+  for (let i = 0; i < w.length; i++) {
+    if (w[i] === 'will' && w[i + 1] === 'be' && /ing$/.test(w[i + 2] || '')) return { name: 'future progressive', at: [i, i + 1, i + 2] };
+    if (w[i] === 'will' && w[i + 1] === 'have' && w[i + 2]) return { name: 'future perfect', at: [i, i + 1, i + 2] };
+    if (['am', 'is', 'are'].includes(w[i]) && /ing$/.test(w[i + 1] || '')) return { name: 'present progressive', at: [i, i + 1] };
+    if (['was', 'were'].includes(w[i]) && /ing$/.test(w[i + 1] || '')) return { name: 'past progressive', at: [i, i + 1] };
+    if (['has', 'have'].includes(w[i]) && w[i + 1]) return { name: 'present perfect', at: [i, i + 1] };
+    if (w[i] === 'had' && w[i + 1]) return { name: 'past perfect', at: [i, i + 1] };
+  }
+  return null;
+}
+/** A possessive by the owner: the apostrophe alone after a plural ("the students'"), else an apostrophe and s. */
+export const possessiveOf = owner => (/^the \S+s$/i.test(owner) ? `${owner}'` : `${owner}'s`);
+const seqAt = (w, v) => w.findIndex((_, i) => v.every((x, k) => w[i + k] === x));
+/** Is the word a verbal here (an infinitive, an -ing word with no form of be before it, or a word after an article)? */
+export function isVerbal(text, v) {
+  const w = lowWords(text), vw = lowWords(v), i = seqAt(w, vw);
+  if (vw[0] === 'to') return true;
+  if (/ing$/.test(vw[0]) && !['am', 'is', 'are', 'was', 'were', 'be'].includes(w[i - 1])) return true;
+  return i > 0 && ARTICLES.has(w[i - 1]);
+}
+/** What a verbal does: 'noun' (a subject or an object), 'adjective' (it describes a noun) or 'adverb' (it tells why). */
+export function verbalRole(text, v) {
+  const w = lowWords(text), vw = lowWords(v), i = seqAt(w, vw), prev = w[i - 1];
+  if (vw[0] === 'to') {
+    if (i === 0 || ['like', 'likes', 'want', 'wants', 'hope', 'hopes', 'love', 'loves', 'need', 'needs'].includes(prev)) return 'noun';
+    return i >= 2 && ARTICLES.has(w[i - 2]) ? 'adjective' : 'adverb';
+  }
+  if (i === 0) return 'noun';
+  return ARTICLES.has(prev) ? 'adjective' : 'noun';
+}
+/** Who or what the words after a sentence's first comma name, up to their verb (the subject of the main clause). */
+export function subjectAfterComma(s) {
+  const toks = tokenize(s), c = toks.findIndex(w => /^,/.test(w.post));
+  if (c < 0) return null;
+  const out = [];
+  for (let i = c + 1; i < toks.length && !isVerbish(toks[i].t); i++) out.push(toks[i].t);
+  return out.length && out.length < toks.length - c - 1 ? out.join(' ').toLowerCase() : null;
+}
+/** The word a modifier (a phrase) sits next to in a sentence: after it when the sentence opens with it, else before
+ *  it ("that was" before it, or a "that had" version, counts as the word before "that"). */
+export function attachOf(s, mod) {
+  const w = words(body(s)), m = lowWords(mod), low = w.map(x => x.toLowerCase());
+  const i = seqAt(low, m);
+  if (i === 0) { let j = m.length; while (j < w.length && (ARTICLES.has(low[j]) || POSSESSIVE_DETERMINERS.has(low[j]))) j++; return low[j] || null; }
+  if (i > 1 && ['was', 'were'].includes(low[i - 1]) && low[i - 2] === 'that') return low[i - 3] || null;
+  if (i > 0) return low[i - 1];
+  const t = low.indexOf('that');
+  return t > 0 ? low[t - 1] : null;
+}
+/** Restrictive or not: a "that" clause never takes commas, a "which" clause always does, and a "who" clause does
+ *  after a name (it only adds detail). */
+export function needsClauseCommas(text) {
+  const toks = tokenize(text.replace(/,/g, ''));
+  const k = toks.findIndex((w, i) => i > 0 && /^(who|which|that)$/i.test(w.t));
+  if (k < 0) return null;
+  const w = norm(toks[k].t);
+  if (w === 'that') return false;
+  if (w === 'which') return true;
+  return /^\p{Lu}/u.test(toks[k - 1].t) || (k > 1 && /^(my|our)$/i.test(toks[k - 2].t));
+}
+/** Shared or unshared possession by its apostrophes: one owned thing takes one apostrophe (on the last name), several
+ *  take one on every name. -> the possession is written right. */
+export function possessionOk(s) {
+  const m = /\b(\w+)('s)? and (\w+)('s)? (\w+)/.exec(s);
+  if (m) return /s$/.test(m[5]) ? !!(m[2] && m[4]) : !m[2] && !!m[4];
+  const p = /^The (\w+s)('s|')? \w+/.exec(s);
+  return !!p && p[2] === "'";
+}
+/** Does a noun phrase name a person (a name, or a word for a person)? */
+const personal = np => /^\p{Lu}/u.test(np.replace(/^the /i, '')) && !/^the /i.test(np) ? true : PERSON_NOUNS.has(norm(np.split(' ').pop()));
+/** The nouns a pronoun could stand for: names and "the" + noun before it. */
+function candidatesBefore(text, upto) {
+  const toks = tokenize(text), out = [];
+  for (let i = 0; i < upto; i++) {
+    const w = toks[i];
+    if (/^the$/i.test(w.t) && i + 1 < upto) { out.push(`the ${toks[i + 1].t}`); i++; continue; }
+    if (/^\p{Lu}/u.test(w.t) && !/^(When|If|After|Before|While|The|A|An)$/.test(w.t)) out.push(w.t);
+  }
+  return [...new Set(out)];
+}
+const PRONOUN_KIND = { he: 'person', she: 'person', him: 'person', his: 'person', her: 'person', it: 'thing', its: 'thing', they: 'plural', them: 'plural', their: 'plural' };
+/** Which of the candidates the pronoun can stand for by its kind (a person, a thing, more than one). */
+const fits = (pron, cands) => cands.filter(c => (PRONOUN_KIND[pron] === 'person' ? personal(c) : PRONOUN_KIND[pron] === 'thing' ? !personal(c) : / and /.test(c)));
+
+/** Readers for a line that is only its sentence, by the topic's read.bare: (raw, def, problems, at) -> item. */
+const BARE = {
+  // tap the word or phrase the topic asks for (the answer)
+  tap(r, def, problems, at) {
+    const text = doubleQuotes(r.text), ans = unq(r.a).replace(/\.$/, '');
+    const np = !def.read.whole && /^(the|a|an) /i.test(ans) ? nounPhrase(text, ans) : null;
+    const places = np ? null : placesOf(text, ans);
+    if (!np && !places) { problems.push(`${at}: the answer "${ans}" is not in the sentence once`); return false; }
+    if (hintLeaks(r.hint, ans)) problems.push(`${at}: the hint names the answer "${ans}"`);
+    // an appositive is shown in bold: the words between the commas
+    let focus = null;
+    if (def.read.focus === 'appositive') { const toks = tokenize(text), a = toks.findIndex(w => /^,/.test(w.post)), b = toks.findIndex((w, i) => i > a && /^,/.test(w.post)); if (a >= 0 && b > a) focus = Array.from({ length: b - a }, (_, k) => a + 1 + k); }
+    return { format: 'tap', text, ...(np || { answer: places }), rule: 'tap', ...(focus ? { focus } : {}) };
+  },
+  // pills from the topic's labels, checked by its rule (read.check)
+  label(r, def, problems, at) {
+    const text = doubleQuotes(r.text), labels = def.read.labels;
+    const k = labels.findIndex(l => norm(l) === norm(unq(r.a).replace(/\.$/, '')));
+    if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${labels.join(' / ')}`); return false; }
+    const focus = def.read.focus === 'second' ? [1] : null;
+    return labelItem(text, labels, labels[k], r, problems, at, { rule: def.read.check || 'given', ...(focus ? { focus } : {}) });
+  },
+  // a misplaced modifier: tap the word the sentence seems to give it, or the word it really describes
+  misplaced(r, def, problems, at) {
+    const a = unq(r.a);
+    let x, ask, head;
+    if ((x = /^The sentence seems to say (?:the |a )?(\S+) (?:was|were|wore)\b/.exec(a))) { head = x[1]; ask = 'Tap the word the sentence seems to say the modifier describes.'; }
+    else if ((x = /^.+? describes (?:the )?(\S+?),? not /.exec(a))) { head = x[1]; ask = 'Tap the word the modifier really describes.'; }
+    else { problems.push(`${at}: the answer neither says what the sentence seems to say nor what the modifier describes`); return false; }
+    const w = wordAt(r.text, head);
+    if (!w) { problems.push(`${at}: "${head}" is not in the sentence once`); return false; }
+    return { format: 'tap', text: r.text, ask, ...w, rule: 'tap' };
+  },
+  // a dangling modifier: tap the word the opening phrase seems to describe (the subject after the comma)
+  dangling(r, def, problems, at) {
+    const toks = tokenize(r.text), c = toks.findIndex(w => /^,/.test(w.post));
+    let v = c + 1;
+    while (c >= 0 && v < toks.length && !isVerbish(toks[v].t)) v++;
+    if (c < 0 || v >= toks.length || v === c + 1) { problems.push(`${at}: no subject after the opening phrase`); return false; }
+    if (!/^The modifier dangles because no one in the sentence /.test(r.a)) { problems.push(`${at}: the answer does not say the modifier dangles`); return false; }
+    const span = Array.from({ length: v - c - 1 }, (_, k) => c + 1 + k);
+    return { format: 'tap', text: r.text, ask: 'Tap the word the opening phrase seems to describe.', answer: [span[span.length - 1]], optional: span.slice(0, -1), rule: 'tap' };
+  },
+  // restrictive or not: the sentence with its commas taken out, and the chips to put them back (or not)
+  restrictive(r, def, problems, at) {
+    const right = doubleQuotes(r.text), text = right.replace(/,/g, '');
+    if (/^no commas/i.test(r.a) === right.includes(',')) { problems.push(`${at}: the answer and the sentence disagree about commas`); return false; }
+    const it = marksItem(text, right, def, problems, at);
+    return it && { ...it, rule: 'restrictive' };
+  },
+  // "One cat, two cats.": the plural is the blank
+  plural(r, def, problems, at) {
+    const x = /^One (\w+), two (\w+)\.$/.exec(r.text);
+    if (!x || x[2] !== unq(r.a).replace(/\.$/, '')) { problems.push(`${at}: not "One noun, two nouns." with the plural as the answer`); return false; }
+    const [, base, right] = x;
+    const wrong = /(s|x|ch|sh|z)$/.test(base) ? [`${base}s`, `${base}'s`] : /e$/.test(base) ? [`${base}'s`, `${base}s'`] : [`${base}es`, `${base}'s`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: `One ${base}, two ___.`, options, answer: [options.indexOf(right)], right: r.text, rule: 'plural', base };
+  },
+  // subject and object pronouns: tap the one the line names (when it names both, odd lines ask for the object)
+  subjobj(r, def, problems, at) {
+    const parts = [...r.a.matchAll(/(\w+(?: and \w+)?) (?:is|are) (?:the )?(subject|object) pronouns?/gi)].map(m => ({ w: m[1], role: m[2].toLowerCase() }));
+    const pick = parts.length === 1 ? parts[0] : parts.find(p => p.role === (r.n % 2 ? 'object' : 'subject'));
+    if (!pick) { problems.push(`${at}: the answer names no subject or object pronoun`); return false; }
+    const places = placesOf(r.text, pick.w.replace(/ and /, ', '));
+    if (!places) { problems.push(`${at}: "${pick.w}" is not in the sentence once`); return false; }
+    return { format: 'tap', text: r.text, ask: `Tap the ${pick.role} pronoun${/ and /.test(pick.w) ? 's' : ''}.`, answer: places, rule: 'pronoun-role', role: pick.role };
+  },
+  // he or him, she or her in a compound: the pronoun is the blank
+  pair(r, def, problems, at) {
+    const ans = unq(r.a).replace(/\.$/, ''), toks = tokenize(r.text), found = findWords(toks, ans);
+    const PAIR = { she: 'her', he: 'him' }, low = ans.toLowerCase();
+    const subj = Object.keys(PAIR).find(k => k === low || PAIR[k] === low);
+    if (found.length !== 1 || !subj) { problems.push(`${at}: the answer is not he, she, him or her once in the sentence`); return false; }
+    const i = found[0][0], options = [subj, PAIR[subj]].map(o => firstUp(o, i === 0));
+    return { format: 'choice', text: blankAt(r.text, [i]), options, answer: [options.indexOf(ans)], right: r.text, rule: 'compound', spot: i };
+  },
+  // a pronoun before a gerund: the possessive is the blank
+  gerund(r, def, problems, at) {
+    const ans = unq(r.a).replace(/\.$/, ''), found = findWords(tokenize(r.text), ans), wrong = GERUND_WRONG[ans.toLowerCase()];
+    if (found.length !== 1 || !wrong) { problems.push(`${at}: the answer is not a possessive pronoun once in the sentence`); return false; }
+    const i = found[0][0], options = seededShuffle([ans, ...wrong.map(o => firstUp(o, i === 0))], at);
+    return { format: 'choice', text: blankAt(r.text, [i]), options, answer: [options.indexOf(ans)], right: r.text, rule: 'gerund' };
+  },
+  // a reflexive pronoun: the blank, with two that do not point back to the subject
+  reflexive(r, def, problems, at) {
+    const ans = unq(r.a).replace(/\.$/, ''), found = findWords(tokenize(r.text), ans), wrong = REFLEXIVE_WRONG[ans];
+    if (found.length !== 1 || !wrong) { problems.push(`${at}: the answer is not a reflexive pronoun once in the sentence`); return false; }
+    const options = seededShuffle([ans, ...wrong], at);
+    return { format: 'choice', text: blankAt(r.text, found[0]), options, answer: [options.indexOf(ans)], right: r.text, rule: 'reflexive' };
+  },
+  // a pronoun that agrees with its antecedent
+  agree(r, def, problems, at) {
+    const ans = unq(r.a).replace(/\.$/, ''), found = findWords(tokenize(r.text), ans), wrong = AGREE_WRONG[ans];
+    if (found.length !== 1 || !wrong) { problems.push(`${at}: the answer is not its, their, his or her once in the sentence`); return false; }
+    const options = seededShuffle([ans, ...wrong], at);
+    return { format: 'choice', text: blankAt(r.text, found[0]), options, answer: [options.indexOf(ans)], right: r.text, rule: 'agree' };
+  },
+  // an indefinite antecedent: "his or her" and singular "their" are both right after a singular one
+  indefinite(r, def, problems, at) {
+    const ans = unq(r.a).replace(/\.$/, ''), found = findWords(tokenize(r.text), ans);
+    if (found.length !== 1 || !['his or her', 'her', 'his', 'their'].includes(ans)) { problems.push(`${at}: the answer is not "his or her", "her" or "their" once in the sentence`); return false; }
+    const first = ans === 'their' ? 'his or her' : ans, options = [first, 'their', 'its'];
+    const word = lowWords(r.text)[0], singular = INDEFINITE_SINGULAR.includes(word);
+    const answer = singular ? [0, 1] : [1];
+    if (!answer.includes(options.indexOf(ans))) { problems.push(`${at}: "${ans}" does not agree with "${word}" by the rule`); return false; }
+    return { format: 'choice', text: blankAt(r.text, found[0]), options, answer, right: r.text, rule: 'indefinite', word, ...(answer.length > 1 ? { multi: true } : {}) };
+  },
+  // a dependent clause fragment: pick the sentence that joins it to a main clause
+  depfrag(r, def, problems, at) {
+    const right = unq(r.a), m = /^(.+?), (.+)$/.exec(right);
+    if (!m || `${m[1]}.` !== r.text) { problems.push(`${at}: the fix is not the fragment, a comma and a main clause`); return false; }
+    const [, dep, main] = m, rest = dep.split(' ').slice(1).join(' ');
+    const wrong = [r.text, `${dep}. ${capFirst(main)}`, `${capFirst(rest)}, ${main}`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: right, prompt: r.text, ask: 'Choose the sentence that fixes the fragment.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'depfrag' };
+  },
+  // a misplaced modifier fixed: the fix, the sentence as it was, the modifier as a "that" clause on the wrong word, and
+  // (when it fits) the modifier moved next to the wrong word
+  movefix(r, def, problems, at) {
+    const text = r.text, right = unq(r.a), open = /^([^,]+), (.+)$/.exec(text);
+    let mod = null, kind = null;
+    if (open && new RegExp(`\\b${esc(open[1])}\\b`, 'i').test(body(right)) && !right.startsWith(open[1])) { mod = open[1]; kind = 'open'; }
+    else {
+      const w = words(body(text));
+      for (let k = 1; k < w.length && !mod; k++) { const tail = w.slice(k).join(' '); if (new RegExp(`\\b${esc(tail)}\\b`, 'i').test(right)) { mod = tail; kind = 'end'; } }
+    }
+    if (!mod) { problems.push(`${at}: no modifier moves between the sentence and its fix`); return false; }
+    const wrongWord = attachOf(text, mod), be = /[^s]s$/.test(wrongWord || '') ? 'were' : 'was';
+    const rel = /^with /i.test(mod) ? `that had ${mod.replace(/^with /i, '')}` : `that ${be} ${lowFirst(mod)}`;
+    const wrong = [text];
+    if (kind === 'open') {
+      const rest = tokenize(open[2]), v = rest.findIndex(x => isVerbish(x.t));
+      const subj = joinTokens(rest.slice(0, v)), after = joinTokens(rest.slice(v));
+      wrong.push(`${capFirst(subj)} ${rel} ${after}`, `${capFirst(subj)} ${lowFirst(mod)} ${after}`);
+    } else {
+      const lead = body(text).slice(0, body(text).length - mod.length).trim();
+      wrong.push(`${lead} ${rel}.`);
+      if (!right.toLowerCase().startsWith(mod.toLowerCase())) wrong.push(`${capFirst(mod)}, ${lc(lead)}.`);
+    }
+    const options = seededShuffle([right, ...new Set(wrong)], at);
+    return { format: 'choice', text: right, prompt: text, ask: 'Choose the sentence that puts the modifier next to the word it describes.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'misplaced', mod };
+  },
+  // a dangling modifier fixed: the fix names the doer as the subject; the wrong versions leave the old subject in place
+  danglefix(r, def, problems, at) {
+    const right = unq(r.a), doer = subjectAfterComma(right);
+    if (!doer || subjectAfterComma(r.text) === doer) { problems.push(`${at}: the fix does not give the main clause a new subject`); return false; }
+    const doerShown = subjectAfterComma(right) && right.split(', ').slice(1).join(', ').split(' ').slice(0, doer.split(' ').length).join(' ');
+    const wrong = [r.text, `${body(r.text)} ${isPassive(r.text) ? 'by' : 'for'} ${doerShown}.`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: right, prompt: r.text, ask: 'Choose the sentence that gives the modifier a word to describe.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'dangling', doer };
+  },
+  // shared or unshared possession: the error-fixing box
+  sharedfix(r, def, problems, at) {
+    const text = doubleQuotes(r.text), right = unq(r.a);
+    let third;
+    const m = /\b(\w+?)(?:'s)? and (\w+?)(?:'s)? (\w+)/.exec(right);
+    if (m) third = right.replace(m[0], `${m[1]}'s and ${m[2]} ${m[3]}`);
+    else third = right.replace(/^The (\w+s)' /, 'The $1 ');
+    const wrong = [...new Set([text, third])].filter(w => w !== right);
+    if (wrong.length < 2) problems.push(`${at}: fewer than 2 wrong versions`);
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'fix', text, right, accept: [right], options, answer: [options.indexOf(right)], rule: 'fix-possession' };
+  },
+  // a question mark or exclamation point with a citation: pick the sentence punctuated right
+  citemark(r, def, problems, at) {
+    const right = doubleQuotes(r.text), m = /^“(.+)([?!])” (.+?) (\([A-Z][a-z]+ \d+\))\.$/.exec(right);
+    if (!m) { problems.push(`${at}: not a quote ending in ? or ! with a citation after it`); return false; }
+    const [, q, mk, tag, cite] = m;
+    if ((mk === '?') !== /question mark/.test(r.a)) { problems.push(`${at}: the answer names the other mark`); return false; }
+    const wrong = [`“${q}”${mk} ${tag} ${cite}.`, `“${q}” ${tag} ${cite}${mk}`, `“${q}${mk}” ${tag}. ${cite}`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: right, ask: 'Which sentence is punctuated correctly?', options, answer: [options.indexOf(right)], right, whole: true, rule: 'citemark' };
+  },
+};
+
+/** The readers of part 2, tried before the others: (raw, def, problems, at, ctx) -> item, false or null. */
+const READERS_2 = [
+  function bare(r, def, problems, at) {
+    if (!r.bare) return null;
+    const read = BARE[def.read.bare];
+    if (!read) { problems.push(`${at}: read.bare "${def.read.bare}" is not built`); return false; }
+    return read(r, def, problems, at);
+  },
+  // "Choose the correct verb: "The dog (bark / barks) at the mail carrier.""
+  function givenPair(r, def, problems, at) {
+    const x = /^Choose the correct (?:verb|word|form): "(.*?)\(([^()]+?) \/ ([^()]+?)\)(.*)"$/.exec(r.q);
+    if (!x) return null;
+    const [, before, a, b, after] = x, options = [a.trim(), b.trim()], ans = unq(r.a).replace(/\.$/, '');
+    const k = options.indexOf(ans);
+    if (k < 0) { problems.push(`${at}: the answer "${ans}" is not one of ${options.join(' / ')}`); return false; }
+    // a form of be, have or do is a plain word in a hint ("so the verb is singular")
+    if (!/^(is|are|was|were|has|have|does|do)$/.test(ans) && hintLeaks(r.hint, ans, options.filter(o => o !== ans))) problems.push(`${at}: the hint names the answer "${ans}" and not the other choice`);
+    return { format: 'choice', text: `${before}___${after}`, options, answer: [k], right: `${before}${ans}${after}`, rule: 'given', ...(def.read && def.read.cycle ? { cycle: true } : {}) };
+  },
+  // "Name the tense: "Ana was reading when the phone rang."": the verb in bold, the three times of its kind of tense
+  function nameTense(r, def, problems, at) {
+    const x = /^Name the tense: "(.+)"$/.exec(r.q);
+    if (!x) return null;
+    const t = tense3Of(x[1]), ans = r.a.replace(/\.$/, '');
+    if (!t || t.name !== ans.toLowerCase()) { problems.push(`${at}: the helping verbs make "${t && t.name}", not "${ans}"`); return false; }
+    const aspect = t.name.split(' ')[1], options = ['past', 'present', 'future'].map(tm => capFirst(`${tm} ${aspect}`)), right = capFirst(t.name);
+    return { format: 'choice', text: x[1], options, answer: [options.indexOf(right)], right: x[1], label: right, plain: true, rule: 'tense3', focus: t.at };
+  },
+  // "Form the past participle: "sing."": the form after "have" (or "are"), and two forms that are not it
+  function participle(r, def, problems, at) {
+    const x = /^Form the (present|past) participle: "(\w+)\.?"$/.exec(r.q);
+    if (!x) return null;
+    const [, kind, base] = x, right = kind === 'present' ? ingOf(base) : ppOf(base), ans = unq(r.a).replace(/\.$/, '');
+    if (right !== ans) { problems.push(`${at}: the rules make "${right}", not "${ans}"`); return false; }
+    let wrong;
+    if (kind === 'present') {
+      const misspelled = right === `${base}ing` ? `${base}${base.slice(-1)}ing` : `${base}ing`;
+      wrong = [IRREGULAR_PAST[base] || regularPast(base), misspelled];
+    } else wrong = PAST_PARTICIPLE[base] ? [IRREGULAR_PAST[base] || EXTRA_PAST[base], regularPast(base)] : [ingOf(base), presentOf(base)];
+    if (wrong.some(w => !w)) { problems.push(`${at}: no past form of "${base}" to offer`); return false; }
+    const options = seededShuffle([right, ...new Set(wrong)].filter((o, i, a) => a.indexOf(o) === i), at);
+    const frame = kind === 'present' ? 'We are' : 'We have';
+    return { format: 'choice', text: `${frame} ___.`, ask: `Choose the ${kind} participle of ${base}.`, options, answer: [options.indexOf(right)], right: `${frame} ${right}.`, rule: 'participle', base, kind };
+  },
+  // "Write the possessive: "The books belong to the students."": the possessive phrase, and three that misplace the
+  // apostrophe
+  function possessive(r, def, problems, at) {
+    const x = /^Write the possessive: "((?:The )?(.+?) belongs? to (.+?)\.)"$/.exec(r.q);
+    if (!x) return null;
+    const [, said, thing, owner] = x, ans = unq(r.a).replace(/\.$/, ''), up = /^\p{Lu}/u.test(ans);
+    const shown = s => (up ? capFirst(s) : s);
+    const right = shown(`${possessiveOf(owner)} ${thing}`);
+    if (right !== ans) { problems.push(`${at}: the rule makes "${right}", not "${ans}"`); return false; }
+    const plural = /'$/.test(possessiveOf(owner));
+    const wrong = plural ? [`${owner.slice(0, -1)}'s ${thing}`, `${owner}'s ${thing}`, `${owner} ${thing}`] : [`${owner}s' ${thing}`, `${owner}s ${thing}`];
+    const options = seededShuffle([right, ...wrong.map(shown)], at);
+    return { format: 'choice', text: right, prompt: said, ask: 'Choose the possessive.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'possessive', owner, thing };
+  },
+  // "What is the function of to win?": noun, adjective or adverb (a verbal's job)
+  function verbalFunction(r, def, problems, at) {
+    const x = def.read && def.read.verbals && r.text && /^What is the function of (.+?)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const labels = ['Noun', 'Adjective', 'Adverb'], ans = capFirst(r.a.split(',')[0].trim().replace(/\.$/, ''));
+    if (!labels.includes(ans)) { problems.push(`${at}: "${r.a}" is not noun, adjective or adverb`); return false; }
+    const focus = placesOf(r.text, x[1]);
+    if (!focus) { problems.push(`${at}: "${x[1]}" is not in the sentence once`); return false; }
+    return labelItem(r.text, labels, ans, r, problems, at, { ask: `What does ${x[1]} do in this sentence?`, rule: 'verbalfn', focus, verbal: x[1] });
+  },
+  // "What is the antecedent of he?": the nouns it could stand for, "It is unclear", and for "they" the two together
+  function antecedent(r, def, problems, at) {
+    const x = r.text && /^What is the antecedent of (\w+)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const pron = x[1].toLowerCase(), toks = tokenize(r.text), pi = toks.findIndex(w => norm(w.t) === pron);
+    const cands = candidatesBefore(r.text, pi).map(capFirst);
+    const people = cands.filter(personal);
+    const options = [...cands, ...(pron === 'they' && people.length >= 2 ? [`${people[0]} and ${people[1]}`] : []), 'It is unclear'];
+    const u = /^It is unclear\. It could be (.+) or (.+)\.$/.exec(r.a);
+    const right = u ? 'It is unclear' : capFirst(r.a.replace(/\.$/, ''));
+    if (u && ![u[1], u[2]].every(c => cands.some(o => norm(o) === norm(c)))) { problems.push(`${at}: "${u[1]}" and "${u[2]}" are not both nouns before the pronoun`); return false; }
+    if (!options.includes(right)) { problems.push(`${at}: "${right}" is not one of ${options.join(' / ')}`); return false; }
+    return { format: 'choice', text: r.text, ask: `What does ${x[1]} stand for?`, options, answer: [options.indexOf(right)], right: r.text, label: right, plain: true, rule: 'antecedent', pron, focus: [pi] };
+  },
+  // "Fix the sentence so it is clear that Sam was upset: "...": the error-fixing box; the cycle's wrong versions are the
+  // sentence as it was and the pronoun replaced by the other noun
+  function clearFix(r, def, problems, at) {
+    const x = /^Fix the sentence so it is clear that (.+?): "(.+)"$/.exec(r.q);
+    if (!x) return null;
+    const [, meaning, text] = x, right = unq(r.a).replace(/"([^"]+)"/g, '“$1”'), toks = tokenize(text);
+    const pi = toks.findIndex((w, i) => i > 0 && Object.hasOwn(PRONOUN_KIND, norm(w.t)));
+    const pron = pi >= 0 ? norm(toks[pi].t) : null;
+    const cands = pron ? fits(pron, candidatesBefore(text, pi)) : [];
+    const intended = cands.slice().sort((a, b) => meaning.toLowerCase().indexOf(a.toLowerCase()) - meaning.toLowerCase().indexOf(b.toLowerCase())).find(c => meaning.toLowerCase().includes(c.toLowerCase()));
+    const other = cands.find(c => c !== intended);
+    if (!intended || !other) { problems.push(`${at}: no two nouns the pronoun could stand for`); return false; }
+    const poss = ['his', 'its'].includes(pron) || (pron === 'her' && pi < toks.length - 1 && !/[.!?]/.test(toks[pi].post));
+    const swapped = joinTokens(toks.map((w, i) => (i === pi ? { ...w, t: poss ? `${other}'s` : other } : w)));
+    const extra = ((def.notes || {})[r.n] || {}).accept || [];
+    const options = seededShuffle([right, text, swapped], at);
+    return { format: 'fix', text, ask: `Fix the sentence so it is clear that ${meaning}.`, right, accept: [right, ...extra], options, answer: [options.indexOf(right)], rule: 'fix-vague', intended, other, pron };
+  },
+];
+const countOf = (s, w) => (String(s).toLowerCase().match(new RegExp(`\\b${esc(w.toLowerCase())}\\b`, 'g')) || []).length;
+
+/** The independent check of part 2's items (called from checkItems). */
+function checkItems2(it, chk) {
+  const at = it.id, right = it.options ? it.options[it.answer[0]] : null, wrong = it.options ? it.options.filter((_, i) => !it.answer.includes(i)) : [];
+  switch (it.rule) {
+    case 'plural': chk(pluralOf(it.base) === right && wrong.every(o => o !== pluralOf(it.base)), `${at}: a wrong plural follows the -s and -es rule`); break;
+    case 'participle': { const want = it.kind === 'present' ? ingOf(it.base) : ppOf(it.base); chk(right === want && wrong.every(o => o !== want), `${at}: a wrong option is the ${it.kind} participle`); break; }
+    case 'tense3': chk(capFirst((tense3Of(it.text) || {}).name || '') === it.label, `${at}: the helping verbs do not make "${it.label}"`); break;
+    case 'possessive': chk(right.toLowerCase() === `${possessiveOf(it.owner)} ${it.thing}`.toLowerCase() && wrong.every(o => o.toLowerCase() !== right.toLowerCase()), `${at}: a wrong possessive is the right one`); break;
+    case 'compound': { const subj = it.spot <= 2; chk(wrong.every(o => SUBJECT_PRONOUNS.has(norm(o)) !== subj) && SUBJECT_PRONOUNS.has(norm(right)) === subj, `${at}: the pronoun's form does not fit its place in the sentence`); break; }
+    case 'gerund': chk(POSSESSIVE_DETERMINERS.has(norm(right)) && wrong.every(o => !POSSESSIVE_DETERMINERS.has(norm(o))), `${at}: a wrong option is a possessive before the gerund`); break;
+    case 'reflexive': {
+      const w = lowWords(it.text), k = w.indexOf('___'), before = w.slice(0, k);
+      const person = PERSON_OF[w[0]] || (before.includes('and') ? '3p' : '3s');
+      const ok = o => REFLEXIVE[o] && REFLEXIVE[o].startsWith(person);
+      chk(ok(right) && wrong.every(o => !ok(o)), `${at}: a wrong reflexive points back to the subject`);
+      break;
+    }
+    case 'agree': {
+      const w = lowWords(it.text), k = w.indexOf('___'), subj = w.slice(0, k).filter(x => !ARTICLES.has(x));
+      const head = it.text.split(' ').filter(x => !/^(The|the)$/.test(x))[0];
+      const kind = subj.includes('and') || /[^s]s$/.test(subj[0]) ? 'plural' : personal(head) ? 'person' : 'thing';
+      const ok = { plural: ['their'], person: ['his', 'her', 'their', 'his or her'], thing: ['its'] }[kind];
+      chk(ok.includes(right) && wrong.every(o => !ok.includes(o)), `${at}: a wrong pronoun agrees with a ${kind} antecedent`);
+      break;
+    }
+    case 'indefinite': {
+      const sing = INDEFINITE_SINGULAR.includes(it.word), plur = INDEFINITE_PLURAL.includes(it.word);
+      const rights = it.answer.map(i => it.options[i]);
+      chk(sing !== plur && rights.includes('their') && (sing ? rights.length === 2 : rights.length === 1) && !rights.includes('its'), `${at}: the right pronouns do not match "${it.word}"`);
+      break;
+    }
+    case 'depfrag': {
+      const ok = new RegExp(`^(${SUBORDINATORS_2.join('|')}) [^.,]+, [^.]+\\.$`, 'i');
+      chk(ok.test(right) && wrong.every(o => !ok.test(o)), `${at}: a wrong version joins the clause to a main clause`);
+      break;
+    }
+    case 'misplaced': { const target = attachOf(right, it.mod); chk(!!target && wrong.every(o => attachOf(o, it.mod) !== target), `${at}: a wrong version puts the modifier next to "${target}"`); break; }
+    case 'dangling': chk(subjectAfterComma(right) === it.doer && wrong.every(o => subjectAfterComma(o) !== it.doer), `${at}: a wrong version gives the modifier its doer`); break;
+    case 'citemark': { const ok = /[?!]” .+ \([A-Z][a-z]+ \d+\)\.$/; chk(ok.test(right) && wrong.every(o => !ok.test(o)), `${at}: a wrong version keeps the mark inside the quotes and the period after the citation`); break; }
+    case 'antecedent': {
+      const cands = it.options.filter(o => o !== 'It is unclear' && !/ and /.test(o)), fit = fits(it.pron, cands.map(c => (/^The /.test(c) ? lowFirst(c) : c)));
+      const want = it.pron === 'they' ? it.options.find(o => / and /.test(o)) : fit.length === 1 ? capFirst(fit[0]) : 'It is unclear';
+      chk(want === it.label, `${at}: the pronoun's kind makes "${want}", not "${it.label}"`);
+      break;
+    }
+    default: break;
+  }
+  if (it.plain && it.label) {
+    const w = it.focus && it.focus.length ? it.focus.map(i => tokenize(it.text)[i].t).join(' ') : '';
+    let want = null;
+    if (it.rule === 'verbal') want = isVerbal(it.text, w) ? /^verbal$/i : /^verb$/i;
+    if (it.rule === 'verbalfn') want = new RegExp(`^${verbalRole(it.text, it.verbal)}$`, 'i');
+    if (it.rule === 'fragment68') want = /^(that|which|especially)\b/i.test(it.text) ? /fragment/i : /sentence/i;
+    if (it.rule === 'pluralposs') want = /'/.test(w) ? /possessive/i : /plural/i;
+    if (it.rule === 'shared') { const n = (it.text.match(/'s\b|s'/g) || []).length; const owned = (/(?:'s|s') (\w+)/.exec(it.text.split(' and ').pop()) || [])[1] || ''; want = n >= 2 || /s$/.test(owned) ? /unshared/i : /^shared/i; }
+    if (want) chk(want.test(it.label), `${at}: the ${it.rule} rule does not give "${it.label}" for "${it.text}"`);
+  }
+  if (it.rule === 'pronoun-role') { const toks = tokenize(it.text), set = it.role === 'subject' ? SUBJECT_PRONOUNS : OBJECT_PRONOUNS; chk(it.answer.every(i => set.has(norm(toks[i].t))), `${at}: a tapped word is not a ${it.role} pronoun`); }
+  if (it.rule === 'restrictive') { const need = needsClauseCommas(it.text); chk(need !== null && (it.want.length > 0) === need, `${at}: the clause rule ${need ? 'needs' : 'takes no'} commas`); }
+  if (it.rule === 'fix-possession') { chk(possessionOk(it.right), `${at}: the fix breaks the possession rule`); for (const o of it.options) if (o !== it.right) chk(!possessionOk(o), `${at}: wrong version "${o}" follows the possession rule`); }
+  if (it.rule === 'fix-vague') {
+    chk(countOf(it.right, it.intended) > countOf(it.text, it.intended) || !countOf(it.right, it.pron), `${at}: the fix neither names "${it.intended}" again nor drops "${it.pron}"`);
+    for (const o of it.options) if (o !== it.right) chk(o === it.text || countOf(o, it.other) > countOf(it.text, it.other), `${at}: wrong version "${o}" is not the sentence as it was or the other noun`);
+  }
+}
+
 /** A 6-8 topic's quiz lines -> its items (each with its own format). */
-function readItems(lines, problems, where, def, notes) {
-  const ctx = { last: null, raws: [] };
+function readItems(lines, problems, where, topicDef, notes) {
+  const ctx = { last: null, raws: [] }, def = { ...topicDef, notes };
   const raws = lines.map(l => {
     const line = { ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text };
-    const r = rawOf(line, ctx);
+    const r = rawOf(line, ctx, def);
     if (!r) problems.push(`${where} line ${l.line}: not "N. ... Answer: ... Hint: ..."`);
     return r;
   });
   ctx.raws = raws.filter(Boolean);
   return ctx.raws.map(r => {
     const at = `${where} item ${r.n}`;
-    for (const read of READERS) {
+    for (const read of [...READERS_2, ...READERS]) {
       const it = read(r, def, problems, at, ctx);
       if (it === false) return null;
       if (it) {
@@ -1333,7 +1825,7 @@ function readItems(lines, problems, where, def, notes) {
         // a book or movie title in the sentence is shown in italics (overrides { title })
         const title = (notes[String(r.n)] || {}).title, titleAt = title ? placesOf(it.text, title) : null;
         if (title && !titleAt) problems.push(`${at}: the title "${title}" is not in the sentence`);
-        return { n: r.n, ...it, hint: r.hint, ...(titleAt ? { titleAt } : {}), ...(def.read && def.read.asIs && (it.format === 'marks' || it.format === 'fix') ? { asIs: true } : {}) };
+        return { n: r.n, ...it, hint: r.hint, ...(titleAt ? { titleAt } : {}), ...(def.read && def.read.asIs && (it.format === 'marks' || it.format === 'fix' || it.format === 'capfix') ? { asIs: true } : {}) };
       }
     }
     problems.push(`${at}: no reader knows this item's shape: ${r.q.slice(0, 80)}`);
@@ -1349,7 +1841,7 @@ export function checkItems(topic) {
   for (const it of topic.items) {
     const at = it.id;
     if (it.options && it.format !== 'fix') {
-      chk(it.answer.length === 1 && new Set(it.options).size === it.options.length, `${at}: options repeat or more than one is right`);
+      chk((it.answer.length === 1 || (it.multi && it.answer.length === 2)) && new Set(it.options).size === it.options.length, `${at}: options repeat or more than one is right`);
       const right = it.options[it.answer[0]], wrong = it.options.filter((_, i) => i !== it.answer[0]);
       for (const o of wrong) {
         switch (it.rule) {
@@ -1421,6 +1913,7 @@ export function checkItems(topic) {
       chk(!it.optional.some(([g]) => it.want.some(([h]) => h === g)), `${at}: a gap both needed and optional`);
     }
     if (it.format === 'capfix') chk(it.answer.every((i, k) => tokenize(it.text)[i].t !== it.fixed[k] && norm(tokenize(it.text)[i].t) === norm(it.fixed[k])), `${at}: a tapped word does not change case`);
+    checkItems2(it, chk);
   }
   return problems;
 }
@@ -1483,7 +1976,7 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
   for (const b of plan.bands) for (const p of b.pathways) for (const part of (plan.pathways[p] || { parts: [] }).parts) for (const id of part.topics) bandOf[id] = bandOf[id] || b.id;
   for (const [id, def] of Object.entries(plan.topics)) {
     const where = `${id} (${def.source.band} "${def.source.title}")`;
-    const src = findTopic(sections, def.source.band, def.source.title);
+    const src = findTopic(sections, def.source.band, def.source.title, def.source.line || null);
     if (!src) { problems.push(`${where}: no full topic with that title in that band of the source`); continue; }
     const fmt = def.format === 'items' ? readItems : FORMATS[def.format];
     if (!fmt) { problems.push(`${where}: format "${def.format}" is not built yet`); continue; }

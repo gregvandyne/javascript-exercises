@@ -23,7 +23,9 @@ const MD = fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/source/cour
 const PLAN = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/pathways.json'), 'utf8'));
 const OVERRIDES = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/overrides.json'), 'utf8'));
 const BAND = PLAN.bands.find(b => b.id === '6-8');
-const IDS = [...new Set(BAND.pathways.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics)))];
+// part 1 is the band's first 27 units (part 2 follows them: grammar-lab-6-8b.test.js)
+const PART1 = BAND.pathways.slice(0, 27);
+const IDS = [...new Set(PART1.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics)))];
 let server, base;
 test.before(async () => { config.grammarLab = true; config.grammarLabUsers = ['*']; server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(() => { server.close(); config.grammarLab = false; config.grammarLabUsers = []; });
@@ -79,8 +81,9 @@ async function playTopic(u, unit, topic, { wrongFirst = false } = {}) {
 test('6-8 part 1 in full: 27 units, 113 topic slots, 86 topics with 12 items each, every source slot and line placed', () => {
   const { topics, rooms, problems } = B.buildTopics(MD, PLAN, OVERRIDES);
   assert.deepEqual(problems, []);
-  assert.equal(BAND.pathways.length, 27);
-  const slots = BAND.pathways.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics));
+  assert.equal(PART1.length, 27);
+  assert.equal(PART1[26], 'parts-of-speech-6-8');
+  const slots = PART1.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics));
   assert.equal(slots.length, 113);
   assert.equal(IDS.length, 86);
   for (const id of IDS) {
@@ -99,13 +102,13 @@ test('6-8 part 1 in full: 27 units, 113 topic slots, 86 topics with 12 items eac
   for (const title of titles) assert.ok(placed.has(title), `"${title}" is placed`);
   assert.equal(sec.pathways.length, 27);
   // the units in the source's order, one for each source pathway
-  assert.deepEqual(BAND.pathways.map(p => PLAN.pathways[p].parts.flatMap(x => x.topics).length), sec.pathways.map(p => p.topics.length));
+  assert.deepEqual(PART1.map(p => PLAN.pathways[p].parts.flatMap(x => x.topics).length), sec.pathways.map(p => p.topics.length));
   // a topic used by several units is one id: mastering it counts in each
-  assert.deepEqual(GL.unitsWith('fanboys-identify').map(p => p.id), ['compound-and-complex', 'choosing-conjunctions', 'parts-of-a-sentence-2']);
-  assert.deepEqual(GL.unitsWith('sentence-verb').map(p => p.id), ['parts-of-a-sentence-1', 'parts-of-a-sentence-2', 'parts-of-speech-6-8']);
+  assert.deepEqual(GL.unitsWith('fanboys-identify').map(p => p.id).slice(0, 3), ['compound-and-complex', 'choosing-conjunctions', 'parts-of-a-sentence-2'], 'and the units of part 2 after them');
+  assert.deepEqual(GL.unitsWith('sentence-verb').map(p => p.id).slice(0, 3), ['parts-of-a-sentence-1', 'parts-of-a-sentence-2', 'parts-of-speech-6-8']);
   assert.deepEqual(GL.unitsWith('a-and-an').map(p => p.id), ['articles', 'confused-words-1']);
   // checkpoints follow the topic list
-  const marks = Object.assign({}, ...BAND.pathways.map(p => PLAN.pathways[p].marks || {}));
+  const marks = Object.assign({}, ...PART1.map(p => PLAN.pathways[p].marks || {}));
   assert.deepEqual(marks, { 'using-transitions': 'checkpoint', 'fanboys-punctuate': 'checkpoint', 'conclusion-jobs': 'checkpoint', counterargument: 'checkpoint', 'common-proper': 'checkpoint' });
   // the reference product's coinages never appear (conjunctive adverbs and subordinating conjunctions by their names)
   const shipped = JSON.stringify(IDS.map(id => topics[id]));

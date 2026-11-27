@@ -3265,16 +3265,16 @@ Teaching card:
 Quiz:
 1. "They built a fort in the yard." Answer: They. Hint: Ask who built the fort.
 2. "She read the book in one evening." Answer: She. Hint: Ask who read the book.
-3. "It rained all day long." Answer: It. Hint: Find the verb, then look for the pronoun that comes before it.
+3. "It rained all day long." Answer: It. Hint: Find the verb, then look for the pronoun that comes before the verb.
 4. "We walked to the market together." Answer: We. Hint: Ask who walked to the market.
 5. "He painted the fence blue." Answer: He. Hint: Ask who painted the fence.
 6. "They sang songs around the fire." Answer: They. Hint: Ask who sang songs.
-7. "It smells like rain outside." Answer: It. Hint: Find the verb, then look for the pronoun that comes before it.
+7. "It smells like rain outside." Answer: It. Hint: Find the verb, then look for the pronoun that comes before the verb.
 8. "She won the race by a step." Answer: She. Hint: Ask who won the race.
 9. "We planted seeds in the spring." Answer: We. Hint: Ask who planted seeds.
 10. "He fixed the broken chair." Answer: He. Hint: Ask who fixed the chair.
 11. "They left before the storm arrived." Answer: They. Hint: Ask who left before the storm.
-12. "It was cold on the mountain." Answer: It. Hint: Find the verb, then look for the pronoun that comes before it.
+12. "It was cold on the mountain." Answer: It. Hint: Find the verb, then look for the pronoun that comes before the verb.
 
 ### Topic: Sentences and Fragments with "That," "Which," and "Especially"
 
@@ -3335,12 +3335,12 @@ Teaching card:
 Quiz:
 1. "They planted a garden behind the school." Answer: They. Hint: Ask who planted a garden.
 2. "She won the spelling contest." Answer: She. Hint: Ask who won the contest.
-3. "It rained all morning." Answer: It. Hint: Find the verb, then look for the pronoun that comes before it.
+3. "It rained all morning." Answer: It. Hint: Find the verb, then look for the pronoun that comes before the verb.
 4. "We built a bridge from sticks." Answer: We. Hint: Ask who built a bridge.
 5. "He carried the heavy box upstairs." Answer: He. Hint: Ask who carried the box.
 6. "They cleaned the classroom after lunch." Answer: They. Hint: Ask who cleaned the classroom.
 7. "She practiced the violin every day." Answer: She. Hint: Ask who practiced the violin.
-8. "It snowed on the first day of winter." Answer: It. Hint: Find the verb, then look for the pronoun that comes before it.
+8. "It snowed on the first day of winter." Answer: It. Hint: Find the verb, then look for the pronoun that comes before the verb.
 9. "We visited the farm in the fall." Answer: We. Hint: Ask who visited the farm.
 10. "He fixed the flat tire himself." Answer: He. Hint: Ask who fixed the tire.
 11. "They cheered when the team scored." Answer: They. Hint: Ask who cheered.
@@ -4270,7 +4270,7 @@ Quiz:
 2. Fix the capitalization: "I told my dad about the game." Answer: I told my dad about the game. Hint: A family word stays lowercase after a word like my.
 3. Fix the capitalization: "grandma baked bread this morning." Answer: Grandma baked bread this morning. Hint: A family word is capitalized when it is used as a name.
 4. Fix the capitalization: "My grandma baked bread this morning." Answer: My grandma baked bread this morning. Hint: A family word stays lowercase after a word like my.
-5. Fix the capitalization: "Can uncle Omar drive us to practice?" Answer: Can Uncle Sam drive us to practice? Hint: A family word is capitalized when it is part of a name.
+5. Fix the capitalization: "Can uncle Omar drive us to practice?" Answer: Can Uncle Omar drive us to practice? Hint: A family word is capitalized when it is part of a name.
 6. Fix the capitalization: "Can your uncle drive us to practice?" Answer: Can your uncle drive us to practice? Hint: A family word stays lowercase after a word like your.
 7. Fix the capitalization: "mom said to wash your hands." Answer: Mom said to wash your hands. Hint: A family word is capitalized when it is used as a name.
 8. Fix the capitalization: "His mom said to wash your hands." Answer: His mom said to wash your hands. Hint: A family word stays lowercase after a word like his.
@@ -4402,23 +4402,23 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 ### Topic: Capitalizing Things in Space
 
 **Teaching card**
-- Definition: The names of planets, stars, and other specific things in space are capitalized. Words like earth, sun, and moon are capitalized when they name the specific planet, star, or moon, and stay lowercase when they are used in a general way.
-- Worked example: "the earth orbits the sun." The planet "earth" becomes "Earth" and the star "sun" becomes "Sun."
+- Definition: The names of planets, stars, galaxies, and other specific things in space are capitalized. Earth is capitalized when it names our planet. The everyday words sun and moon stay lowercase.
+- Worked example: "earth orbits the sun." The planet "earth" becomes "Earth," and "sun" stays lowercase: "Earth orbits the sun."
 - Explanation: Specific things in space are proper nouns, so they take capital letters.
-- Tip box: "Mars is called the red planet." Mars is capitalized because it names a specific planet. "We sat in the sun all afternoon." Sun stays lowercase because it is used in a general way.
+- Tip box: "Mars is called the red planet." Mars is capitalized because it names a specific planet. "We sat in the sun all afternoon." Sun stays lowercase, like moon.
 
 **Quiz**
-1. Fix the capitalization: "the earth orbits the sun." Answer: The Earth orbits the Sun. Hint: Specific planets and stars are capitalized.
+1. Fix the capitalization: "earth orbits the sun." Answer: Earth orbits the sun. Hint: A planet's name is capitalized, and the everyday word sun stays lowercase.
 2. Fix the capitalization: "mars is called the red planet." Answer: Mars is called the Red Planet. Hint: Planet names are capitalized.
-3. Fix the capitalization: "The moon rises after sunset." Answer: The Moon rises after sunset. Hint: Ask whether the word names our own moon or any moon in general.
+3. Fix the capitalization: "the moon rises after sunset." Answer: The moon rises after sunset. Hint: A sentence starts with a capital, and the everyday word moon stays lowercase.
 4. Fix the capitalization: "Jupiter is the largest planet." Answer: Jupiter is the largest planet. Hint: Planet names are capitalized.
-5. Fix the capitalization: "We sat in the sun all afternoon." Answer: We sat in the sun all afternoon. Hint: Ask whether the word names the star itself or just its light and warmth.
+5. Fix the capitalization: "We sat in the sun all afternoon." Answer: We sat in the sun all afternoon. Hint: Ask whether the word is a name, like Mars, or an everyday word, like sun and moon.
 6. Fix the capitalization: "Venus shines brightly in the morning sky." Answer: Venus shines brightly in the morning sky. Hint: Planet names are capitalized.
 7. Fix the capitalization: "The milky way is our galaxy." Answer: The Milky Way is our galaxy. Hint: Names of galaxies are capitalized.
 8. Fix the capitalization: "Saturn has wide rings." Answer: Saturn has wide rings. Hint: Planet names are capitalized.
 9. Fix the capitalization: "The north star helps travelers find their way." Answer: The North Star helps travelers find their way. Hint: Star names are capitalized.
-10. Fix the capitalization: "By the light of the moon, we walked home." Answer: By the light of the Moon, we walked home. Hint: Ask whether the word names our own moon or any moon in general.
-11. Fix the capitalization: "Neptune is far from the sun." Answer: Neptune is far from the Sun. Hint: Ask whether each word names one specific planet or star.
+10. Fix the capitalization: "By the light of the moon, we saw venus." Answer: By the light of the moon, we saw Venus. Hint: Planet names are capitalized, and the everyday word moon stays lowercase.
+11. Fix the capitalization: "Neptune is far from the sun." Answer: Neptune is far from the sun. Hint: Planet names are capitalized, and the everyday word sun stays lowercase.
 12. Fix the capitalization: "The big dipper is easy to spot." Answer: The Big Dipper is easy to spot. Hint: Names of star groups are capitalized.
 
 ### Topic: Capitalizing Academic Subjects
@@ -4650,24 +4650,24 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 ### Topic: Which Part of the Collective Noun Subject Agrees with the Verb?
 
 **Teaching card**
-- Definition: A collective noun names a group, like team, class, or family. When the group acts as one unit, the verb is singular. When the members act as separate people, the verb is plural.
-- Worked example: "The team wins the game." The team acts as one unit, so the verb "wins" is singular. Compare: "The team argue among themselves." The members act separately, so the verb "argue" is plural.
-- Explanation: Ask whether the group acts together or as separate people, then match the verb to that meaning.
-- Tip box: "The class reads quietly." One unit, so the verb is singular. "The class disagree about the book." Separate people, so the verb is plural.
+- Definition: A collective noun names a group, like team, class, or family. In US English, a collective noun takes a singular verb, because the group acts as one unit. To show the members acting as separate people, make the members the subject, and the verb is plural.
+- Worked example: "The team wins the game." The subject "team" is one unit, so the verb "wins" is singular. Compare: "The team members argue among themselves." The subject "members" is plural, so the verb "argue" is plural.
+- Explanation: Find the word the verb agrees with: the group itself, or the members of the group. Then match the verb to it.
+- Tip box: "The class reads quietly." The class is one unit, so the verb is singular. "The students in the class disagree about the book." The students are many, so the verb is plural.
 
 **Quiz**
-1. Choose the correct verb: "The team (wins / win) the game." Answer: wins. Hint: Ask whether the group acts together as one unit or as separate members.
-2. Choose the correct verb: "The team (argues / argue) among themselves." Answer: argue. Hint: Ask whether the group acts together as one unit or as separate members.
-3. Choose the correct verb: "The class (reads / read) quietly." Answer: reads. Hint: Ask whether the group acts together as one unit or as separate members.
-4. Choose the correct verb: "The class (disagrees / disagree) about the book." Answer: disagree. Hint: Ask whether the group acts together as one unit or as separate members.
-5. Choose the correct verb: "The family (eats / eat) dinner together." Answer: eats. Hint: Ask whether the group acts together as one unit or as separate members.
-6. Choose the correct verb: "The family (goes / go) their separate ways after lunch." Answer: go. Hint: Ask whether the group acts together as one unit or as separate members.
-7. Choose the correct verb: "The band (plays / play) on Friday night." Answer: plays. Hint: Ask whether the group acts together as one unit or as separate members.
-8. Choose the correct verb: "The band (tunes / tune) their instruments." Answer: tune. Hint: Ask whether the group acts together as one unit or as separate members.
-9. Choose the correct verb: "The jury (reaches / reach) a verdict." Answer: reaches. Hint: Ask whether the group acts together as one unit or as separate members.
-10. Choose the correct verb: "The jury (disagrees / disagree) with each other." Answer: disagree. Hint: Ask whether the group acts together as one unit or as separate members.
-11. Choose the correct verb: "The crowd (cheers / cheer) for the home team." Answer: cheers. Hint: Ask whether the group acts together as one unit or as separate members.
-12. Choose the correct verb: "The crowd (scatters / scatter) in every direction." Answer: scatter. Hint: Ask whether the group acts together as one unit or as separate members.
+1. Choose the correct verb: "The team (wins / win) the game." Answer: wins. Hint: Ask whether the subject is the group as one unit or the members of the group.
+2. Choose the correct verb: "The team members (argues / argue) among themselves." Answer: argue. Hint: Ask whether the subject is the group as one unit or the members of the group.
+3. Choose the correct verb: "The class (reads / read) quietly." Answer: reads. Hint: Ask whether the subject is the group as one unit or the members of the group.
+4. Choose the correct verb: "The students in the class (disagrees / disagree) about the book." Answer: disagree. Hint: Ask whether the subject is the group as one unit or the members of the group.
+5. Choose the correct verb: "The family (eats / eat) dinner together." Answer: eats. Hint: Ask whether the subject is the group as one unit or the members of the group.
+6. Choose the correct verb: "The family members (goes / go) their separate ways after lunch." Answer: go. Hint: Ask whether the subject is the group as one unit or the members of the group.
+7. Choose the correct verb: "The band (plays / play) on Friday night." Answer: plays. Hint: Ask whether the subject is the group as one unit or the members of the group.
+8. Choose the correct verb: "The band members (tunes / tune) their instruments." Answer: tune. Hint: Ask whether the subject is the group as one unit or the members of the group.
+9. Choose the correct verb: "The jury (reaches / reach) a verdict." Answer: reaches. Hint: Ask whether the subject is the group as one unit or the members of the group.
+10. Choose the correct verb: "The jurors (disagrees / disagree) with each other." Answer: disagree. Hint: Ask whether the subject is the group as one unit or the members of the group.
+11. Choose the correct verb: "The crowd (cheers / cheer) for the home team." Answer: cheers. Hint: Ask whether the subject is the group as one unit or the members of the group.
+12. Choose the correct verb: "The people in the crowd (scatters / scatter) in every direction." Answer: scatter. Hint: Ask whether the subject is the group as one unit or the members of the group.
 
 ### Topic: Agreement with Collective Nouns
 
@@ -5116,18 +5116,18 @@ See the topic "Identifying Verbs in Simple, Progressive, and Perfect Tenses" und
 - Tip box: "She likes to read." To read is an infinitive, not a verb. "The running water is cold." Running describes water, so it is a participle, not a verb.
 
 **Quiz**
-1. Read the sentence: "Swimming is good exercise." Ask: Is swimming a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-2. Read the sentence: "She likes to read." Ask: Is to read a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-3. Read the sentence: "The running water is cold." Ask: Is running a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-4. Read the sentence: "Ana walks to school." Ask: Is walks a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-5. Read the sentence: "Reading is my favorite hobby." Ask: Is reading a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-6. Read the sentence: "The broken vase lay on the floor." Ask: Is broken a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-7. Read the sentence: "They want to win the game." Ask: Is to win a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-8. Read the sentence: "The dog barked all night." Ask: Is barked a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-9. Read the sentence: "Dancing makes her happy." Ask: Is dancing a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-10. Read the sentence: "The smiling teacher greeted the class." Ask: Is smiling a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-11. Read the sentence: "Leo hopes to travel this summer." Ask: Is to travel a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
-12. Read the sentence: "We studied for the test." Ask: Is studied a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or does it act as a noun, an adjective, or an adverb?
+1. Read the sentence: "Swimming is good exercise." Ask: Is swimming a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+2. Read the sentence: "She likes to read." Ask: Is to read a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+3. Read the sentence: "The running water is cold." Ask: Is running a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+4. Read the sentence: "Ana walks to school." Ask: Is walks a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+5. Read the sentence: "Reading is my favorite hobby." Ask: Is reading a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+6. Read the sentence: "The broken vase lay on the floor." Ask: Is broken a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+7. Read the sentence: "They want to win the game." Ask: Is to win a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+8. Read the sentence: "The dog barked all night." Ask: Is barked a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+9. Read the sentence: "Dancing makes her happy." Ask: Is dancing a verb or a verbal? Answer: a verbal, a gerund. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+10. Read the sentence: "The smiling teacher greeted the class." Ask: Is smiling a verb or a verbal? Answer: a verbal, a participle. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+11. Read the sentence: "Leo hopes to travel this summer." Ask: Is to travel a verb or a verbal? Answer: a verbal, an infinitive. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
+12. Read the sentence: "We studied for the test." Ask: Is studied a verb or a verbal? Answer: a verb. Hint: Ask what job the word does here. Is it the main verb, or is it a verbal acting as a noun, an adjective, or an adverb?
 
 ### Topic: Identifying Modifiers
 
@@ -5160,18 +5160,18 @@ See the topic "Identifying Verbs in Simple, Progressive, and Perfect Tenses" und
 - Tip box: "Swimming is fun." Swimming is a gerund acting as a subject. "The barking dog woke us." Barking is a participle acting as an adjective.
 
 **Quiz**
-1. Read the sentence: "To win takes practice." Ask: What is the function of to win? Answer: noun, subject. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-2. Read the sentence: "Swimming is fun." Ask: What is the function of swimming? Answer: noun, subject. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-3. Read the sentence: "The barking dog woke us." Ask: What is the function of barking? Answer: adjective. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-4. Read the sentence: "She likes to read." Ask: What is the function of to read? Answer: noun, object. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-5. Read the sentence: "The broken vase lay on the floor." Ask: What is the function of broken? Answer: adjective. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-6. Read the sentence: "He came to help." Ask: What is the function of to help? Answer: adverb. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-7. Read the sentence: "Reading builds vocabulary." Ask: What is the function of reading? Answer: noun, subject. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-8. Read the sentence: "The smiling teacher greeted the class." Ask: What is the function of smiling? Answer: adjective. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-9. Read the sentence: "They stopped to rest." Ask: What is the function of to rest? Answer: adverb. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-10. Read the sentence: "Dancing makes her happy." Ask: What is the function of dancing? Answer: noun, subject. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-11. Read the sentence: "The book to read is on the shelf." Ask: What is the function of to read? Answer: adjective. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
-12. Read the sentence: "The running water was cold." Ask: What is the function of running? Answer: adjective. Hint: Ask whether the verbal names something, describes a noun, or tells why something happened.
+1. Read the sentence: "To win takes practice." Ask: What is the function of to win? Answer: noun, subject. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+2. Read the sentence: "Swimming is fun." Ask: What is the function of swimming? Answer: noun, subject. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+3. Read the sentence: "The barking dog woke us." Ask: What is the function of barking? Answer: adjective. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+4. Read the sentence: "She likes to read." Ask: What is the function of to read? Answer: noun, object. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+5. Read the sentence: "The broken vase lay on the floor." Ask: What is the function of broken? Answer: adjective. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+6. Read the sentence: "He came to help." Ask: What is the function of to help? Answer: adverb. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+7. Read the sentence: "Reading builds vocabulary." Ask: What is the function of reading? Answer: noun, subject. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+8. Read the sentence: "The smiling teacher greeted the class." Ask: What is the function of smiling? Answer: adjective. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+9. Read the sentence: "They stopped to rest." Ask: What is the function of to rest? Answer: adverb. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+10. Read the sentence: "Dancing makes her happy." Ask: What is the function of dancing? Answer: noun, subject. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+11. Read the sentence: "The book to read is on the shelf." Ask: What is the function of to read? Answer: adjective. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
+12. Read the sentence: "The running water was cold." Ask: What is the function of running? Answer: adjective. Hint: Ask whether the verbal names something like a noun, describes a noun like an adjective, or tells why like an adverb.
 # Grammar Lab: Grades 9-12 Lessons
 
 Band: Grades 9-12, plus the ungraded Possessives pathway.
