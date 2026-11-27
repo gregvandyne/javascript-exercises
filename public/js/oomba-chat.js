@@ -97,7 +97,7 @@ export function mountChat(o) {
   function took(chat, { initial = false } = {}) {
     if (!chat) return;
     const before = new Set(C.chat.turns.map(x => x.id));
-    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter, x.note && x.note.pick && x.note.pick.need, x.note && Object.values(x.note).map(v => (v && typeof v === 'object' && !Array.isArray(v) ? [v.state || null, v.v || null] : null))]), chat.pending && [chat.pending.id, chat.pending.step]]);
+    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter, x.note && x.note.pick && x.note.pick.need, x.note && Object.values(x.note).map(v => (v && typeof v === 'object' && !Array.isArray(v) ? [v.state || null, v.v || null, v.savedAs ? v.savedAs.name || v.savedAs.id || 1 : null] : null))]), chat.pending && [chat.pending.id, chat.pending.step]]);
     if (chat.pending) C.skew = Date.now() - chat.pending.now;
     if (!initial && sig === C.sig) return;
     C.sig = sig;

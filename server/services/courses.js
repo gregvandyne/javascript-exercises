@@ -853,6 +853,10 @@ export function recordCheck(user, course, step, { score, passed }) {
 // passed on a step with a game, without its win, is cleared unrecorded: that student still owes the
 // game. (A check on a step with no game is honoured: there, the check is the finished step.)
 export const isGuestUser = u => !!u && !!u.is_guest;
+/** Courses that keep their own steps outside COURSES (Grammar Lab: services/grammar-lab.js) honor their stashed wins
+ *  here too: slug -> (user, stepKey) => true when the win became that course's progress. Registered on import. */
+const pendingHandlers = new Map();
+export const onPendingWin = (slug, fn) => { pendingHandlers.set(slug, fn); };
 /** Keep one earned fact for a guest (idempotent; a check keeps its best score). Accounts never need
  *  this — their facts are progress the moment they happen — so it writes nothing for them. */
 export function stashPendingFact(user, course, step, kind, score = null) {
@@ -896,7 +900,11 @@ export function applyPendingWins(user) {
   const applied = [];
   for (const e of byStep.values()) {
     const course = getCourse(e.course); const step = course && getStep(course, e.step);
-    if (!step) continue;
+    if (!step) {
+      const own = !course && pendingHandlers.get(e.course);
+      if (own && e.kinds.has('win') && own(user, e.step)) applied.push({ course: e.course, step: e.step, via: 'win' });
+      continue;
+    }
     const via = e.kinds.has('win') ? 'win' : (!step.game && e.kinds.has('check') ? 'check' : null);
     if (!via) continue;
     upsert(user, course, step, { read_at: 'now', checked_at: 'now', ...(step.game ? { played_at: 'now', completed_at: 'now' } : {}) });

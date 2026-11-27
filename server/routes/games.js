@@ -58,6 +58,8 @@ import * as courses from '../services/courses.js';
 import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 import { fenceLets } from './family.js';
+import * as GLAB from '../services/grammar-lab.js';
+import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
 export const FRAME_STYLES = Object.freeze(['cartoon', 'breeze']);
@@ -355,7 +357,16 @@ router.get('/play/:slug', (req, res) => {
   // teacher's instructions again at the top of the game (the game itself is unchanged). Its student's supports (Homeroom
   // step 3c) ride in the token to the frame (BRB.support: extra time, read aloud, simpler wording, bigger text).
   const frame = lesson ? L.playFrame(u, lc.cl, lc.step, t) : null;
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}), ...(frame && frame.support ? { sp: frame.support } : {}) }, 15 * 60);
+  // A Grammar Lab topic's Mistake Hunt room (?glroom=<topic>&unit=<unit>; services/grammar-lab.js): the game opens in its
+  // hand-in mode on the room's passage, and hands in to Grammar Lab, which checks it. Only where Grammar Lab lets the
+  // player in (GRAMMAR_LAB), for a topic of that unit that is open to them; anything else plays the game as usual.
+  const glRoom = !lesson && !inMatch && u && !isGrownup(u) && typeof req.query.glroom === 'string' && typeof req.query.unit === 'string' && g.slug === PS.SLUG && g.source === 'seed' && mayOpenGrammarLab(u)
+    ? (() => {
+      const tp = GLAB.topic(req.query.glroom), p = tp && GLAB.room(tp.id) ? GLAB.pathway(req.query.unit, tp.band) : null;
+      const st = p && p.topics.includes(tp.id) ? GLAB.unitStates(u, p).find(x => x.topic.id === tp.id) : null;
+      return st && st.open ? { topic: tp.id, unit: p.id, back: `/courses/grammar-lab/${p.band}/${p.id}#gl-topic-${tp.id}`, title: tp.title } : null;
+    })() : null;
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}), ...(glRoom ? { gr: [glRoom.topic, glRoom.unit] } : {}), ...(frame && frame.support ? { sp: frame.support } : {}) }, 15 * 60);
   // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that
   // offers that style (Oomba.three's styles) draws it; every other game ignores it. Only the known style names pass.
   const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
@@ -369,8 +380,8 @@ router.get('/play/:slug', (req, res) => {
   // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
   // escape (the game's own screens offer only Play again / Next).
   if (frame) lesson.back = frame.backHref;
-  const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
-  const backLabel = lesson ? (frame ? frame.backLabel : t('progress.play.backToLesson')) : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
+  const backHref = lesson ? lesson.back : glRoom ? glRoom.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
+  const backLabel = lesson ? (frame ? frame.backLabel : t('progress.play.backToLesson')) : glRoom ? t('grammarLab.room.back', { topic: glRoom.title }) : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
   // Loudness (services/mic-games.js): the official noise meters, and any Builder game whose code uses BRB.loudness; never
   // in an online match. This page (not the game frame, which keeps microphone=()) may then open the mic after a tap and
   // pass the game a number.
@@ -398,7 +409,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}), ...(hostLiveMode(u, g) ? { hostLive: hostLiveMode(u, g) } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson || glRoom) ? { backHref, backLabel } : {}), ...(glRoom ? { glRoom: { topic: glRoom.topic, unit: glRoom.unit } } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}), ...(hostLiveMode(u, g) ? { hostLive: hostLiveMode(u, g) } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: [...(mic ? ['js.match', 'js.loudness'] : ['js.match']), ...(frame && frame.i18n ? frame.i18n : [])] });
 });
@@ -508,6 +519,8 @@ router.get('/frame/:token', (req, res) => {
     // A graded Mistake Hunt step (BRB.proofStep; services/proof-steps.js viewFor): the words students see and their
     // saved fixes, never the key or the why lines before they are allowed. Only for the student the token was made for.
     ...(!preview && tok.pf && u && docTextGame(g) ? (() => { const r = progress.proofFor(u, String(tok.pf[0]), String(tok.pf[1])); return r.ok ? { proofStep: r.view } : {}; })() : {}),
+    // A Grammar Lab room (services/grammar-lab.js roomOpen): the same hand-in mode, on the room's planted passage.
+    ...(!preview && tok.gr && u && docTextGame(g) && mayOpenGrammarLab(u) ? (() => { const v = GLAB.roomOpen(u, String(tok.gr[0])); return v ? { proofStep: v } : {}; })() : {}),
     // Print (BRB.canPrint / BRB.print; Crossword, Arithmetic Lab, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the

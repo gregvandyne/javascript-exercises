@@ -5763,6 +5763,27 @@
       "joinShort": "Entrar",
       "join": "Entrar em {title}",
       "over": "O jogo ao vivo acabou. Você voltou para sua mesa."
+    },
+    "grammar-lab": {
+      "levelOf": "Nível {n} de {total}",
+      "levelsDone": "{done} de {total} níveis terminados",
+      "levelsNow": "Você está no nível {n} de {total}.",
+      "counter": "Pergunta {n} de {total}",
+      "streak": "Certas seguidas: {n} de {need}",
+      "wrong": "Quase. Olhe de novo e tente outra vez. Acerte duas seguidas para terminar este nível.",
+      "again": "Ainda não. Abra a dica para ajudar.",
+      "near": "Você escolheu palavras demais. Tire as que sobram e envie de novo.",
+      "hideHint": "Esconder a dica",
+      "hint": "Dica",
+      "levelDone": "Nível {n} terminado!",
+      "levelText": "Vêm perguntas novas. Continue!",
+      "answered": "{count, plural, one {Você respondeu # pergunta.} other {Você respondeu # perguntas.}}",
+      "next": "Próximo: {topic}",
+      "flagSent": "Obrigado. Vamos dar uma olhada.",
+      "wentWrong": "Algo deu errado. Tente de novo.",
+      "gap": "Vírgula depois de {word}",
+      "blank": "lacuna",
+      "nearGaps": "Você colocou vírgulas demais. Tire as que sobram e envie de novo."
     }
   },
   "favorites": {
@@ -10948,7 +10969,7 @@
       "trademarks": "{names} são marcas de seus respectivos donos. A Oomba Academy não tem vínculo com eles."
     },
     "tools": {
-      "h": "Uau, faz tudo isso.",
+      "h": "Todas as ferramentas de que sua turma precisa. Em um só lugar.",
       "lead": "Cada ferramenta é distribuída às carteiras no Hub, e o Oomba consegue comandar a maioria delas.",
       "manip": {
         "h": "{count} manipuláveis",
@@ -11170,7 +11191,7 @@
     "tour": {
       "kicker": "Tour interativo",
       "h": "Experimente o Hub antes de se cadastrar.",
-      "lead": "Um passeio curto por telas reais. Toque nos pontos amarelos ou em Próximo.",
+      "lead": "Seis passos por uma aula no Hub. Toque em Próximo.",
       "label": "O tour do Hub",
       "stepOf": "Passo {n} de {total}",
       "back": "Voltar",
@@ -11179,38 +11200,32 @@
       "note": "Telas reais do aplicativo com alunos inventados.",
       "s1": {
         "t": "Organizar os lugares",
-        "h": "Igual à sua sala de verdade",
-        "p": "Escolha fileiras, mesas de quatro, um U ou um círculo, ou arraste uma carteira até onde ela fica de verdade. Os grupos mantêm suas cores.",
+        "p": "Escolha fileiras, mesas de quatro, um U ou um círculo, ou arraste uma carteira até o lugar real dela.",
         "alt": "Organizar os lugares no Hub: fileiras, mesas de quatro, em U e em círculo, com as carteiras em mesas de quatro."
       },
       "s2": {
         "t": "Distribuir uma aula",
-        "h": "Toque, depois uma carteira",
-        "p": "Toque em uma aula, um jogo ou uma ferramenta de matemática, depois em uma carteira, um grupo ou a turma toda. Ou arraste até lá.",
+        "p": "Toque em uma aula, aqui Mistake Hunt, depois em uma carteira, um grupo ou a turma toda.",
         "alt": "Mistake Hunt escolhido no Hub: agora toque em uma carteira, um grupo, Turma toda ou Minha mesa."
       },
       "s3": {
         "t": "Ver cada carteira",
-        "h": "Cada carteira, ao vivo",
-        "p": "Cada carteira mostra o que o aluno tem aberto, aqui o Arithmetic Lab. Carteiras tracejadas ainda não chegaram. Toque em uma carteira para ver de perto.",
+        "p": "Cada carteira mostra o que aquele aluno tem aberto agora. Toque em uma para ver de perto.",
         "alt": "O Hub com cada carteira ao vivo: a maioria jogando Arithmetic Lab, dois ainda não chegaram."
       },
       "s4": {
         "t": "Responder às mãos",
-        "h": "Mãos levantadas, em ordem",
-        "p": "Uma pergunta e um pedido de ajuda, na ordem em que chegaram. Respondido os tira da fila. O passe de corredor também fica aqui, e nunca no projetor.",
+        "p": "As mãos levantadas ficam em ordem. Toque em Respondido depois de ajudar.",
         "alt": "O painel Mãos levantadas: Cleo tem uma pergunta, Gus precisa de ajuda, e o passe de corredor."
       },
       "s5": {
         "t": "Pergunte ao Oomba",
-        "h": "Planeje com o Oomba",
-        "p": "Peça o plano de hoje. O Oomba faz um cartão, e nada vai para as carteiras até você tocar em Usar este plano.",
+        "p": "Peça o plano de hoje. Nada vai para as carteiras até você tocar em Usar este plano.",
         "alt": "O chat do Oomba ao lado do Hub com um cartão de plano Dia de frações e Usar este plano."
       },
       "s6": {
         "t": "Encerrar a aula",
-        "h": "Encerrar a aula",
-        "p": "Encerrar a aula mostra um breve resumo e termina a aula. O que não foi concluído fica nas carteiras como lição de casa.",
+        "p": "Toque em Encerrar a aula. O que não foi concluído fica nas carteiras como lição de casa.",
         "alt": "Encerrar a aula no Hub: mostra um breve resumo e termina a aula."
       }
     },
@@ -16138,6 +16153,123 @@
       "title": "Cartões compartilhados com a turma",
       "cards": "{count, plural, one {# cartão} other {# cartões}}",
       "hidden": "Oculto para a turma"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Gramática e escrita, uma habilidade de cada vez",
+    "band": "Anos {grades}",
+    "topicsN": "{count, plural, one {# tema} other {# temas}}",
+    "ringLabel": "{done} de {total} temas dominados",
+    "allUnits": "Todas as unidades",
+    "backTo": "Voltar para {unit}",
+    "noscript": "Esta prática precisa do JavaScript ativado.",
+    "topic": {
+      "options": "Mais de {topic}",
+      "card": "Ficha da lição",
+      "again": "Praticar de novo",
+      "review": "Rever as perguntas",
+      "afterMastery": "Depois que você dominar",
+      "new": "Começar",
+      "started": "Continuar",
+      "mastered": "Dominado",
+      "pending": "Entre para guardar",
+      "locked": "Domine o anterior primeiro"
+    },
+    "guest": {
+      "title": "Entre para guardar suas conquistas",
+      "text": "Você pode jogar como convidado. Para guardar um tema que dominar, entre ou crie uma conta.",
+      "wonTitle": "Muito bem! Entre para guardar",
+      "wonText": "Você dominou isso como convidado. Entre ou crie uma conta e vamos adicionar ao seu progresso.",
+      "signup": "Criar uma conta",
+      "login": "Entrar"
+    },
+    "welcome": {
+      "heading": "Bem-vindo a {topic}",
+      "text": "Continue respondendo até mostrar que sabe. Acerte as duas últimas seguidas para terminar cada nível.",
+      "go": "Vamos lá",
+      "skip": "Pular a introdução"
+    },
+    "practice": {
+      "tip": "Como funciona o toque duplo",
+      "card": "Ficha da lição",
+      "hint": "Dica",
+      "hintTitle": "Aqui vai uma dica",
+      "submit": "Enviar",
+      "flag": "Avisar um problema com esta pergunta",
+      "correct": "Certo!",
+      "levelNext": "Próximo nível"
+    },
+    "levels": {
+      "heading": "Níveis e domínio",
+      "rule": "Para terminar um nível, responda às perguntas dele e acerte as duas últimas seguidas. Uma resposta errada acrescenta uma pergunta.",
+      "mastery": "{total, plural, one {Termine o nível para dominar este tema.} other {Termine os # níveis para dominar este tema.}}",
+      "close": "Fechar"
+    },
+    "tip": {
+      "heading": "Toque duas vezes para ver o que uma palavra significa",
+      "text": "Toque duas vezes numa palavra de gramática, como {word}, e o significado aparece.",
+      "before": "Toque no",
+      "after": "em cada frase.",
+      "def": "fala de um substantivo",
+      "ok": "Entendi",
+      "replay": "Ver de novo"
+    },
+    "flag": {
+      "heading": "Avisar um problema",
+      "text": "Tem algo errado com esta pergunta? Mande para nós e vamos dar uma olhada.",
+      "send": "Enviar",
+      "cancel": "Cancelar"
+    },
+    "done": {
+      "heading": "Você dominou {topic}!",
+      "back": "Voltar para {unit}"
+    },
+    "card": {
+      "heading": "Ficha da lição",
+      "example": "Exemplo",
+      "how": "Como funciona:",
+      "tips": "Mais exemplos",
+      "listen": "Leia para mim",
+      "stop": "Parar",
+      "practice": "Começar a praticar"
+    },
+    "review": {
+      "heading": "Reveja suas perguntas",
+      "firstTry": "Certo de primeira",
+      "fixed": "Corrigida depois de uma dica",
+      "none": "Domine este tema para rever as perguntas."
+    },
+    "roles": {
+      "adjective": "adjetivo",
+      "noun": "substantivo",
+      "verb": "verbo",
+      "adverb": "advérbio",
+      "pronoun": "pronome",
+      "subject": "sujeito",
+      "article": "artigo",
+      "conjunction": "conjunção",
+      "preposition": "preposição",
+      "capital": "letra maiúscula",
+      "comma": "vírgula"
+    },
+    "glossaryWord": {
+      "adjective": "adjetivo",
+      "noun": "substantivo"
+    },
+    "glossary": {
+      "adjective": "uma palavra que fala de um substantivo: de que tipo, quantos ou qual",
+      "noun": "uma palavra para uma pessoa, um lugar, um animal ou uma coisa"
+    },
+    "mark": {
+      "checkpoint": "Ponto de controle",
+      "review": "Revisão"
+    },
+    "room": {
+      "open": "Sala de revisão",
+      "passed": "Sala de revisão concluída",
+      "locked": "Abra o tema primeiro",
+      "back": "Voltar para {topic}"
     }
   }
 }

@@ -1,0 +1,30 @@
+/* Grammar Lab's pictures and animations (public/js/grammar-lab-art.js). The pictures read their theme colours from the
+   --gl-* properties below, mapped to the app's tokens (public/css/app.css), so light and dark both come from the two
+   token blocks there; nothing here names a theme. The scenes never take clicks (only the tip's Replay button does) and
+   sit inside their container, so they never cover the lesson or its submit control. */
+.gla{--gl-paper:var(--card);--gl-bg:var(--bg);--gl-soft:var(--card-2);--gl-hair:var(--line);--gl-line:var(--text);--gl-muted:var(--muted);
+  --gl-edge:var(--edge);--gl-mintsoft:var(--accent-soft);--gl-sparksoft:var(--spark-soft);
+  position:relative;display:block;max-width:100%;pointer-events:none;user-select:none;-webkit-user-select:none;font-family:var(--font);color:var(--text)}
+.gla svg{display:block;width:100%;height:auto}
+.gla-scene{overflow:hidden;border-radius:var(--r);margin-inline:auto}
+.gla-greet{max-width:240px;overflow:visible}
+.gla-welcome,.gla-mastery{max-width:520px;box-shadow:inset 0 0 0 2px var(--line)}
+.gla-welcome svg,.gla-mastery svg{border-radius:inherit}
+/* A picture shown as a plain image (an <img> of public/img/grammar-lab/*.svg, or art.* markup in a .gla box). */
+.gla-pic{display:block;width:100%;height:auto;border-radius:var(--r)}
+
+/* The double-tap tip: real text, so it reads in every theme and size; the finger, rings and bubble are placed by JS. */
+.gla-tap{max-width:520px;margin-inline:auto}
+.gla-tap-card{position:relative;padding:92px 18px 64px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);overflow:hidden}
+.gla-tap-sentence{margin:0;font-size:clamp(20px,5.4vw,28px);font-weight:600;line-height:1.35;text-align:center;color:var(--text)}
+.gla-tap-word{position:relative;display:inline-block;padding:0 .18em;border-radius:8px;background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gla-tap-mark{position:absolute;inset:0;border-radius:inherit;background:var(--spark)}
+.gla-tap-text{position:relative;font-weight:800;color:var(--brand-ink)}
+.gla .gla-tap-finger{position:absolute;width:56px;height:auto;left:0;top:0;transform-origin:25% 2%;filter:drop-shadow(0 4px 6px rgba(20,20,20,.18))}
+.gla-tap-ring{position:absolute;width:44px;height:44px;border-radius:50%;border:3px solid var(--accent-line);opacity:0;transform:translate(-50%,-50%)}
+.gla-tap-bubble{--tail:50%;position:absolute;left:8px;bottom:0;max-width:min(260px,calc(100% - 16px));padding:10px 14px;border-radius:14px;background:var(--card);
+  color:var(--text);box-shadow:inset 0 0 0 2px var(--text),var(--shadow-lg);font-size:16px;line-height:1.35;text-align:start;transform-origin:var(--tail) 100%}
+.gla-tap-bubble b{display:block;font-size:18px;color:var(--accent-ink)}
+.gla-tap-bubble::after{content:"";position:absolute;left:calc(var(--tail) - 9px);bottom:-9px;width:16px;height:16px;background:var(--card);
+  box-shadow:2px 2px 0 0 var(--text);transform:rotate(45deg)}
+.gla-replay{pointer-events:auto;display:flex;margin:10px auto 0}

@@ -1633,6 +1633,13 @@ export const MIGRATIONS = [
       shared_at INTEGER NOT NULL, hidden_at INTEGER, hidden_by TEXT, PRIMARY KEY(set_id, class_id));
     CREATE INDEX IF NOT EXISTS idx_flash_shares_class ON flash_shares(class_id, shared_at);
     CREATE INDEX IF NOT EXISTS idx_flash_shares_owner ON flash_shares(owner_id);`],
+  // Grammar Lab's quiz in progress (services/grammar-lab.js): one row per player per topic, the mastery run as JSON
+  // (services/grammar-lab-mastery.js: levels, streak, the question on screen, what was answered), so grading and the
+  // counter live on the server and the page never holds an answer. Not progress: a mastered topic is a course_progress
+  // row (course 'grammar-lab'), and a guest's mastery a course_pending_wins row until they sign in. Goes with the account.
+  ['0145_grammar_lab_quiz', `
+    CREATE TABLE IF NOT EXISTS grammar_lab_quiz (user_id TEXT NOT NULL, topic TEXT NOT NULL, state TEXT NOT NULL,
+      started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, topic));`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

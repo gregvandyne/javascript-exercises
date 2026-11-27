@@ -131,6 +131,8 @@ const manipulatives = parseFlag(process.env.MANIPULATIVES, 'MANIPULATIVES', true
 const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
 // Homeroom (docs/homeroom.md; services/homeroom.js): off until launch.
 const homeroom = parseFlag(process.env.HOMEROOM, 'HOMEROOM');
+// Grammar Lab (services/grammar-lab-access.js): off until launch, and the kill switch while it is on.
+const grammarLab = parseFlag(process.env.GRAMMAR_LAB, 'GRAMMAR_LAB');
 // The focus on teaching tools (docs/decisions.md "Focus: teaching tools first"; services/game-focus.js): both off by default.
 const arcade = parseFlag(process.env.ARCADE, 'ARCADE');
 const coursesFlag = parseFlag(process.env.COURSES, 'COURSES');
@@ -371,6 +373,13 @@ export const config = {
   // have the Teacher plan. Everyone else sees today's class page and gets the normal 404 at /class/:id/homeroom.
   homeroom: homeroom.on,
   homeroomUsers: String(process.env.HOMEROOM_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
+  // Grammar Lab, the grammar and writing course (services/grammar-lab-access.js; seed-lessons/grammar-lab), behind
+  // GRAMMAR_LAB until launch (off by default). Off, every Grammar Lab page, API and read-aloud answers the normal 404 for
+  // everyone, the platform admin included: it is the kill switch. On, it opens for the platform admin and the accounts
+  // whose username is in GRAMMAR_LAB_USERS (comma separated, like HOMEROOM_USERS; '*' opens it to every visitor,
+  // guests included). It needs nothing from COURSES: the COURSES gate in app.js lets Grammar Lab through for them.
+  grammarLab: grammarLab.on,
+  grammarLabUsers: String(process.env.GRAMMAR_LAB_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
   // Homeroom's first-run guide for teachers and the intro card on a student's first desk (docs/decisions.md "Homeroom:
   // onboarding, Needs a look, Oomba follow-ups"): on unless HOMEROOM_ONBOARDING=0 (the unit tests' setup turns it off so
   // the older browser tests see the board and the desk as they were; the onboarding tests turn it on).

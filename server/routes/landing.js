@@ -331,28 +331,35 @@ export function renderLanding(req, res) {
 
   // ---- 8. the click-through tour of the Hub: six steps on real screens. Without script it is the list of all six;
   // public/js/landing.js shows one at a time with Back, Next, the arrow keys, swipe and the progress bar.
-  // Each step: its screenshot, its hotspots (x %, y % of the picture) and the corner its callout sits in on wide screens.
+  // Each step zooms its screenshot into the part that matters (the camera: cx, cy, the centre in % of the picture, and w,
+  // the share of its width in view on a phone; a wider screen sees 1.6 times as much) and rings the one control the
+  // step is about (ring: x, y, w, h in % of the picture). The ring is a highlight, not a button: nothing on the picture
+  // is tappable, so nothing looks it. Between steps the camera pans and zooms from one region to the next (none under
+  // prefers-reduced-motion). Every number here was read off the screenshots (scripts/landing-shots.mjs).
   const STEPS = [
-    { shot: 'tour-seats', hots: [[41, 18.5], [57, 66]], at: 'br' },
-    { shot: 'tour-handout', hots: [[13, 80], [33, 19]], at: 'br' },
-    { shot: 'tour-watch', hots: [[44, 60], [66.7, 60], [54, 11]], at: 'bl' },
-    { shot: 'tour-hands', hots: [[87, 22], [36.7, 67]], at: 'bl' },
-    { shot: 'tour-oomba', hots: [[77.7, 42], [73, 79]], at: 'bl' },
-    { shot: 'tour-finish', hots: [[55, 53]], at: 'tr' },
+    { shot: 'tour-seats', cam: [47, 36, 40], ring: [34.4, 16.9, 26.3, 5.2] },
+    { shot: 'tour-handout', cam: [20, 70, 42], ring: [10.2, 77.4, 9.1, 14.2] },
+    { shot: 'tour-watch', cam: [45, 66, 42], ring: [30.8, 53.6, 26.8, 23.2] },
+    { shot: 'tour-hands', cam: [86, 32, 30], ring: [76, 24.8, 22.5, 13.8] },
+    { shot: 'tour-oomba', cam: [84, 52, 34], ring: [75.6, 57.2, 10, 5.4] },
+    { shot: 'tour-finish', cam: [50, 50, 34], ring: [54.4, 54.6, 9.4, 5.6] },
   ].filter(s => SHOTS[s.shot]);
   const n = STEPS.length;
+  const camStyle = ([cx, cy, w]) => `--cx:${cx};--cy:${cy};--w:${w}`;
   const tour = n ? html`<section class="lp-sec" id="tour" aria-labelledby="tour-h"><div class="lp-wrap">
     <header class="lp-head">${T('p', 'landing.tour.kicker', ' class="lp-eyebrow"')}${T('h2', 'landing.tour.h', ' id="tour-h"')}${T('p', 'landing.tour.lead', ' class="lp-sub"')}${planTag()}</header>
     <div class="lp-card lp-tour" data-tour aria-label="${t('landing.tour.label')}" role="region">
       <ol class="lp-steps">${STEPS.map((s, i) => html`<li><button type="button" class="lp-step" data-go="${i}"${i === 0 ? raw(' aria-current="step"') : ''}><i aria-hidden="true">${i + 1}</i><span${fb(`landing.tour.s${i + 1}.t`)}>${t(`landing.tour.s${i + 1}.t`)}</span></button></li>`)}</ol>
       <p class="sr-only" aria-live="polite" data-tour-live></p>
-      <ol class="lp-tsteps">${STEPS.map((s, i) => html`<li class="lp-tstep" data-step="${i}" data-at="${s.at}">
+      <ol class="lp-tsteps">${STEPS.map((s, i) => html`<li class="lp-tstep" data-step="${i}">
         <div class="lp-tstage">
-          <div class="lp-shot">${pic(s.shot, { alt: t(`landing.tour.s${i + 1}.alt`), sizes: '(min-width: 1100px) 1100px, 92vw' })}</div>
-          ${STEPS[i].hots.map(([x, y], j) => html`<span class="lp-hot" style="left:${x}%;top:${y}%" aria-hidden="true">${j + 1}</span>`)}
+          <div class="lp-tcam" data-cam="${s.cam.join(',')}" style="${camStyle(s.cam)}">
+            <div class="lp-shot">${pic(s.shot, { alt: t(`landing.tour.s${i + 1}.alt`), sizes: '(max-width: 900px) 300vw, 1800px' })}</div>
+            <span class="lp-ring" style="left:${s.ring[0]}%;top:${s.ring[1]}%;width:${s.ring[2]}%;height:${s.ring[3]}%" aria-hidden="true"></span>
+          </div>
         </div>
         <div class="lp-tip">
-          <h3 tabindex="-1"${fb(`landing.tour.s${i + 1}.h`)}>${t(`landing.tour.s${i + 1}.h`)}</h3>${T('p', `landing.tour.s${i + 1}.p`)}
+          <h3 tabindex="-1"${fb(`landing.tour.s${i + 1}.t`)}>${t(`landing.tour.s${i + 1}.t`)}</h3>${T('p', `landing.tour.s${i + 1}.p`)}
           <div class="lp-tipnav"><span${fb('landing.tour.stepOf')}>${t('landing.tour.stepOf', { n: i + 1, total: n })}</span><span class="lp-tipbtns" hidden><button type="button" class="lp-btn lp-btn-ghost lp-btn-xs" data-back${fb('landing.tour.back')}>${t('landing.tour.back')}</button><button type="button" class="lp-btn lp-btn-primary lp-btn-xs" data-next${fb('landing.tour.next')}>${i === n - 1 ? t('landing.tour.again') : t('landing.tour.next')}</button></span></div>
         </div>
       </li>`)}</ol>

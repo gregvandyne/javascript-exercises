@@ -5763,6 +5763,27 @@
       "joinShort": "Mitmachen",
       "join": "{title} beitreten",
       "over": "Das Live-Spiel ist vorbei. Du bist wieder an deinem Tisch."
+    },
+    "grammar-lab": {
+      "levelOf": "Level {n} von {total}",
+      "levelsDone": "{done} von {total} Level geschafft",
+      "levelsNow": "Du bist auf Level {n} von {total}.",
+      "counter": "Frage {n} von {total}",
+      "streak": "Richtig hintereinander: {n} von {need}",
+      "wrong": "Nicht ganz. Schau noch einmal und versuch es wieder. Zweimal hintereinander richtig schafft dieses Level.",
+      "again": "Immer noch nicht. Öffne den Tipp, er hilft dir.",
+      "near": "Du hast zu viele Wörter gewählt. Nimm die übrigen weg und schick es noch einmal ab.",
+      "hideHint": "Tipp ausblenden",
+      "hint": "Tipp",
+      "levelDone": "Level {n} geschafft!",
+      "levelText": "Jetzt kommen neue Fragen. Mach weiter!",
+      "answered": "{count, plural, one {Du hast # Frage beantwortet.} other {Du hast # Fragen beantwortet.}}",
+      "next": "Als Nächstes: {topic}",
+      "flagSent": "Danke. Wir sehen es uns an.",
+      "wentWrong": "Etwas ist schiefgelaufen. Versuch es noch einmal.",
+      "gap": "Komma nach {word}",
+      "blank": "Lücke",
+      "nearGaps": "Du hast zu viele Kommas gesetzt. Nimm die überzähligen weg und schick es noch einmal."
     }
   },
   "favorites": {
@@ -10947,7 +10968,7 @@
       "trademarks": "{names} sind Marken ihrer jeweiligen Inhaber. Oomba Academy ist nicht mit ihnen verbunden."
     },
     "tools": {
-      "h": "Wow, das kann es alles.",
+      "h": "Jedes Werkzeug, das Ihre Klasse braucht. An einem Ort.",
       "lead": "Jedes Werkzeug lässt sich im Hub an die Plätze verteilen, und Oomba kann die meisten steuern.",
       "manip": {
         "h": "{count} Mathe-Materialien",
@@ -11169,7 +11190,7 @@
     "tour": {
       "kicker": "Zum Durchklicken",
       "h": "Probieren Sie den Hub, bevor Sie sich anmelden.",
-      "lead": "Ein kurzer Rundgang auf echten Bildschirmen. Tippen Sie auf die gelben Punkte oder auf Weiter.",
+      "lead": "Sechs Schritte durch eine Stunde im Hub. Tippen Sie auf Weiter.",
       "label": "Die Hub-Tour",
       "stepOf": "Schritt {n} von {total}",
       "back": "Zurück",
@@ -11178,38 +11199,32 @@
       "note": "Echte Bildschirme der App mit erfundenen Kindern.",
       "s1": {
         "t": "Sitzplan einrichten",
-        "h": "Wie in Ihrem echten Raum",
-        "p": "Wählen Sie Reihen, Vierertische, ein U oder einen Kreis, oder ziehen Sie einen Platz dorthin, wo er wirklich steht. Gruppen behalten ihre Farben.",
+        "p": "Wählen Sie Reihen, Vierertische, ein U oder einen Kreis, oder ziehen Sie einen Platz an seine echte Stelle.",
         "alt": "Sitzplan einrichten im Hub: Reihen, Vierertische, U-Form und Kreis, mit den Plätzen an Vierertischen."
       },
       "s2": {
         "t": "Eine Lektion verteilen",
-        "h": "Antippen, dann ein Platz",
-        "p": "Tippen Sie eine Lektion, ein Spiel oder ein Mathe-Werkzeug an, dann einen Platz, eine Gruppe oder die ganze Klasse. Oder ziehen Sie es dorthin.",
+        "p": "Tippen Sie eine Lektion an, hier Mistake Hunt, dann einen Platz, eine Gruppe oder die ganze Klasse.",
         "alt": "Mistake Hunt im Hub gewählt: jetzt einen Platz, eine Gruppe, Ganze Klasse oder Mein Platz antippen."
       },
       "s3": {
         "t": "Jeden Platz sehen",
-        "h": "Jeder Platz, live",
-        "p": "Jeder Platz zeigt, was das Kind geöffnet hat, hier Arithmetic Lab. Gestrichelte Plätze sind noch nicht da. Tippen Sie einen Platz an, um genauer hinzusehen.",
+        "p": "Jeder Platz zeigt, was das Kind gerade offen hat. Tippen Sie einen an, um genauer hinzusehen.",
         "alt": "Der Hub mit jedem Platz live: Die meisten spielen Arithmetic Lab, zwei sind noch nicht da."
       },
       "s4": {
         "t": "Auf Meldungen antworten",
-        "h": "Gemeldete Hände, der Reihe nach",
-        "p": "Eine Frage und eine Bitte um Hilfe, in der Reihenfolge, in der sie kamen. Beantwortet entfernt sie. Der Toilettenpass ist auch hier, nie am Beamer.",
+        "p": "Meldungen stehen der Reihe nach an. Tippen Sie Beantwortet, wenn Sie geholfen haben.",
         "alt": "Das Fenster Gemeldete Hände: Cleo hat eine Frage, Gus braucht Hilfe, und der Toilettenpass."
       },
       "s5": {
         "t": "Frag Oomba",
-        "h": "Mit Oomba planen",
-        "p": "Fragen Sie nach dem Plan für heute. Oomba entwirft ihn als Karte, und nichts kommt auf die Plätze, bevor Sie Diesen Plan nutzen antippen.",
+        "p": "Fragen Sie nach dem Plan für heute. Nichts kommt auf die Plätze, bevor Sie Diesen Plan nutzen antippen.",
         "alt": "Der Oomba-Chat neben dem Hub mit einer Tagesplan-Karte Bruch-Tag und Diesen Plan nutzen."
       },
       "s6": {
         "t": "Stunde beenden",
-        "h": "Stunde beenden",
-        "p": "Stunde beenden zeigt eine kurze Zusammenfassung und beendet die Stunde. Unfertiges bleibt als Hausaufgabe auf den Plätzen.",
+        "p": "Tippen Sie Stunde beenden. Unfertiges bleibt als Hausaufgabe auf den Plätzen.",
         "alt": "Stunde beenden im Hub: eine kurze Zusammenfassung, dann ist die Stunde vorbei."
       }
     },
@@ -16137,6 +16152,123 @@
       "title": "Mit der Klasse geteilte Lernkarten",
       "cards": "{count, plural, one {# Karte} other {# Karten}}",
       "hidden": "Für die Klasse ausgeblendet"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammatik und Schreiben, eine Fähigkeit nach der anderen",
+    "band": "Klassen {grades}",
+    "topicsN": "{count, plural, one {# Thema} other {# Themen}}",
+    "ringLabel": "{done} von {total} Themen gemeistert",
+    "allUnits": "Alle Einheiten",
+    "backTo": "Zurück zu {unit}",
+    "noscript": "Diese Übung braucht eingeschaltetes JavaScript.",
+    "topic": {
+      "options": "Mehr zu {topic}",
+      "card": "Lernkarte",
+      "again": "Noch einmal üben",
+      "review": "Fragen ansehen",
+      "afterMastery": "Wenn du es gemeistert hast",
+      "new": "Starten",
+      "started": "Weitermachen",
+      "mastered": "Gemeistert",
+      "pending": "Melde dich an, um es zu behalten",
+      "locked": "Meistere zuerst das vorige"
+    },
+    "guest": {
+      "title": "Melde dich an, um deine Erfolge zu behalten",
+      "text": "Du kannst als Gast spielen. Um ein gemeistertes Thema zu behalten, melde dich an oder erstelle ein Konto.",
+      "wonTitle": "Super! Melde dich an, um es zu behalten",
+      "wonText": "Du hast das als Gast gemeistert. Melde dich an oder erstelle ein Konto, dann tragen wir es in deinen Fortschritt ein.",
+      "signup": "Konto erstellen",
+      "login": "Anmelden"
+    },
+    "welcome": {
+      "heading": "Willkommen bei {topic}",
+      "text": "Antworte weiter, bis du zeigst, dass du es kannst. Beantworte die letzten zwei richtig hintereinander, um jedes Level zu schaffen.",
+      "go": "Los geht's",
+      "skip": "Intro überspringen"
+    },
+    "practice": {
+      "tip": "So funktioniert doppeltes Tippen",
+      "card": "Lernkarte",
+      "hint": "Tipp",
+      "hintTitle": "Hier ist ein Tipp",
+      "submit": "Abschicken",
+      "flag": "Ein Problem mit dieser Frage melden",
+      "correct": "Richtig!",
+      "levelNext": "Nächstes Level"
+    },
+    "levels": {
+      "heading": "Level und Meistern",
+      "rule": "Um ein Level zu schaffen, beantworte seine Fragen und die letzten zwei richtig hintereinander. Eine falsche Antwort fügt eine Frage hinzu.",
+      "mastery": "{total, plural, one {Schaffe das Level, um dieses Thema zu meistern.} other {Schaffe alle # Level, um dieses Thema zu meistern.}}",
+      "close": "Schließen"
+    },
+    "tip": {
+      "heading": "Tippe zweimal, um zu sehen, was ein Wort bedeutet",
+      "text": "Tippe zweimal auf ein Grammatikwort wie {word}, und seine Bedeutung erscheint.",
+      "before": "Tippe auf das",
+      "after": "in jedem Satz.",
+      "def": "sagt etwas über ein Nomen",
+      "ok": "Verstanden",
+      "replay": "Noch mal"
+    },
+    "flag": {
+      "heading": "Ein Problem melden",
+      "text": "Stimmt etwas mit dieser Frage nicht? Schick sie uns, und wir sehen sie uns an.",
+      "send": "Senden",
+      "cancel": "Abbrechen"
+    },
+    "done": {
+      "heading": "Du hast {topic} gemeistert!",
+      "back": "Zurück zu {unit}"
+    },
+    "card": {
+      "heading": "Lernkarte",
+      "example": "Beispiel",
+      "how": "So funktioniert es:",
+      "tips": "Mehr Beispiele",
+      "listen": "Vorlesen",
+      "stop": "Stopp",
+      "practice": "Üben starten"
+    },
+    "review": {
+      "heading": "Sieh dir deine Fragen an",
+      "firstTry": "Beim ersten Mal richtig",
+      "fixed": "Nach einem Tipp verbessert",
+      "none": "Meistere dieses Thema, um seine Fragen anzusehen."
+    },
+    "roles": {
+      "adjective": "Adjektiv",
+      "noun": "Nomen",
+      "verb": "Verb",
+      "adverb": "Adverb",
+      "pronoun": "Pronomen",
+      "subject": "Subjekt",
+      "article": "Artikel",
+      "conjunction": "Konjunktion",
+      "preposition": "Präposition",
+      "capital": "Großbuchstabe",
+      "comma": "Komma"
+    },
+    "glossaryWord": {
+      "adjective": "Adjektiv",
+      "noun": "Nomen"
+    },
+    "glossary": {
+      "adjective": "ein Wort, das etwas über ein Nomen sagt: welche Art, wie viele oder welches",
+      "noun": "ein Wort für eine Person, einen Ort, ein Tier oder eine Sache"
+    },
+    "mark": {
+      "checkpoint": "Kontrollpunkt",
+      "review": "Wiederholung"
+    },
+    "room": {
+      "open": "Korrekturraum",
+      "passed": "Korrekturraum geschafft",
+      "locked": "Öffne zuerst das Thema",
+      "back": "Zurück zu {topic}"
     }
   }
 }

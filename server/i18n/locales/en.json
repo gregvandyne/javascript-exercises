@@ -6826,6 +6826,27 @@
       "joinShort": "Join",
       "join": "Join {title}",
       "over": "The live game ended. You are back at your desk."
+    },
+    "grammar-lab": {
+      "levelOf": "Level {n} of {total}",
+      "levelsDone": "{done} of {total} levels done",
+      "levelsNow": "You are on level {n} of {total}.",
+      "counter": "Question {n} of {total}",
+      "streak": "Right in a row: {n} of {need}",
+      "wrong": "Not quite. Look again and try once more. Get two right in a row to finish this level.",
+      "again": "Still not it. Open the hint for help.",
+      "near": "You picked too many words. Unpick the extras, then submit again.",
+      "hideHint": "Hide hint",
+      "hint": "Hint",
+      "levelDone": "Level {n} done!",
+      "levelText": "Fresh questions are next. Keep going!",
+      "answered": "{count, plural, one {You answered # question.} other {You answered # questions.}}",
+      "next": "Next: {topic}",
+      "flagSent": "Thanks. We will take a look.",
+      "wentWrong": "Something went wrong. Try again.",
+      "gap": "Comma after {word}",
+      "blank": "blank",
+      "nearGaps": "You put in too many commas. Take out the extras, then submit again."
     }
   },
   "favorites": {
@@ -12521,7 +12542,7 @@
       "trademarks": "{names} are trademarks of their owners. Oomba Academy is not affiliated with them."
     },
     "tools": {
-      "h": "Wow, it does all of this.",
+      "h": "Every tool your class needs. In one place.",
       "lead": "Every tool hands out to desks in the Hub, and Oomba can drive most of them.",
       "manip": {
         "h": "{count} Manipulatives",
@@ -12743,7 +12764,7 @@
     "tour": {
       "kicker": "Click-through tour",
       "h": "Try the Hub before you sign up.",
-      "lead": "A short walkthrough on real screens. Tap the yellow dots, or press Next.",
+      "lead": "Six steps through a class in the Hub. Press Next.",
       "label": "The Hub tour",
       "stepOf": "Step {n} of {total}",
       "back": "Back",
@@ -12752,38 +12773,32 @@
       "note": "Real app screens with made-up students.",
       "s1": {
         "t": "Arrange seats",
-        "h": "Match your real room",
-        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to where it really sits. Groups keep their colors.",
+        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to its real spot.",
         "alt": "Arrange seats in the Hub: rows, tables of four, U-shape and circle, with the desks in tables of four."
       },
       "s2": {
         "t": "Hand out a lesson",
-        "h": "Tap, then a desk",
-        "p": "Tap a lesson, a game or a math tool, then a desk, a group or the whole class. Or drag it there.",
+        "p": "Tap a lesson, here Mistake Hunt, then a desk, a group or the whole class.",
         "alt": "Mistake Hunt picked in the Hub: now tap a desk, a group, Whole class or My desk."
       },
       "s3": {
         "t": "Watch every desk",
-        "h": "Every desk, live",
-        "p": "Each desk shows what that student has open, here Arithmetic Lab. Dashed desks are not here yet. Tap a desk to look closer.",
+        "p": "Each desk shows what that student has open right now. Tap one to look closer.",
         "alt": "The Hub with every desk live: most students playing Arithmetic Lab, two not here yet."
       },
       "s4": {
         "t": "Answer hands",
-        "h": "Hands up, in order",
-        "p": "A question and a help request, in the order they came. Answered clears them. The hall pass is here too, and never on the projector.",
+        "p": "Raised hands line up in order. Tap Answered when you've helped.",
         "alt": "The Hands up panel: Cleo has a question, Gus needs help, and the hall pass."
       },
       "s5": {
         "t": "Ask Oomba",
-        "h": "Plan it with Oomba",
-        "p": "Ask for today's plan. Oomba drafts it as a card, and nothing goes on desks until you tap Use this plan.",
+        "p": "Ask for today's plan. Nothing goes on desks until you tap Use this plan.",
         "alt": "The Oomba chat beside the Hub with a Fractions day plan card and Use this plan."
       },
       "s6": {
         "t": "Finish class",
-        "h": "Finish class",
-        "p": "Finish class shows a short summary and ends class. Unfinished handouts stay on desks as homework.",
+        "p": "Tap Finish class. Unfinished handouts stay on desks as homework.",
         "alt": "End class in the Hub: Finish class shows a short summary and ends class."
       }
     },
@@ -17881,6 +17896,123 @@
       "title": "Flashcards they shared with the class",
       "cards": "{count, plural, one {# card} other {# cards}}",
       "hidden": "Hidden from the class"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammar and writing, one skill at a time",
+    "band": "Grades {grades}",
+    "topicsN": "{count, plural, one {# topic} other {# topics}}",
+    "ringLabel": "{done} of {total} topics mastered",
+    "allUnits": "All units",
+    "backTo": "Back to {unit}",
+    "noscript": "This practice needs JavaScript turned on.",
+    "topic": {
+      "options": "More for {topic}",
+      "card": "Teaching card",
+      "again": "Practice again",
+      "review": "Look back at questions",
+      "afterMastery": "After you master it",
+      "new": "Start",
+      "started": "Keep going",
+      "mastered": "Mastered",
+      "pending": "Sign in to keep it",
+      "locked": "Master the one before first"
+    },
+    "guest": {
+      "title": "Sign in to keep your wins",
+      "text": "You can play as a guest. To keep a topic you master, sign in or make an account.",
+      "wonTitle": "Nice work! Sign in to keep it",
+      "wonText": "You mastered this as a guest. Sign in or make an account, and we will add it to your progress.",
+      "signup": "Make an account",
+      "login": "Sign in"
+    },
+    "welcome": {
+      "heading": "Welcome to {topic}",
+      "text": "Keep answering until you show you have it. Get the last two right in a row to finish each level.",
+      "go": "Let's go",
+      "skip": "Skip intro"
+    },
+    "practice": {
+      "tip": "How double-tap works",
+      "card": "Teaching card",
+      "hint": "Hint",
+      "hintTitle": "Here is a hint",
+      "submit": "Submit",
+      "flag": "Report a problem with this question",
+      "correct": "Correct!",
+      "levelNext": "Next level"
+    },
+    "levels": {
+      "heading": "Levels and mastery",
+      "rule": "To finish a level, answer its questions and get the last two right in a row. A wrong answer adds one question.",
+      "mastery": "{total, plural, one {Finish the level to master this topic.} other {Finish all # levels to master this topic.}}",
+      "close": "Close"
+    },
+    "tip": {
+      "heading": "Double-tap to see what a word means",
+      "text": "Double-tap a grammar word, like {word}, and its meaning pops up.",
+      "before": "Tap the",
+      "after": "in each sentence.",
+      "def": "tells about a noun",
+      "ok": "Got it",
+      "replay": "Replay"
+    },
+    "flag": {
+      "heading": "Report a problem",
+      "text": "Is something wrong with this question? Send it to us and we will take a look.",
+      "send": "Send",
+      "cancel": "Cancel"
+    },
+    "done": {
+      "heading": "You mastered {topic}!",
+      "back": "Back to {unit}"
+    },
+    "card": {
+      "heading": "Teaching card",
+      "example": "Example",
+      "how": "How it works:",
+      "tips": "More examples",
+      "listen": "Read it to me",
+      "stop": "Stop",
+      "practice": "Start practice"
+    },
+    "review": {
+      "heading": "Look back at your questions",
+      "firstTry": "Right the first time",
+      "fixed": "Fixed after a hint",
+      "none": "Master this topic to look back at its questions."
+    },
+    "roles": {
+      "adjective": "adjective",
+      "noun": "noun",
+      "verb": "verb",
+      "adverb": "adverb",
+      "pronoun": "pronoun",
+      "subject": "subject",
+      "article": "article",
+      "conjunction": "conjunction",
+      "preposition": "preposition",
+      "capital": "capital letter",
+      "comma": "comma"
+    },
+    "glossaryWord": {
+      "adjective": "adjective",
+      "noun": "noun"
+    },
+    "glossary": {
+      "adjective": "a word that tells about a noun: what kind, how many, or which one",
+      "noun": "a word for a person, place, animal, or thing"
+    },
+    "mark": {
+      "checkpoint": "Checkpoint",
+      "review": "Review"
+    },
+    "room": {
+      "open": "Proofread room",
+      "passed": "Proofread room done",
+      "locked": "Open the topic first",
+      "back": "Back to {topic}"
     }
   }
 }
