@@ -32,6 +32,8 @@ const PASS = 'how-demo-pass-1';
 /** light (the default) or dark: the theme every shot is taken in. Dark files get -dark after the slug. */
 const THEME = args.includes('--theme') && args[args.indexOf('--theme') + 1] === 'dark' ? 'dark' : 'light';
 const SUFFIX = THEME === 'dark' ? '-dark' : '';
+/** --slug: only that step is taken (the other steps of its group are skipped where they stand alone). */
+const ONLY_SLUG = args.includes('--slug') ? args[args.indexOf('--slug') + 1] : null;
 // The demo people. Every name a roster or friends shot shows must be one of these.
 const NAMES = ['Pixel Panda', 'Rocket Otter', 'Comet Fox', 'Maple Koala', 'Nova Newt', 'Star Gecko', 'Ms. Rivera', 'PandaGrownup', 'Oomba Academy', 'Coding Club', 'Reading Rockets', "Ms. Rivera's Class"];
 // Not names: the demo lessons' titles (scripts/seed.js seedDemoLessons), which class cards show in a <bdi> too.
@@ -249,7 +251,7 @@ async function previewReady(page) {
 // ---------------------------------------------------------------- parents
 async function parentShots({ person, shot }) {
   const made = [];
-  const both = async (slug, fn) => { for (const kind of ['phone', 'desk']) made.push({ slug, kind, png: await fn(kind) }); };
+  const both = async (slug, fn) => { if (ONLY_SLUG && slug !== ONLY_SLUG) return; for (const kind of ['phone', 'desk']) made.push({ slug, kind, png: await fn(kind) }); };
 
   // 1. Sign up with a made-up name (not submitted).
   await both('parents-start', async kind => {
@@ -268,6 +270,7 @@ async function parentShots({ person, shot }) {
     const f = await shot(p, `parents-play-${kind}`); await p.context().close(); return f;
   });
 
+  if (ONLY_SLUG && ['parents-start', 'parents-play'].includes(ONLY_SLUG)) return made;
   // 3 + 4. The Builder: idea -> chips -> version 1 -> "Make it harder" -> version 2; then the share sheet (not confirmed).
   {
     const desk = await person('desk', 'PixelPanda');
@@ -381,7 +384,7 @@ async function openShare(p) {
 // ---------------------------------------------------------------- teachers
 async function teacherShots({ person, shot }, ids) {
   const made = [];
-  const both = async (slug, fn) => { for (const kind of ['phone', 'desk']) made.push({ slug, kind, png: await fn(kind) }); };
+  const both = async (slug, fn) => { if (ONLY_SLUG && slug !== ONLY_SLUG) return; for (const kind of ['phone', 'desk']) made.push({ slug, kind, png: await fn(kind) }); };
   await both('teachers-classes', async kind => {
     const p = await person(kind, 'MsRivera'); await p.goto('/teach');
     const f = await shot(p, `teachers-classes-${kind}`, { names: true }); await p.context().close(); return f;
