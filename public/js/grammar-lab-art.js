@@ -459,3 +459,18 @@ export function mountTapTip(el, opts = {}) {
 }
 
 export const mounts = { greeting: mountGreeting, welcome: mountWelcome, mastery: mountMastery, tapTip: mountTapTip };
+
+/**
+ * The one call a page needs: GrammarArt.mount(el, 'greeting' | 'welcome' | 'mastery' | 'doubletap', opts). opts.band
+ * ('k-2' | '3-5' | '6-8' | '9-12') is recorded on the scene (data-band) for styling; the tip also takes before, word,
+ * after, def and replayLabel. Returns the controller ({ root, finished, replay(), seek(ms), finish(), destroy() }).
+ */
+export function mount(el, kind, opts = {}) {
+  const fn = { greeting: mountGreeting, welcome: mountWelcome, mastery: mountMastery, doubletap: mountTapTip, tapTip: mountTapTip }[kind];
+  if (!fn) throw new Error(`grammar-lab-art: unknown animation "${kind}"`);
+  const c = fn(el, opts);
+  if (opts.band) c.root.dataset.band = opts.band;
+  return c;
+}
+export const GrammarArt = { mount, art, prefersReducedMotion };
+if (typeof window !== 'undefined') window.GrammarArt = GrammarArt;

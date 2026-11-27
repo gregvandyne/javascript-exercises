@@ -32,7 +32,7 @@ const inline = document.getElementById('inline');
 for (const [name, f] of Object.entries(A.FILES)) { const d = document.createElement('figure'); d.innerHTML = '<div class="gla">' + f() + '</div><figcaption>' + name + ' (inline)</figcaption>'; inline.appendChild(d); }
 window.__gla = { A, ctl: {} , clicks: 0 };
 document.querySelectorAll('[data-submit]').forEach(b => b.addEventListener('click', () => { window.__gla.clicks++; }));
-if (!new URLSearchParams(location.search).has('manual')) for (const k of ['greeting', 'welcome', 'mastery', 'tapTip']) window.__gla.ctl[k] = A.mounts[k](document.getElementById('stage-' + k));
+if (!new URLSearchParams(location.search).has('manual')) for (const k of ['greeting', 'welcome', 'mastery', 'tapTip']) window.__gla.ctl[k] = window.GrammarArt.mount(document.getElementById('stage-' + k), k === 'tapTip' ? 'doubletap' : k, { band: 'k-2' });
 `;
 
 export function serve(port = 0) {
