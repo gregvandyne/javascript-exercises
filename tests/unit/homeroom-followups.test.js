@@ -273,6 +273,8 @@ test('Needs a look summed up by Oomba: placeholders only, the names back in the 
   for (const s of SECRETS()) assert.ok(!sent.includes(s), 'no username or id reaches the AI');
   const res = JSON.parse(calls[1].messages.at(-1).content.find(c => c.type === 'tool_result').content);
   assert.ok(res.students.length >= 4); assert.ok(res.students.every(x => /^Student [A-Z]\d*$/.test(x.student)));
+  assert.ok(res.students.every(x => !('hasSupports' in x) && !Object.keys(x).some(k => /sup/i.test(k))), 'no supports flag reaches the AI');
+  assert.ok(!/support/i.test(JSON.stringify(res)), 'nothing about supports in the list Oomba sees');
   const turn = (await as(rivera)('/api/companion/chat')).json.chat.turns.filter(x => x.role === 'oomba').at(-1);
   assert.match(turn.text, /Student A/, 'the stored words keep the placeholder');
   assert.equal(turn.note.who['Student A'], listOf()[0].id, 'which placeholder is which student, for the page');
@@ -387,4 +389,15 @@ test('deleting: the account takes its seen marks and Needs a look marks; the cla
   assert.ok(NL.mark(rivera, A, { studentId: eli.id, state: 'snooze' }).ok);
   S.classDeleted(A.id);   // (what a class delete runs: services/schools.js deleteClass, the school delete's BY_CLASS)
   assert.equal(q.get('SELECT COUNT(*) n FROM homeroom_look WHERE class_id=?', A.id).n, 0);
+});
+
+test('Needs a look for Oomba never says whether a student has supports (a disability or IEP hint stays in the app)', () => {
+  const items = [{ id: 1, name: 'Ana', sup: true, home: false, reasons: [{ rule: 'stuck', minutes: 9 }] }, { id: 2, name: 'Ben', sup: false, home: true, reasons: [{ rule: 'tries', count: 4 }] }];
+  const { students } = NL.forAi(rivera, items);
+  assert.equal(students.length, 2);
+  for (const x of students) {
+    assert.ok(!Object.keys(x).some(k => /sup/i.test(k)), 'no supports key: ' + Object.keys(x).join(','));
+    for (const r of x.reasons) assert.ok(!Object.keys(r).some(k => /sup|read/i.test(k)));
+  }
+  assert.deepEqual(Object.keys(students[0]).sort(), Object.keys(students[1]).sort(), 'the supported student looks like any other');
 });
