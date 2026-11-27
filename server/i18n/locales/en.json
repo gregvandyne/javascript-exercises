@@ -10226,7 +10226,7 @@
         },
         "grades": {
           "need": "Grades covered",
-          "oomba": "Kindergarten to grade 8, in three bands: {bands}."
+          "oomba": "Kindergarten to grade 12, in four bands: {bands}."
         },
         "readAloud": {
           "need": "Read aloud for early readers",
@@ -12836,7 +12836,7 @@
       "classScreen": "{count} widgets, a screen for every student, points with reasons, and the Hub's desks one tab away.",
       "mathTools": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks.",
       "grammarUs": "What Oomba's Grammar Lab covers",
-      "grammar": "{topics} grammar topics for kindergarten to grade 8, each mastered in three levels, with read-aloud cards in K-2 and Mistake Hunt proofreading rooms. No essay writing or writing feedback: Oomba's AI never reads student work."
+      "grammar": "{topics} grammar topics for kindergarten to grade 12, each mastered in three levels, with read-aloud cards in K-2 and Mistake Hunt proofreading rooms. No essay writing or writing feedback: Oomba's AI never reads student work."
     },
     "tour": {
       "kicker": "Click-through tour",

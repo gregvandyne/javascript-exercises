@@ -8811,7 +8811,7 @@
         },
         "grades": {
           "need": "Grados que cubre",
-          "oomba": "Desde kínder hasta 8.º grado, en tres bloques: {bands}."
+          "oomba": "Desde kínder hasta 12.º grado, en cuatro bloques: {bands}."
         },
         "readAloud": {
           "need": "Lectura en voz alta para los más pequeños",
@@ -11261,7 +11261,7 @@
       "classScreen": "{count} widgets, una pantalla para cada estudiante, puntos con motivos y los pupitres del Hub a una pestaña.",
       "mathTools": "{tools} manipulativos y {tasks} tareas de K a 8, además de fichas de Figures, Oomba cambiando el tablero cuando lo pides y cada herramienta repartida a los pupitres del Hub.",
       "grammarUs": "Lo que cubre Grammar Lab de Oomba",
-      "grammar": "{topics} temas de gramática desde kínder hasta 8.º grado, cada uno con tres niveles para dominarlo, tarjetas con lectura en voz alta en K-2 y salas de corrección de Mistake Hunt. No incluye redacción de ensayos ni comentarios sobre la escritura: la IA de Oomba nunca lee el trabajo de los estudiantes."
+      "grammar": "{topics} temas de gramática desde kínder hasta 12.º grado, cada uno con tres niveles para dominarlo, tarjetas con lectura en voz alta en K-2 y salas de corrección de Mistake Hunt. No incluye redacción de ensayos ni comentarios sobre la escritura: la IA de Oomba nunca lee el trabajo de los estudiantes."
     },
     "tour": {
       "kicker": "Recorrido interactivo",

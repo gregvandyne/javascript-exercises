@@ -159,11 +159,11 @@ Cells in `GRAMMAR_CELLS` (server/routes/compare.js), dated 2026-11-27 (`GRAMMAR_
 publishes no price for Premium (schools and districts ask its sales team for a quote) and no per-teacher price, so the
 section has no cost line.
 
-**How these were read, and what is still to do before Grammar Lab opens.** noredink.com could not be opened from the
-session that wrote the section (the host is not on the session's network allowlist). The quotes below come from
-NoRedInk's own pages as a web search returned them on 2026-11-27, not from the pages rendered in a browser as the other
-products' cells were. **Before GRAMMAR_LAB_USERS gets '*', someone must open each address below, confirm the words are
-on the page word for word, and fix or drop any that are not** (a dropped row becomes Not stated).
+**How these were read.** A web search first supplied the quotes on 2026-11-27, because noredink.com was not yet on
+the session's network allowlist. Later that day the host was allowed and each address below was fetched and its text
+checked word for word. Three quotes were on their pages exactly. The Guided essay writing quote ("Guided Drafts provide
+scaffolding to students throughout the writing cycle.") was not on /about/product, so it was replaced with a sentence
+that is. If any of these pages changes, re-check its row and fix or drop it (a dropped row becomes Not stated).
 
 | Row | Status | Address | Words |
 |---|---|---|---|
@@ -172,7 +172,7 @@ on the page word for word, and fix or drop any that are not** (a dropped row bec
 | Grades covered | Yes | https://www.noredink.com/ | "building strong writers and critical thinkers in Grades 3–12" |
 | Read aloud for early readers | Not stated | | |
 | Proofreading passages | Not stated | | |
-| Guided essay writing | Yes | https://www.noredink.com/about/product | "Guided Drafts provide scaffolding to students throughout the writing cycle." |
+| Guided essay writing | Yes | https://www.noredink.com/about/product | "Meet students where they are with adaptive exercises and scaffolded writing activities that deliver differentiated support when students get stuck at various points of the writing cycle." |
 | Feedback on student writing | Yes | https://www.noredink.com/premium | (the Premium sentence above: "AI-powered feedback tool") |
 | Assign to a class, with class reports | Yes | https://www.noredink.com/premium | (the Premium sentence above: "reporting features") |
 | A free option | Yes | https://www.noredink.com/product/elementary-grades-3-5/ | "a new version of our free online writing curriculum that's designed specifically for elementary learners" |

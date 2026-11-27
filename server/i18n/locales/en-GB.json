@@ -587,7 +587,7 @@
         },
         "grades": {
           "need": "Grades covered",
-          "oomba": "Kindergarten to grade 8, in three bands: {bands}."
+          "oomba": "Kindergarten to grade 12, in four bands: {bands}."
         },
         "readAloud": {
           "need": "Read aloud for early readers",

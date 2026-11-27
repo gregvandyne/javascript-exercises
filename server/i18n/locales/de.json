@@ -8812,7 +8812,7 @@
         },
         "grades": {
           "need": "Klassenstufen",
-          "oomba": "Vom Kindergarten bis Klasse 8, in drei Stufen: {bands}."
+          "oomba": "Vom Kindergarten bis Klasse 12, in vier Stufen: {bands}."
         },
         "readAloud": {
           "need": "Vorlesen für die Jüngsten",
@@ -11262,7 +11262,7 @@
       "classScreen": "{count} Widgets, ein Bildschirm für jedes Kind, Punkte mit Gründen und die Plätze des Hubs nur einen Tab entfernt.",
       "mathTools": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen.",
       "grammarUs": "Was Oombas Grammar Lab abdeckt",
-      "grammar": "{topics} Grammatikthemen vom Kindergarten bis Klasse 8, jedes in drei Stufen zu meistern, mit vorgelesenen Karten in K-2 und Mistake-Hunt-Korrekturräumen. Kein Aufsatzschreiben und keine Rückmeldung zu Texten: Oombas KI liest nie Arbeiten der Kinder."
+      "grammar": "{topics} Grammatikthemen vom Kindergarten bis Klasse 12, jedes in drei Stufen zu meistern, mit vorgelesenen Karten in K-2 und Mistake-Hunt-Korrekturräumen. Kein Aufsatzschreiben und keine Rückmeldung zu Texten: Oombas KI liest nie Arbeiten der Kinder."
     },
     "tour": {
       "kicker": "Zum Durchklicken",

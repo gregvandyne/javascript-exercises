@@ -8813,7 +8813,7 @@
         },
         "grades": {
           "need": "Anos atendidos",
-          "oomba": "Da educação infantil ao 8.º ano (K-8), em três faixas: {bands}."
+          "oomba": "Da educação infantil ao 12.º ano (K-12), em quatro faixas: {bands}."
         },
         "readAloud": {
           "need": "Leitura em voz alta para os pequenos",
@@ -11263,7 +11263,7 @@
       "classScreen": "{count} widgets, uma tela para cada aluno, pontos com motivos e as carteiras do Hub a uma aba de distância.",
       "mathTools": "{tools} manipuláveis e {tasks} tarefas do K ao 8º ano, além das fichas do Figures, o Oomba mudando o quadro quando você pede e cada ferramenta distribuída às carteiras do Hub.",
       "grammarUs": "O que o Grammar Lab da Oomba cobre",
-      "grammar": "{topics} tópicos de gramática da educação infantil ao 8.º ano, cada um dominado em três níveis, com cartões lidos em voz alta em K-2 e salas de revisão do Mistake Hunt. Sem redação nem comentários sobre a escrita: a IA da Oomba nunca lê o trabalho dos alunos."
+      "grammar": "{topics} tópicos de gramática da educação infantil ao 12.º ano, cada um dominado em três níveis, com cartões lidos em voz alta em K-2 e salas de revisão do Mistake Hunt. Sem redação nem comentários sobre a escrita: a IA da Oomba nunca lê o trabalho dos alunos."
     },
     "tour": {
       "kicker": "Tour interativo",
