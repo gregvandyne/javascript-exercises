@@ -8762,7 +8762,8 @@
         "h": "Teach with the tools",
         "p": "Ask Oomba for a worksheet in the chat: it drafts the questions, Figures draws every figure to scale and works out the answers. Or run a live math room with virtual manipulatives.",
         "alt": "The Figures worksheet builder with Oomba’s chat open beside it: a worksheet called Area and volume practice, its first question with a rectangle drawn to scale and the answer 12 m², and the chat’s list of what changed."
-      }
+      },
+      "kicker": "How it works"
     },
     "build": {
       "h": "Build to learn",
@@ -11580,7 +11581,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. The big screen shows where the whole class tapped, and close guesses still score."
-      }
+      },
+      "kicker": "Live games"
     },
     "tools": {
       "h": "Tools teachers asked for",
@@ -11615,7 +11617,7 @@
     "faq": {
       "h": "Questions teachers ask about Oomba Live",
       "q1": "Is Oomba Live free?",
-      "a1": "Yes. Hosting live lessons, the starter question sets, your own sets and the results are all free, with no ads.",
+      "a1": "Yes. Hosting live lessons, the starter question sets, your own sets and the results cost nothing, and so do the ready-made courses you can teach and give your students: {courses}. The optional <a href=\"{plans}\">Teacher plan</a> adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, and a shared daily pool of AI builds.",
       "q2": "Do my students need accounts?",
       "a2": "Not for an open room: students type the code and get a made-up nickname. In a class room, they use the school accounts you made for them, and their scores go into your gradebook.",
       "q3": "How many students can play?",
@@ -11623,7 +11625,8 @@
       "q4": "Can I use my own questions?",
       "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lesson plans into a live quiz.",
       "q5": "What do students need?",
-      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the lesson on the board from your own computer."
+      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the lesson on the board from your own computer.",
+      "a1NoCourses": "Yes. Hosting live lessons, the starter question sets, your own sets and the results cost nothing. The optional <a href=\"{plans}\">Teacher plan</a> adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, and a shared daily pool of AI builds."
     },
     "own": {
       "h": "Your questions, your way",
@@ -12509,7 +12512,8 @@
       "ask": "Ask Oomba",
       "tour": "Tour",
       "videos": "Videos",
-      "compare": "Compare"
+      "compare": "Compare",
+      "signupShort": "Sign up"
     },
     "hero": {
       "kicker": "For K-8 teachers",

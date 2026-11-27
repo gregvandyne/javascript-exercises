@@ -6,7 +6,8 @@
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
 
-const PAGES = ['/parents', '/teachers'];
+// /teachers has the homepage's click-through tour instead (tests/unit/how-it-works.test.js, landing-tour-browser).
+const PAGES = ['/parents'];
 const VIEWS = [
   { width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'light' }, { width: 1280, height: 860, scheme: 'dark' },
@@ -145,7 +146,7 @@ test('browsers without scroll-driven animations get the parallax from how.js', a
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
   await ctx.addInitScript(() => { const s = CSS.supports.bind(CSS); CSS.supports = (...a) => (/animation-timeline/.test(a.join(':')) ? false : s(...a)); });
   const page = await ctx.newPage(); const errs = errorsOf(page);
-  await page.goto('/teachers');
+  await page.goto('/parents');
   const art = page.locator('.how-art');
   await expect(art).toHaveClass(/how-par-js/);
   await page.evaluate(() => scrollTo({ top: 344, behavior: 'instant' })); await page.waitForTimeout(200);

@@ -7680,7 +7680,8 @@
         "h": "Enseña con las herramientas",
         "p": "Pídele a Oomba una hoja de trabajo en el chat: redacta las preguntas, Figures dibuja cada figura a escala y calcula las respuestas. O abre una sala de matemáticas en vivo con manipulativos virtuales.",
         "alt": "El creador de hojas de Figures con el chat de Oomba abierto al lado: una hoja llamada Area and volume practice, su primera pregunta con un rectángulo dibujado a escala y la respuesta 12 m², y la lista de lo que cambió en el chat."
-      }
+      },
+      "kicker": "Cómo funciona"
     },
     "build": {
       "h": "Crear para aprender",
@@ -10165,7 +10166,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Todos tocan el país en su propio mapa del mundo: el país, su bandera, su capital o por qué es famoso. La pantalla grande muestra dónde tocó toda la clase, y acercarse también suma."
-      }
+      },
+      "kicker": "Juegos en vivo"
     },
     "tools": {
       "h": "Las herramientas que pidieron los docentes",
@@ -10200,7 +10202,7 @@
     "faq": {
       "h": "Preguntas de docentes sobre Oomba Live",
       "q1": "¿Oomba Live es gratis?",
-      "a1": "Sí. Dirigir lecciones en vivo, los conjuntos de inicio, sus propios conjuntos y los resultados son gratis y sin anuncios.",
+      "a1": "Sí. Dirigir lecciones en vivo, los conjuntos de inicio, sus propios conjuntos y los resultados no cuestan nada, y tampoco los cursos listos que puede enseñar y dar a sus estudiantes: {courses}. El <a href=\"{plans}\">plan Docente</a> opcional añade las herramientas de pago: el Hub, Pregúntale a Oomba, los Manipulativos y sus salas en vivo, Figures y una reserva diaria compartida de creaciones con IA.",
       "q2": "¿Mis estudiantes necesitan una cuenta?",
       "a2": "No para una sala abierta: escriben el código y reciben un apodo inventado. En una sala de clase, usan las cuentas escolares que usted creó para ellos, y sus puntuaciones van a su cuaderno de notas.",
       "q3": "¿Cuántos estudiantes pueden jugar?",
@@ -10208,7 +10210,8 @@
       "q4": "¿Puedo usar mis propias preguntas?",
       "a4": "Sí, de cualquier materia y nivel. Escriba un conjunto de hasta {items} preguntas con 2 a 4 respuestas cada una, pegue uno de una hoja de cálculo, deje que la IA redacte uno para editar o convierta las preguntas de uno de sus planes de clase en un cuestionario en vivo.",
       "q5": "¿Qué necesitan los estudiantes?",
-      "a5": "Cualquier dispositivo con un navegador actualizado: Chromebooks, tabletas, portátiles o teléfonos. Nada que instalar. Usted muestra la lección en la pizarra desde su propio ordenador."
+      "a5": "Cualquier dispositivo con un navegador actualizado: Chromebooks, tabletas, portátiles o teléfonos. Nada que instalar. Usted muestra la lección en la pizarra desde su propio ordenador.",
+      "a1NoCourses": "Sí. Dirigir lecciones en vivo, los conjuntos de inicio, sus propios conjuntos y los resultados no cuestan nada. El <a href=\"{plans}\">plan Docente</a> opcional añade las herramientas de pago: el Hub, Pregúntale a Oomba, los Manipulativos y sus salas en vivo, Figures y una reserva diaria compartida de creaciones con IA."
     },
     "own": {
       "h": "Sus preguntas, a su manera",
@@ -10934,7 +10937,8 @@
       "ask": "Pregúntale a Oomba",
       "tour": "Recorrido",
       "videos": "Videos",
-      "compare": "Comparar"
+      "compare": "Comparar",
+      "signupShort": "Regístrate"
     },
     "hero": {
       "kicker": "Para docentes de K a 8",

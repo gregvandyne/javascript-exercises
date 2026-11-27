@@ -7681,7 +7681,8 @@
         "h": "Insegna con gli strumenti",
         "p": "Chiedi a Oomba una scheda nella chat: scrive le domande, Figures disegna ogni figura in scala e calcola le risposte. Oppure apri un’aula di matematica dal vivo con materiali manipolabili virtuali.",
         "alt": "Il creatore di schede di Figures con la chat di Oomba aperta accanto: una scheda intitolata Area and volume practice, la prima domanda con un rettangolo disegnato in scala e la risposta 12 m², e l’elenco di cosa è cambiato nella chat."
-      }
+      },
+      "kicker": "Come funziona"
     },
     "build": {
       "h": "Creare per imparare",
@@ -10166,7 +10167,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Tutti toccano il paese sulla propria mappa del mondo: il paese, la bandiera, la capitale o ciò per cui è famoso. Lo schermo grande mostra dove ha toccato tutta la classe, e andarci vicino vale comunque."
-      }
+      },
+      "kicker": "Giochi dal vivo"
     },
     "tools": {
       "h": "Gli strumenti chiesti dagli insegnanti",
@@ -10201,7 +10203,7 @@
     "faq": {
       "h": "Domande degli insegnanti su Oomba Live",
       "q1": "Oomba Live è gratis?",
-      "a1": "Sì. Condurre lezioni dal vivo, i set di partenza, i tuoi set e i risultati sono tutti gratuiti e senza pubblicità.",
+      "a1": "Sì. Condurre lezioni dal vivo, i set iniziali, i tuoi set e i risultati non costano nulla, e lo stesso vale per i corsi pronti che puoi insegnare e dare ai tuoi studenti: {courses}. Il <a href=\"{plans}\">piano Insegnante</a> facoltativo aggiunge gli strumenti a pagamento: l'Hub, Chiedi a Oomba, i Manipolativi e le loro stanze dal vivo, Figures e una riserva giornaliera condivisa di creazioni con l'IA.",
       "q2": "I miei studenti hanno bisogno di un account?",
       "a2": "Non per una stanza aperta: gli studenti scrivono il codice e ricevono un soprannome inventato. In una stanza di classe usano gli account scolastici che lei ha creato per loro, e i loro punteggi vanno nel suo registro.",
       "q3": "Quanti studenti possono giocare?",
@@ -10209,7 +10211,8 @@
       "q4": "Posso usare le mie domande?",
       "a4": "Sì, in qualsiasi materia e livello. Scrivi un set fino a {items} domande con 2-4 risposte ciascuna, incollane uno da un foglio di calcolo, fai scrivere all’IA una bozza da modificare o trasforma le domande di uno dei tuoi piani di lezione in un quiz dal vivo.",
       "q5": "Di cosa hanno bisogno gli studenti?",
-      "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Mostri la lezione alla lavagna dal tuo computer."
+      "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Mostri la lezione alla lavagna dal tuo computer.",
+      "a1NoCourses": "Sì. Condurre lezioni dal vivo, i set iniziali, i tuoi set e i risultati non costano nulla. Il <a href=\"{plans}\">piano Insegnante</a> facoltativo aggiunge gli strumenti a pagamento: l'Hub, Chiedi a Oomba, i Manipolativi e le loro stanze dal vivo, Figures e una riserva giornaliera condivisa di creazioni con l'IA."
     },
     "own": {
       "h": "Le sue domande, a modo suo",
@@ -10935,7 +10938,8 @@
       "ask": "Chiedi a Oomba",
       "tour": "Tour",
       "videos": "Video",
-      "compare": "Confronto"
+      "compare": "Confronto",
+      "signupShort": "Registrati"
     },
     "hero": {
       "kicker": "Per insegnanti dalla materna alla terza media",
