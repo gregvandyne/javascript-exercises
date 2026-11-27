@@ -1,11 +1,11 @@
 [
   { "start": 0.45, "scene": "hook: Atlas Quest (0.00)", "text": "Want your whole class cheering during a quiz? Meet Oomba Live." },
-  { "start": 5.2, "scene": "teacher picks subject and level (4.85)", "text": "Pick any subject and any level, and you're ready in seconds." },
+  { "start": 5.2, "scene": "teacher picks a lesson and a level (4.85)", "text": "Pick any subject and any level, and you're ready in seconds." },
   { "start": 10.2, "scene": "students join with a code (9.90)", "text": "Students join with a simple code and get a safe made-up name. No setup." },
-  { "start": 14.7, "scene": "Question Battle (14.35)", "text": "Everyone answers on their own device, the class battles together, and the top five shows after every question." },
-  { "start": 22.5, "scene": "the Builder: a kid types an idea (22.15)", "text": "And when the quiz is over? Kids become the makers." },
-  { "start": 26.3, "scene": "the Builder builds and playtests", "text": "They describe a game in their own words. The Builder makes it, then plays it to check that it works." },
-  { "start": 37.4, "scene": "they play it (37.05)", "text": "Then it's theirs to play, and to share with the class." },
-  { "start": 42.0, "scene": "official games montage (41.70)", "text": "Plus a growing library of learning games, from geography and word puzzles to chess, in thirteen languages." },
-  { "start": 52.6, "scene": "end card (52.35)", "text": "Oomba Live. Free for teachers at oomba.ai." }
+  { "start": 14.7, "scene": "Brain Board (14.35)", "text": "You open a tile, everyone answers on their own device, and the teams race for the points." },
+  { "start": 23.75, "scene": "the Builder: a kid types an idea (23.40)", "text": "And when the quiz is over? Kids become the makers." },
+  { "start": 27.5, "scene": "the Builder builds and playtests", "text": "They describe a game in their own words. The Builder makes it, then plays it to check that it works." },
+  { "start": 38.65, "scene": "they play it (38.30)", "text": "Then it's theirs to play, and to share with the class." },
+  { "start": 43.3, "scene": "official games montage (42.95)", "text": "Plus a growing library of learning games, from geography and word puzzles to chess, in thirteen languages." },
+  { "start": 54.25, "scene": "end card (53.95)", "text": "Oomba Live. Find it at oomba.ai." }
 ]

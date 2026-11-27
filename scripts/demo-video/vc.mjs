@@ -14,7 +14,8 @@ export const VCLOCK = () => {
   let vt = 0;  // virtual ms since this document started
   let nextId = 1; const timers = new Map(); let rafs = new Map(); let rafId = 1;
   performance.now = () => t0p + vt;
-  const vnow = () => t0d + vt;
+  let dOff = t0d;   // Date = dOff + vt; a shared wall clock (Capture.wall) moves dOff so every page reads the same Date
+  const vnow = () => dOff + vt;
   Date.now = vnow;
   // new Date() with no args -> virtual now
   const VDate = function (...a) { if (!(this instanceof VDate)) return new RealDate(vnow()).toString(); return a.length ? new RealDate(...a) : new RealDate(vnow()); };
@@ -36,8 +37,9 @@ export const VCLOCK = () => {
   const run = (fn, a) => { try { typeof fn === 'function' ? fn(...a) : (0, eval)(String(fn)); } catch (e) { console.error(e); } };
   window.__vc = {
     get t() { return vt; },
-    step(dt) {
+    step(dt, wall) {
       const end = vt + dt;
+      if (wall != null) dOff = wall - end;
       // timers due within this step, in time order (new ones scheduled while running are picked up too)
       for (let guard = 0; guard < 5000; guard++) {
         let best = null, bid = 0; for (const [id, t] of timers) if (t.at <= end && (!best || t.at < best.at)) { best = t; bid = id; }
@@ -62,8 +64,16 @@ export class Capture {
   static async install(ctx) { await ctx.addInitScript(VCLOCK); }
   /** Advance every frame of every page by ms without capturing (setup, loading). */
   async advance(ms, chunk = DT) { for (let t = 0; t < ms; t += chunk) await this.stepAll(Math.min(chunk, ms - t)); }
+  /** A wall clock shared by every page (Date.now), for pages that compare times with each other or a server (Oomba
+   *  Live: each page's own clock would drift apart, and the host and the phone show different timers). Set
+   *  Capture.wall to a start time in ms to use it; Capture.onWall(ms) runs after each step (e.g. to move the server's
+   *  clock along with it). */
+  static wall = null;
+  static onWall = null;
   async stepAll(dt) {
-    await Promise.all([...this.pages, ...this.extras].map(p => Promise.all(p.frames().map(f => f.evaluate(dt => window.__vc ? window.__vc.step(dt) : 0, dt).catch(() => 0)))));
+    const wall = Capture.wall == null ? null : (Capture.wall += dt);
+    await Promise.all([...this.pages, ...this.extras].map(p => Promise.all(p.frames().map(f => f.evaluate(([dt, w]) => window.__vc ? window.__vc.step(dt, w) : 0, [dt, wall]).catch(() => 0)))));
+    if (wall != null && Capture.onWall) await Capture.onWall(wall);
   }
   /** Step one output frame and screenshot every page. onFrame(i) runs input before the step. */
   async frame() {
@@ -101,15 +111,22 @@ export async function cursorInit(page) {
     window.__cur = { x: innerWidth * 0.62, y: innerHeight * 0.72 };
   });
 }
+const ease = k => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 export const setCursor = (page, x, y, ring = -1) => page.evaluate(({ x, y, ring }) => {
   const c = document.getElementById('demo-cursor'); if (c) c.style.transform = `translate(${x}px,${y}px)`; window.__cur = { x, y };
   const r = document.getElementById('demo-ring'); if (r) { if (ring >= 0) { r.style.left = x + 'px'; r.style.top = y + 'px'; r.style.opacity = String(Math.max(0, 1 - ring)); r.style.transform = `scale(${0.4 + ring})`; } else r.style.opacity = '0'; }
 }, { x, y, ring });
-const ease = k => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 /** Glide the cursor to a locator over `sec` seconds of video (captured), then optionally click with a ring. */
 export async function glide(cap, page, loc, { sec = 0.6, click = true, dx = 0.5, dy = 0.5 } = {}) {
-  await loc.scrollIntoViewIfNeeded().catch(() => {});
-  const b = await loc.boundingBox(); if (!b) throw new Error('no box');
+  let b = await loc.boundingBox(); if (!b) throw new Error('no box');
+  // out of view: scroll the page there smoothly, on the captured timeline (scrollIntoViewIfNeeded jumps in one frame)
+  const vh = await page.evaluate(() => innerHeight);
+  const by = b.y < 8 ? b.y - 24 : b.y + b.height > vh - 8 ? b.y + b.height - vh + 24 : 0;
+  if (by) {
+    const y0 = await page.evaluate(() => scrollY), n = Math.max(6, Math.round(Math.min(0.5, Math.abs(by) / 900) * 30));
+    await cap.frames(n, i => page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), y0 + by * ease((i + 1) / n)));
+    b = await loc.boundingBox(); if (!b) throw new Error('no box');
+  }
   const x = b.x + b.width * dx, y = b.y + b.height * dy;
   const s = await page.evaluate(() => window.__cur || { x: innerWidth * 0.6, y: innerHeight * 0.7 });
   const n = Math.max(1, Math.round(sec * 30));
