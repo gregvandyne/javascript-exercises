@@ -39,7 +39,11 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar) + 12px);-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body.lp{margin:0;background:var(--bg);color:var(--text);font:400 17px/1.55 var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto;display:block}
+img{display:block}
+/* Pictures scale with their box. Not the icons (.fx: public/js/icons.js iconHtml, a square drawn at its width and height
+   attributes): with height:auto an icon in a flex row (the Hub's features, the safety cards) was stretched to the row's
+   height by align-items:stretch while its width stayed put, so it looked squeezed. Its own height keeps it square. */
+img:not(.fx){max-width:100%;height:auto}
 a{color:var(--link)}
 h1,h2,h3{margin:0;line-height:1.08;letter-spacing:-.025em;font-weight:800}
 p{margin:0}
@@ -54,7 +58,7 @@ button{font:inherit;color:inherit}
 .lp-alt{background-color:var(--bg-2)}
 .lp-center{text-align:center}
 .lp-small{font-size:14px;color:var(--muted)}
-.fx{flex:none}
+.fx{flex:none;object-fit:contain}
 
 /* ---------------------------------------------------------------- top bar */
 .lp-skip{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 16px;border-radius:12px;background:var(--spark);color:#141414;font-weight:700;text-decoration:none}
