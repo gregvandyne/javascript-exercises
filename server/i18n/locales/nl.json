@@ -5763,6 +5763,24 @@
       "joinShort": "Meedoen",
       "join": "Meedoen met {title}",
       "over": "Het live-spel is afgelopen. Je bent terug aan je tafel."
+    },
+    "grammar-lab": {
+      "levelOf": "Level {n} van {total}",
+      "levelsDone": "{done} van {total} levels af",
+      "levelsNow": "Je zit op level {n} van {total}.",
+      "counter": "Vraag {n} van {total}",
+      "streak": "Goed achter elkaar: {n} van {need}",
+      "wrong": "Net niet. Kijk nog eens en probeer het opnieuw. Twee keer achter elkaar goed maakt dit level af.",
+      "again": "Nog steeds niet. Open de hint voor hulp.",
+      "near": "Je hebt te veel woorden gekozen. Haal de extra woorden weg en verstuur opnieuw.",
+      "hideHint": "Hint verbergen",
+      "hint": "Hint",
+      "levelDone": "Level {n} af!",
+      "levelText": "Er komen nieuwe vragen. Ga zo door!",
+      "answered": "{count, plural, one {Je hebt # vraag beantwoord.} other {Je hebt # vragen beantwoord.}}",
+      "next": "Volgende: {topic}",
+      "flagSent": "Bedankt. We kijken ernaar.",
+      "wentWrong": "Er ging iets mis. Probeer het opnieuw."
     }
   },
   "favorites": {
@@ -16023,6 +16041,111 @@
       "title": "Flashcards gedeeld met de klas",
       "cards": "{count, plural, one {# kaart} other {# kaarten}}",
       "hidden": "Verborgen voor de klas"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammatica en schrijven, één vaardigheid tegelijk",
+    "band": "Groepen {grades}",
+    "topicsN": "{count, plural, one {# onderwerp} other {# onderwerpen}}",
+    "ringLabel": "{done} van {total} onderwerpen beheerst",
+    "allUnits": "Alle eenheden",
+    "backTo": "Terug naar {unit}",
+    "noscript": "Voor deze oefening moet JavaScript aan staan.",
+    "topic": {
+      "options": "Meer bij {topic}",
+      "card": "Leskaart",
+      "again": "Nog een keer oefenen",
+      "review": "Vragen terugkijken",
+      "afterMastery": "Als je het beheerst",
+      "new": "Beginnen",
+      "started": "Verdergaan",
+      "mastered": "Beheerst",
+      "pending": "Log in om het te bewaren",
+      "locked": "Beheers eerst de vorige"
+    },
+    "guest": {
+      "title": "Log in om je successen te bewaren",
+      "text": "Je kunt als gast spelen. Om een onderwerp dat je beheerst te bewaren, log je in of maak je een account.",
+      "wonTitle": "Goed gedaan! Log in om het te bewaren",
+      "wonText": "Je hebt dit als gast beheerst. Log in of maak een account, dan zetten we het bij je voortgang.",
+      "signup": "Account maken",
+      "login": "Inloggen"
+    },
+    "welcome": {
+      "heading": "Welkom bij {topic}",
+      "text": "Blijf antwoorden tot je laat zien dat je het kunt. Heb de laatste twee achter elkaar goed om elk level af te maken.",
+      "go": "Daar gaan we",
+      "skip": "Intro overslaan"
+    },
+    "practice": {
+      "tip": "Hoe dubbeltikken werkt",
+      "card": "Leskaart",
+      "hint": "Hint",
+      "hintTitle": "Hier is een hint",
+      "submit": "Versturen",
+      "flag": "Een probleem met deze vraag melden",
+      "correct": "Goed zo!",
+      "levelNext": "Volgend level"
+    },
+    "levels": {
+      "heading": "Levels en beheersen",
+      "rule": "Om een level af te maken, beantwoord je de vragen en heb je de laatste twee achter elkaar goed. Een fout antwoord voegt een vraag toe.",
+      "mastery": "{total, plural, one {Maak het level af om dit onderwerp te beheersen.} other {Maak alle # levels af om dit onderwerp te beheersen.}}",
+      "close": "Sluiten"
+    },
+    "tip": {
+      "heading": "Tik twee keer om te zien wat een woord betekent",
+      "text": "Tik twee keer op een grammaticawoord, zoals {word}, en de betekenis verschijnt.",
+      "before": "Tik op het",
+      "after": "in elke zin.",
+      "def": "zegt iets over een zelfstandig naamwoord",
+      "ok": "Begrepen",
+      "replay": "Opnieuw"
+    },
+    "flag": {
+      "heading": "Een probleem melden",
+      "text": "Klopt er iets niet aan deze vraag? Stuur hem naar ons, dan kijken we ernaar.",
+      "send": "Versturen",
+      "cancel": "Annuleren"
+    },
+    "done": {
+      "heading": "Je beheerst {topic}!",
+      "back": "Terug naar {unit}"
+    },
+    "card": {
+      "heading": "Leskaart",
+      "example": "Voorbeeld",
+      "how": "Zo werkt het:",
+      "tips": "Meer voorbeelden",
+      "listen": "Lees het voor",
+      "stop": "Stop",
+      "practice": "Begin met oefenen"
+    },
+    "review": {
+      "heading": "Kijk je vragen terug",
+      "firstTry": "In één keer goed",
+      "fixed": "Verbeterd na een hint",
+      "none": "Beheers dit onderwerp om de vragen terug te kijken."
+    },
+    "roles": {
+      "adjective": "bijvoeglijk naamwoord",
+      "noun": "zelfstandig naamwoord",
+      "verb": "werkwoord",
+      "adverb": "bijwoord",
+      "pronoun": "voornaamwoord",
+      "subject": "onderwerp",
+      "article": "lidwoord",
+      "conjunction": "voegwoord",
+      "preposition": "voorzetsel"
+    },
+    "glossaryWord": {
+      "adjective": "bijvoeglijk naamwoord",
+      "noun": "zelfstandig naamwoord"
+    },
+    "glossary": {
+      "adjective": "een woord dat iets zegt over een zelfstandig naamwoord: wat voor, hoeveel of welke",
+      "noun": "een woord voor een persoon, plaats, dier of ding"
     }
   }
 }

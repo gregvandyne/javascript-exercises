@@ -5763,6 +5763,24 @@
       "joinShort": "Entrar",
       "join": "Entrar em {title}",
       "over": "O jogo ao vivo acabou. Você voltou para sua mesa."
+    },
+    "grammar-lab": {
+      "levelOf": "Nível {n} de {total}",
+      "levelsDone": "{done} de {total} níveis terminados",
+      "levelsNow": "Você está no nível {n} de {total}.",
+      "counter": "Pergunta {n} de {total}",
+      "streak": "Certas seguidas: {n} de {need}",
+      "wrong": "Quase. Olhe de novo e tente outra vez. Acerte duas seguidas para terminar este nível.",
+      "again": "Ainda não. Abra a dica para ajudar.",
+      "near": "Você escolheu palavras demais. Tire as que sobram e envie de novo.",
+      "hideHint": "Esconder a dica",
+      "hint": "Dica",
+      "levelDone": "Nível {n} terminado!",
+      "levelText": "Vêm perguntas novas. Continue!",
+      "answered": "{count, plural, one {Você respondeu # pergunta.} other {Você respondeu # perguntas.}}",
+      "next": "Próximo: {topic}",
+      "flagSent": "Obrigado. Vamos dar uma olhada.",
+      "wentWrong": "Algo deu errado. Tente de novo."
     }
   },
   "favorites": {
@@ -16024,6 +16042,111 @@
       "title": "Cartões compartilhados com a turma",
       "cards": "{count, plural, one {# cartão} other {# cartões}}",
       "hidden": "Oculto para a turma"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Gramática e escrita, uma habilidade de cada vez",
+    "band": "Anos {grades}",
+    "topicsN": "{count, plural, one {# tema} other {# temas}}",
+    "ringLabel": "{done} de {total} temas dominados",
+    "allUnits": "Todas as unidades",
+    "backTo": "Voltar para {unit}",
+    "noscript": "Esta prática precisa do JavaScript ativado.",
+    "topic": {
+      "options": "Mais de {topic}",
+      "card": "Ficha da lição",
+      "again": "Praticar de novo",
+      "review": "Rever as perguntas",
+      "afterMastery": "Depois que você dominar",
+      "new": "Começar",
+      "started": "Continuar",
+      "mastered": "Dominado",
+      "pending": "Entre para guardar",
+      "locked": "Domine o anterior primeiro"
+    },
+    "guest": {
+      "title": "Entre para guardar suas conquistas",
+      "text": "Você pode jogar como convidado. Para guardar um tema que dominar, entre ou crie uma conta.",
+      "wonTitle": "Muito bem! Entre para guardar",
+      "wonText": "Você dominou isso como convidado. Entre ou crie uma conta e vamos adicionar ao seu progresso.",
+      "signup": "Criar uma conta",
+      "login": "Entrar"
+    },
+    "welcome": {
+      "heading": "Bem-vindo a {topic}",
+      "text": "Continue respondendo até mostrar que sabe. Acerte as duas últimas seguidas para terminar cada nível.",
+      "go": "Vamos lá",
+      "skip": "Pular a introdução"
+    },
+    "practice": {
+      "tip": "Como funciona o toque duplo",
+      "card": "Ficha da lição",
+      "hint": "Dica",
+      "hintTitle": "Aqui vai uma dica",
+      "submit": "Enviar",
+      "flag": "Avisar um problema com esta pergunta",
+      "correct": "Certo!",
+      "levelNext": "Próximo nível"
+    },
+    "levels": {
+      "heading": "Níveis e domínio",
+      "rule": "Para terminar um nível, responda às perguntas dele e acerte as duas últimas seguidas. Uma resposta errada acrescenta uma pergunta.",
+      "mastery": "{total, plural, one {Termine o nível para dominar este tema.} other {Termine os # níveis para dominar este tema.}}",
+      "close": "Fechar"
+    },
+    "tip": {
+      "heading": "Toque duas vezes para ver o que uma palavra significa",
+      "text": "Toque duas vezes numa palavra de gramática, como {word}, e o significado aparece.",
+      "before": "Toque no",
+      "after": "em cada frase.",
+      "def": "fala de um substantivo",
+      "ok": "Entendi",
+      "replay": "Ver de novo"
+    },
+    "flag": {
+      "heading": "Avisar um problema",
+      "text": "Tem algo errado com esta pergunta? Mande para nós e vamos dar uma olhada.",
+      "send": "Enviar",
+      "cancel": "Cancelar"
+    },
+    "done": {
+      "heading": "Você dominou {topic}!",
+      "back": "Voltar para {unit}"
+    },
+    "card": {
+      "heading": "Ficha da lição",
+      "example": "Exemplo",
+      "how": "Como funciona:",
+      "tips": "Mais exemplos",
+      "listen": "Leia para mim",
+      "stop": "Parar",
+      "practice": "Começar a praticar"
+    },
+    "review": {
+      "heading": "Reveja suas perguntas",
+      "firstTry": "Certo de primeira",
+      "fixed": "Corrigida depois de uma dica",
+      "none": "Domine este tema para rever as perguntas."
+    },
+    "roles": {
+      "adjective": "adjetivo",
+      "noun": "substantivo",
+      "verb": "verbo",
+      "adverb": "advérbio",
+      "pronoun": "pronome",
+      "subject": "sujeito",
+      "article": "artigo",
+      "conjunction": "conjunção",
+      "preposition": "preposição"
+    },
+    "glossaryWord": {
+      "adjective": "adjetivo",
+      "noun": "substantivo"
+    },
+    "glossary": {
+      "adjective": "uma palavra que fala de um substantivo: de que tipo, quantos ou qual",
+      "noun": "uma palavra para uma pessoa, um lugar, um animal ou uma coisa"
     }
   }
 }

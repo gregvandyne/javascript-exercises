@@ -5763,6 +5763,24 @@
       "joinShort": "Entra",
       "join": "Entra in {title}",
       "over": "Il gioco dal vivo è finito. Sei di nuovo al tuo banco."
+    },
+    "grammar-lab": {
+      "levelOf": "Livello {n} di {total}",
+      "levelsDone": "{done} livelli finiti su {total}",
+      "levelsNow": "Sei al livello {n} di {total}.",
+      "counter": "Domanda {n} di {total}",
+      "streak": "Giuste di fila: {n} su {need}",
+      "wrong": "Non proprio. Guarda di nuovo e riprova. Due giuste di fila finiscono questo livello.",
+      "again": "Non ancora. Apri il suggerimento per aiutarti.",
+      "near": "Hai scelto troppe parole. Togli quelle in più e invia di nuovo.",
+      "hideHint": "Nascondi il suggerimento",
+      "hint": "Suggerimento",
+      "levelDone": "Livello {n} finito!",
+      "levelText": "Arrivano domande nuove. Continua così!",
+      "answered": "{count, plural, one {Hai risposto a # domanda.} other {Hai risposto a # domande.}}",
+      "next": "Prossimo: {topic}",
+      "flagSent": "Grazie. Daremo un'occhiata.",
+      "wentWrong": "Qualcosa è andato storto. Riprova."
     }
   },
   "favorites": {
@@ -16023,6 +16041,111 @@
       "title": "Flashcard condivise con la classe",
       "cards": "{count, plural, one {# carta} other {# carte}}",
       "hidden": "Nascosto alla classe"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammatica e scrittura, un'abilità alla volta",
+    "band": "Classi {grades}",
+    "topicsN": "{count, plural, one {# argomento} other {# argomenti}}",
+    "ringLabel": "{done} argomenti padroneggiati su {total}",
+    "allUnits": "Tutte le unità",
+    "backTo": "Torna a {unit}",
+    "noscript": "Questo esercizio ha bisogno di JavaScript attivo.",
+    "topic": {
+      "options": "Altro su {topic}",
+      "card": "Scheda della lezione",
+      "again": "Esercitati ancora",
+      "review": "Rivedi le domande",
+      "afterMastery": "Quando lo padroneggi",
+      "new": "Inizia",
+      "started": "Continua",
+      "mastered": "Padroneggiato",
+      "pending": "Accedi per tenerlo",
+      "locked": "Prima padroneggia quello prima"
+    },
+    "guest": {
+      "title": "Accedi per tenere i tuoi successi",
+      "text": "Puoi giocare come ospite. Per tenere un argomento che padroneggi, accedi o crea un account.",
+      "wonTitle": "Bravo! Accedi per tenerlo",
+      "wonText": "Lo hai padroneggiato come ospite. Accedi o crea un account e lo aggiungeremo ai tuoi progressi.",
+      "signup": "Crea un account",
+      "login": "Accedi"
+    },
+    "welcome": {
+      "heading": "Benvenuto in {topic}",
+      "text": "Continua a rispondere finché non mostri che lo sai. Fai giuste le ultime due di fila per finire ogni livello.",
+      "go": "Andiamo",
+      "skip": "Salta l'introduzione"
+    },
+    "practice": {
+      "tip": "Come funziona il doppio tocco",
+      "card": "Scheda della lezione",
+      "hint": "Suggerimento",
+      "hintTitle": "Ecco un suggerimento",
+      "submit": "Invia",
+      "flag": "Segnala un problema con questa domanda",
+      "correct": "Giusto!",
+      "levelNext": "Livello successivo"
+    },
+    "levels": {
+      "heading": "Livelli e padronanza",
+      "rule": "Per finire un livello, rispondi alle sue domande e fai giuste le ultime due di fila. Una risposta sbagliata aggiunge una domanda.",
+      "mastery": "{total, plural, one {Finisci il livello per padroneggiare questo argomento.} other {Finisci tutti i # livelli per padroneggiare questo argomento.}}",
+      "close": "Chiudi"
+    },
+    "tip": {
+      "heading": "Tocca due volte per vedere cosa vuol dire una parola",
+      "text": "Tocca due volte una parola di grammatica, come {word}, e compare il suo significato.",
+      "before": "Trova ogni",
+      "after": "nella frase.",
+      "def": "dice qualcosa di un nome",
+      "ok": "Ho capito",
+      "replay": "Rivedi"
+    },
+    "flag": {
+      "heading": "Segnala un problema",
+      "text": "C'è qualcosa che non va in questa domanda? Mandacela e daremo un'occhiata.",
+      "send": "Invia",
+      "cancel": "Annulla"
+    },
+    "done": {
+      "heading": "Hai padroneggiato {topic}!",
+      "back": "Torna a {unit}"
+    },
+    "card": {
+      "heading": "Scheda della lezione",
+      "example": "Esempio",
+      "how": "Come funziona:",
+      "tips": "Altri esempi",
+      "listen": "Leggimelo",
+      "stop": "Ferma",
+      "practice": "Inizia a esercitarti"
+    },
+    "review": {
+      "heading": "Rivedi le tue domande",
+      "firstTry": "Giusta al primo colpo",
+      "fixed": "Corretta dopo un suggerimento",
+      "none": "Padroneggia questo argomento per rivederne le domande."
+    },
+    "roles": {
+      "adjective": "aggettivo",
+      "noun": "nome",
+      "verb": "verbo",
+      "adverb": "avverbio",
+      "pronoun": "pronome",
+      "subject": "soggetto",
+      "article": "articolo",
+      "conjunction": "congiunzione",
+      "preposition": "preposizione"
+    },
+    "glossaryWord": {
+      "adjective": "aggettivo",
+      "noun": "nome"
+    },
+    "glossary": {
+      "adjective": "una parola che dice qualcosa di un nome: di che tipo, quanti o quale",
+      "noun": "una parola per una persona, un luogo, un animale o una cosa"
     }
   }
 }

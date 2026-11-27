@@ -5762,6 +5762,24 @@
       "joinShort": "参加",
       "join": "{title}に参加",
       "over": "ライブゲームが終わりました。自分の机に戻りました。"
+    },
+    "grammar-lab": {
+      "levelOf": "レベル {n} / {total}",
+      "levelsDone": "{total} レベル中 {done} クリア",
+      "levelsNow": "いまはレベル {n} / {total} です。",
+      "counter": "問題 {n} / {total}",
+      "streak": "連続正解：{n} / {need}",
+      "wrong": "おしい。もう一度よく見て、やってみよう。2問続けて正解でレベルクリアだよ。",
+      "again": "まだちがうよ。ヒントを開いてみよう。",
+      "near": "言葉をえらびすぎだよ。よぶんな言葉をはずして、もう一度答えよう。",
+      "hideHint": "ヒントをかくす",
+      "hint": "ヒント",
+      "levelDone": "レベル {n} クリア！",
+      "levelText": "次は新しい問題だよ。その調子！",
+      "answered": "{count, plural, other {# 問に答えました。}}",
+      "next": "次：{topic}",
+      "flagSent": "ありがとう。確認します。",
+      "wentWrong": "うまくいきませんでした。もう一度ためしてね。"
     }
   },
   "favorites": {
@@ -16022,6 +16040,111 @@
       "title": "クラスに共有したフラッシュカード",
       "cards": "{count, plural, other {#枚}}",
       "hidden": "クラスには非表示"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "文法と書く力を、ひとつずつ",
+    "band": "{grades} 年生",
+    "topicsN": "{count, plural, other {# トピック}}",
+    "ringLabel": "{total} トピック中 {done} をマスター",
+    "allUnits": "すべてのユニット",
+    "backTo": "{unit} にもどる",
+    "noscript": "この練習には JavaScript が必要です。",
+    "topic": {
+      "options": "{topic} のメニュー",
+      "card": "まなびカード",
+      "again": "もう一度練習する",
+      "review": "問題をふりかえる",
+      "afterMastery": "マスターしたら使えます",
+      "new": "はじめる",
+      "started": "つづける",
+      "mastered": "マスター",
+      "pending": "ログインしてのこそう",
+      "locked": "まず前のトピックをマスターしよう"
+    },
+    "guest": {
+      "title": "ログインして記録をのこそう",
+      "text": "ゲストのままでも遊べます。マスターしたトピックをのこすには、ログインするかアカウントを作ってね。",
+      "wonTitle": "やったね！ログインしてのこそう",
+      "wonText": "ゲストでマスターしました。ログインするかアカウントを作ると、きろくに追加します。",
+      "signup": "アカウントを作る",
+      "login": "ログイン"
+    },
+    "welcome": {
+      "heading": "{topic} へようこそ",
+      "text": "できるようになるまで答えつづけよう。最後の2問を続けて正解すると、レベルクリアだよ。",
+      "go": "はじめよう",
+      "skip": "イントロをとばす"
+    },
+    "practice": {
+      "tip": "ダブルタップのつかいかた",
+      "card": "まなびカード",
+      "hint": "ヒント",
+      "hintTitle": "ヒントだよ",
+      "submit": "答える",
+      "flag": "この問題のまちがいを知らせる",
+      "correct": "正解！",
+      "levelNext": "次のレベルへ"
+    },
+    "levels": {
+      "heading": "レベルとマスター",
+      "rule": "レベルをクリアするには、問題に答えて、最後の2問を続けて正解しよう。まちがえると問題が1つふえます。",
+      "mastery": "{total, plural, other {# つのレベルをすべてクリアすると、このトピックをマスターできます。}}",
+      "close": "とじる"
+    },
+    "tip": {
+      "heading": "ダブルタップで言葉の意味が見られるよ",
+      "text": "{word} のような文法の言葉をダブルタップすると、意味が出てきます。",
+      "before": "文の中の",
+      "after": "をタップしよう。",
+      "def": "名詞についておしえる言葉",
+      "ok": "わかった",
+      "replay": "もう一度見る"
+    },
+    "flag": {
+      "heading": "まちがいを知らせる",
+      "text": "この問題、どこかおかしい？送ってくれたら確認します。",
+      "send": "送る",
+      "cancel": "やめる"
+    },
+    "done": {
+      "heading": "{topic} をマスターしたよ！",
+      "back": "{unit} にもどる"
+    },
+    "card": {
+      "heading": "まなびカード",
+      "example": "例",
+      "how": "しくみ：",
+      "tips": "ほかの例",
+      "listen": "読んで",
+      "stop": "とめる",
+      "practice": "練習をはじめる"
+    },
+    "review": {
+      "heading": "問題をふりかえろう",
+      "firstTry": "1回で正解",
+      "fixed": "ヒントのあとで正解",
+      "none": "このトピックをマスターすると、問題をふりかえれます。"
+    },
+    "roles": {
+      "adjective": "形容詞",
+      "noun": "名詞",
+      "verb": "動詞",
+      "adverb": "副詞",
+      "pronoun": "代名詞",
+      "subject": "主語",
+      "article": "冠詞",
+      "conjunction": "接続詞",
+      "preposition": "前置詞"
+    },
+    "glossaryWord": {
+      "adjective": "形容詞",
+      "noun": "名詞"
+    },
+    "glossary": {
+      "adjective": "名詞について、どんな、いくつ、どれかを教える言葉",
+      "noun": "人、場所、動物、ものをあらわす言葉"
     }
   }
 }

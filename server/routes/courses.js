@@ -192,7 +192,7 @@ function nqReaction(step, itemId, choice, right) {
  *  check's and the mission's Tally Marks, and any lap it lands — so the sign-up step costs the student
  *  nothing. Called wherever the student meets their course state; a no-op for guests and for students
  *  with nothing pending. */
-function honourPendingWins(u) {
+export function honourPendingWins(u) {
   // A grown-up has no course progress (they read the course pages Home links to: routes/family.js): a win stashed by the
   // guest they signed in from stays unapplied rather than becoming a grown-up's progress.
   if (!u || u.is_guest || isGrownup(u)) return;

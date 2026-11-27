@@ -5763,6 +5763,24 @@
       "joinShort": "Mitmachen",
       "join": "{title} beitreten",
       "over": "Das Live-Spiel ist vorbei. Du bist wieder an deinem Tisch."
+    },
+    "grammar-lab": {
+      "levelOf": "Level {n} von {total}",
+      "levelsDone": "{done} von {total} Level geschafft",
+      "levelsNow": "Du bist auf Level {n} von {total}.",
+      "counter": "Frage {n} von {total}",
+      "streak": "Richtig hintereinander: {n} von {need}",
+      "wrong": "Nicht ganz. Schau noch einmal und versuch es wieder. Zweimal hintereinander richtig schafft dieses Level.",
+      "again": "Immer noch nicht. Öffne den Tipp, er hilft dir.",
+      "near": "Du hast zu viele Wörter gewählt. Nimm die übrigen weg und schick es noch einmal ab.",
+      "hideHint": "Tipp ausblenden",
+      "hint": "Tipp",
+      "levelDone": "Level {n} geschafft!",
+      "levelText": "Jetzt kommen neue Fragen. Mach weiter!",
+      "answered": "{count, plural, one {Du hast # Frage beantwortet.} other {Du hast # Fragen beantwortet.}}",
+      "next": "Als Nächstes: {topic}",
+      "flagSent": "Danke. Wir sehen es uns an.",
+      "wentWrong": "Etwas ist schiefgelaufen. Versuch es noch einmal."
     }
   },
   "favorites": {
@@ -16023,6 +16041,111 @@
       "title": "Mit der Klasse geteilte Lernkarten",
       "cards": "{count, plural, one {# Karte} other {# Karten}}",
       "hidden": "Für die Klasse ausgeblendet"
+    }
+  },
+  "grammarLab": {
+    "title": "Grammar Lab",
+    "sub": "Grammatik und Schreiben, eine Fähigkeit nach der anderen",
+    "band": "Klassen {grades}",
+    "topicsN": "{count, plural, one {# Thema} other {# Themen}}",
+    "ringLabel": "{done} von {total} Themen gemeistert",
+    "allUnits": "Alle Einheiten",
+    "backTo": "Zurück zu {unit}",
+    "noscript": "Diese Übung braucht eingeschaltetes JavaScript.",
+    "topic": {
+      "options": "Mehr zu {topic}",
+      "card": "Lernkarte",
+      "again": "Noch einmal üben",
+      "review": "Fragen ansehen",
+      "afterMastery": "Wenn du es gemeistert hast",
+      "new": "Starten",
+      "started": "Weitermachen",
+      "mastered": "Gemeistert",
+      "pending": "Melde dich an, um es zu behalten",
+      "locked": "Meistere zuerst das vorige"
+    },
+    "guest": {
+      "title": "Melde dich an, um deine Erfolge zu behalten",
+      "text": "Du kannst als Gast spielen. Um ein gemeistertes Thema zu behalten, melde dich an oder erstelle ein Konto.",
+      "wonTitle": "Super! Melde dich an, um es zu behalten",
+      "wonText": "Du hast das als Gast gemeistert. Melde dich an oder erstelle ein Konto, dann tragen wir es in deinen Fortschritt ein.",
+      "signup": "Konto erstellen",
+      "login": "Anmelden"
+    },
+    "welcome": {
+      "heading": "Willkommen bei {topic}",
+      "text": "Antworte weiter, bis du zeigst, dass du es kannst. Beantworte die letzten zwei richtig hintereinander, um jedes Level zu schaffen.",
+      "go": "Los geht's",
+      "skip": "Intro überspringen"
+    },
+    "practice": {
+      "tip": "So funktioniert doppeltes Tippen",
+      "card": "Lernkarte",
+      "hint": "Tipp",
+      "hintTitle": "Hier ist ein Tipp",
+      "submit": "Abschicken",
+      "flag": "Ein Problem mit dieser Frage melden",
+      "correct": "Richtig!",
+      "levelNext": "Nächstes Level"
+    },
+    "levels": {
+      "heading": "Level und Meistern",
+      "rule": "Um ein Level zu schaffen, beantworte seine Fragen und die letzten zwei richtig hintereinander. Eine falsche Antwort fügt eine Frage hinzu.",
+      "mastery": "{total, plural, one {Schaffe das Level, um dieses Thema zu meistern.} other {Schaffe alle # Level, um dieses Thema zu meistern.}}",
+      "close": "Schließen"
+    },
+    "tip": {
+      "heading": "Tippe zweimal, um zu sehen, was ein Wort bedeutet",
+      "text": "Tippe zweimal auf ein Grammatikwort wie {word}, und seine Bedeutung erscheint.",
+      "before": "Tippe auf das",
+      "after": "in jedem Satz.",
+      "def": "sagt etwas über ein Nomen",
+      "ok": "Verstanden",
+      "replay": "Noch mal"
+    },
+    "flag": {
+      "heading": "Ein Problem melden",
+      "text": "Stimmt etwas mit dieser Frage nicht? Schick sie uns, und wir sehen sie uns an.",
+      "send": "Senden",
+      "cancel": "Abbrechen"
+    },
+    "done": {
+      "heading": "Du hast {topic} gemeistert!",
+      "back": "Zurück zu {unit}"
+    },
+    "card": {
+      "heading": "Lernkarte",
+      "example": "Beispiel",
+      "how": "So funktioniert es:",
+      "tips": "Mehr Beispiele",
+      "listen": "Vorlesen",
+      "stop": "Stopp",
+      "practice": "Üben starten"
+    },
+    "review": {
+      "heading": "Sieh dir deine Fragen an",
+      "firstTry": "Beim ersten Mal richtig",
+      "fixed": "Nach einem Tipp verbessert",
+      "none": "Meistere dieses Thema, um seine Fragen anzusehen."
+    },
+    "roles": {
+      "adjective": "Adjektiv",
+      "noun": "Nomen",
+      "verb": "Verb",
+      "adverb": "Adverb",
+      "pronoun": "Pronomen",
+      "subject": "Subjekt",
+      "article": "Artikel",
+      "conjunction": "Konjunktion",
+      "preposition": "Präposition"
+    },
+    "glossaryWord": {
+      "adjective": "Adjektiv",
+      "noun": "Nomen"
+    },
+    "glossary": {
+      "adjective": "ein Wort, das etwas über ein Nomen sagt: welche Art, wie viele oder welches",
+      "noun": "ein Wort für eine Person, einen Ort, ein Tier oder eine Sache"
     }
   }
 }
