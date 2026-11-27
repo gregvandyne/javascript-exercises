@@ -5604,7 +5604,7 @@
       "pictures": "Pictures",
       "undo": "Undo",
       "waitSecs": "Try again in {n} seconds.",
-      "welcome": "Welcome, {name}!"
+      "welcome": "You're in! Your desk is ready."
     },
     "homeroom-signin-panel": {
       "closed": "Sign-in is closed",
@@ -12012,7 +12012,7 @@
       "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
       "openLive": "Open live lesson",
-      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below and add your students, then open its Hub to hand out your first lesson. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
     "loop": {

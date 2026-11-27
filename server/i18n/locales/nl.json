@@ -5144,7 +5144,7 @@
       "pictures": "Plaatjes",
       "undo": "Ongedaan maken",
       "waitSecs": "Probeer het over {n} seconden opnieuw.",
-      "welcome": "Welkom, {name}!"
+      "welcome": "Je bent binnen! Je tafel staat klaar."
     },
     "homeroom-signin-panel": {
       "closed": "Inloggen is gesloten",
@@ -11337,7 +11337,7 @@
       "lessonFolder": "Lessenmap",
       "openClass": "Klas openen",
       "openLive": "Liveles openen",
-      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg je leerlingen toe, open dan de Hub om je eerste les uit te delen. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
       "allClasses": "Alle klassen"
     },
     "loop": {
