@@ -46,6 +46,7 @@ function start() {
   const views = !!document.getElementById('cv');
   let dash = PAGE.type === 'dashboard';
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
+  const actDrafts = new Map();   // an action card's typed box, by turn (below)
   const label = () => {
     const a = BUS.page(); if (a && a.label) { const x = a.label(); if (x) return String(x).slice(0, 60); }
     const h = document.querySelector(dash ? '.dash-class' : 'main h1');
@@ -100,7 +101,7 @@ function start() {
     // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'action' ? actionDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
     changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L('asg.open'))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
@@ -121,6 +122,8 @@ function start() {
   BUS.setChat(chat);
   BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
   const root = chat.root;
+  // What the teacher typed in an action card's box, kept while the panel redraws (never stored, never sent until Do it).
+  root.addEventListener('input', e => { const el = e.target.closest && e.target.closest('[id^="oc-act-"]'); if (el) actDrafts.set(el.id.slice(7), el.value); });
   const $ = id => document.getElementById(id);
 
   // ---------------------------------------------------------------- the flags: web search, the microphone
@@ -387,6 +390,7 @@ function start() {
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
     if (n.assign) parts.push(assignHtml(x, n.assign));
+    if (n.action) parts.push(actionHtml(x, n.action));
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     if (n.book) parts.push(bookHtml(x, n.book));
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
@@ -472,6 +476,24 @@ function start() {
     return `<div class="oc-change oc-cls"><p>${ic(p.kind === 'book' ? '📚' : '🎮', 20)} <b dir="auto">${esc(t('js.companion.asg.ask', { title: p.title, class: p.className }))}</b></p><p class="oc-hsub">${esc(asgWho(p.students.length, p.due))}</p><div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="assign" data-turn="${esc(x.id)}">${ic('✓', 16)} ${esc(L('asg.assign'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="assignNo" data-turn="${esc(x.id)}">${esc(L('asg.notNow'))}</button></div></div>`;
   }
   const assignDoneHtml = x => `<p>${ic('🎒', 18)} <b dir="auto">${esc(t('js.companion.asg.done', { title: x.change.title, class: x.change.className }))}</b></p><p class="oc-hsub">${esc(asgWho(x.change.students, x.change.due))}</p>`;
+  // Oomba does it (services/companion-actions/): any other teacher action is one card, dressed by the server in the
+  // teacher's language with the names (for this page only): what will happen, a one-line warning for children's
+  // accounts, deletes, students' screens or posts outside the site, and Do it / Not now. Add students has a box for the
+  // names (sent with the tap only, never to Oomba's AI); a join request a box for the name on the class list.
+  // An action's icon (add one here with a new action; ✨ otherwise).
+  const ACT_ICON = { addStudents: '🧒', changeDue: '📅', unassign: '➖', renameClass: '✏️' };
+  function actionHtml(x, p) {
+    if (!p) return '';
+    if (p.state !== 'open') {
+      const done = p.state === 'done';
+      return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(done ? '✓' : p.state === 'failed' ? '⚠️' : '➖', 16)} ${esc(L(`act.${done ? 'done' : p.state === 'failed' ? 'failed' : 'declined'}`))}</p>${p.why ? `<p class="oc-hsub">${esc(p.why)}</p>` : ''}</div>`;
+    }
+    const id = esc(x.id);
+    const box = p.input === 'list' ? `<label class="oc-actin"><span>${esc(L('act.namesLabel'))}</span><textarea class="input" id="oc-act-${id}" rows="5" maxlength="2000" autocomplete="off" spellcheck="false" dir="auto">${esc(actDrafts.get(x.id) || '')}</textarea><small>${esc(L('act.namesHint'))}</small></label>`
+      : p.input === 'one' ? `<label class="oc-actin"><span>${esc(L('act.nameLabel'))}</span><input class="input" id="oc-act-${id}" maxlength="60" autocomplete="off" dir="auto" value="${esc(actDrafts.has(x.id) ? actDrafts.get(x.id) : p.value || '')}"></label>` : '';
+    return `<div class="oc-change oc-cls oc-act"><p>${ic(ACT_ICON[p.action] || '✨', 20)} <b dir="auto">${esc(p.title)}</b></p>${(p.lines || []).map(l => `<p class="oc-hsub" dir="auto">${esc(l)}</p>`).join('')}${p.warn ? `<p class="oc-hsub oc-actwarn">${ic('⚠️', 14)} ${esc(p.warn)}</p>` : ''}${p.undoable ? '' : `<p class="oc-hsub">${esc(L('act.noUndo'))}</p>`}${box}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="actionDo" data-turn="${id}">${ic('✓', 16)} ${esc(L('act.do'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="actionNo" data-turn="${id}">${esc(L('act.notNow'))}</button></div></div>`;
+  }
+  const actionDoneHtml = x => { const c = x.change, [first, ...rest] = c.lines || []; return `<p>${ic(ACT_ICON[c.id] || '✓', 18)} <b dir="auto">${esc(first || L('act.done'))}</b></p>${rest.map(l => `<p class="oc-hsub" dir="auto">${esc(l)}</p>`).join('')}${(c.links || []).length ? `<div class="oc-acts">${c.links.map(k => `<a class="btn btn-sm${k.primary ? ' btn-primary' : ''} oc-open" href="${esc(k.href)}">${esc(k.label)}</a>`).join('')}</div>` : ''}`; };
   // Beside its Undo: Open its dashboard (Go there, so the panel opens there too; a plain link once used).
   const openDashHtml = x => {
     const n = x.note && x.note.nav;
@@ -623,6 +645,12 @@ function start() {
       if (!v || !v.trim()) return null;
       btn.dataset.v = v.trim().slice(0, 60);
     }
+    // An action card's box (Add students: the names; a join request: the name for the class list) goes with the tap only.
+    if (act === 'actionDo' && btn) {
+      const box = document.getElementById(`oc-act-${turn.id}`), p = turn.note && turn.note.action;
+      if (box && p && p.input === 'list' && !box.value.trim()) { box.focus(); chat.showErr(L('act.namesFirst')); return null; }
+      btn.dataset.v = box ? box.value.slice(0, 2000) : '';
+    }
     // Copying a plan or a week to another class: the preview first (what goes where there, groups it doesn't have).
     if ((act === 'planCopy' || act === 'planWeekCopy') && btn && btn.dataset.v) {
       try {
@@ -639,7 +667,7 @@ function start() {
     }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || act === 'actionDo' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
       if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {

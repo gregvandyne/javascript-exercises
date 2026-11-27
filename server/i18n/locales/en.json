@@ -5077,7 +5077,9 @@
         "report": "Read the class's progress",
         "reportNo": "Couldn't read that class's progress",
         "pointEmpty": "Checked the class: no students yet",
-        "askBack": "Asked what you need"
+        "askBack": "Asked what you need",
+        "action": "Got it ready for you to check",
+        "actionNo": "Couldn't do that"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5415,6 +5417,61 @@
         "pastEnd": "{v} is past the end of a {from} to {to} line, so the point can't go there.",
         "other": "That figure can't be drawn: {what}.",
         "notAsked": "Not put on: {what}."
+      },
+      "act": {
+        "whichClass": "Which class is it for?",
+        "do": "Do it",
+        "notNow": "Not now",
+        "done": "Done",
+        "declined": "Not done",
+        "failed": "Not done: nothing was changed",
+        "noUndo": "This can't be undone from the chat.",
+        "namesLabel": "Students' names, one on each line",
+        "namesHint": "The names stay here: they are not sent to Oomba's AI.",
+        "namesFirst": "Type the students' names first.",
+        "nameLabel": "Name on the class list",
+        "openClass": "Open the class",
+        "why": {
+          "needText": "Type the students' names first.",
+          "tooMany": "At most 40 names at a time.",
+          "sameNames": "{count, plural, one {# name already has} other {# names already have}} an account at this school: add them with Add existing students on the class page.",
+          "other": "It could not be done, so nothing was changed."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "This makes accounts for children."
+          },
+          "add": {
+            "ask": "Add students to {class}?",
+            "where": "Type their names below. Each student gets a username and a password on a login card.",
+            "done": "Added {count, plural, one {# student} other {# students}} to {class}.",
+            "cardsOnce": "Print the login cards now: the passwords are only on them.",
+            "printCards": "Print login cards"
+          },
+          "rename": {
+            "ask": "Change {class}?",
+            "done": "Changed {class}.",
+            "name": "Name: {name}",
+            "grade": "Grade: {grade}",
+            "subject": "Subject: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "This takes it off the class. Students' work is kept."
+          },
+          "due": {
+            "ask": "Change the dates of “{title}” in {class}?",
+            "done": "Changed the dates of “{title}”.",
+            "none": "No due day",
+            "opens": "Opens {day}",
+            "opensNow": "Open now"
+          },
+          "unassign": {
+            "ask": "Take “{title}” off {class}?",
+            "done": "Took “{title}” off {class}."
+          }
+        }
       }
     },
     "companion-greet": {

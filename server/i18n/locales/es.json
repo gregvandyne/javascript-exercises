@@ -4668,7 +4668,9 @@
         "report": "Leyó el progreso de la clase",
         "reportNo": "No pudo leer el progreso de esa clase",
         "pointEmpty": "Revisó la clase: todavía no hay estudiantes",
-        "askBack": "Preguntó qué necesitas"
+        "askBack": "Preguntó qué necesitas",
+        "action": "Lo dejé listo para que lo revises",
+        "actionNo": "No se pudo hacer"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4956,6 +4958,61 @@
         "pastEnd": "{v} queda más allá del final de una recta de {from} a {to}, así que el punto no puede ir ahí.",
         "other": "Esa figura no se puede dibujar: {what}.",
         "notAsked": "No se añadió: {what}."
+      },
+      "act": {
+        "whichClass": "¿Para qué clase?",
+        "do": "Hacerlo",
+        "notNow": "Ahora no",
+        "done": "Hecho",
+        "declined": "No se hizo",
+        "failed": "No se hizo: no se cambió nada",
+        "noUndo": "Esto no se puede deshacer desde el chat.",
+        "namesLabel": "Nombres de los estudiantes, uno por línea",
+        "namesHint": "Los nombres se quedan aquí: no se envían a la IA de Oomba.",
+        "namesFirst": "Primero escribe los nombres.",
+        "nameLabel": "Nombre en la lista de la clase",
+        "openClass": "Abrir la clase",
+        "why": {
+          "needText": "Primero escribe los nombres.",
+          "tooMany": "Como máximo 40 nombres a la vez.",
+          "sameNames": "{count, plural, one {# nombre ya tiene} other {# nombres ya tienen}} una cuenta en esta escuela: agrégalos con Añadir estudiantes existentes en la página de la clase.",
+          "other": "No se pudo hacer, así que no se cambió nada."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Esto crea cuentas para niños."
+          },
+          "add": {
+            "ask": "¿Añadir estudiantes a {class}?",
+            "where": "Escribe sus nombres abajo. Cada estudiante recibe un usuario y una contraseña en una tarjeta de acceso.",
+            "done": "Se {count, plural, one {añadió # estudiante} other {añadieron # estudiantes}} a {class}.",
+            "cardsOnce": "Imprime ahora las tarjetas de acceso: las contraseñas solo aparecen en ellas.",
+            "printCards": "Imprimir tarjetas de acceso"
+          },
+          "rename": {
+            "ask": "¿Cambiar {class}?",
+            "done": "Se cambió {class}.",
+            "name": "Nombre: {name}",
+            "grade": "Grado: {grade}",
+            "subject": "Materia: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Esto lo quita de la clase. Se conserva el trabajo de los estudiantes."
+          },
+          "due": {
+            "ask": "¿Cambiar las fechas de «{title}» en {class}?",
+            "done": "Se cambiaron las fechas de «{title}».",
+            "none": "Sin fecha de entrega",
+            "opens": "Se abre el {day}",
+            "opensNow": "Abierto ahora"
+          },
+          "unassign": {
+            "ask": "¿Quitar «{title}» de {class}?",
+            "done": "Se quitó «{title}» de {class}."
+          }
+        }
       }
     },
     "companion-greet": {

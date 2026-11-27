@@ -16573,3 +16573,62 @@ What the round-2 audit listed and #686 had not covered:
 - **Voice**: when live words and the upload both fail, the clip stays in the page (never stored on the server) with
   Try again and Dismiss.
 - **How-to "assign"** now tells the AI it can assign itself (find, then `assign`), steps only if the teacher wants to.
+
+## Oomba does it: one confirm card for any teacher action (27 Nov 2026)
+
+The owner: "ensure EVERYTHING can be done from the Oomba chat". Until now each thing Oomba could change had its own tool,
+card and tap (assign, createClass, givePoint...). From here on every other teacher action goes through ONE mechanism
+(`server/services/companion-actions/`), so a new action is one entry, not a new tool, card and act.
+
+- **One tool, `doAction { action, params }`** (services/companion.js). It never changes anything. The action's `plan()`
+  resolves everything (the class from `classRef`, the page's class or the teacher's only class; several and none named:
+  a which-class card; students only from `[student N]` placeholders), checks the same permissions as the page's own
+  route, and the change is run in a dry run (verify-change.js `dryRun`) before a card is shown. A refusal is plain
+  words for the AI ending "Nothing was changed." The AI is told: "Nothing is done yet: the teacher taps Do it on the
+  card. Say so in one short sentence, never that it is done." One action per answer.
+- **The card rule**: the card (`note.action`) says what will happen in the teacher's language, with a one-line warning
+  when the action makes accounts for children, deletes or takes something away, reaches students' screens or posts
+  outside the site (risk `child`, `delete`, `students`, `external`), and Do it / Not now. Only Do it (act `actionDo`)
+  changes anything: checked again in a dry run with what the teacher typed on the card (a failure leaves the card
+  "Not done" with the reason and changes nothing), then the SAME service as the page's route, in the engine's
+  transaction, read back (verify), with Undo where the action has one ("This can't be undone from the chat" otherwise).
+- **The privacy rule**: students' names never go to the AI. New names (Add students) are typed in a box on the card and
+  sent with the tap only (the act route takes up to 2000 characters for `actionDo`), never in a message, never kept in
+  the chat. Existing students are only placeholders. What a card or change shows (names, a join code, a login cards
+  link) is built by the action's `view()`/`doneView()` for the teacher's own page only (dress), never in a turn's words
+  or a tool result. New passwords are never in the chat: they go on the one-time login cards page (routes/schools.js
+  keepCards, reached through `S.loginCards.keep`), and the change links to it.
+- **The first actions** (the reference examples): `addStudents` (risk child; S.createSchoolAccount + S.addToClass, at
+  most 40 names, names the school already has are refused, login cards link; no Undo), `renameClass` (S.updateClass:
+  name, grade, subject; Undo), `changeDue` (L.updateAssignment: due and open day, or "none"; Undo), `unassign` (risk
+  delete; L.unassign, students' work kept; Undo is L.assign of the same lesson, which brings it back with its work).
+  How-to answers for add-students and due-dates now tell the AI it can do it with doAction.
+
+### How to add an action
+
+1. **File**: put it in the area's file, `server/services/companion-actions/<area>.js` (classes, assignments, live,
+   dashboard, classroom...; a new area is a new file that `default`-exports an array, plus one `register(...)` line in
+   `index.js`). An area file imports only `./shared.js` (never `index.js`) and the services it calls.
+2. **Shape** (checked by `register`):
+   `{ id, area, risk: 'normal'|'child'|'delete'|'students'|'external', warn?, input?: 'list'|'one', undoable, label, params,
+   dry?, check?, sample?, plan, view, run, doneView, undo? }`
+   - `label`: one line for the AI (the doAction description lists `- id (params): label`); `params`: JSON-schema
+     properties (use `CLASS_REF`, `STUDENT`, `ASSIGNMENT`, `P()` from shared.js).
+   - `plan(u, ctx, params) -> { data, ai } | { ask } | { error }`: resolve with `whichClass`, `studentIn`,
+     `someStudents`, `assignmentIn`, `dayParam`; refuse with `no('Plain words.')`. `data` is kept on the card (ids, never
+     a name or a secret); `ai` is what the AI is told (use `clean()` on any text it reads).
+   - `run(u, data, value, { dry }) -> { ok: true, landed, done, undo? } | { ok: false, code, count? }`: call the route's
+     own service, then read the result back for `landed`. `done` is what the change card shows; `undo` is what `undo()`
+     gets. Anything outside the database (login cards, a live room in memory) only when `!dry`; an action whose state
+     is not in the database sets `dry: false` and gives `check(u, data) -> why | ''` instead of a dry run.
+   - `view(u, data, t) -> { title, lines, value? }` and `doneView(u, done, t) -> { lines, links: [{ href, label,
+     primary? }] }`: the teacher's own page only (names may be shown here). `undo(u, undoData) -> { ok: true, skipped }
+     | { ok: false, code }`: put back only what is still as Oomba left it.
+3. **Strings**: under your area's own block, `js.companion.act.<area>.*` (`.warn.<warn>` for the warning line), in every
+   locale file with real translations, no em dashes; `npm run -s i18n:check` and `npm run -s check-keys`. Shared words
+   (Do it, Not now, the why lines) are in `js.companion.act.*`; a new tap-time reason goes in `WHY` (index.js) and
+   `js.companion.act.why.*`. Add the action's icon to `ACT_ICON` in public/js/companion.js.
+4. **Test**: `tests/unit/companion-actions-<area>.test.js` with the harness `tests/unit/_companion-actions-harness.js`
+   (`boot()`, `world()`, `ask()`, `doIt()`, `undo()`, `refused()`, `sentToAi()`, `storedTurns()`): the card comes and
+   nothing changes before the tap; the tap does it (assert the database); verify ok; Undo restores; the refusals end
+   "Nothing was changed."; nothing private reaches the AI or the stored chat.

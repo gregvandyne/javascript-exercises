@@ -4669,7 +4669,9 @@
         "report": "Den Fortschritt der Klasse gelesen",
         "reportNo": "Den Fortschritt dieser Klasse nicht lesen können",
         "pointEmpty": "Klasse geprüft: noch keine Schülerinnen und Schüler",
-        "askBack": "Gefragt, was du brauchst"
+        "askBack": "Gefragt, was du brauchst",
+        "action": "Zum Prüfen vorbereitet",
+        "actionNo": "Das ging nicht"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4957,6 +4959,61 @@
         "pastEnd": "{v} liegt hinter dem Ende eines Zahlenstrahls von {from} bis {to}, also kann der Punkt dort nicht hin.",
         "other": "Diese Figur lässt sich nicht zeichnen: {what}.",
         "notAsked": "Nicht hinzugefügt: {what}."
+      },
+      "act": {
+        "whichClass": "Für welche Klasse?",
+        "do": "Ausführen",
+        "notNow": "Jetzt nicht",
+        "done": "Erledigt",
+        "declined": "Nicht ausgeführt",
+        "failed": "Nicht ausgeführt: nichts wurde geändert",
+        "noUndo": "Das lässt sich im Chat nicht rückgängig machen.",
+        "namesLabel": "Namen der Schülerinnen und Schüler, einer pro Zeile",
+        "namesHint": "Die Namen bleiben hier: Sie werden nicht an Oombas KI gesendet.",
+        "namesFirst": "Gib zuerst die Namen ein.",
+        "nameLabel": "Name auf der Klassenliste",
+        "openClass": "Klasse öffnen",
+        "why": {
+          "needText": "Gib zuerst die Namen ein.",
+          "tooMany": "Höchstens 40 Namen auf einmal.",
+          "sameNames": "{count, plural, one {# Name hat} other {# Namen haben}} schon ein Konto an dieser Schule: Füge sie auf der Klassenseite mit Vorhandene Schüler hinzufügen hinzu.",
+          "other": "Das ging nicht, deshalb wurde nichts geändert."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Damit werden Konten für Kinder angelegt."
+          },
+          "add": {
+            "ask": "Schülerinnen und Schüler zu {class} hinzufügen?",
+            "where": "Gib unten ihre Namen ein. Jedes Kind bekommt einen Benutzernamen und ein Passwort auf einer Anmeldekarte.",
+            "done": "{count, plural, one {# Kind} other {# Kinder}} zu {class} hinzugefügt.",
+            "cardsOnce": "Drucke die Anmeldekarten jetzt: Die Passwörter stehen nur dort.",
+            "printCards": "Anmeldekarten drucken"
+          },
+          "rename": {
+            "ask": "{class} ändern?",
+            "done": "{class} geändert.",
+            "name": "Name: {name}",
+            "grade": "Klassenstufe: {grade}",
+            "subject": "Fach: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Damit wird es aus der Klasse genommen. Die Arbeiten der Kinder bleiben erhalten."
+          },
+          "due": {
+            "ask": "Die Daten von „{title}“ in {class} ändern?",
+            "done": "Die Daten von „{title}“ geändert.",
+            "none": "Kein Abgabetag",
+            "opens": "Offen ab {day}",
+            "opensNow": "Jetzt offen"
+          },
+          "unassign": {
+            "ask": "„{title}“ aus {class} nehmen?",
+            "done": "„{title}“ aus {class} genommen."
+          }
+        }
       }
     },
     "companion-greet": {

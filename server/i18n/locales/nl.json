@@ -4669,7 +4669,9 @@
         "report": "De voortgang van de klas gelezen",
         "reportNo": "De voortgang van die klas kon niet gelezen worden",
         "pointEmpty": "De klas gecontroleerd: nog geen leerlingen",
-        "askBack": "Gevraagd wat je nodig hebt"
+        "askBack": "Gevraagd wat je nodig hebt",
+        "action": "Klaargezet om te controleren",
+        "actionNo": "Dat lukte niet"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4957,6 +4959,61 @@
         "pastEnd": "{v} ligt voorbij het einde van een lijn van {from} tot {to}, dus het punt kan daar niet staan.",
         "other": "Die figuur kan niet getekend worden: {what}.",
         "notAsked": "Niet toegevoegd: {what}."
+      },
+      "act": {
+        "whichClass": "Voor welke klas?",
+        "do": "Doen",
+        "notNow": "Nu niet",
+        "done": "Klaar",
+        "declined": "Niet gedaan",
+        "failed": "Niet gedaan: er is niets veranderd",
+        "noUndo": "Dit kan niet ongedaan worden gemaakt vanuit de chat.",
+        "namesLabel": "Namen van de leerlingen, één per regel",
+        "namesHint": "De namen blijven hier: ze gaan niet naar de AI van Oomba.",
+        "namesFirst": "Typ eerst de namen.",
+        "nameLabel": "Naam op de klassenlijst",
+        "openClass": "Klas openen",
+        "why": {
+          "needText": "Typ eerst de namen.",
+          "tooMany": "Hoogstens 40 namen tegelijk.",
+          "sameNames": "{count, plural, one {# naam heeft} other {# namen hebben}} al een account op deze school: voeg ze toe met Bestaande leerlingen toevoegen op de klaspagina.",
+          "other": "Dat lukte niet, dus er is niets veranderd."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Dit maakt accounts voor kinderen."
+          },
+          "add": {
+            "ask": "Leerlingen toevoegen aan {class}?",
+            "where": "Typ hieronder hun namen. Elke leerling krijgt een gebruikersnaam en een wachtwoord op een inlogkaart.",
+            "done": "{count, plural, one {# leerling} other {# leerlingen}} toegevoegd aan {class}.",
+            "cardsOnce": "Print de inlogkaarten nu: de wachtwoorden staan alleen daarop.",
+            "printCards": "Inlogkaarten printen"
+          },
+          "rename": {
+            "ask": "{class} wijzigen?",
+            "done": "{class} gewijzigd.",
+            "name": "Naam: {name}",
+            "grade": "Groep: {grade}",
+            "subject": "Vak: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Dit haalt het uit de klas. Het werk van de leerlingen blijft bewaard."
+          },
+          "due": {
+            "ask": "De datums van ‘{title}’ in {class} wijzigen?",
+            "done": "De datums van ‘{title}’ gewijzigd.",
+            "none": "Geen inleverdatum",
+            "opens": "Open vanaf {day}",
+            "opensNow": "Nu open"
+          },
+          "unassign": {
+            "ask": "‘{title}’ uit {class} halen?",
+            "done": "‘{title}’ uit {class} gehaald."
+          }
+        }
       }
     },
     "companion-greet": {

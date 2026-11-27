@@ -4668,7 +4668,9 @@
         "report": "A lu les progrès de la classe",
         "reportNo": "N'a pas pu lire les progrès de cette classe",
         "pointEmpty": "A vérifié la classe : pas encore d'élèves",
-        "askBack": "A demandé ce qu'il te faut"
+        "askBack": "A demandé ce qu'il te faut",
+        "action": "Préparé pour que tu vérifies",
+        "actionNo": "Impossible de le faire"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4956,6 +4958,61 @@
         "pastEnd": "{v} est au-delà de la fin d'une droite de {from} à {to}, donc le point ne peut pas y aller.",
         "other": "Cette figure ne peut pas être dessinée : {what}.",
         "notAsked": "Pas ajoutée : {what}."
+      },
+      "act": {
+        "whichClass": "Pour quelle classe ?",
+        "do": "Le faire",
+        "notNow": "Pas maintenant",
+        "done": "Fait",
+        "declined": "Pas fait",
+        "failed": "Pas fait : rien n’a été changé",
+        "noUndo": "Cela ne peut pas être annulé depuis le chat.",
+        "namesLabel": "Noms des élèves, un par ligne",
+        "namesHint": "Les noms restent ici : ils ne sont pas envoyés à l’IA d’Oomba.",
+        "namesFirst": "Écris d’abord les noms des élèves.",
+        "nameLabel": "Nom sur la liste de la classe",
+        "openClass": "Ouvrir la classe",
+        "why": {
+          "needText": "Écris d’abord les noms des élèves.",
+          "tooMany": "40 noms au plus à la fois.",
+          "sameNames": "{count, plural, one {# nom a déjà} other {# noms ont déjà}} un compte dans cette école : ajoute-les avec Ajouter des élèves existants sur la page de la classe.",
+          "other": "Impossible de le faire, donc rien n’a été changé."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Cela crée des comptes pour des enfants."
+          },
+          "add": {
+            "ask": "Ajouter des élèves à {class} ?",
+            "where": "Écris leurs noms ci-dessous. Chaque élève reçoit un identifiant et un mot de passe sur une carte de connexion.",
+            "done": "{count, plural, one {# élève ajouté} other {# élèves ajoutés}} à {class}.",
+            "cardsOnce": "Imprime les cartes de connexion maintenant : les mots de passe ne sont que sur elles.",
+            "printCards": "Imprimer les cartes de connexion"
+          },
+          "rename": {
+            "ask": "Modifier {class} ?",
+            "done": "{class} modifiée.",
+            "name": "Nom : {name}",
+            "grade": "Niveau : {grade}",
+            "subject": "Matière : {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Cela le retire de la classe. Le travail des élèves est conservé."
+          },
+          "due": {
+            "ask": "Changer les dates de « {title} » dans {class} ?",
+            "done": "Dates de « {title} » changées.",
+            "none": "Pas de date limite",
+            "opens": "Ouvre le {day}",
+            "opensNow": "Ouvert maintenant"
+          },
+          "unassign": {
+            "ask": "Retirer « {title} » de {class} ?",
+            "done": "« {title} » retiré de {class}."
+          }
+        }
       }
     },
     "companion-greet": {

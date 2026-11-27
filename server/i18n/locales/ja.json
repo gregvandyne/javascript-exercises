@@ -4668,7 +4668,9 @@
         "report": "クラスの進み具合を読みました",
         "reportNo": "そのクラスの進み具合は読めませんでした",
         "pointEmpty": "クラスを確認しました:まだ生徒がいません",
-        "askBack": "何が必要かたずねました"
+        "askBack": "何が必要かたずねました",
+        "action": "確認用に準備しました",
+        "actionNo": "できませんでした"
       },
       "stepsSum": "{n}ステップ · {s}秒",
       "prog": {
@@ -4956,6 +4958,61 @@
         "pastEnd": "{v} は {from} から {to} の数直線の端より先なので、そこに点を置けません。",
         "other": "その図は描けません:{what}。",
         "notAsked": "追加しませんでした:{what}。"
+      },
+      "act": {
+        "whichClass": "どのクラスですか？",
+        "do": "実行する",
+        "notNow": "今はしない",
+        "done": "完了",
+        "declined": "実行しませんでした",
+        "failed": "実行できませんでした：何も変わっていません",
+        "noUndo": "これはチャットから元に戻せません。",
+        "namesLabel": "児童の名前（1行に1人）",
+        "namesHint": "名前はここだけに残ります。OombaのAIには送られません。",
+        "namesFirst": "先に名前を入力してください。",
+        "nameLabel": "クラス名簿の名前",
+        "openClass": "クラスを開く",
+        "why": {
+          "needText": "先に名前を入力してください。",
+          "tooMany": "一度に入力できるのは40人までです。",
+          "sameNames": "{count}人の名前はこの学校にすでにアカウントがあります。クラスページの「既存の児童を追加」から追加してください。",
+          "other": "できなかったため、何も変わっていません。"
+        },
+        "classes": {
+          "warn": {
+            "accounts": "子ども用のアカウントを作成します。"
+          },
+          "add": {
+            "ask": "{class}に児童を追加しますか？",
+            "where": "下に名前を入力してください。児童ごとにユーザー名とパスワードがログインカードに載ります。",
+            "done": "{class}に{count}人の児童を追加しました。",
+            "cardsOnce": "今すぐログインカードを印刷してください。パスワードはカードにしか載っていません。",
+            "printCards": "ログインカードを印刷"
+          },
+          "rename": {
+            "ask": "{class}を変更しますか？",
+            "done": "{class}を変更しました。",
+            "name": "名前：{name}",
+            "grade": "学年：{grade}",
+            "subject": "教科：{subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "クラスから外します。児童の取り組みは残ります。"
+          },
+          "due": {
+            "ask": "{class}の「{title}」の日付を変更しますか？",
+            "done": "「{title}」の日付を変更しました。",
+            "none": "提出日なし",
+            "opens": "{day}に公開",
+            "opensNow": "公開中"
+          },
+          "unassign": {
+            "ask": "{class}から「{title}」を外しますか？",
+            "done": "{class}から「{title}」を外しました。"
+          }
+        }
       }
     },
     "companion-greet": {

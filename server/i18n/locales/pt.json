@@ -4669,7 +4669,9 @@
         "report": "Leu o progresso da turma",
         "reportNo": "Não conseguiu ler o progresso dessa turma",
         "pointEmpty": "Conferiu a turma: ainda sem alunos",
-        "askBack": "Perguntou o que você precisa"
+        "askBack": "Perguntou o que você precisa",
+        "action": "Deixei pronto para você conferir",
+        "actionNo": "Não deu para fazer"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4957,6 +4959,61 @@
         "pastEnd": "{v} fica além do fim de uma reta de {from} a {to}, então o ponto não pode ficar ali.",
         "other": "Essa figura não pode ser desenhada: {what}.",
         "notAsked": "Não adicionada: {what}."
+      },
+      "act": {
+        "whichClass": "Para qual turma?",
+        "do": "Fazer",
+        "notNow": "Agora não",
+        "done": "Feito",
+        "declined": "Não feito",
+        "failed": "Não feito: nada foi alterado",
+        "noUndo": "Isso não pode ser desfeito pelo chat.",
+        "namesLabel": "Nomes dos alunos, um por linha",
+        "namesHint": "Os nomes ficam aqui: não são enviados à IA do Oomba.",
+        "namesFirst": "Digite os nomes primeiro.",
+        "nameLabel": "Nome na lista da turma",
+        "openClass": "Abrir a turma",
+        "why": {
+          "needText": "Digite os nomes primeiro.",
+          "tooMany": "No máximo 40 nomes de cada vez.",
+          "sameNames": "{count, plural, one {# nome já tem} other {# nomes já têm}} conta nesta escola: adicione com Adicionar alunos existentes na página da turma.",
+          "other": "Não deu para fazer, então nada foi alterado."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Isso cria contas para crianças."
+          },
+          "add": {
+            "ask": "Adicionar alunos a {class}?",
+            "where": "Digite os nomes abaixo. Cada aluno recebe um nome de usuário e uma senha num cartão de acesso.",
+            "done": "{count, plural, one {# aluno adicionado} other {# alunos adicionados}} a {class}.",
+            "cardsOnce": "Imprima os cartões de acesso agora: as senhas só aparecem neles.",
+            "printCards": "Imprimir cartões de acesso"
+          },
+          "rename": {
+            "ask": "Alterar {class}?",
+            "done": "{class} alterada.",
+            "name": "Nome: {name}",
+            "grade": "Ano: {grade}",
+            "subject": "Matéria: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Isso tira da turma. O trabalho dos alunos é mantido."
+          },
+          "due": {
+            "ask": "Mudar as datas de “{title}” em {class}?",
+            "done": "Datas de “{title}” alteradas.",
+            "none": "Sem data de entrega",
+            "opens": "Abre em {day}",
+            "opensNow": "Aberto agora"
+          },
+          "unassign": {
+            "ask": "Tirar “{title}” de {class}?",
+            "done": "“{title}” saiu de {class}."
+          }
+        }
       }
     },
     "companion-greet": {

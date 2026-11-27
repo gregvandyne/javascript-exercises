@@ -4668,7 +4668,9 @@
         "report": "讀取了班級進度",
         "reportNo": "無法讀取這個班級的進度",
         "pointEmpty": "檢查了班級:還沒有學生",
-        "askBack": "詢問了你需要什麼"
+        "askBack": "詢問了你需要什麼",
+        "action": "已準備好讓你確認",
+        "actionNo": "無法完成"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4956,6 +4958,61 @@
         "pastEnd": "{v} 超出了從 {from} 到 {to} 的數線終點,所以那個點放不上去。",
         "other": "這個圖形無法畫出:{what}。",
         "notAsked": "沒有加入:{what}。"
+      },
+      "act": {
+        "whichClass": "要給哪個班級？",
+        "do": "執行",
+        "notNow": "先不要",
+        "done": "完成",
+        "declined": "未執行",
+        "failed": "未執行：沒有任何變更",
+        "noUndo": "這無法在聊天中復原。",
+        "namesLabel": "學生姓名，每行一個",
+        "namesHint": "姓名只留在這裡：不會傳給 Oomba 的 AI。",
+        "namesFirst": "請先輸入學生姓名。",
+        "nameLabel": "班級名單上的姓名",
+        "openClass": "開啟班級",
+        "why": {
+          "needText": "請先輸入學生姓名。",
+          "tooMany": "一次最多 40 個姓名。",
+          "sameNames": "有 {count} 個姓名在這所學校已有帳號：請在班級頁面用「加入現有學生」加入。",
+          "other": "無法完成，所以沒有任何變更。"
+        },
+        "classes": {
+          "warn": {
+            "accounts": "這會為孩子建立帳號。"
+          },
+          "add": {
+            "ask": "要把學生加入 {class} 嗎？",
+            "where": "在下方輸入他們的姓名。每位學生會在登入卡上拿到使用者名稱和密碼。",
+            "done": "已把 {count} 位學生加入 {class}。",
+            "cardsOnce": "請現在列印登入卡：密碼只印在卡上。",
+            "printCards": "列印登入卡"
+          },
+          "rename": {
+            "ask": "要變更 {class} 嗎？",
+            "done": "已變更 {class}。",
+            "name": "名稱：{name}",
+            "grade": "年級：{grade}",
+            "subject": "科目：{subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "這會把它從班級移除。學生的作業會保留。"
+          },
+          "due": {
+            "ask": "要變更 {class} 中「{title}」的日期嗎？",
+            "done": "已變更「{title}」的日期。",
+            "none": "沒有繳交日",
+            "opens": "{day} 開放",
+            "opensNow": "現在開放"
+          },
+          "unassign": {
+            "ask": "要把「{title}」從 {class} 移除嗎？",
+            "done": "已把「{title}」從 {class} 移除。"
+          }
+        }
       }
     },
     "companion-greet": {

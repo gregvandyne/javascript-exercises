@@ -4669,7 +4669,9 @@
         "report": "Ha letto i progressi della classe",
         "reportNo": "Non è riuscito a leggere i progressi di quella classe",
         "pointEmpty": "Ha controllato la classe: ancora nessuno studente",
-        "askBack": "Ha chiesto che cosa ti serve"
+        "askBack": "Ha chiesto che cosa ti serve",
+        "action": "Pronto da controllare",
+        "actionNo": "Non è stato possibile"
       },
       "stepsSum": "{n, plural, one {# passaggio} other {# passaggi}} · {s} s",
       "prog": {
@@ -4957,6 +4959,61 @@
         "pastEnd": "{v} è oltre la fine di una linea da {from} a {to}, quindi il punto non può andare lì.",
         "other": "Quella figura non si può disegnare: {what}.",
         "notAsked": "Non aggiunta: {what}."
+      },
+      "act": {
+        "whichClass": "Per quale classe?",
+        "do": "Fallo",
+        "notNow": "Non ora",
+        "done": "Fatto",
+        "declined": "Non fatto",
+        "failed": "Non fatto: non è cambiato niente",
+        "noUndo": "Non si può annullare dalla chat.",
+        "namesLabel": "Nomi degli studenti, uno per riga",
+        "namesHint": "I nomi restano qui: non vengono inviati all’IA di Oomba.",
+        "namesFirst": "Scrivi prima i nomi.",
+        "nameLabel": "Nome nell’elenco della classe",
+        "openClass": "Apri la classe",
+        "why": {
+          "needText": "Scrivi prima i nomi.",
+          "tooMany": "Al massimo 40 nomi alla volta.",
+          "sameNames": "{count, plural, one {# nome ha} other {# nomi hanno}} già un account in questa scuola: aggiungili con Aggiungi studenti esistenti nella pagina della classe.",
+          "other": "Non è stato possibile, quindi non è cambiato niente."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Questo crea account per bambini."
+          },
+          "add": {
+            "ask": "Aggiungere studenti a {class}?",
+            "where": "Scrivi qui sotto i loro nomi. Ogni studente riceve un nome utente e una password su una scheda di accesso.",
+            "done": "{count, plural, one {Aggiunto # studente} other {Aggiunti # studenti}} a {class}.",
+            "cardsOnce": "Stampa ora le schede di accesso: le password sono solo lì.",
+            "printCards": "Stampa le schede di accesso"
+          },
+          "rename": {
+            "ask": "Modificare {class}?",
+            "done": "{class} modificata.",
+            "name": "Nome: {name}",
+            "grade": "Classe: {grade}",
+            "subject": "Materia: {subject}"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Questo lo toglie dalla classe. Il lavoro degli studenti resta."
+          },
+          "due": {
+            "ask": "Cambiare le date di «{title}» in {class}?",
+            "done": "Date di «{title}» cambiate.",
+            "none": "Nessuna scadenza",
+            "opens": "Si apre il {day}",
+            "opensNow": "Aperto ora"
+          },
+          "unassign": {
+            "ask": "Togliere «{title}» da {class}?",
+            "done": "«{title}» tolto da {class}."
+          }
+        }
       }
     },
     "companion-greet": {
