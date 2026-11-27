@@ -4980,7 +4980,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "這會為孩子建立帳號。"
+            "accounts": "這會為孩子建立帳號。",
+            "password": "舊密碼會立刻失效。",
+            "archive": "這會封存班級。之後可以還原。",
+            "remove": "這會把學生移出班級。帳號和作業會保留。",
+            "move": "學生會離開這個班級。帳號和作業會保留。"
           },
           "add": {
             "ask": "要把學生加入 {class} 嗎？",
@@ -4995,6 +4999,46 @@
             "name": "名稱：{name}",
             "grade": "年級：{grade}",
             "subject": "科目：{subject}"
+          },
+          "code": {
+            "ask": "要為 {class} 建立新的加入代碼嗎？",
+            "old": "舊代碼會失效。",
+            "done": "{class} 的新加入代碼是 {code}。"
+          },
+          "archive": {
+            "ask": "要封存 {class} 嗎？",
+            "done": "已封存 {class}。"
+          },
+          "restore": {
+            "ask": "要還原 {class} 嗎？",
+            "done": "已還原 {class}。"
+          },
+          "pw": {
+            "ask": "要為 {name} 建立新密碼嗎？",
+            "done": "已為 {name} 建立新密碼。",
+            "cardOnce": "請現在列印登入卡：密碼只在卡片上。",
+            "printCard": "列印登入卡"
+          },
+          "remove": {
+            "ask": "要把 {name} 移出 {class} 嗎？",
+            "done": "已把 {name} 移出 {class}。"
+          },
+          "move": {
+            "ask": "要把 {name} 從 {from} 移到 {to} 嗎？",
+            "done": "已把 {name} 移到 {to}。"
+          },
+          "coteach": {
+            "ask": "要把 {name} 加為 {class} 的老師嗎？",
+            "done": "{name} 現在是 {class} 的老師。"
+          },
+          "join": {
+            "ask": "要讓 {name} 加入 {class} 嗎？",
+            "nameHint": "請在下方確認班級名單上的姓名。",
+            "done": "{name} 已加入 {class}。"
+          },
+          "decline": {
+            "ask": "要拒絕 {name} 加入 {class} 的申請嗎？",
+            "done": "已拒絕加入 {class} 的申請。"
           }
         },
         "assignments": {

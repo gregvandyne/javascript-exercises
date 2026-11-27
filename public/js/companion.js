@@ -481,7 +481,7 @@ function start() {
   // accounts, deletes, students' screens or posts outside the site, and Do it / Not now. Add students has a box for the
   // names (sent with the tap only, never to Oomba's AI); a join request a box for the name on the class list.
   // An action's icon (add one here with a new action; ✨ otherwise).
-  const ACT_ICON = { addStudents: '🧒', changeDue: '📅', unassign: '➖', renameClass: '✏️' };
+  const ACT_ICON = { addStudents: '🧒', changeDue: '📅', unassign: '➖', renameClass: '✏️', newJoinCode: '🔑', archiveClass: '🗄️', restoreClass: '♻️', resetPassword: '🔒', removeStudent: '🚪', moveStudent: '🔀', addCoTeacher: '🧑‍🏫', approveJoin: '✅', declineJoin: '🚫' };
   function actionHtml(x, p) {
     if (!p) return '';
     if (p.state !== 'open') {

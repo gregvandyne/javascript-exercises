@@ -4981,7 +4981,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "Damit werden Konten für Kinder angelegt."
+            "accounts": "Damit werden Konten für Kinder angelegt.",
+            "password": "Das alte Passwort gilt sofort nicht mehr.",
+            "archive": "Damit wird die Klasse archiviert. Du kannst sie später wiederherstellen.",
+            "remove": "Damit wird das Kind aus der Klasse genommen. Konto und Arbeiten bleiben erhalten.",
+            "move": "Das Kind verlässt diese Klasse. Konto und Arbeiten bleiben erhalten."
           },
           "add": {
             "ask": "Schülerinnen und Schüler zu {class} hinzufügen?",
@@ -4996,6 +5000,46 @@
             "name": "Name: {name}",
             "grade": "Klassenstufe: {grade}",
             "subject": "Fach: {subject}"
+          },
+          "code": {
+            "ask": "Einen neuen Beitrittscode für {class} erstellen?",
+            "old": "Der alte Code gilt dann nicht mehr.",
+            "done": "Der neue Beitrittscode für {class} ist {code}."
+          },
+          "archive": {
+            "ask": "{class} archivieren?",
+            "done": "{class} archiviert."
+          },
+          "restore": {
+            "ask": "{class} wiederherstellen?",
+            "done": "{class} wiederhergestellt."
+          },
+          "pw": {
+            "ask": "Ein neues Passwort für {name} erstellen?",
+            "done": "Neues Passwort für {name} erstellt.",
+            "cardOnce": "Drucke die Anmeldekarte jetzt: Das Passwort steht nur darauf.",
+            "printCard": "Anmeldekarte drucken"
+          },
+          "remove": {
+            "ask": "{name} aus {class} nehmen?",
+            "done": "{name} aus {class} genommen."
+          },
+          "move": {
+            "ask": "{name} von {from} nach {to} verschieben?",
+            "done": "{name} ist jetzt in {to}."
+          },
+          "coteach": {
+            "ask": "{name} als Lehrkraft zu {class} hinzufügen?",
+            "done": "{name} unterrichtet jetzt {class}."
+          },
+          "join": {
+            "ask": "{name} in {class} aufnehmen?",
+            "nameHint": "Prüfe unten den Namen für die Klassenliste.",
+            "done": "{name} ist jetzt in {class}."
+          },
+          "decline": {
+            "ask": "Die Anfrage von {name} für {class} ablehnen?",
+            "done": "Die Anfrage für {class} abgelehnt."
           }
         },
         "assignments": {

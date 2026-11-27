@@ -4981,7 +4981,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "Dit maakt accounts voor kinderen."
+            "accounts": "Dit maakt accounts voor kinderen.",
+            "password": "Het oude wachtwoord werkt meteen niet meer.",
+            "archive": "Dit archiveert de klas. Je kunt hem later terugzetten.",
+            "remove": "Dit haalt de leerling uit de klas. Account en werk blijven bewaard.",
+            "move": "De leerling verlaat deze klas. Account en werk blijven bewaard."
           },
           "add": {
             "ask": "Leerlingen toevoegen aan {class}?",
@@ -4996,6 +5000,46 @@
             "name": "Naam: {name}",
             "grade": "Groep: {grade}",
             "subject": "Vak: {subject}"
+          },
+          "code": {
+            "ask": "Een nieuwe deelnamecode maken voor {class}?",
+            "old": "De oude code werkt dan niet meer.",
+            "done": "De nieuwe deelnamecode voor {class} is {code}."
+          },
+          "archive": {
+            "ask": "{class} archiveren?",
+            "done": "{class} gearchiveerd."
+          },
+          "restore": {
+            "ask": "{class} terugzetten?",
+            "done": "{class} teruggezet."
+          },
+          "pw": {
+            "ask": "Een nieuw wachtwoord maken voor {name}?",
+            "done": "Nieuw wachtwoord gemaakt voor {name}.",
+            "cardOnce": "Print de inlogkaart nu: het wachtwoord staat alleen daarop.",
+            "printCard": "Inlogkaart printen"
+          },
+          "remove": {
+            "ask": "{name} uit {class} halen?",
+            "done": "{name} uit {class} gehaald."
+          },
+          "move": {
+            "ask": "{name} van {from} naar {to} verplaatsen?",
+            "done": "{name} zit nu in {to}."
+          },
+          "coteach": {
+            "ask": "{name} als leerkracht aan {class} toevoegen?",
+            "done": "{name} geeft nu les aan {class}."
+          },
+          "join": {
+            "ask": "{name} laten meedoen in {class}?",
+            "nameHint": "Controleer hieronder de naam voor de klassenlijst.",
+            "done": "{name} zit nu in {class}."
+          },
+          "decline": {
+            "ask": "Het verzoek van {name} voor {class} weigeren?",
+            "done": "Het verzoek voor {class} geweigerd."
           }
         },
         "assignments": {

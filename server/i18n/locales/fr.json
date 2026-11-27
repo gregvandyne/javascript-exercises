@@ -4980,7 +4980,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "Cela crée des comptes pour des enfants."
+            "accounts": "Cela crée des comptes pour des enfants.",
+            "password": "Son ancien mot de passe ne marche plus tout de suite.",
+            "archive": "Cela archive la classe. Tu pourras la restaurer plus tard.",
+            "remove": "Cela retire l’élève de la classe. Son compte et son travail sont conservés.",
+            "move": "L’élève quitte cette classe. Son compte et son travail sont conservés."
           },
           "add": {
             "ask": "Ajouter des élèves à {class} ?",
@@ -4995,6 +4999,46 @@
             "name": "Nom : {name}",
             "grade": "Niveau : {grade}",
             "subject": "Matière : {subject}"
+          },
+          "code": {
+            "ask": "Créer un nouveau code pour rejoindre {class} ?",
+            "old": "L’ancien code ne marchera plus.",
+            "done": "Le nouveau code pour rejoindre {class} est {code}."
+          },
+          "archive": {
+            "ask": "Archiver {class} ?",
+            "done": "{class} archivée."
+          },
+          "restore": {
+            "ask": "Restaurer {class} ?",
+            "done": "{class} restaurée."
+          },
+          "pw": {
+            "ask": "Créer un nouveau mot de passe pour {name} ?",
+            "done": "Nouveau mot de passe créé pour {name}.",
+            "cardOnce": "Imprime la carte de connexion maintenant : le mot de passe n’est que sur elle.",
+            "printCard": "Imprimer la carte de connexion"
+          },
+          "remove": {
+            "ask": "Retirer {name} de {class} ?",
+            "done": "{name} retiré de {class}."
+          },
+          "move": {
+            "ask": "Déplacer {name} de {from} vers {to} ?",
+            "done": "{name} est maintenant dans {to}."
+          },
+          "coteach": {
+            "ask": "Ajouter {name} comme enseignant de {class} ?",
+            "done": "{name} enseigne maintenant dans {class}."
+          },
+          "join": {
+            "ask": "Laisser {name} rejoindre {class} ?",
+            "nameHint": "Vérifie ci-dessous le nom pour la liste de la classe.",
+            "done": "{name} a rejoint {class}."
+          },
+          "decline": {
+            "ask": "Refuser la demande de {name} pour {class} ?",
+            "done": "Demande refusée pour {class}."
           }
         },
         "assignments": {

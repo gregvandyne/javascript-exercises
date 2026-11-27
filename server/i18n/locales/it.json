@@ -4981,7 +4981,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "Questo crea account per bambini."
+            "accounts": "Questo crea account per bambini.",
+            "password": "La vecchia password smette subito di funzionare.",
+            "archive": "Questo archivia la classe. Puoi ripristinarla più tardi.",
+            "remove": "Questo toglie lo studente dalla classe. Account e lavori restano.",
+            "move": "Lo studente lascia questa classe. Account e lavori restano."
           },
           "add": {
             "ask": "Aggiungere studenti a {class}?",
@@ -4996,6 +5000,46 @@
             "name": "Nome: {name}",
             "grade": "Classe: {grade}",
             "subject": "Materia: {subject}"
+          },
+          "code": {
+            "ask": "Creare un nuovo codice di accesso per {class}?",
+            "old": "Il vecchio codice smette di funzionare.",
+            "done": "Il nuovo codice di accesso di {class} è {code}."
+          },
+          "archive": {
+            "ask": "Archiviare {class}?",
+            "done": "{class} archiviata."
+          },
+          "restore": {
+            "ask": "Ripristinare {class}?",
+            "done": "{class} ripristinata."
+          },
+          "pw": {
+            "ask": "Creare una nuova password per {name}?",
+            "done": "Nuova password creata per {name}.",
+            "cardOnce": "Stampa ora la scheda di accesso: la password è solo lì.",
+            "printCard": "Stampa la scheda di accesso"
+          },
+          "remove": {
+            "ask": "Togliere {name} da {class}?",
+            "done": "{name} tolto da {class}."
+          },
+          "move": {
+            "ask": "Spostare {name} da {from} a {to}?",
+            "done": "{name} ora è in {to}."
+          },
+          "coteach": {
+            "ask": "Aggiungere {name} come insegnante di {class}?",
+            "done": "{name} ora insegna in {class}."
+          },
+          "join": {
+            "ask": "Far entrare {name} in {class}?",
+            "nameHint": "Controlla qui sotto il nome per l’elenco della classe.",
+            "done": "{name} è entrato in {class}."
+          },
+          "decline": {
+            "ask": "Rifiutare la richiesta di {name} per {class}?",
+            "done": "Richiesta per {class} rifiutata."
           }
         },
         "assignments": {

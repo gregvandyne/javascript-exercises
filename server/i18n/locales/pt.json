@@ -4981,7 +4981,11 @@
         },
         "classes": {
           "warn": {
-            "accounts": "Isso cria contas para crianças."
+            "accounts": "Isso cria contas para crianças.",
+            "password": "A senha antiga deixa de funcionar na hora.",
+            "archive": "Isso arquiva a turma. Você pode restaurá-la depois.",
+            "remove": "Isso tira o aluno da turma. A conta e os trabalhos são mantidos.",
+            "move": "O aluno sai desta turma. A conta e os trabalhos são mantidos."
           },
           "add": {
             "ask": "Adicionar alunos a {class}?",
@@ -4996,6 +5000,46 @@
             "name": "Nome: {name}",
             "grade": "Ano: {grade}",
             "subject": "Matéria: {subject}"
+          },
+          "code": {
+            "ask": "Criar um novo código de entrada para {class}?",
+            "old": "O código antigo deixa de funcionar.",
+            "done": "O novo código de entrada de {class} é {code}."
+          },
+          "archive": {
+            "ask": "Arquivar {class}?",
+            "done": "{class} arquivada."
+          },
+          "restore": {
+            "ask": "Restaurar {class}?",
+            "done": "{class} restaurada."
+          },
+          "pw": {
+            "ask": "Criar uma nova senha para {name}?",
+            "done": "Nova senha criada para {name}.",
+            "cardOnce": "Imprima o cartão de acesso agora: a senha só está nele.",
+            "printCard": "Imprimir o cartão de acesso"
+          },
+          "remove": {
+            "ask": "Tirar {name} de {class}?",
+            "done": "{name} saiu de {class}."
+          },
+          "move": {
+            "ask": "Mover {name} de {from} para {to}?",
+            "done": "{name} agora está em {to}."
+          },
+          "coteach": {
+            "ask": "Adicionar {name} como professor de {class}?",
+            "done": "{name} agora dá aula em {class}."
+          },
+          "join": {
+            "ask": "Deixar {name} entrar em {class}?",
+            "nameHint": "Confira abaixo o nome para a lista da turma.",
+            "done": "{name} entrou em {class}."
+          },
+          "decline": {
+            "ask": "Recusar o pedido de {name} para {class}?",
+            "done": "Pedido para {class} recusado."
           }
         },
         "assignments": {
