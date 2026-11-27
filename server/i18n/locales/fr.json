@@ -16463,6 +16463,10 @@
       "listen": "Lis-le-moi",
       "stop": "Arrêter",
       "practice": "Commencer l'entraînement",
+      "start": "Commencer les questions",
+      "skip": "Aller aux questions",
+      "lead": "Lis la fiche, puis commence les questions. Tu peux la rouvrir à tout moment.",
+      "close": "Fermer",
       "question": "Demande-toi"
     },
     "review": {

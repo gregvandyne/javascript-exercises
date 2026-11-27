@@ -18208,6 +18208,10 @@
       "listen": "Read it to me",
       "stop": "Stop",
       "practice": "Start practice",
+      "start": "Start the questions",
+      "skip": "Skip to questions",
+      "lead": "Read the card, then start the questions. You can open it again any time.",
+      "close": "Close",
       "question": "Ask yourself"
     },
     "review": {

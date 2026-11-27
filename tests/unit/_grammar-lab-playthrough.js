@@ -54,7 +54,7 @@ export async function playUnit(env, band) {
       await page.click(`#gl-topic-${id} a.gl-tile-main`);
       await page.waitForSelector('#gl-welcome:not([hidden])');
       box.q = null;
-      await page.click('#gl-go');
+      await page.click('#gl-go'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await H.closeTip(page);
       const total = tp.levels.reduce((a, b) => a + b, 0);

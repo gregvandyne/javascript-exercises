@@ -149,7 +149,7 @@ async function playLesson(page, box, tag, L) {
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -240,7 +240,7 @@ test('the other 9-12 shapes on a phone, dark, and the "Scene" vs. "Seen" Mistake
     for (const [unit, topic, key] of [['confused-words-5', 'later-latter', 'cycle'], ['parallel-structure', 'parallel-identify', 'whole'], ['lists', 'list-cue-words', 'chips'],
       ['hyphens', 'hyphen-affixes', 'prefix'], ['conjunctions-all', 'fanboys-identify', 'shared']]) {
       await page.goto(`${base}/courses/grammar-lab/9-12/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));

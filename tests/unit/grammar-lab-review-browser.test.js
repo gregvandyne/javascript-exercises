@@ -118,7 +118,7 @@ test('the intro, single pick, a phrase\'s toggle, picks cleared after a miss, "T
     assert.equal(await page.textContent('#gl-count'), '12 questions, plus one for each miss.');
     await page.waitForTimeout(2400);
     await shot(page, '01-intro-rule-and-counts', dark);
-    await page.click('#gl-go');
+    await page.click('#gl-go'); await page.click('#gl-card-go');
     await page.waitForSelector('#gl-quiz:not([hidden])');
     // one word to find: a second tap moves the pick
     let qn = onScreen(kid, T), it = itemOf(T, qn.id);
@@ -262,7 +262,7 @@ test('a failed try re-syncs: a dropped request keeps the picks; a run finished o
     await shot(page, '12-resync-finished-elsewhere', dark);
     // a sign-in that ended: a notice with the way back in; reloading never starts over as a guest
     await page.goto(`${base}/courses/grammar-lab/k-2/${U}/identifying-adverbs`);
-    await page.click('#gl-go');
+    await page.click('#gl-go'); await page.click('#gl-card-go');
     await page.waitForSelector('#gl-quiz:not([hidden])');
     q.run('UPDATE sessions SET expires_at=1 WHERE user_id=?', kid.id);
     await answerRight(page, kid, 'identifying-adverbs');
@@ -432,7 +432,7 @@ test('the adverb topics: K-2 Identifying Adverbs and 3-5 Adverbs That Tell How, 
       assert.match(await page.textContent('.gl-ex-text'), band === 'k-2' ? /quickly\s*adverb/ : /softly\s*adverb/);
       await shot(page, `20-${band}-adverbs-card`, dark);
       await page.goto(`${base}/courses/grammar-lab/${band}/adjectives-and-adverbs/${topic}`);
-      await page.click('#gl-go');
+      await page.click('#gl-go'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       assert.equal(await page.textContent('#gl-ask'), 'Tap the adverb.');
       await answerRight(page, kid, topic, { submit: false });

@@ -186,7 +186,10 @@ export function learnCard({ t, staff = false, done = 0, total = 0, begun = false
     </article></div></div></section>`;
 }
 
-/** A topic's practice: every screen of the flow, shown one at a time by public/js/grammar-lab.js. */
+/** A topic's practice: every screen of the flow, shown one at a time by public/js/grammar-lab.js: the welcome, the
+ *  teaching card (a step of the lesson, with "Start the questions"), the questions and the mastery screen. During the
+ *  questions the header's "Teaching card" opens the same card in a sheet over the lesson (its link still goes to the
+ *  card page without the script). */
 export function practicePage({ t, p, tp, data, guest, listen = false }) {
   // K-2 read-aloud (only when the English voice is on: routes/grammar-lab.js voiceOn): a listen button for the question
   // and one in the hint, shown by public/js/grammar-lab.js when this device uses the AI voice
@@ -203,7 +206,7 @@ export function practicePage({ t, p, tp, data, guest, listen = false }) {
       <span class="gl-dots" id="gl-dots" role="img" aria-label="" hidden><i></i><i></i><i></i></span>
       <button type="button" class="btn btn-sm gl-hbtn" id="gl-levels-btn" aria-haspopup="dialog" hidden></button>
       <button type="button" class="btn btn-sm gl-hbtn gl-ibtn" id="gl-tip-btn" aria-label="${t('grammarLab.practice.tip')}" title="${t('grammarLab.practice.tip')}"><span aria-hidden="true">?</span></button>
-      <a class="btn btn-sm gl-hbtn" href="${topicHref(p, tp.id, 'card')}">${t('grammarLab.practice.card')}</a>
+      <a class="btn btn-sm gl-hbtn" id="gl-card-btn" href="${topicHref(p, tp.id, 'card')}" aria-haspopup="dialog" aria-controls="gl-cardsheet">${t('grammarLab.practice.card')}</a>
     </header>
     <div class="gl-meter" id="gl-meter" hidden><p class="gl-counter"><span id="gl-counter"></span> <span class="gl-added" id="gl-added" hidden></span></p><ol class="gl-bar" id="gl-bar" aria-hidden="true"></ol></div>
     <noscript><p class="notice warn">${t('grammarLab.noscript')}</p></noscript>
@@ -219,6 +222,14 @@ export function practicePage({ t, p, tp, data, guest, listen = false }) {
       <p class="gl-lead gl-rule" id="gl-rule">${per ? t('grammarLab.welcome.rule', { per }) : t('grammarLab.levels.rule')}</p>
       <p class="gl-count" id="gl-count">${t('grammarLab.welcome.count', { total })}</p>
       <button type="button" class="btn btn-primary btn-big" id="gl-go">${t('grammarLab.welcome.go')}</button>
+    </section>
+
+    <section class="gl-screen gl-cardstep" id="gl-cardstep" hidden aria-labelledby="gl-cardstep-h">
+      <div class="gl-cardstep-top"><p class="gl-label" id="gl-cardstep-h">${t('grammarLab.card.heading')}</p>
+        <button type="button" class="btn btn-ghost btn-sm" id="gl-card-skip" hidden>${t('grammarLab.card.skip')}</button></div>
+      <p class="gl-cardstep-lead">${t('grammarLab.card.lead')}</p>
+      <div class="gl-cardstep-slot" id="gl-cardstep-slot">${cardArticle(t, tp, listen)}</div>
+      <p class="gl-card-go"><button type="button" class="btn btn-primary btn-big" id="gl-card-go">${t('grammarLab.card.start')}</button></p>
     </section>
 
     <section class="gl-screen gl-quiz" id="gl-quiz" hidden aria-labelledby="gl-qtopic">
@@ -292,21 +303,30 @@ export function practicePage({ t, p, tp, data, guest, listen = false }) {
       <p class="gl-dialog-go"><button type="button" class="btn" id="gl-flag-no">${t('grammarLab.flag.cancel')}</button>
         <button type="button" class="btn btn-primary" id="gl-flag-yes">${t('grammarLab.flag.send')}</button></p>
     </dialog>
+    <dialog class="gl-sheet" id="gl-cardsheet" aria-labelledby="gl-card-h">
+      <div class="gl-sheet-bar"><button type="button" class="btn btn-sm gl-sheet-x" id="gl-sheet-x">${t('grammarLab.card.close')}</button></div>
+      <div class="gl-sheet-body" id="gl-sheet-body"></div>
+    </dialog>
     <div class="gl-bubble" id="gl-bubble" role="tooltip" hidden></div>
     ${jsonData('page-data', data)}
   </div>`;
 }
 
-/** The teaching card on its own (from the topic's menu, or the practice header). */
+/** The teaching card itself: its title, the read-aloud button (when the voice is on) and its body. The practice page
+ *  shows it as the lesson's step before the questions, then moves it into the sheet over the questions
+ *  (public/js/grammar-lab.js); the card page shows it on its own. */
+function cardArticle(t, tp, listen, { h = 'h2' } = {}) {
+  return html`<article class="gl-card" id="gl-card" aria-labelledby="gl-card-h">
+      ${h === 'h1' ? html`<p class="gl-label">${t('grammarLab.card.heading')}</p><h1 id="gl-card-h"${en}>${tp.title}</h1>` : html`<h2 class="gl-card-h" id="gl-card-h"${en}>${tp.title}</h2>`}
+      ${listen ? html`<p><button type="button" class="btn gl-listen" id="gl-listen" hidden aria-pressed="false"><span aria-hidden="true">🔊</span> <span class="lbl">${t('grammarLab.card.listen')}</span></button></p>` : ''}
+      ${cardBody(t, tp)}
+    </article>`;
+}
+/** The teaching card on its own (from the topic's menu, or a direct link). */
 export function cardPage({ t, p, tp, listen }) {
   return html`<div class="gl gl-cardpage ${bandClass(p.band)}">
     <p class="gl-crumb"><a href="${unitHref(p)}"${en}>${p.title}</a></p>
-    <article class="gl-card" aria-labelledby="gl-card-h">
-      <p class="gl-label">${t('grammarLab.card.heading')}</p>
-      <h1 id="gl-card-h"${en}>${tp.title}</h1>
-      ${listen ? html`<p><button type="button" class="btn gl-listen" id="gl-listen" hidden aria-pressed="false"><span aria-hidden="true">🔊</span> <span class="lbl">${t('grammarLab.card.listen')}</span></button></p>` : ''}
-      ${cardBody(t, tp)}
-    </article>
+    ${cardArticle(t, tp, listen, { h: 'h1' })}
     <p class="gl-card-go"><a class="btn btn-primary btn-big" href="${topicHref(p, tp.id)}">${t('grammarLab.card.practice')}</a></p>
     ${jsonData('page-data', { topic: tp.id, listen: !!listen, stop: t('grammarLab.card.stop'), listenLabel: t('grammarLab.card.listen') })}
   </div>`;

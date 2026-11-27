@@ -267,7 +267,8 @@ export async function cardOverlaps(page, root = '.gl-card-body') {
       const sr = scope.getBoundingClientRect();
       const boxes = [];
       for (const m of scope.querySelectorAll('.gl-mk')) { const r = m.getBoundingClientRect(); boxes.push({ kind: 'mark', el: m, r, text: say(m.firstChild ? m.firstChild.textContent : '') }); }
-      for (const l of scope.querySelectorAll('.gl-mk-tag')) boxes.push({ kind: 'label', el: l, r: l.getBoundingClientRect(), text: say(l.textContent) });
+      // (a label's own text: a comma's label box takes no width, its words hang centered under the comma)
+      for (const l of scope.querySelectorAll('.gl-mk-tag')) { const rg = document.createRange(); rg.selectNodeContents(l); boxes.push({ kind: 'label', el: l, r: rg.getBoundingClientRect(), text: say(l.textContent) }); }
       const walk = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       for (let nd = walk.nextNode(); nd; nd = walk.nextNode()) {
         const el = nd.parentElement;

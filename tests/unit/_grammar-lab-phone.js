@@ -1,6 +1,6 @@
 // Grammar Lab's phone checks for one band (tests/unit/grammar-lab-phone-*-browser.test.js): at 320 x 568 and 390 x 844,
 // each screen in light and then dark, a signed-in student sees the course page, a unit, a teaching card, a topic's
-// welcome, questions in at least three formats, a wrong answer and its hint, a level-done overlay, the mastery screen
+// welcome, the card step and the card's sheet over a question, questions in at least three formats, a wrong answer and its hint, a level-done overlay, the mastery screen
 // and the topic's proofread room. Every screen passes the layout checks (tests/unit/_grammar-lab-play.js
 // layoutProblems): nothing sideways, nothing cut off, nothing stuck under the top bar or the bottom nav, no line that
 // starts with a punctuation mark, and, in German or Arabic, every piece of course text marked lang="en".
@@ -68,7 +68,7 @@ export async function phoneRun(env, band, size, { lang = 'en', themes = ['light'
       box.q = null;
       await page.goto(`${base}/courses/grammar-lab/${band}/${u2}/${t2}`);
       await page.waitForSelector('#gl-welcome:not([hidden]), #gl-quiz:not([hidden])');
-      if (await page.isVisible('#gl-welcome')) await page.click('#gl-go');
+      if (await page.isVisible('#gl-welcome')) { await page.click('#gl-go'); await page.click('#gl-card-go'); }
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await H.closeTip(page);
       await H.syncBox(page, box);
@@ -80,11 +80,23 @@ export async function phoneRun(env, band, size, { lang = 'en', themes = ['light'
     await page.waitForSelector('#gl-welcome:not([hidden])');
     await check('05-intro', { keys: ['#gl-skip', '#gl-welcome-h'] });
     await page.click('#gl-go');
+    // the teaching card, a step of the lesson: its heading in view, and its Start reachable above the bottom nav
+    await page.waitForSelector('#gl-cardstep:not([hidden])');
+    await check('05-card-step', { keys: ['#gl-cardstep-h', '#gl-card-h'] });
+    await page.locator('#gl-card-go').scrollIntoViewIfNeeded();
+    await check('05-card-step-start', { keys: ['#gl-card-go'], bottom: false });
+    await page.click('#gl-card-go');
     await page.waitForSelector('#gl-quiz:not([hidden])');
     await H.closeTip(page);
     await H.syncBox(page, box);
     kinds.add(kindOf(box.q));
     await check(`06-question-${kindOf(box.q)}`, { keys: ['#gl-ask'] });
+    // the card again, in its sheet over the question
+    await page.click('#gl-card-btn');
+    await page.waitForSelector('#gl-cardsheet[open]');
+    await check('06-card-sheet', { keys: ['#gl-sheet-x', '#gl-card-h'], bottom: false });
+    await page.click('#gl-sheet-x');
+    await page.waitForSelector('#gl-cardsheet', { state: 'hidden' });
     await H.answer(page, box, topic, { wrong: true });
     await page.waitForSelector('#gl-notice.gl-notice-wrong:not([hidden])');
     await page.waitForTimeout(100);
