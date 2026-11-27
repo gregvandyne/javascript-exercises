@@ -17,6 +17,7 @@
   {
    "id": "3-5",
    "grades": "3-5",
+   "readAloud": true,
    "pathways": [
     "adjectives-and-adverbs",
     "building-sentences",

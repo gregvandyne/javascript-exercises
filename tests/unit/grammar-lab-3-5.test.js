@@ -295,12 +295,12 @@ test('a topic mastered in K-2 is mastered in 3-5 at once (and back): tiles, lock
   // A shared unit opened in 3-5 suggests within 3-5: its links keep the band.
   const shared = await get('/courses/grammar-lab/3-5/kinds-of-words', kid);
   assert.match(shared.text, /href="\/courses\/grammar-lab\/3-5\/kinds-of-words\/identifying-common-nouns"/);
-  // The review mark, and a K-2 card in a 3-5 unit is not read aloud there.
+  // The review mark; 3-5 is read aloud too (owner, 2026-11-27), a 9-12 topic is not.
   const verbs = await get('/courses/grammar-lab/3-5/more-verbs-and-time', kid);
   assert.match(verbs.text, /id="gl-topic-tense-shifts">[\s\S]*?Correcting Shifts in Verb Tense[\s\S]*?<span class="gl-badge gl-badge-review">Review<\/span>/);
-  assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', '3-5')), false);
+  assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', '3-5')), true);
   assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', 'k-2')), true);
-  assert.equal(GL.readsAloud(T('compound-sentences')), false);
+  assert.equal(GL.readsAloud(T('compound-sentences')), true);
   // The writing card's three sections, with its highlighted sentences.
   master(kid, 'evidence-for-informing');
   const card = await get('/courses/grammar-lab/3-5/evidence-that-informs/evidence-for-informing/card', kid);

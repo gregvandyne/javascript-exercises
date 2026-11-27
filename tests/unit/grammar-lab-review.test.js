@@ -313,9 +313,9 @@ test('the adverb topics: both parse; each band\'s Adjectives and Adverbs has 2 t
   assert.ok(!GL.masteredSet(kid).has('adverbs-how-when-where'));
   assert.deepEqual(GL.unitProgress(kid, GL.pathway('adjectives-and-adverbs', 'k-2')), { done: 2, total: 2, started: 0 });
   assert.deepEqual(GL.unitProgress(kid, GL.pathway('adjectives-and-adverbs', '3-5')), { done: 1, total: 2, started: 0 });
-  // the K-2 topic is read aloud there; the 3-5 one is not
+  // both are read aloud (K-2 and 3-5)
   assert.equal(GL.readsAloud(GL.topic('identifying-adverbs'), GL.pathway('adjectives-and-adverbs', 'k-2')), true);
-  assert.equal(GL.readsAloud(GL.topic('adverbs-how-when-where'), GL.pathway('adjectives-and-adverbs', '3-5')), false);
+  assert.equal(GL.readsAloud(GL.topic('adverbs-how-when-where'), GL.pathway('adjectives-and-adverbs', '3-5')), true);
   // a part may only name a band that uses its unit (the build says so)
   const bad = JSON.parse(JSON.stringify(PLAN));
   bad.pathways['capital-letters'].parts.push({ band: '9-12', topics: ['identifying-adverbs'] });

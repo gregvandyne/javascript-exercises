@@ -113,7 +113,8 @@ async function playLesson(page, tag, L) {
   await shot(page, T, '01-unit');
   await noSideScroll(page, 'unit');
   await page.goto(base + topicUrl + '/card');
-  assert.equal(await page.isVisible('#gl-listen'), false, 'a 3-5 card is not read aloud');
+  // 3-5 cards are read aloud (owner, 2026-11-27); the voices are off in this test, so no button shows.
+  assert.equal(await page.isVisible('#gl-listen'), false, 'no listen button while the voices are off');
   await shot(page, T, '02-card');
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
