@@ -238,16 +238,6 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
       });
       if (format === 'tap' && !example.marks.length) problems.push(`${where}: the worked example names no word's job ("X is the adjective.")`);
     }
-    if (format === 'capfix' || format === 'gaps' || format === 'choice') {
-      // A fix example: "wrong" ... "right". The words that changed are marked in both.
-      const pairs = [example, ...(example.more || [])].filter(u => u.then);
-      for (const u of pairs) {
-        const c = capitalDiff(u.text, u.then.text), g = commaDiff(u.text, u.then.text);
-        if (c && c.length) { u.marks = c.map(i => ({ i, role: 'capital' })); u.then.marks = c.map(i => ({ i, role: 'capital' })); }
-        else if (g && g.length) { u.then.marks = g.map(i => ({ i, role: 'comma' })); }
-      }
-      if ((format === 'capfix' || format === 'gaps') && !pairs.some(u => u.then && u.then.marks)) problems.push(`${where}: the worked example has no "before" and "after" sentences that differ by a capital or a comma`);
-    }
   }
   // A word pair (your / you're): the pair's words are marked wherever the examples use them.
   const pairMarks = u => (pair ? tokenize(u.text).flatMap((w, i) => (pair.some(x => norm(x) === norm(w.t)) ? [{ i, role: 'key' }] : [])) : []);
@@ -265,13 +255,15 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
       for (const w of tokenize(u.note)) for (const [i] of findWords(tokens, w.t)) if (/^\p{Lu}/u.test(w.t) && tokens[i].t !== w.t && !marks.some(m => m.i === i)) marks.push({ i, role: 'capital' });
     }
     if (pair) marks.push(...pairMarks(u));
-    const out = { ...u, marks };
-    if (u.then) {
-      const c = capitalDiff(u.text, u.then.text), g = commaDiff(u.text, u.then.text);
-      out.then = { ...u.then, marks: c && c.length ? c.map(i => ({ i, role: 'capital' })) : g && g.length ? g.map(i => ({ i, role: 'comma' })) : [] };
-    }
-    return out;
+    return { ...u, marks, ...(u.then ? { then: { ...u.then } } : {}) };
   });
+  // Before and after: every example that shows a sentence as written and then fixed.
+  if (example) {
+    const all = [example, ...(example.more || [])];
+    for (const u of all) beforeAfter(u, all[0], problems, where);
+    for (const u of tips) beforeAfter(u, all[0], problems, where);
+    if ((format === 'capfix' || format === 'gaps') && !all.some(u => u.fix && u.then.marks.some(m => m.role === 'capital' || m.role === 'comma'))) problems.push(`${where}: the worked example has no "before" and "after" sentences that differ by a capital or a comma`);
+  }
   if (tip && !tips.length && format === 'choice' && /^[A-Z][^"]+\.$/.test(tip)) tips.push({ text: tip, note: '', marks: [] });
   else if (tip && !tips.length) problems.push(`${where}: the tip box has no quoted example`);
   return { definition, example, how, tips };
@@ -289,9 +281,39 @@ function plainCard(definition, worked, how, tip) {
   const unit = (text, n = '') => {
     const b = /^(.+?) becomes (.+)$/.exec(text);
     if (!b) return { text, note: n, marks: marksOf(text) };
-    return { text: b[1], note: 'becomes', marks: marksOf(b[1]), then: { text: b[2], note: n, marks: marksOf(b[2]) } };
+    return { text: b[1], note: 'becomes', marks: marksOf(b[1]), then: { text: b[2], note: n, marks: marksOf(b[2]) }, fix: true };
   };
-  return { definition, example: unit(ex.trim(), note), how, tips: sentencesOf(tip).map(t => unit(t)) };
+  const example = unit(ex.trim(), note), tips = sentencesOf(tip).map(t => unit(t));
+  for (const u of [example, ...tips]) beforeAfter(u, example, [], '');
+  return { definition, example, how, tips };
+}
+
+/** The words a fix example's note ends on when the quote after it is the sentence fixed. */
+const FIX_CUE = /(?:^|[\s.!?:,])(?:the correct sentence is|the title is|with (?:a )?commas?:|fix(?: it(?: like this)?)?:|fixed:|the fix is)$/i;
+/** A fix example (a sentence as written, then fixed: "before" and "after"): u.fix, and its marks all on the after. It
+ *  is a fix when its note says so (FIX_CUE), when the two differ by capitals or commas only, or when it "becomes" the
+ *  next sentence on a card whose worked example is a fix. The after's marks: the words whose capital changed ('capital',
+ *  or 'lower' for one that loses it) or the commas added, any word jobs the before had marked on the same words, and (a
+ *  title) the small words the title leaves lowercase ('small'). The before is shown as written, with no marks. */
+function beforeAfter(u, first, problems, where) {
+  if (!u.then) return;
+  const note = String(u.note || '').trim();
+  const c = capitalDiff(u.text, u.then.text), g = commaDiff(u.text, u.then.text);
+  const diff = (c && c.length) || (g && g.length);
+  if (!u.fix && !FIX_CUE.test(note) && !diff && !(/\bbecomes$/.test(note) && u !== first && first.fix)) return;
+  u.fix = true;
+  const A = tokenize(u.text), Bt = tokenize(u.then.text);
+  let marks = (u.then.marks || []).slice();
+  if (c && c.length) marks = c.map(i => ({ i, role: /^\p{Ll}/u.test(Bt[i].t) ? 'lower' : 'capital' }));
+  else if (g && g.length) marks = g.map(i => ({ i, role: 'comma' }));
+  for (const m of u.marks || []) if (!['capital', 'lower', 'comma', 'key'].includes(m.role) && A[m.i] && Bt[m.i] && A[m.i].t === Bt[m.i].t && !marks.some(x => x.i === m.i)) marks.push(m);
+  if (/\bthe title is$/i.test(note)) {
+    const right = titleCase(u.then.text.replace(/[.!?]$/, ''));
+    if (`${right}${/[.!?]$/.test(u.then.text) ? u.then.text.slice(-1) : ''}` !== u.then.text) problems.push(`${where}: the title "${u.then.text}" is not capitalized by the title rules ("${right}")`);
+    Bt.forEach((w, i) => { if (i > 0 && i < Bt.length - 1 && SMALL_WORDS.has(norm(w.t)) && /^\p{Ll}/u.test(w.t) && !marks.some(x => x.i === i)) marks.push({ i, role: 'small' }); });
+  }
+  u.then.marks = marks.sort((a, b) => a.i - b.i);
+  u.marks = [];
 }
 
 // ------------------------------------------------------------------------------------------------- the rules for wrong options

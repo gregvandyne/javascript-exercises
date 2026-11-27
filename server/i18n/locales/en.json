@@ -18613,6 +18613,8 @@
       "example": "Example",
       "how": "How it works:",
       "tips": "More examples",
+      "before": "Before:",
+      "after": "After:",
       "listen": "Read it to me",
       "stop": "Stop",
       "practice": "Start practice",
@@ -18639,6 +18641,8 @@
       "conjunction": "conjunction",
       "preposition": "preposition",
       "capital": "capital letter",
+      "lower": "small letter",
+      "small": "stays small",
       "comma": "comma"
     },
     "glossaryWord": {

@@ -113,7 +113,9 @@ test('the parser, topic by topic: answers placed in their sentences, cards read,
   assert.deepEqual(names.items.map(wordsAt), ['ana', 'monday', 'june', 'leo', 'friday', 'max', 'september', 'sam', 'tuesday', 'october', 'ana', 'may']);
   assert.deepEqual(names.items[0].fixed, ['Ana']); assert.equal(names.items[0].right, 'My friend Ana likes to draw.');
   assert.deepEqual(names.card.example.then.marks.map(m => tokenize(names.card.example.then.text)[m.i].t), ['Sam', 'July']);
-  assert.deepEqual(names.card.tips[0].marks, [{ i: 2, role: 'capital' }]);
+  // a fix is shown before and after: every mark on the after, none on the sentence as written
+  assert.ok(names.card.example.fix && names.card.tips.every(u => u.fix), 'the worked example and tips are fixes');
+  assert.deepEqual(names.card.tips[0].marks, []); assert.deepEqual(names.card.tips[0].then.marks, [{ i: 2, role: 'capital' }]);
   // Titles: a blank in the sentence (no quotes), the title shown in italics, the right capitals by the title rules.
   const titles = T('capitalizing-titles');
   assert.equal(titles.italic, true);
@@ -121,6 +123,10 @@ test('the parser, topic by topic: answers placed in their sentences, cards read,
   assert.ok(titles.items.every(it => !/['"]/.test(it.text)), 'no quotes around titles');
   assert.deepEqual(titles.items.map(it => it.options[it.answer[0]]), ['The Brave Little Fox', 'My Yellow Kite', 'A Day at the Farm', 'The Lost Puppy', 'Rain on My Roof', 'The Big Green Frog', 'My Trip to the Zoo', 'Bears in the Snow', 'The Magic Pond', 'The Happy Farmer', 'The Sleepy Owl', 'Dogs and Ducks at Play']);
   assert.equal(titles.card.example.lead, 'We read the book'); assert.equal(titles.card.example.then.text, 'The Brave Little Fox.');
+  // the fixed title: its capitals marked, and the small words it leaves lowercase marked "stays small"
+  const bees = titles.card.tips[1];
+  assert.ok(bees.fix); assert.deepEqual(bees.marks, []);
+  assert.deepEqual(bees.then.marks.map(m => `${tokenize(bees.then.text)[m.i].t}:${m.role}`), ['The:capital', 'Bear:capital', 'and:small', 'the:small', 'Bees:capital']);
   // Commas in a list: the gaps, the last one (before "and") optional.
   const series = T('commas-in-a-series');
   assert.deepEqual([series.items[0].answer, series.items[0].optional], [[4], [6]]);

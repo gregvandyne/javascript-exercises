@@ -16871,6 +16871,8 @@
       "example": "Voorbeeld",
       "how": "Zo werkt het:",
       "tips": "Meer voorbeelden",
+      "before": "Voor:",
+      "after": "Na:",
       "listen": "Lees het voor",
       "stop": "Stop",
       "practice": "Begin met oefenen",
@@ -16897,6 +16899,8 @@
       "conjunction": "voegwoord",
       "preposition": "voorzetsel",
       "capital": "hoofdletter",
+      "lower": "kleine letter",
+      "small": "blijft klein",
       "comma": "komma"
     },
     "glossaryWord": {
