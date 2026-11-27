@@ -175,8 +175,8 @@ test('the locale-file guard catches what translators can get wrong', () => {
     'nav.home': 'Accueil',
     'nav.nope': 'x',
     'layout.meLabel': 'Moi : {nom}',
-    'cards.plays': '{count, plural, one {{n} partie} other {{n} parties}}',
-    'game.stats.plays': 'parties',
+    'js.buildsetup.lesson.readWords': '✓ {count, plural, one {{n} mot lu} other {{n} mots lus}} dans {name}',
+    'profile.stats.games': 'jeux',
     'search.gameCount': 'jeux',
     'home.hero.about': 'À propos de {title',
   });
@@ -185,8 +185,8 @@ test('the locale-file guard catches what translators can get wrong', () => {
   assert.ok(r.placeholderErrors.some(e => e.startsWith('layout.meLabel: unknown placeholder {nom}')));
   assert.ok(r.placeholderErrors.some(e => e.startsWith('layout.meLabel: missing placeholder {name}')));
   assert.ok(r.placeholderErrors.some(e => e.startsWith('search.gameCount: missing placeholder {count}')), 'the number a reader sees must stay');
-  assert.ok(!r.placeholderErrors.some(e => e.startsWith('game.stats.plays')), 'a plural-only selector may be dropped');
-  assert.ok(!r.placeholderErrors.some(e => e.startsWith('cards.plays')));
+  assert.ok(!r.placeholderErrors.some(e => e.startsWith('profile.stats.games')), 'a plural-only selector may be dropped');
+  assert.ok(!r.placeholderErrors.some(e => e.startsWith('js.buildsetup.lesson.readWords')));
 });
 
 test('fmt: Intl numbers, money, dates and time-ago per locale', () => {

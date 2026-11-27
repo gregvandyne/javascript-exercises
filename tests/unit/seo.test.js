@@ -151,7 +151,7 @@ test('structured data parses: Organization and WebSite, VideoGame + LearningReso
   assert.equal(sr.audience[0].suggestedMinAge, 5); assert.equal(sr.audience[0].suggestedMaxAge, 14);
   assert.equal(sr.offers.price, 0);
   assert.ok(sr.inLanguage.includes('fr'));
-  assert.equal(sr.aggregateRating, undefined, 'no rating until there are enough real ones');
+  assert.equal(sr.aggregateRating, undefined, 'no rating: the page shows none (no stars or play counts anywhere)');
   const hero = ofType((await get('/g/ring-rumble')).text, 'VideoGame')[0];
   assert.equal(hero['@type'], 'VideoGame', 'a game with nothing to learn is not a LearningResource');
 

@@ -69,7 +69,7 @@ test('open to everyone: Learn (signed out too, under the Words and grade filters
   set(true, ['*']);
   try {
     const learn = await get('/learn');
-    assert.match(learn.text, /class="rail courses gl-learn"/, 'signed out, on Learn');
+    assert.match(learn.text, /id="learn-courses"[\s\S]*id="learn-course-grammar-lab"/, 'signed out, on Learn, in the Courses section');
     assert.match(learn.text, /English, grammar, writing · Grades K-12/, 'its tags and grades');
     assert.match(learn.text, /src="\/covers\/grammar-lab.jpg"/, 'its cover');
     assert.match((await get('/learn?subject=words&grade=3')).text, /gl-learn/, 'Words, grade 3');
@@ -124,10 +124,38 @@ test('open to everyone: first in a teacher\'s Find on Oomba, with Assign; its bo
   } finally { set(false, []); }
 });
 
+test('the Courses section on Learn: Typing Zoo always, Grammar Lab by its own gate, whatever COURSES says', async () => {
+  const was = config.courses;
+  try {
+    for (const courses of [true, false]) {
+      config.courses = courses;
+      set(false, []);
+      let h = (await get('/learn')).text;
+      assert.match(h, /id="learn-courses"[\s\S]*?<h2 id="learn-courses-h">[\s\S]*?Courses<\/h2>/, `COURSES ${courses}: the section`);
+      assert.match(h, /id="learn-course-typing"[\s\S]*?src="\/covers\/typing-zoo.jpg"[\s\S]*?Learn to touch type, one key at a time/, 'Typing Zoo, its cover and line');
+      assert.doesNotMatch(h, /id="learn-course-grammar-lab"/, 'Grammar Lab off: not there');
+      set(true, ['*']);
+      h = (await get('/learn')).text;
+      assert.match(h, /id="learn-course-grammar-lab"[\s\S]*?src="\/covers\/grammar-lab.jpg"/);
+      assert.ok(h.indexOf('id="learn-courses"') < h.indexOf('id="learn-games"') || !h.includes('id="learn-games"'), 'near the top');
+      // the old courses row (CS Quest, Number Quest, Cyber Defenders) stays behind COURSES
+      assert.equal(/id="course-cs-quest-h"/.test(h), courses, `the COURSES row ${courses ? 'shown' : 'hidden'}`);
+      // filters: Words keeps Grammar Lab, Typing keeps Typing Zoo
+      h = (await get('/learn?subject=words')).text;
+      assert.match(h, /id="learn-course-grammar-lab"/); assert.doesNotMatch(h, /id="learn-course-typing"/);
+      h = (await get('/learn?subject=typing')).text;
+      assert.match(h, /id="learn-course-typing"/); assert.doesNotMatch(h, /id="learn-course-grammar-lab"/);
+      // in Spanish: the heading and the line translated
+      h = (await get('/learn', '', 'es')).text;
+      assert.match(h, /Cursos<\/h2>/); assert.match(h, /Aprende a escribir con el teclado, tecla a tecla/);
+    }
+  } finally { config.courses = was; set(false, []); }
+});
+
 test('its listing words are in every language, with no dashes', () => {
   for (const c of CODES) {
     const t = makeT(c);
-    for (const k of ['grammarLab.listing.desc', 'grammarLab.listing.tags', 'grammarLab.listing.terms', 'grammarLab.listing.units', 'search.courses']) {
+    for (const k of ['grammarLab.listing.desc', 'grammarLab.listing.tags', 'grammarLab.listing.terms', 'grammarLab.listing.units', 'search.courses', 'learn.courses.h', 'learn.courses.typing', 'learn.courses.grades', 'game.favAdd', 'game.favRemove']) {
       const v = t(k, { text: 'x' });
       assert.ok(v && v !== k, `${c} ${k}`);
       assert.doesNotMatch(v, /[–—]/, `${c} ${k}: no en or em dash`);

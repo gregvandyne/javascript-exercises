@@ -9,7 +9,7 @@ if (rate) rate.addEventListener('click', async e => {
   try {
     const r = await api(`/api/games/${d.gameId}/rate`, { method: 'POST', body: { stars: n } });
     [...rate.children].forEach((x, i) => { x.classList.toggle('on', i < n); x.setAttribute('aria-checked', String(i + 1 === n)); });
-    $('#ratemsg').textContent = t('js.game.rated', { count: n, average: r.average.toFixed(1) });
+    $('#ratemsg').textContent = t('js.game.thanksRating');
     toast(t('js.game.thanksRating'));
   } catch (err) { toast(err.message, { bad: true }); }
 });
@@ -20,7 +20,7 @@ if (like) like.addEventListener('click', async () => {
   try {
     const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} });
     like.setAttribute('aria-pressed', String(r.liked)); like.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍';
-    $('#likecount').textContent = r.likes; toast(r.liked ? t('js.game.liked') : t('js.game.unliked'));
+    like.setAttribute('aria-label', r.liked ? like.dataset.on : like.dataset.off); toast(r.liked ? t('js.game.liked') : t('js.game.unliked'));
   } catch (err) { toast(err.message, { bad: true }); }
 });
 

@@ -518,14 +518,10 @@
     }
   },
   "cards": {
-    "new": "新遊戲",
-    "noRatings": "還沒有評分",
-    "starsLabel": "{count} 個評分，平均 {stars} 顆星（滿分 5 顆）",
     "playing": "{count} 人在玩",
     "gameBy": "{title}，作者：{name}",
     "classOnly": "僅限班級",
     "by": "作者：{name}",
-    "plays": "{n} 次遊玩",
     "seeAll": "看全部",
     "scrollBack": "往回捲動「{title}」",
     "scrollForward": "往前捲動「{title}」"
@@ -1149,11 +1145,7 @@
     "updateWaiting": "有更新正在等待審核",
     "reviewer": "審核員：「{note}」",
     "stats": {
-      "ratings": "{n} 個評分",
-      "noRatings": "還沒有評分",
-      "playingNow": "正在玩",
-      "plays": "遊玩次數",
-      "likes": "人加入最愛"
+      "playingNow": "正在玩"
     },
     "about": {
       "heading": "關於這個遊戲",
@@ -1220,7 +1212,9 @@
     },
     "best": {
       "heading": "你的最佳成績"
-    }
+    },
+    "favAdd": "加入最愛",
+    "favRemove": "從最愛移除"
   },
   "play": {
     "backTo": "回到 {title}",
@@ -2444,7 +2438,6 @@
     },
     "game": {
       "needSignIn": "請點「用訪客身分玩」或先登入。",
-      "rated": "你給了 {count} 顆星。現在平均是 {average}。",
       "thanksRating": "謝謝你評分！",
       "liked": "已加入你的最愛！",
       "unliked": "已從你的最愛移除",
@@ -8751,6 +8744,11 @@
       "try": "試玩",
       "also": "Oomba 上還有",
       "hubNamed": "{subject}：{hub}"
+    },
+    "courses": {
+      "h": "課程",
+      "typing": "一次一個鍵，學會盲打：40 堂短課，還有 41 隻寵物等你孵化。",
+      "grades": "{grades} 年級"
     }
   },
   "parents": {

@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "Novo",
-    "noRatings": "Sem avaliações ainda",
-    "starsLabel": "{stars} de 5 estrelas em {count, plural, =0 {# avaliações} one {# avaliação} other {# avaliações}}",
     "playing": "{count} jogando",
     "gameBy": "{title}, de {name}",
     "classOnly": "Só a turma",
     "by": "de {name}",
-    "plays": "{count, plural, =0 {{n} jogadas} one {{n} jogada} other {{n} jogadas}}",
     "seeAll": "Ver tudo",
     "scrollBack": "Rolar {title} para trás",
     "scrollForward": "Rolar {title} para a frente"
@@ -1150,11 +1146,7 @@
     "updateWaiting": "uma atualização está esperando revisão",
     "reviewer": "Revisor: “{note}”",
     "stats": {
-      "ratings": "{count, plural, =0 {{n} avaliações} one {{n} avaliação} other {{n} avaliações}}",
-      "noRatings": "sem avaliações ainda",
-      "playingNow": "jogando agora",
-      "plays": "{count, plural, =0 {jogadas} one {jogada} other {jogadas}}",
-      "likes": "{count, plural, one {favorito} other {favoritos}}"
+      "playingNow": "jogando agora"
     },
     "about": {
       "heading": "Sobre este jogo",
@@ -1221,7 +1213,9 @@
     },
     "best": {
       "heading": "Seu recorde"
-    }
+    },
+    "favAdd": "Adicionar aos favoritos",
+    "favRemove": "Remover dos favoritos"
   },
   "play": {
     "backTo": "Voltar para {title}",
@@ -2445,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "Toque em “Jogar como convidado” ou entre primeiro.",
-      "rated": "Você deu {count, plural, one {# estrela} other {# estrelas}}. A média agora é {average}.",
       "thanksRating": "Obrigado por avaliar!",
       "liked": "Adicionado aos seus favoritos!",
       "unliked": "Removido dos seus favoritos",
@@ -8753,6 +8746,11 @@
       "try": "Experimentar",
       "also": "Também no Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Cursos",
+      "typing": "Aprenda a digitar, uma tecla de cada vez: 40 lições curtas e 41 bichinhos para chocar.",
+      "grades": "Anos {grades}"
     }
   },
   "parents": {

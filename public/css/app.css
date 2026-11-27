@@ -339,14 +339,13 @@ textarea.input{min-height:96px;resize:vertical}
 .coverart.has-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
 .coverart .shot-icon{position:absolute;inset-inline-start:8px;bottom:8px;z-index:1;display:grid;place-items:center;width:2.1em;height:2.1em;border-radius:50%;background:rgba(255,253,242,.92);box-shadow:0 2px 8px rgba(20,20,20,.25);font-size:1rem;line-height:1}
 
-/* game card: 3:4 cover, icon art, title, builder, stars, live pill */
+/* game card: 3:4 cover, icon art, title, builder, live pill (no stars, plays or favorites: the owner, 27 Nov 2026) */
 .gcard{display:flex;flex-direction:column;gap:6px;color:var(--text);min-width:0;position:relative;border-radius:var(--r);outline-offset:4px}
 .gcard:hover{text-decoration:none}
 .gcard .coverart{aspect-ratio:3/4;border-radius:var(--r);box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
 .gcard:hover .coverart{transform:translateY(-3px) rotate(-.6deg);box-shadow:var(--shadow-lg)}
 .gcard .t{font-weight:800;font-size:1.02rem;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .gcard .by{font-size:.86rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gcard .meta{display:flex;gap:8px;align-items:center;font-size:.86rem;color:var(--text-2);font-weight:700}
 .live{position:absolute;z-index:2;inset-inline-start:8px;top:8px;display:inline-flex;align-items:center;gap:5px;padding-block:3px;padding-inline:7px 9px;border-radius:999px;background:rgba(20,20,20,.62);color:var(--brand-cream);font-size:.78rem;font-weight:800;backdrop-filter:blur(4px)}
 .live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand-mint);box-shadow:0 0 0 0 rgba(102,199,146,.7);animation:pulse 1.8s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(102,199,146,0)}100%{box-shadow:0 0 0 0 rgba(102,199,146,0)}}
@@ -354,10 +353,6 @@ textarea.input{min-height:96px;resize:vertical}
 /* "🎒 Class only" on a card: the bottom corner opposite the game's icon, so it never covers the "playing" pill at the top. */
 .vis-pill.vis-class{top:auto;bottom:8px;max-width:calc(100% - 3.3rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .coverart:not(.has-shot)~.vis-pill.vis-class{max-width:calc(100% - 16px)}
-/* Stars are the logo's spark: Spark yellow with an Ink outline (no outline in dark). */
-.stars{color:var(--spark);-webkit-text-stroke:1px var(--spark-edge);letter-spacing:1px;white-space:nowrap}
-.stars.muted{color:var(--muted);-webkit-text-stroke:0}
-.stars .num{color:var(--text-2);-webkit-text-stroke:0;letter-spacing:0;margin-inline-start:2px}
 
 /* rails */
 .rail{margin:8px 0 28px}
@@ -1253,8 +1248,8 @@ a.course-head:hover h3,a.course-head:focus-visible h3{text-decoration:underline}
 .course-emo{font-size:2rem;line-height:1;flex:none}
 .course-emo.big{font-size:3rem}
 /* Grammar Lab's Learn card (server/views/grammar-lab.js learnCard): the course's cover in place of the emoji. */
-.gl-learncover{flex:none;width:72px;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:var(--card-2)}
-.gl-learn{margin-top:8px}
+.gl-learncover,.course-coverimg{flex:none;width:72px;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:var(--card-2)}
+section.gl-learn{margin-top:8px}
 /* Grammar Lab in search (views/grammar-lab.js searchCard): the course card, then the units the search names. */
 .gl-search{margin-bottom:20px}
 .gl-search-k{text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px}

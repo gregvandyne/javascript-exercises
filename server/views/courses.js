@@ -84,6 +84,29 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
   </section>`;
 }
 
+/** The Learn page's "Courses" section (routes/teachers.js learnCourses; docs/decisions.md "A Courses section on Learn"):
+ *  Grammar Lab and Typing Zoo (the typing course, its pets) as course cards in the courseRow's own style, each with its
+ *  cover, a one-line description, "Subject · Grades", a progress line where there is one, and one main button (Assign
+ *  for staff). Not the COURSES row above (CS Quest, Number Quest, Cyber Defenders), which stays behind its own flag.
+ *  cards: [{ id, href, cover, title, desc, meta, prog?: { done, total, label }, actions: [{ href, label, primary, id }],
+ *  cls? }] */
+export function coursesSection(cards) {
+  const { t } = current();
+  if (!cards.length) return '';
+  const title = t('learn.courses.h');
+  return html`<section class="rail courses learn-courses" id="learn-courses" aria-labelledby="learn-courses-h">
+    <div class="rail-head"><h2 id="learn-courses-h">${ico('📚', { size: 28 })} ${title}</h2></div>
+    <div class="course-rail"><div class="rail-track course-track learn-courses-track" role="region" aria-label="${title}" tabindex="0">
+    ${cards.map(c => html`<article class="course-card learn-course${c.cls ? ` ${c.cls}` : ''}" id="learn-course-${c.id}" aria-labelledby="learn-course-${c.id}-h">
+      <a class="course-head" href="${c.href}"><img class="course-coverimg" src="${c.cover}" alt="" width="72" height="96" loading="lazy">
+        <div class="course-ht"><h3 id="learn-course-${c.id}-h"${c.lang ? raw(` lang="${c.lang}"`) : ''}>${c.title}</h3><p>${c.desc}</p>${c.meta ? html`<p class="gmeta course-meta">${c.meta}</p>` : ''}</div>
+        <span class="course-go flip" aria-hidden="true">›</span></a>
+      ${c.prog && c.prog.total ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(c.prog.done / Math.max(1, c.prog.total) * 100)}%"></span></div><span class="muted course-prog">${c.prog.label}</span></div>` : ''}
+      <div class="course-foot">${c.actions.map(a => html`<a class="btn ${a.primary ? 'btn-primary' : 'btn-ghost'}" href="${a.href}"${a.id ? raw(` id="${a.id}"`) : ''}>${a.label}</a>`)}</div>
+    </article>`)}
+    </div></div></section>`;
+}
+
 /** The course's name and what it is (the longer line only until a band is picked: then the map is the page). */
 function hero(t, c, short = false) {
   return html`<header class="course-hero">

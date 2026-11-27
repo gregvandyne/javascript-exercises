@@ -81,9 +81,7 @@
   },
   "game": {
     "like": "Favourite",
-    "stats": {
-      "likes": "{count, plural, one {favourite} other {favourites}}"
-    },
+    "stats": {},
     "unavailable": {
       "title": "This game isn’t available right now",
       "text": "It may come back later. Learn has more games and puzzles to try.",
@@ -91,7 +89,9 @@
     },
     "shareText": {
       "connectionsClasses": "Only the maker's friends and classmates can open this link."
-    }
+    },
+    "favAdd": "Add to favourites",
+    "favRemove": "Remove from favourites"
   },
   "friends": {
     "api": {
@@ -514,6 +514,9 @@
       "subjects": {
         "math": "Maths"
       }
+    },
+    "courses": {
+      "grades": "US grades {grades}"
     }
   },
   "parents": {

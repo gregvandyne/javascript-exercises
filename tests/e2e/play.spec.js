@@ -131,13 +131,13 @@ test('rate and favorite a game; it shows in My favorites', async ({ page }) => {
   await signup(page);
   await page.goto('/g/shark-plank');
   await page.click('#rate [data-stars="4"]');
-  await expect(page.locator('#ratemsg')).toContainText('4 stars');
+  await expect(page.locator('#ratemsg')).toContainText('Thanks');
   await page.reload();
   await expect(page.locator('#rate [data-stars="4"]')).toHaveAttribute('aria-checked', 'true');
-  const before = +(await page.locator('#likecount').textContent());
+  await expect(page.locator('#likecount')).toHaveCount(0);
   await page.click('#likebtn');
-  await expect(page.locator('#likecount')).toHaveText(String(before + 1));
   await expect(page.locator('#likebtn')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#likebtn')).toHaveAttribute('aria-label', 'Remove from favorites');
   await expect(page.locator('#likebtn')).toContainText('Favorite');
   await page.goto('/favorites');
   await expect(page.locator('a.gcard[href="/g/shark-plank"]')).toBeVisible();

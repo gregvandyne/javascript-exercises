@@ -518,14 +518,10 @@
     }
   },
   "cards": {
-    "new": "Nouveau",
-    "noRatings": "Pas encore de notes",
-    "starsLabel": "{stars} étoiles sur 5, {count, plural, one {# note} other {# notes}}",
     "playing": "{count} en jeu",
     "gameBy": "{title}, par {name}",
     "classOnly": "Classe seulement",
     "by": "par {name}",
-    "plays": "{count, plural, one {{n} partie} other {{n} parties}}",
     "seeAll": "Voir tout",
     "scrollBack": "Reculer dans {title}",
     "scrollForward": "Avancer dans {title}"
@@ -1149,11 +1145,7 @@
     "updateWaiting": "une mise à jour attend d’être vérifiée",
     "reviewer": "Vérificateur : « {note} »",
     "stats": {
-      "ratings": "{count, plural, one {{n} note} other {{n} notes}}",
-      "noRatings": "pas encore de notes",
-      "playingNow": "en ce moment",
-      "plays": "{count, plural, one {partie} other {parties}}",
-      "likes": "{count, plural, one {favori} other {favoris}}"
+      "playingNow": "en ce moment"
     },
     "about": {
       "heading": "À propos de ce jeu",
@@ -1220,7 +1212,9 @@
     },
     "best": {
       "heading": "Ton meilleur score"
-    }
+    },
+    "favAdd": "Ajouter aux favoris",
+    "favRemove": "Retirer des favoris"
   },
   "play": {
     "backTo": "Retour à {title}",
@@ -2444,7 +2438,6 @@
     },
     "game": {
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
-      "rated": "Tu lui as donné {count, plural, one {# étoile} other {# étoiles}}. La moyenne est maintenant de {average}.",
       "thanksRating": "Merci pour ta note !",
       "liked": "Ajouté à tes favoris !",
       "unliked": "Retiré de tes favoris",
@@ -8751,6 +8744,11 @@
       "try": "Essayer",
       "also": "Aussi sur Oomba",
       "hubNamed": "{subject} : {hub}"
+    },
+    "courses": {
+      "h": "Cours",
+      "typing": "Apprends à taper au clavier, une touche à la fois : 40 petites leçons et 41 animaux à faire éclore.",
+      "grades": "Niveaux {grades}"
     }
   },
   "parents": {

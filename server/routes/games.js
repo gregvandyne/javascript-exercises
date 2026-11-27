@@ -137,10 +137,7 @@ router.get('/g/:slug', (req, res) => {
           : grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
         ${shared && shared.names.length ? html`<div class="sharedwith small"><span>${ico('🎒', { size: 18 })} ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
-          <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
           <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>${t('game.stats.playingNow')}</div>
-          <div class="stat"><b>${f.num(g.plays)}</b>${t('game.stats.plays', { count: +g.plays || 0 })}</div>
-          <div class="stat"><b id="likecount">${f.num(g.likes)}</b>${t('game.stats.likes', { count: +g.likes || 0 })}</div>
         </div>
         ${liveEntry && playable ? '' : html`<div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="${keepLang(req, `/play/${g.slug}`)}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
@@ -150,7 +147,7 @@ router.get('/g/:slug', (req, res) => {
       </div>
       ${liveEntry && playable ? livePanel(req, g, liveEntry) : ''}
       <div class="quietacts">
-          ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
+          ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}" aria-label="${t(liked ? 'game.favRemove' : 'game.favAdd')}" data-on="${t('game.favRemove')}" data-off="${t('game.favAdd')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="qact" type="button" id="sharebtn"><span class="emo">${ico('🔗', { size: 20 })}</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo">${ico('🛠️', { size: 20 })}</span>${t('game.edit')}</a>` : ''}
           ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo">${ico('📁', { size: 20 })}</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo">${ico('📌', { size: 20 })}</span>${t('folders.assign')}</a>` : ''}` : ''}
@@ -260,10 +257,9 @@ function gameSeo(req, g, d, owner) {
     publisher: { '@id': seo.orgId(req) }, author: { '@id': seo.orgId(req) },
     ...(g.published_at ? { datePublished: new Date(g.published_at).toISOString().slice(0, 10) } : {}),
     ...(g.updated_at ? { dateModified: new Date(g.updated_at).toISOString().slice(0, 10) } : {}),
-    // Only real ratings, shown on the page, and only once there are enough to mean something.
-    // applicationCategory and operatingSystem make this a Software App rich result, which Google rejects without a
-    // rating or review, so they come only with the rating.
-    ...(d.rating_count >= 5 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: +d.rating.toFixed(1), ratingCount: d.rating_count, bestRating: 5, worstRating: 1 }, applicationCategory: 'GameApplication', operatingSystem: 'Any (web browser)' } : {}),
+    // No aggregateRating: the page shows no rating (the owner, 27 Nov 2026: no stars or play counts on any card or game
+    // page), and structured data only says what the page shows. Without a rating, applicationCategory and operatingSystem
+    // (a Software App rich result, which Google rejects without a rating or review) are left out too.
     ...(learn && isLearningGame(g.slug) ? { teaches: learn.teaches, educationalLevel: learn.level, learningResourceType: 'Game', interactivityType: 'active' } : {}),
   };
   const crumbs = gameCrumbs(req, g);
@@ -399,7 +395,7 @@ router.get('/play/:slug', (req, res) => {
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <h1 class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">${ico('📚', { size: 18 })} ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</h1>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
-    ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
+    ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t(liked ? 'game.favRemove' : 'game.favAdd')}" data-on="${t('game.favRemove')}" data-off="${t('game.favAdd')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
     <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo">${ico('⭐', { size: 20 })}</span><span class="lbl">${t('play.rate')}</span></button>`}
     ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo">${ico('🔊', { size: 20 })}</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>

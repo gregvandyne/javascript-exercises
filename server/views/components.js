@@ -40,12 +40,6 @@ export const categoryLabel = (key, t = current().t) => t(`categories.${key}`);
  *  else ('Year 4', 'K', '4–5') is shown as typed, so it never reads 'Grade Year 4'. */
 export const gradeLabel = (t, g) => (!g ? '' : /^\d{1,2}$/.test(String(g).trim()) ? t('school.class.gradeN', { grade: String(g).trim() }) : String(g));
 
-export function stars(rating, count) {
-  const { t } = current();
-  const r = Math.round((+rating || 0) * 2) / 2;
-  if (!count) return html`<span class="stars small muted" aria-label="${t('cards.noRatings')}">☆ ${t('cards.new')}</span>`;
-  return html`<span class="stars" aria-label="${t('cards.starsLabel', { stars: r.toFixed(1), count })}">★<span class="num">${r.toFixed(1)}</span></span>`;
-}
 /** A player's picture: their profile photo when they have one, else their emoji on their colour. The photo URL itself
  *  decides per viewer (/avatars/<id>): friends, the player and admins get the photo, everyone else the emoji. */
 export function avatar(u, size = 40) {
@@ -90,7 +84,7 @@ export function coverArt(g, extra = '', { draft = false, eager = false } = {}) {
  *  byName: a name to credit instead of the owner's display name (the class page shows a teacher's real name). */
 /** meta: a short extra line under the title (the Learn tab's "Math · Grades 1–5"). */
 export function gameCard(g, { showVis = false, classPill = true, byName = null, meta = null } = {}) {
-  const { t, fmt, anon } = current();
+  const { t, anon } = current();
   // Signed out (search engines included): no child's name. Only the official account's name is shown.
   const by = anon && g.owner_name !== OFFICIAL ? '' : byName || g.owner_display || g.owner_name || '';
   const label = by ? t('cards.gameBy', { title: g.title, name: by }) : g.title;
@@ -103,7 +97,6 @@ export function gameCard(g, { showVis = false, classPill = true, byName = null, 
     <div class="t">${g.title}</div>
     ${meta ? html`<div class="by gmeta">${meta}</div>` : ''}
     ${by ? html`<div class="by">${t('cards.by', { name: by })}</div>` : ''}
-    <div class="meta">${stars(g.rating, g.rating_count)}<span class="muted">· ${t('cards.plays', { count: +g.plays || 0, n: fmt.num(g.plays) })}</span></div>
   </a>`;
 }
 /** count: for a 'class' game, how many classes it is shared with ("My class" / "My classes"). */
