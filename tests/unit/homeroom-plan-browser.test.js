@@ -145,6 +145,12 @@ test('1366 x 768: plan in the chat, Use this plan, Start, the pill counts down, 
   await settle(page);
   await card.locator('.oc-planh').evaluate(el => el.scrollIntoView({ block: 'start' }));
   await shot(page, '1366-card');
+  // Save plan: the card itself says it was saved, at once (no reload): the chat redraws on savedAs (25 Nov 2026)
+  await card.locator('[data-act="planSave"]').click();
+  await page.locator('dialog.ob-dialog input').fill('Fractions day');
+  await page.locator('dialog.ob-dialog .btn-primary').click();
+  await card.locator('.oc-state', { hasText: /Saved as/ }).waitFor({ timeout: 8000 });
+  assert.equal(await card.locator('[data-act="planSave"]').count(), 0, 'Save plan is gone once the plan is saved');
   // Use this plan: on desks; the pill shows Today with Start plan
   await card.locator('button', { hasText: 'Use this plan' }).click();
   await page.waitForSelector('#hr-plan [data-hrplan="start"]');
