@@ -1167,7 +1167,7 @@ See 2.5 Forming Superlative Adjectives above.
 7. "An apple fell from our tree." Which word is the article? Answer: An. Hint: Look for a, an, or the in front of a noun.
 8. "The moon rose over those hills." Which word is the article? Answer: The. Hint: Look for a, an, or the in front of a noun.
 9. "Leo built a fort in his backyard." Which word is the article? Answer: a. Hint: Look for a, an, or the in front of a noun.
-10. "The teacher read a story to the class." Which words are the articles? Answer: The and a. Hint: Look for a, an, or the in front of each noun.
+10. "The teacher read a story to the class." Which words are the articles? Answer: The, a, and the. Hint: Look for a, an, or the in front of each noun.
 11. "An ant carried a crumb across the floor." Which words are the articles? Answer: An and a. Hint: Look for a, an, or the in front of each noun.
 12. "The river flows through the valley." Which words are the articles? Answer: The and the. Hint: Look for a, an, or the in front of each noun.
 
@@ -2442,7 +2442,7 @@ See 3.9 Forming Comparative and Superlative Adverbs above.
 4. "Ana sat beside her friend." Which word is the preposition? Answer: beside. Hint: Look for the word that shows the link between Ana and her friend.
 5. "The bird flew over the house." Which word is the preposition? Answer: over. Hint: Look for the word that shows where the bird flew.
 6. "Leo hid behind the tree." Which word is the preposition? Answer: behind. Hint: Look for the word that shows where Leo hid.
-7. "The ball rolled between the chairs." Which word is the preposition? Answer: between. Hint: Look for the word that shows the link between ball and chairs.
+7. "The ball rolled between the chairs." Which word is the preposition? Answer: between. Hint: Look for the word that shows where the ball rolled.
 8. "Maya walked home with her brother." Which word is the preposition? Answer: with. Hint: Look for the word that shows the link between Maya and her brother.
 9. "The keys are in the drawer." Which word is the preposition? Answer: in. Hint: Look for the word that shows where the keys are.
 10. "We met at noon." Which word is the preposition? Answer: at. Hint: Look for the word that shows when we met.

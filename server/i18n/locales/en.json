@@ -6849,7 +6849,16 @@
       "nearGaps": "You put in too many commas. Take out the extras, then submit again.",
       "cyclePress": "Press to choose",
       "cycleOf": "{option}, choice {n} of {total}. Press for the next one.",
-      "wrongFix": "Not quite. Now press the sentence to see some fixes, stop on the right one, and submit. Get two right in a row to finish this level."
+      "wrongFix": "Not quite. Now press the sentence to see some fixes, stop on the right one, and submit. Get two right in a row to finish this level.",
+      "chip": "Mark to place: {mark}",
+      "mark": {
+        "comma": "comma",
+        "semicolon": "semicolon",
+        "colon": "colon"
+      },
+      "gapHolds": "{mark} after {word}",
+      "mgap": "Space after {word}",
+      "wrongMarks": "Not quite. Look at the marks between the words again. Get two right in a row to finish this level."
     }
   },
   "favorites": {
@@ -17947,7 +17956,9 @@
       "flag": "Report a problem with this question",
       "correct": "Correct!",
       "levelNext": "Next level",
-      "fixLabel": "Fix the sentence here"
+      "fixLabel": "Fix the sentence here",
+      "chips": "Marks to place",
+      "asIs": "It's right as it is"
     },
     "levels": {
       "heading": "Levels and mastery",

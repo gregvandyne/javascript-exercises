@@ -252,3 +252,12 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-passage{margin:0 0 8px;font-size:19px;line-height:1.6}
 .gl-hl{background:var(--spark-soft);color:var(--text);padding:.05em .15em;border-radius:6px;box-shadow:inset 0 -3px 0 var(--spark-press);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .gl-sections .gl-how{margin:0;color:var(--text-2)}
+/* grades 6-8: the word a question names, punctuation chips, "It's right as it is" */
+.gl-focus{font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.gl-chips{display:flex;gap:10px;justify-content:center;margin:6px 0 10px}
+.gl-chip{font:inherit;font-size:26px;font-weight:800;min-width:52px;min-height:48px;border:2px solid var(--edge);border-radius:var(--r-sm);background:var(--card);color:var(--text);cursor:pointer}
+.gl-chip[aria-checked="true"]{background:var(--spark);color:var(--brand-ink);border-color:var(--spark-press)}
+.gl-chip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-mgap[aria-pressed="true"]::after{content:attr(data-mark)}
+.gl-asis[aria-pressed="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-section-body{margin:4px 0 8px}

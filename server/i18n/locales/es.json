@@ -5785,7 +5785,16 @@
       "nearGaps": "Pusiste demasiadas comas. Quita las que sobran y vuelve a enviar.",
       "cyclePress": "Pulsa para elegir",
       "cycleOf": "{option}, opción {n} de {total}. Pulsa para ver la siguiente.",
-      "wrongFix": "Casi. Ahora pulsa la oración para ver algunas correcciones, quédate en la correcta y envíala. Acierta dos seguidas para terminar este nivel."
+      "wrongFix": "Casi. Ahora pulsa la oración para ver algunas correcciones, quédate en la correcta y envíala. Acierta dos seguidas para terminar este nivel.",
+      "chip": "Signo para colocar: {mark}",
+      "mark": {
+        "comma": "coma",
+        "semicolon": "punto y coma",
+        "colon": "dos puntos"
+      },
+      "gapHolds": "{mark} después de {word}",
+      "mgap": "Espacio después de {word}",
+      "wrongMarks": "Casi. Vuelve a mirar los signos entre las palabras. Acierta dos seguidas para terminar este nivel."
     }
   },
   "favorites": {
@@ -16202,7 +16211,9 @@
       "flag": "Informar de un problema con esta pregunta",
       "correct": "¡Correcto!",
       "levelNext": "Siguiente nivel",
-      "fixLabel": "Corrige la oración aquí"
+      "fixLabel": "Corrige la oración aquí",
+      "chips": "Signos para colocar",
+      "asIs": "Está bien así"
     },
     "levels": {
       "heading": "Niveles y dominio",

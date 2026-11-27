@@ -2,7 +2,8 @@
   "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title, its parts (each an ordered list of topic ids, with an optional part title; a topic opens when the one before it in the unit is mastered) and optional marks ({ topic id: 'checkpoint' | 'review' }). topics: each topic once, by id, however many units use it: where its text is in source/course.md (the band section and the topic heading), an optional display title, its quiz format (tap, capfix, gaps, choice with choices.kind, passage, or fix with fix.kind; choices.cycle shows a choice as press-to-cycle), the line that asks the question, its levels (questions per level) and, for a topic with a Mistake Hunt room, the room's mistake kinds. scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
   "bands": [
     { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] },
-    { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] }
+    { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] },
+    { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8"] }
   ],
   "pathways": {
     "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] },
@@ -49,7 +50,34 @@
     "more-verbs-and-time": { "title": "More Verbs and Time", "parts": [
       { "title": "Progressive Verbs", "topics": ["progressive-verbs"] },
       { "title": "Tense Shifts", "topics": ["tense-shifts"] }
-    ], "marks": { "tense-shifts": "review" } }
+    ], "marks": { "tense-shifts": "review" } },
+    "active-and-passive-voice": { "title": "Active and Passive Voice", "parts": [{ "title": "Spotting Active and Passive Voice", "topics": ["active-voice-verbs", "active-or-passive"] }, { "title": "Writing in Active Voice", "topics": ["creating-active-sentences"] }, { "title": "Choosing a Voice", "topics": ["emphasis-with-voice"] }] },
+    "adjectives-6-8": { "title": "Adjectives", "parts": [{ "title": "Finding and Ordering Adjectives", "topics": ["adjective-describes", "adjectives-before-after", "ordering-adjectives"] }, { "title": "Comparing with Adjectives", "topics": ["comparative-adjectives", "superlative-adjectives"] }] },
+    "adjectives-vs-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "title": "Adjectives", "topics": ["adjective-describes", "adjectives-before-after"] }, { "title": "Adverbs", "topics": ["adverb-describes", "adverbs-time-place-manner"] }, { "title": "Adverb or Adjective", "topics": ["adverb-or-adjective", "using-adverbs-adjectives"] }, { "title": "Comparing with Adjectives", "topics": ["comparative-adjectives", "superlative-adjectives"] }, { "title": "Comparing with Adverbs", "topics": ["comparative-superlative-adverbs"] }] },
+    "articles": { "title": "Articles", "parts": [{ "topics": ["identifying-articles", "a-and-an"] }] },
+    "claims-evidence-reasoning": { "title": "Claims, Evidence, and Reasoning", "parts": [{ "title": "Strong Claims", "topics": ["strong-claims"] }, { "title": "Connecting Evidence to a Claim", "topics": ["claims-evidence-reasoning"] }] },
+    "embedding-evidence": { "title": "Using Evidence in Body Paragraphs", "parts": [{ "title": "Context for Story Evidence", "topics": ["literary-context"] }, { "title": "Context for Nonfiction Evidence", "topics": ["nonfiction-context"] }, { "title": "Paraphrasing Without Copying", "topics": ["paraphrase-plagiarism"] }, { "title": "Fitting Quotes into Your Sentences", "topics": ["matching-pronouns-verbs"] }, { "title": "In-Text Citations", "topics": ["in-text-citations"] }] },
+    "transitions": { "title": "Transition Words and Phrases", "parts": [{ "topics": ["using-transitions"] }], "marks": { "using-transitions": "checkpoint" } },
+    "compound-and-complex": { "title": "Compound and Complex Sentences", "parts": [{ "title": "Coordinating Conjunctions", "topics": ["fanboys-identify", "fanboys-function"] }, { "title": "Punctuating Coordinating Conjunctions", "topics": ["fanboys-punctuate"] }, { "title": "Comma Splices and Fused Sentences", "topics": ["splices-fused"] }, { "title": "Conjunctive Adverbs", "topics": ["conj-adverbs-identify"] }, { "title": "Punctuating Conjunctive Adverbs", "topics": ["conj-adverbs-start", "conj-adverbs-middle"] }, { "title": "Subordinating Conjunctions", "topics": ["subordinating-identify"] }, { "title": "Punctuating Subordinating Conjunctions", "topics": ["subordinating-start", "subordinating-middle"] }], "marks": { "fanboys-punctuate": "checkpoint" } },
+    "titles-of-works": { "title": "Titles of Works", "parts": [{ "topics": ["long-short-works", "capitalizing-formatting-titles"] }] },
+    "choosing-conjunctions": { "title": "Choosing Conjunctions", "parts": [{ "title": "Kinds of Conjunctions", "topics": ["fanboys-identify", "subordinating-identify", "conj-adverbs-identify"] }, { "title": "The Right Coordinating Conjunction", "topics": ["choosing-fanboys"] }, { "title": "Conjunctions in Pairs", "topics": ["correlative-conjunctions"] }, { "title": "Fixing Conjunction Errors", "topics": ["fanboys-errors"] }] },
+    "commas-for-clarity": { "title": "Commas for Clear Sentences", "parts": [{ "topics": ["commas-introductory", "commas-adjectives"] }] },
+    "commas-for-formatting": { "title": "Commas in Dates and Lists", "parts": [{ "topics": ["commas-dates", "commas-series-6-8"] }] },
+    "confused-words-1": { "title": "Sound-alike Words I", "parts": [{ "topics": ["its-and-its", "a-and-an", "to-too-two", "know-no", "a-lot", "their-there-theyre"] }] },
+    "confused-words-2": { "title": "Sound-alike Words II", "parts": [{ "topics": ["knot-not", "whos-whose", "right-write", "passed-past", "into-in-to", "desert-dessert", "because-cause", "principal-principle"] }] },
+    "confused-words-3": { "title": "Sound-alike Words III", "parts": [{ "topics": ["who-whom", "quiet-quite", "morning-mourning", "maybe-may-be", "good-well", "everyday-every-day", "everyone-every-one", "anyone-any-one", "affect-effect", "accept-except"] }] },
+    "comparatives-and-superlatives": { "title": "Comparatives and Superlatives", "parts": [{ "title": "Comparing with Adjectives", "topics": ["comparative-adjectives", "superlative-adjectives"] }, { "title": "Comparing with Adverbs", "topics": ["comparative-superlative-adverbs"] }] },
+    "parts-of-a-sentence-1": { "title": "Parts of a Sentence I", "parts": [{ "title": "Subjects", "topics": ["sentence-subject", "pronoun-subjects"] }, { "title": "Verbs", "topics": ["sentence-verb"] }, { "title": "Direct Objects", "topics": ["direct-objects"] }, { "title": "Prepositions", "topics": ["prepositions"] }] },
+    "parts-of-a-sentence-2": { "title": "Parts of a Sentence II", "parts": [{ "title": "Subjects", "topics": ["sentence-subject", "pronoun-subjects"] }, { "title": "Verbs", "topics": ["sentence-verb"] }, { "title": "Direct Objects", "topics": ["direct-objects"] }, { "title": "Prepositions", "topics": ["prepositions"] }, { "title": "Conjunctions", "topics": ["fanboys-identify", "subordinating-identify", "conj-adverbs-identify"] }, { "title": "Clauses", "topics": ["complete-or-incomplete", "dependent-clauses"] }] },
+    "conclusions": { "title": "Conclusion Paragraphs", "parts": [{ "topics": ["conclusion-jobs"] }], "marks": { "conclusion-jobs": "checkpoint" } },
+    "contractions": { "title": "Contractions", "parts": [{ "topics": ["contractions-possessives", "whos-whose", "its-and-its", "possessive-pronouns"] }] },
+    "counterarguments": { "title": "Counterargument Paragraphs", "parts": [{ "topics": ["counterargument"] }], "marks": { "counterargument": "checkpoint" } },
+    "paraphrasing-and-citations": { "title": "Paraphrasing and Citations", "parts": [{ "title": "Paraphrasing Without Copying", "topics": ["paraphrase-plagiarism"] }, { "title": "In-Text Citations", "topics": ["in-text-citations"] }] },
+    "quotes-in-your-sentences": { "title": "Quotes in Your Sentences", "parts": [{ "topics": ["matching-pronouns-verbs"] }] },
+    "context-for-evidence": { "title": "Context for Evidence", "parts": [{ "title": "Context for Story Evidence", "topics": ["literary-context"] }, { "title": "Context for Nonfiction Evidence", "topics": ["nonfiction-context"] }] },
+    "embedding-quotations": { "title": "Embedding Quotations", "parts": [{ "title": "Dialogue and Flow Quotes", "topics": ["capitalizing-quotes", "pause-before-quote", "dialogue-flow-quotes"] }, { "title": "Dialogue and Colon Quotes", "topics": ["dialogue-colon-quotes"] }] },
+    "formal-and-informal": { "title": "Formal and Informal Language", "parts": [{ "topics": ["formal-informal"] }] },
+    "parts-of-speech-6-8": { "title": "Parts of Speech I", "parts": [{ "title": "Nouns", "topics": ["concrete-nouns"] }, { "title": "Common and Proper Nouns", "topics": ["common-nouns-6-8", "common-proper"] }, { "title": "Verbs", "topics": ["sentence-verb", "verb-tenses"] }], "marks": { "common-proper": "checkpoint" } }
   },
   "topics": {
     "identifying-adjectives": {
@@ -205,6 +233,579 @@
       "ask": "Press the verb to make it match the time the first verb sets.",
       "levels": [4, 4, 4],
       "room": { "kinds": ["gr-tense"] }
+    },
+    "active-voice-verbs": {
+      "source": { "band": "6-8", "title": "Identifying Active Voice Verbs" },
+      "format": "items",
+      "ask": "Tap the active voice verb.",
+      "levels": [4, 4, 4]
+    },
+    "active-or-passive": {
+      "source": { "band": "6-8", "title": "Is the Sentence Active or Passive?" },
+      "format": "items",
+      "ask": "Is the sentence active or passive?",
+      "levels": [4, 4, 4],
+      "read": { "check": "voice" }
+    },
+    "creating-active-sentences": {
+      "source": { "band": "6-8", "title": "Creating Active Voice Sentences 1" },
+      "title": "Creating Active Voice Sentences",
+      "format": "items",
+      "ask": "Choose the sentence in active voice.",
+      "levels": [4, 4, 4]
+    },
+    "emphasis-with-voice": {
+      "source": { "band": "6-8", "title": "Creating Emphasis with Voice" },
+      "format": "items",
+      "ask": "Choose the voice that fits.",
+      "levels": [4, 4, 4],
+      "read": { "check": "voice" }
+    },
+    "adjective-describes": {
+      "source": { "band": "6-8", "title": "What Does the Adjective Describe?" },
+      "format": "items",
+      "ask": "Tap the noun the adjective describes.",
+      "levels": [4, 4, 4]
+    },
+    "adjectives-before-after": {
+      "source": { "band": "6-8", "title": "Identifying Adjectives Before and After Nouns" },
+      "format": "items",
+      "ask": "Tap the adjective.",
+      "levels": [4, 4, 4],
+      "read": { "answerHead": true }
+    },
+    "ordering-adjectives": {
+      "source": { "band": "6-8", "title": "Ordering Adjectives" },
+      "format": "items",
+      "ask": "Choose the adjectives in the right order.",
+      "levels": [4, 4, 4],
+      "read": { "check": "order" }
+    },
+    "comparative-adjectives": {
+      "source": { "band": "6-8", "title": "Forming Comparative Adjectives" },
+      "format": "items",
+      "ask": "Choose the comparative.",
+      "levels": [4, 4, 4]
+    },
+    "superlative-adjectives": {
+      "source": { "band": "6-8", "title": "Forming Superlative Adjectives" },
+      "format": "items",
+      "ask": "Choose the superlative.",
+      "levels": [4, 4, 4]
+    },
+    "adverb-describes": {
+      "source": { "band": "6-8", "title": "What Does the Adverb Describe?" },
+      "format": "items",
+      "ask": "Tap the word the adverb describes.",
+      "levels": [4, 4, 4]
+    },
+    "adverbs-time-place-manner": {
+      "source": { "band": "6-8", "title": "Identifying Adverbs of Time, Place, and Manner" },
+      "format": "items",
+      "ask": "What kind of adverb is it?",
+      "levels": [4, 4, 4],
+      "read": { "check": "advkind" }
+    },
+    "adverb-or-adjective": {
+      "source": { "band": "6-8", "title": "Is the Word an Adverb or Adjective?" },
+      "format": "items",
+      "ask": "Is the word an adjective or an adverb?",
+      "levels": [4, 4, 4],
+      "read": { "check": "adjadv" }
+    },
+    "using-adverbs-adjectives": {
+      "source": { "band": "6-8", "title": "Using Adverbs and Adjectives" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "check": "adjadv" },
+      "room": { "kinds": ["gr-adverb"] }
+    },
+    "comparative-superlative-adverbs": {
+      "source": { "band": "6-8", "title": "Forming Comparative and Superlative Adverbs" },
+      "format": "items",
+      "ask": "Choose the form that fits.",
+      "levels": [4, 4, 4]
+    },
+    "identifying-articles": {
+      "source": { "band": "6-8", "title": "Identifying Articles" },
+      "format": "items",
+      "ask": "Tap the article.",
+      "levels": [4, 4, 4],
+      "read": { "ruleWords": ["a", "an", "the"] }
+    },
+    "a-and-an": {
+      "source": { "band": "6-8", "title": "\"A\" vs. \"An\"" },
+      "format": "items",
+      "ask": "Choose a or an.",
+      "levels": [4, 4, 4],
+      "read": { "check": "a-an" }
+    },
+    "strong-claims": {
+      "source": { "band": "6-8", "title": "Recognizing Strong Topic Sentences 1: Claims" },
+      "title": "Recognizing Strong Topic Sentences: Claims",
+      "format": "items",
+      "ask": "Choose the claim.",
+      "levels": [4, 4, 4]
+    },
+    "claims-evidence-reasoning": {
+      "source": { "band": "6-8", "title": "Identifying Claims, Evidence, and Reasoning" },
+      "format": "items",
+      "ask": "Tap the sentence that does the job.",
+      "levels": [4, 4, 4]
+    },
+    "literary-context": {
+      "source": { "band": "6-8", "title": "Context for Literary Evidence 1: Identifying Speaker, Listener, and Plot Clue" },
+      "title": "Context for Literary Evidence: Speaker, Listener, and Plot Clue",
+      "format": "items",
+      "ask": "Read the passage, then answer.",
+      "levels": [4, 4, 4]
+    },
+    "nonfiction-context": {
+      "source": { "band": "6-8", "title": "Context for Nonfiction Evidence 1: Evaluating Source Information and Reporting Verbs" },
+      "title": "Context for Nonfiction Evidence: Source Information and Reporting Verbs",
+      "format": "items",
+      "ask": "Read the passage, then answer.",
+      "levels": [4, 4, 4]
+    },
+    "paraphrase-plagiarism": {
+      "source": { "band": "6-8", "title": "Evaluating Paraphrases for Plagiarism" },
+      "format": "items",
+      "ask": "Read the original, then choose.",
+      "levels": [4, 4, 4]
+    },
+    "matching-pronouns-verbs": {
+      "source": { "band": "6-8", "title": "Matching Pronouns and Verbs between Context and Quotations" },
+      "format": "items",
+      "ask": "Choose the sentence that matches the quote.",
+      "levels": [4, 4, 4]
+    },
+    "in-text-citations": {
+      "source": { "band": "6-8", "title": "Formatting In-Text Citations" },
+      "format": "items",
+      "ask": "Choose the citation written the right way.",
+      "levels": [4, 4, 4]
+    },
+    "using-transitions": {
+      "source": { "band": "6-8", "title": "Using the Appropriate Transition Words and Phrases" },
+      "format": "items",
+      "ask": "Choose the transition that fits.",
+      "levels": [4, 4, 4]
+    },
+    "fanboys-identify": {
+      "source": { "band": "6-8", "title": "Identifying Coordinating Conjunctions (FANBOYS)" },
+      "format": "items",
+      "ask": "Tap the coordinating conjunction.",
+      "levels": [4, 4, 4]
+    },
+    "fanboys-function": {
+      "source": { "band": "6-8", "title": "Identifying the Function of FANBOYS" },
+      "format": "items",
+      "ask": "What does the conjunction do?",
+      "levels": [4, 4, 4]
+    },
+    "fanboys-punctuate": {
+      "source": { "band": "6-8", "title": "Punctuating FANBOYS (checkpoint)" },
+      "title": "Punctuating FANBOYS",
+      "format": "items",
+      "ask": "Put a comma where one is needed, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "splices-fused": {
+      "source": { "band": "6-8", "title": "Correcting Comma Splices and Fused Sentences" },
+      "format": "items",
+      "ask": "Fix the sentence.",
+      "levels": [4, 4, 4],
+      "read": { "fix": "splice", "labels": ["Comma splice", "Fused sentence", "Correct"], "check": "splice" },
+      "room": { "kinds": ["sx-splice", "sx-runon"] }
+    },
+    "conj-adverbs-identify": {
+      "source": { "band": "6-8", "title": "Identifying Conjunctive Adverbs" },
+      "format": "items",
+      "ask": "Tap the conjunctive adverb.",
+      "levels": [4, 4, 4]
+    },
+    "conj-adverbs-start": {
+      "source": { "band": "6-8", "title": "Punctuating Conjunctive Adverbs at the Beginning of a Sentence" },
+      "format": "items",
+      "ask": "Put the comma where it goes.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["pc-intro"] }
+    },
+    "conj-adverbs-middle": {
+      "source": { "band": "6-8", "title": "Punctuating Conjunctive Adverbs in the Middle of a Sentence" },
+      "format": "items",
+      "ask": "Put the marks where they go.",
+      "levels": [4, 4, 4],
+      "read": { "chips": [",", ";"] }
+    },
+    "subordinating-identify": {
+      "source": { "band": "6-8", "title": "Identifying Subordinating Conjunctions" },
+      "format": "items",
+      "ask": "Tap the subordinating conjunction.",
+      "levels": [4, 4, 4]
+    },
+    "subordinating-start": {
+      "source": { "band": "6-8", "title": "Punctuating Subordinating Conjunctions at the Beginning of a Sentence" },
+      "format": "items",
+      "ask": "Put the comma where it goes.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["pc-intro"] }
+    },
+    "subordinating-middle": {
+      "source": { "band": "6-8", "title": "Punctuating Subordinating Conjunctions in the Middle of a Sentence" },
+      "format": "items",
+      "ask": "Take out the comma that does not belong.",
+      "levels": [4, 4, 4]
+    },
+    "long-short-works": {
+      "source": { "band": "6-8", "title": "Recognizing Titles of Long-Form and Short-Form Works" },
+      "format": "items",
+      "ask": "Is the work long-form or short-form?",
+      "levels": [4, 4, 4],
+      "read": { "check": "longshort" }
+    },
+    "capitalizing-formatting-titles": {
+      "source": { "band": "6-8", "title": "Capitalizing and Formatting Titles 1" },
+      "title": "Capitalizing and Formatting Titles",
+      "format": "items",
+      "ask": "Choose the title written the right way.",
+      "levels": [4, 4, 4],
+      "read": { "check": "italics" }
+    },
+    "choosing-fanboys": {
+      "source": { "band": "6-8", "title": "Using the Appropriate FANBOYS" },
+      "format": "items",
+      "ask": "Press the blank to choose the conjunction that fits.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "correlative-conjunctions": {
+      "source": { "band": "6-8", "title": "Matching Correlative Conjunctions" },
+      "format": "items",
+      "ask": "Press the blank to choose the word that completes the pair.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "fanboys-errors": {
+      "source": { "band": "6-8", "title": "Correcting FANBOYS Errors" },
+      "format": "items",
+      "ask": "Fix the sentence, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "fix": "conj", "asIs": true }
+    },
+    "commas-introductory": {
+      "source": { "band": "6-8", "title": "Commas with Introductory Phrases and Clauses" },
+      "format": "items",
+      "ask": "Put the comma where it goes.",
+      "levels": [4, 4, 4],
+      "read": { "optional": ["intro"] }
+    },
+    "commas-adjectives": {
+      "source": { "band": "6-8", "title": "Commas Separating Adjectives" },
+      "format": "items",
+      "ask": "Put a comma where one is needed, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "commas-dates": {
+      "source": { "band": "6-8", "title": "Commas with Dates" },
+      "format": "items",
+      "ask": "Put the commas where they go, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "asIs": true }
+    },
+    "commas-series-6-8": {
+      "source": { "band": "6-8", "title": "Commas with Items in a Series" },
+      "format": "items",
+      "ask": "Put the commas where they go.",
+      "levels": [4, 4, 4],
+      "read": { "optional": ["series"] },
+      "room": { "kinds": ["pc-series"] }
+    },
+    "its-and-its": {
+      "source": { "band": "6-8", "title": "\"It's\" vs. \"Its\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-its"] }
+    },
+    "to-too-two": {
+      "source": { "band": "6-8", "title": "\"To\" vs. \"Too\" vs. \"Two\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-to"] }
+    },
+    "know-no": {
+      "source": { "band": "6-8", "title": "\"Know\" vs. \"No\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-homophone"], "words": ["know", "no"] }
+    },
+    "a-lot": {
+      "source": { "band": "6-8", "title": "\"A lot\" vs. \"Alot\"" },
+      "format": "items",
+      "ask": "Fix the spelling.",
+      "levels": [4, 4, 4],
+      "read": { "fix": "spelling" }
+    },
+    "their-there-theyre": {
+      "source": { "band": "6-8", "title": "\"Their\" vs. \"There\" vs. \"They're\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-there"] }
+    },
+    "knot-not": {
+      "source": { "band": "6-8", "title": "\"Knot\" vs. \"Not\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-homophone"], "words": ["knot", "not"] }
+    },
+    "whos-whose": {
+      "source": { "band": "6-8", "title": "\"Who's\" vs. \"Whose\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused", "us-homophone"], "words": ["who's", "whose"] }
+    },
+    "right-write": {
+      "source": { "band": "6-8", "title": "\"Right\" vs. \"Write\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-homophone"], "words": ["right", "write"] }
+    },
+    "passed-past": {
+      "source": { "band": "6-8", "title": "\"Passed\" vs. \"Past\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-homophone"], "words": ["passed", "past"] }
+    },
+    "into-in-to": {
+      "source": { "band": "6-8", "title": "\"Into\" vs. \"In to\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "desert-dessert": {
+      "source": { "band": "6-8", "title": "\"Desert\" vs. \"Dessert\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused"], "words": ["desert", "dessert"] }
+    },
+    "because-cause": {
+      "source": { "band": "6-8", "title": "\"Because\" vs. \"Cause\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "principal-principle": {
+      "source": { "band": "6-8", "title": "\"Principal\" vs. \"Principle\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused", "us-homophone"], "words": ["principal", "principle"] }
+    },
+    "who-whom": {
+      "source": { "band": "6-8", "title": "\"Who\" vs. \"Whom\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "cycle": true }
+    },
+    "quiet-quite": {
+      "source": { "band": "6-8", "title": "\"Quiet\" vs. \"Quite\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused"], "words": ["quiet", "quite"] }
+    },
+    "morning-mourning": {
+      "source": { "band": "6-8", "title": "\"Morning\" vs. \"Mourning\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "maybe-may-be": {
+      "source": { "band": "6-8", "title": "\"Maybe\" vs. \"May be\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "good-well": {
+      "source": { "band": "6-8", "title": "\"Good\" vs. \"Well\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "everyday-every-day": {
+      "source": { "band": "6-8", "title": "\"Everyday\" vs. \"Every day\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "everyone-every-one": {
+      "source": { "band": "6-8", "title": "\"Everyone\" vs. \"Every one\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "anyone-any-one": {
+      "source": { "band": "6-8", "title": "\"Anyone\" vs. \"Any one\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4]
+    },
+    "affect-effect": {
+      "source": { "band": "6-8", "title": "\"Affect\" vs. \"Effect\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused"], "words": ["affect", "effect"] }
+    },
+    "accept-except": {
+      "source": { "band": "6-8", "title": "\"Accept\" vs. \"Except\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["us-confused"], "words": ["accept", "except"] }
+    },
+    "sentence-subject": {
+      "source": { "band": "6-8", "title": "Identifying the Subject of a Sentence" },
+      "format": "items",
+      "ask": "Tap the subject.",
+      "levels": [4, 4, 4]
+    },
+    "pronoun-subjects": {
+      "source": { "band": "6-8", "title": "Identifying Pronouns as Subjects" },
+      "format": "items",
+      "ask": "Tap the pronoun subject.",
+      "levels": [4, 4, 4],
+      "read": { "ruleWords": ["i", "you", "he", "she", "it", "we", "they"] }
+    },
+    "sentence-verb": {
+      "source": { "band": "6-8", "title": "Identifying the Verb in a Sentence" },
+      "format": "items",
+      "ask": "Tap the verb.",
+      "levels": [4, 4, 4]
+    },
+    "direct-objects": {
+      "source": { "band": "6-8", "title": "Identifying Verbs and Their Direct Objects" },
+      "format": "items",
+      "ask": "Tap the direct object.",
+      "levels": [4, 4, 4]
+    },
+    "prepositions": {
+      "source": { "band": "6-8", "title": "Identifying Prepositions" },
+      "format": "items",
+      "ask": "Tap the preposition.",
+      "levels": [4, 4, 4]
+    },
+    "complete-or-incomplete": {
+      "source": { "band": "6-8", "title": "Is the Thought Complete or Incomplete?" },
+      "format": "items",
+      "ask": "Is the thought complete or incomplete?",
+      "levels": [4, 4, 4],
+      "read": { "check": "thought" }
+    },
+    "dependent-clauses": {
+      "source": { "band": "6-8", "title": "Identifying Dependent Clauses" },
+      "format": "items",
+      "ask": "Tap every word of the dependent clause.",
+      "levels": [4, 4, 4],
+      "room": { "kinds": ["sx-fragment"] }
+    },
+    "conclusion-jobs": {
+      "source": { "band": "6-8", "title": "The Two Jobs of a Conclusion" },
+      "format": "items",
+      "ask": "Read the passage, then choose.",
+      "levels": [4, 4, 4]
+    },
+    "contractions-possessives": {
+      "source": { "band": "6-8", "title": "Distinguishing Contractions and Possessives" },
+      "format": "items",
+      "ask": "Is it a contraction or a possessive?",
+      "levels": [4, 4, 4],
+      "read": { "check": "contraction" }
+    },
+    "possessive-pronouns": {
+      "source": { "band": "6-8", "title": "Correcting Errors with \"Yours,\" \"Hers,\" \"Theirs,\" and \"Ours\"" },
+      "format": "items",
+      "ask": "Fix the sentence, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "fix": "apostrophe", "asIs": true }
+    },
+    "counterargument": {
+      "source": { "band": "6-8", "title": "Planning a Counterargument Paragraph" },
+      "format": "items",
+      "ask": "Read the passage, then choose.",
+      "levels": [4, 4, 4]
+    },
+    "capitalizing-quotes": {
+      "source": { "band": "6-8", "title": "Capitalizing Quotes" },
+      "format": "items",
+      "ask": "Tap each word whose capital letter is wrong.",
+      "levels": [4, 4, 4]
+    },
+    "pause-before-quote": {
+      "source": { "band": "6-8", "title": "Is There a Pause Before the Quote?" },
+      "format": "items",
+      "ask": "Put a comma before the quote, or take out the one that does not belong.",
+      "levels": [4, 4, 4]
+    },
+    "dialogue-flow-quotes": {
+      "source": { "band": "6-8", "title": "Formatting Dialogue and Flow Quotes 1" },
+      "title": "Formatting Dialogue and Flow Quotes",
+      "format": "items",
+      "ask": "Fix the punctuation, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "fix": "endmark", "asIs": true }
+    },
+    "dialogue-colon-quotes": {
+      "source": { "band": "6-8", "title": "Formatting Dialogue and Colon Quotes" },
+      "format": "items",
+      "ask": "Put a comma or a colon before the quote.",
+      "levels": [4, 4, 4],
+      "read": { "chips": [",", ":"] }
+    },
+    "formal-informal": {
+      "source": { "band": "6-8", "title": "Recognizing Language That Is Too Formal or Too Informal" },
+      "format": "items",
+      "ask": "Choose the language that fits the setting.",
+      "levels": [4, 4, 4]
+    },
+    "concrete-nouns": {
+      "source": { "band": "6-8", "title": "Identifying Concrete Nouns" },
+      "format": "items",
+      "ask": "Tap the concrete nouns.",
+      "levels": [4, 4, 4]
+    },
+    "common-nouns-6-8": {
+      "source": { "band": "6-8", "title": "Identifying Common Nouns" },
+      "format": "items",
+      "ask": "Tap the common nouns.",
+      "levels": [4, 4, 4]
+    },
+    "common-proper": {
+      "source": { "band": "6-8", "title": "Distinguishing Common and Proper Nouns (checkpoint)" },
+      "title": "Distinguishing Common and Proper Nouns",
+      "format": "items",
+      "ask": "Common or proper?",
+      "levels": [4, 4, 4],
+      "read": { "check": "commonproper" }
+    },
+    "verb-tenses": {
+      "source": { "band": "6-8", "title": "Identifying Verbs in Simple, Progressive, and Perfect Tenses" },
+      "format": "items",
+      "ask": "Which tense is the verb?",
+      "levels": [4, 4, 4]
     }
   }
 }

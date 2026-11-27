@@ -144,24 +144,33 @@ export function startRun(user, t, { again = false } = {}) {
 /** What the page marks a question with: 'tap' (word places: tap, capfix), 'gaps' (the gaps after word i), 'choice' (the
  *  option picked: choice, and passage, whose options are the passage's sentences) or 'fix' (a typed sentence, or after
  *  a wrong answer the version picked). */
-export const kindOf = t => (t.format === 'gaps' ? 'gaps' : t.format === 'choice' || t.format === 'passage' ? 'choice' : t.format === 'fix' ? 'fix' : 'tap');
+export const kindOf = (t, it = null) => {
+  // a 6-8 topic's items each have their own format (scripts/grammar-lab-build.js "grades 6-8")
+  const f = (it && it.format) || t.format;
+  return f === 'gaps' ? 'gaps' : f === 'marks' ? 'marks' : f === 'choice' || f === 'passage' ? 'choice' : f === 'fix' ? 'fix' : 'tap';
+};
+const formatOf = (t, it) => (it && it.format) || t.format;
 /** A question as the page gets it, never its answer: the line that asks it, and its words (tap, capfix, gaps) or the
- *  sentence around its blank and its choices in a fixed order (choice; whole: the choices are whole sentences). */
+ *  sentence around its blank and its choices in a fixed order (choice; whole: the choices are whole sentences), or the
+ *  words and the marks as written with the chip bank (marks). */
 export function questionFor(t, s) {
   if (!s || !s.cur) return null;
-  const it = t.items[s.cur.item], kind = kindOf(t);
+  const it = t.items[s.cur.item], kind = kindOf(t, it), f = formatOf(t, it);
   const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind };
-  if (t.format === 'passage') return { ...base, before: '', after: '', options: it.options, whole: true, italic: false, passage: true };
+  if (f === 'passage') return { ...base, before: '', after: '', options: it.options, whole: true, italic: false, passage: true };
   if (kind === 'choice') {
     const [before, after] = it.whole || it.plain ? [it.plain ? it.text : '', ''] : it.text.split('___');
     // prompt: what the choice is about, shown above it (two thoughts to join, the sentence with its verb to fix);
     // plain: the sentence itself, with no blank (sentence or fragment); cycle: press-to-cycle in the blank.
     return { ...base, before, after, options: it.options, whole: !!it.whole, italic: !!it.italic,
-      ...(it.prompt ? { prompt: it.prompt } : {}), ...(it.plain ? { plain: true } : {}), ...(t.cycle ? { cycle: true } : {}) };
+      ...(it.prompt ? { prompt: it.prompt } : {}), ...(it.plain ? { plain: true } : {}), ...(t.cycle || it.cycle ? { cycle: true } : {}),
+      ...(it.focus && it.focus.length ? { words: tokenize(it.text), focus: it.focus } : {}) };
   }
+  // punctuation chips: the words without their marks, the marks as written, and the chip bank (never the marks wanted)
+  if (kind === 'marks') return { ...base, words: it.words, start: it.start, chips: it.chips, ...(it.asIs ? { asIs: true } : {}) };
   // A fix: the sentence to fix in a box; once missed, the versions to press through (the right one among them, unsaid).
-  if (kind === 'fix') return { ...base, text: it.text, ...(s.cur.missed ? { options: it.options } : {}) };
-  return { ...base, words: tokenize(it.text), need: it.answer.length };
+  if (kind === 'fix') return { ...base, text: it.text, ...(s.cur.missed ? { options: it.options } : {}), ...(it.asIs && !s.cur.missed ? { asIs: true } : {}) };
+  return { ...base, words: tokenize(it.text), need: it.answer.length, ...(f === 'capfix' ? { capfix: true } : {}), ...(it.focus && it.focus.length ? { focus: it.focus } : {}) };
 }
 /** A list of distinct whole numbers below n, or null. */
 const places = (marked, n) => {
@@ -178,6 +187,24 @@ const places = (marked, n) => {
  *    choice: [the option picked]; right when it is a right one. */
 export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   const n = tokenize(item.text).length;
+  // "It's right as it is" (a topic with read.asIs): right when the sentence needs no fix
+  if (marked === AS_IS && item.asIs && (kind === 'marks' || (kind === 'fix' && !missed))) {
+    return (kind === 'fix' ? item.accept.some(a => normTyped(a) === normTyped(item.text)) : sameMarks(item.start, item.want) && !item.optional.length) ? 'right' : 'wrong';
+  }
+  if (kind === 'marks') {
+    // [[gap, mark]]: every needed mark in its gap, an optional one there or not, no other gap holding a mark
+    if (!Array.isArray(marked) || marked.length > item.words.length) return null;
+    const got = new Map();
+    for (const p of marked) {
+      if (!Array.isArray(p) || p.length !== 2 || !Number.isInteger(p[0]) || p[0] < 0 || p[0] >= item.words.length - 1 || !item.chips.includes(p[1]) || got.has(p[0])) return null;
+      got.set(p[0], p[1]);
+    }
+    if (sameMarks([...got], item.start)) return null;
+    const want = new Map(item.want), opt = new Map(item.optional);
+    for (const [g, m] of want) if (got.get(g) !== m) return 'wrong';
+    for (const [g, m] of got) if (want.get(g) !== m && opt.get(g) !== m) return 'wrong';
+    return 'right';
+  }
   if (kind === 'fix') {
     // typed: right when it is one of the accepted fixes (a run-on: any valid fix); unchanged or empty is nothing sent.
     if (typeof marked === 'string') {
@@ -205,16 +232,22 @@ export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   }
   const set = places(marked, n);
   if (!set) return null;
-  if (set.size > item.answer.length) return 'near';
-  return set.size === item.answer.length && item.answer.every(i => set.has(i)) ? 'right' : 'wrong';
+  // a phrase: its words, and any optional ones (an article) with them; another mention of the same person is right too
+  const ways = [{ answer: item.answer, optional: item.optional || [] }, ...(item.alts || [])];
+  if (ways.some(w => w.answer.every(i => set.has(i)) && [...set].every(i => w.answer.includes(i) || w.optional.includes(i)))) return 'right';
+  if (set.size > Math.max(...ways.map(w => w.answer.length + w.optional.length))) return 'near';
+  return 'wrong';
 }
+/** The page's "It's right as it is". */
+export const AS_IS = 'as-is';
+const sameMarks = (a, b) => { const A = new Map(a), Bm = new Map(b); return A.size === Bm.size && [...A].every(([g, m]) => Bm.get(g) === m); };
 /** One try on the question on screen. -> { result, kind, levelDone, mastered, summary, question, hint, win } or null
  *  when there is no question to answer. win: 'mastered' (recorded) | 'pending' (a guest's, kept until sign-in). */
 export function answerRun(user, t, marked) {
   const s = readRun(user, t.id);
   if (!s || s.mastered || !s.cur) return null;
   const item = t.items[s.cur.item];
-  const result = grade(item, marked, kindOf(t), { missed: !!s.cur.missed });
+  const result = grade(item, marked, kindOf(t, item), { missed: !!s.cur.missed });
   if (!result) return null;
   const out = M.answer(s, result);
   saveRun(user, t.id, s);
@@ -228,12 +261,15 @@ export function answerRun(user, t, marked) {
 }
 /** One item as "look back" shows it: the right sentence and the words to mark in it ({ i, role }). */
 export function rightOf(t, it) {
-  if (t.format === 'tap') {
+  const f = formatOf(t, it);
+  if (f === 'tap' && it.format) return { text: it.text, marks: it.answer.map(i => ({ i, role: 'key' })) };
+  if (f === 'marks') return { text: it.right, marks: [...it.want, ...it.optional].filter(([, m]) => m === ',').map(([i]) => ({ i, role: 'comma' })).sort((a, b) => a.i - b.i) };
+  if (f === 'tap') {
     const role = t.card.example && t.card.example.marks[0] ? t.card.example.marks[0].role : 'key';
     return { text: it.text, marks: it.answer.map(i => ({ i, role })) };
   }
-  if (t.format === 'capfix') return { text: it.right, marks: it.answer.map(i => ({ i, role: 'capital' })) };
-  if (t.format === 'gaps') return { text: it.right, marks: [...it.answer, ...(it.optional || [])].sort((a, b) => a - b).map(i => ({ i, role: 'comma' })) };
+  if (f === 'capfix') return { text: it.right, marks: it.answer.map(i => ({ i, role: 'capital' })) };
+  if (f === 'gaps') return { text: it.right, marks: [...it.answer, ...(it.optional || [])].sort((a, b) => a - b).map(i => ({ i, role: 'comma' })) };
   // sentence or fragment: the sentence and its label; a passage or a pick of two: the sentence that does the job
   if (it.label) return { text: it.text, marks: [], note: it.label };
   return { text: it.right, marks: [], ...(it.italic ? { italic: it.options[it.answer[0]] } : {}) };

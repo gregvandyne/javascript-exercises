@@ -12,19 +12,27 @@ import { api, pageData, $, $$, t, toast } from '/js/app.js';
 // that shows the next option on each press) or 'fix' (an error-fixing box: the student edits the sentence and submits
 // it; after a wrong answer the box turns into press-to-cycle through whole versions of the sentence). Nothing is ever
 // chosen when a question opens (a cycle opens on "Press to choose", never on an option), and Submit stays off until the
-// student acts (a fix box: until the sentence is changed).
+// student acts (a fix box: until the sentence is changed). 'marks' (punctuation chips): each gap between words holds a
+// mark from the chip bank or none; the sentence opens with its marks as written. A topic may offer "It's right as it
+// is" (asIs) on its marks and fix questions, so a sentence with nothing to fix is asked like every other.
 import { mountWelcome, mountGreeting, mountMastery, mountTapTip } from '/js/grammar-lab-art.js';
 
 const d = pageData();
 const base = `/api/courses/grammar-lab/topic/${d.topic}`;
 const TIP_KEY = 'gl:tip-seen';
 const screens = ['gl-welcome', 'gl-quiz', 'gl-done'];
-let summary = null, question = null, busy = false, picked = null;
+let summary = null, question = null, busy = false, picked = null, asIs = false, chip = ',';
 const marked = new Set();
+/** Punctuation chips: the mark in each gap now (gap -> mark), opened with the marks as written. */
+let gapMarks = new Map();
+const AS_IS = 'as-is';
+const sameMarks = (a, b) => a.size === b.size && [...a].every(([g, m]) => b.get(g) === m);
 const fixBox = () => $('#gl-fix');
 const typing = () => !!question && question.kind === 'fix' && !question.options;
 const ready = () => {
   if (!question) return false;
+  if (asIs) return true;
+  if (question.kind === 'marks') return !sameMarks(gapMarks, new Map(question.start));
   if (typing()) { const v = fixBox().value.replace(/\s+/g, ' ').trim(); return !!v && v !== question.text; }
   return question.kind === 'choice' || question.kind === 'fix' ? picked !== null : marked.size > 0;
 };
@@ -74,7 +82,8 @@ function renderAsk(text) {
   });
 }
 function renderQuestion() {
-  marked.clear(); picked = null;
+  marked.clear(); picked = null; asIs = false;
+  gapMarks = new Map(question.start || []);
   const q = question;
   renderAsk(q.ask);
   const box = $('#gl-sentence'), opts = $('#gl-options'), prompt = $('#gl-prompt');
@@ -83,10 +92,14 @@ function renderQuestion() {
   $('#gl-fixbox').hidden = !typing();
   opts.hidden = q.kind !== 'choice' || !!q.passage || !!q.cycle;
   box.hidden = q.kind === 'choice' && q.whole && !q.passage;
-  box.classList.toggle('gl-gaps', q.kind === 'gaps');
+  box.classList.toggle('gl-gaps', q.kind === 'gaps' || q.kind === 'marks');
+  renderChips(q);
+  const keep = $('#gl-asis');
+  keep.hidden = !q.asIs; keep.setAttribute('aria-pressed', 'false');
   box.classList.toggle('gl-passage-q', !!q.passage);
   if (q.passage) { box.setAttribute('role', 'radiogroup'); box.setAttribute('aria-labelledby', 'gl-ask'); } else { box.removeAttribute('role'); box.removeAttribute('aria-labelledby'); }
   if (q.kind === 'fix') renderFix();
+  else if (q.kind === 'marks') renderMarks(q);
   else if (q.passage) {
     // the passage itself: each sentence a choice, where it stands
     q.options.forEach((o, k) => {
@@ -98,7 +111,9 @@ function renderQuestion() {
   } else if (q.kind === 'choice' && q.cycle) {
     box.append(q.before, cycleButton(q.options, false), q.after);
   } else if (q.kind === 'choice') {
-    if (q.plain) box.append(q.before);
+    // pills about a sentence: the sentence, with the word the question names in bold
+    if (q.plain && q.words) q.words.forEach((w, i) => { if (i) box.append(' '); box.append(w.pre); const s = document.createElement(q.focus.includes(i) ? 'b' : 'span'); s.textContent = w.t; if (q.focus.includes(i)) s.className = 'gl-focus'; box.append(s, w.post); });
+    else if (q.plain) box.append(q.before);
     else if (!q.whole) {
       box.append(q.before);
       const blank = document.createElement('span');
@@ -127,7 +142,7 @@ function renderQuestion() {
         return;
       }
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'gl-w'; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
+      b.type = 'button'; b.className = `gl-w${q.focus && q.focus.includes(i) ? ' gl-focus' : ''}`; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
       box.append(b);
       if (w.post) box.append(w.post);
     });
@@ -180,7 +195,64 @@ function renderFix() {
   box.hidden = false; box.textContent = '';
   box.append(cycleButton(q.options, true));
 }
-$('#gl-fix').addEventListener('input', () => { if (!busy) $('#gl-submit').disabled = !ready(); });
+$('#gl-fix').addEventListener('input', () => { if (!busy) { keepAsIs(false); $('#gl-submit').disabled = !ready(); } });
+/** Punctuation chips: the chip bank (when the topic has more than one mark) and each gap showing its mark. */
+function renderChips(q) {
+  const bank = $('#gl-chips');
+  bank.textContent = '';
+  bank.hidden = q.kind !== 'marks' || q.chips.length < 2;
+  chip = q.kind === 'marks' ? q.chips[0] : ',';
+  if (bank.hidden) return;
+  for (const c of q.chips) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'gl-chip'; b.dataset.c = c; b.textContent = c;
+    b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(c === chip)); b.setAttribute('aria-label', t('js.grammar-lab.chip', { mark: t(`js.grammar-lab.mark.${MARK_NAMES[c]}`) }));
+    bank.append(b);
+  }
+}
+const MARK_NAMES = { ',': 'comma', ';': 'semicolon', ':': 'colon' };
+function renderMarks(q) {
+  const box = $('#gl-sentence');
+  q.words.forEach((w, i) => {
+    if (i) box.append(' ');
+    if (w.pre) box.append(w.pre);
+    const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t; box.append(s);
+    if (w.post) box.append(w.post);
+    if (i < q.words.length - 1) {
+      const g = document.createElement('button');
+      g.type = 'button'; g.className = 'gl-gap gl-mgap'; g.dataset.m = String(i);
+      paintGap(g, w.t);
+      box.append(g);
+    }
+  });
+}
+function paintGap(g, word) {
+  const m = gapMarks.get(+g.dataset.m) || '';
+  g.dataset.mark = m;
+  g.setAttribute('aria-pressed', String(!!m));
+  g.setAttribute('aria-label', m ? t('js.grammar-lab.gapHolds', { word, mark: t(`js.grammar-lab.mark.${MARK_NAMES[m]}`) }) : t('js.grammar-lab.mgap', { word }));
+}
+$('#gl-chips').addEventListener('click', e => {
+  const b = e.target.closest('.gl-chip');
+  if (!b || busy) return;
+  chip = b.dataset.c;
+  for (const o of $$('#gl-chips .gl-chip')) o.setAttribute('aria-checked', String(o === b));
+});
+/** "It's right as it is": pressed, it is the answer; any edit lets it go. */
+function keepAsIs(on) {
+  asIs = on;
+  $('#gl-asis').setAttribute('aria-pressed', String(on));
+}
+$('#gl-asis').addEventListener('click', () => {
+  if (busy || !question) return;
+  keepAsIs(!asIs);
+  if (asIs) {
+    // the sentence goes back to how it was written
+    if (question.kind === 'marks') { gapMarks = new Map(question.start || []); for (const g of $$('#gl-sentence .gl-mgap')) paintGap(g, question.words[+g.dataset.m].t); }
+    if (typing()) fixBox().value = question.text;
+  }
+  $('#gl-submit').disabled = !ready();
+});
 function notice(kind, text = '') {
   const n = $('#gl-notice');
   n.hidden = !kind; n.className = `gl-notice${kind ? ` gl-notice-${kind}` : ''}`; n.textContent = text;
@@ -199,6 +271,16 @@ $('#gl-hint-btn').addEventListener('click', () => {
   btn.textContent = box.hidden ? t('js.grammar-lab.hint') : t('js.grammar-lab.hideHint');
 });
 $('#gl-sentence').addEventListener('click', e => {
+  const mg = e.target.closest('.gl-mgap');
+  if (mg && !busy) {
+    // a gap takes the chosen mark; the same mark again clears it
+    const g = +mg.dataset.m;
+    if (gapMarks.get(g) === chip) gapMarks.delete(g); else gapMarks.set(g, chip);
+    paintGap(mg, question.words[g].t);
+    keepAsIs(false);
+    $('#gl-submit').disabled = !ready();
+    return;
+  }
   const b = e.target.closest('.gl-w, .gl-gap');
   if (!b || busy) return;
   const i = +(b.dataset.i ?? b.dataset.g);
@@ -225,8 +307,12 @@ $('#gl-options').addEventListener('keydown', e => {
 });
 /** A capitalization fix made right: the tapped words take their capital before the green confirmation. */
 function showFixed() {
-  if (!question || !d.capfix) return;
-  for (const i of marked) { const b = $(`#gl-sentence .gl-w[data-i="${i}"]`); if (b) b.textContent = b.textContent.charAt(0).toUpperCase() + b.textContent.slice(1); }
+  if (!question || !(d.capfix || question.capfix)) return;
+  // the case flips: a small letter takes its capital, a capital that does not belong goes small
+  for (const i of marked) {
+    const b = $(`#gl-sentence .gl-w[data-i="${i}"]`), c = b && b.textContent.charAt(0);
+    if (b) b.textContent = (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()) + b.textContent.slice(1);
+  }
 }
 
 // ---------------------------------------------------------------------------------------------- answering
@@ -234,7 +320,7 @@ $('#gl-submit').addEventListener('click', async () => {
   if (busy || !ready() || !question) return;
   busy = true; $('#gl-submit').disabled = true;
   let r;
-  const sent = typing() ? fixBox().value : question.kind === 'choice' || question.kind === 'fix' ? [picked] : [...marked].sort((a, b) => a - b);
+  const sent = asIs ? AS_IS : question.kind === 'marks' ? [...gapMarks] : typing() ? fixBox().value : question.kind === 'choice' || question.kind === 'fix' ? [picked] : [...marked].sort((a, b) => a - b);
   try {
     r = await api(`${base}/answer`, { method: 'POST', body: { unit: d.unit, band: d.band, id: question.id, marked: sent } });
   } catch (e) {
@@ -249,9 +335,9 @@ $('#gl-submit').addEventListener('click', async () => {
   if (r.kind === 'wrong' || r.kind === 'again') {
     busy = false;
     // A fix missed for the first time: the box turns into press-to-cycle through versions of the sentence.
-    const toCycle = typing() && r.question && r.question.options;
-    if (toCycle) { question = r.question; renderFix(); }
-    notice('wrong', t(toCycle ? 'js.grammar-lab.wrongFix' : r.kind === 'wrong' ? 'js.grammar-lab.wrong' : 'js.grammar-lab.again'));
+    const toCycle = (typing() || (asIs && question.kind === 'fix')) && r.question && r.question.options;
+    if (toCycle) { question = r.question; keepAsIs(false); $('#gl-asis').hidden = true; renderFix(); }
+    notice('wrong', t(toCycle ? 'js.grammar-lab.wrongFix' : r.kind === 'wrong' ? (question.kind === 'marks' ? 'js.grammar-lab.wrongMarks' : 'js.grammar-lab.wrong') : 'js.grammar-lab.again'));
     hint(r.hint);
     renderHeader();
     $('#gl-submit').disabled = !ready();

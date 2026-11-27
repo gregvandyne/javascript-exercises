@@ -5786,7 +5786,16 @@
       "nearGaps": "Você colocou vírgulas demais. Tire as que sobram e envie de novo.",
       "cyclePress": "Toque para escolher",
       "cycleOf": "{option}, opção {n} de {total}. Toque para ver a próxima.",
-      "wrongFix": "Quase. Agora toque na frase para ver algumas correções, pare na certa e envie. Acerte duas seguidas para terminar este nível."
+      "wrongFix": "Quase. Agora toque na frase para ver algumas correções, pare na certa e envie. Acerte duas seguidas para terminar este nível.",
+      "chip": "Sinal para colocar: {mark}",
+      "mark": {
+        "comma": "vírgula",
+        "semicolon": "ponto e vírgula",
+        "colon": "dois-pontos"
+      },
+      "gapHolds": "{mark} depois de {word}",
+      "mgap": "Espaço depois de {word}",
+      "wrongMarks": "Quase. Olhe de novo os sinais entre as palavras. Acerte duas seguidas para terminar este nível."
     }
   },
   "favorites": {
@@ -16204,7 +16213,9 @@
       "flag": "Avisar um problema com esta pergunta",
       "correct": "Certo!",
       "levelNext": "Próximo nível",
-      "fixLabel": "Corrija a frase aqui"
+      "fixLabel": "Corrija a frase aqui",
+      "chips": "Sinais para colocar",
+      "asIs": "Está certo assim"
     },
     "levels": {
       "heading": "Níveis e domínio",

@@ -48,6 +48,7 @@ function sectionsBody(t, c, small) {
     ${c.sections.map((x, i) => html`<section class="gl-section" aria-labelledby="gl-sec-${small ? 'h' : 'c'}${i}">
       <h2 class="gl-section-h" id="gl-sec-${small ? 'h' : 'c'}${i}"><span class="gl-section-n" aria-hidden="true">${i + 1}</span> ${x.title}</h2>
       <p class="gl-guide"><span class="gl-label">${t('grammarLab.card.question')}</span> ${x.question}</p>
+      ${x.body && !small ? html`<p class="gl-section-body">${x.body}</p>` : ''}
       ${small ? '' : html`<p class="gl-passage">${x.passage.map((y, k) => html`${k ? ' ' : ''}${y.label ? html`<span class="gl-ex-lead">${y.label}:</span> ` : ''}${y.hl ? html`<mark class="gl-hl">${y.text}</mark>` : y.text}`)}</p>`}
       <p class="gl-how">${x.note}</p>
     </section>`)}
@@ -156,6 +157,7 @@ export function practicePage({ t, p, tp, data, guest }) {
       <div class="gl-qtop"><p class="gl-ask" id="gl-ask"${en}></p>
         <p class="gl-streak" id="gl-streak"><span class="gl-pips" aria-hidden="true"><i></i><i></i></span><span class="gl-streak-t" id="gl-streak-t"></span></p></div>
       <p class="gl-prompt" id="gl-prompt" hidden${en}></p>
+      <div class="gl-chips" id="gl-chips" role="radiogroup" aria-label="${t('grammarLab.practice.chips')}" hidden></div>
       <p class="gl-sentence" id="gl-sentence"${en}></p>
       <div class="gl-fixbox" id="gl-fixbox" hidden><label class="gl-label" for="gl-fix">${t('grammarLab.practice.fixLabel')}</label>
         <textarea class="gl-fix" id="gl-fix" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"${en}></textarea></div>
@@ -163,6 +165,7 @@ export function practicePage({ t, p, tp, data, guest }) {
       <div class="gl-notice" id="gl-notice" role="status" aria-live="polite" hidden></div>
       <div class="gl-actions">
         <button type="button" class="btn gl-hint-btn" id="gl-hint-btn" aria-expanded="false" aria-controls="gl-hint" hidden>${t('grammarLab.practice.hint')}</button>
+        <button type="button" class="btn gl-asis" id="gl-asis" aria-pressed="false" hidden>${t('grammarLab.practice.asIs')}</button>
         <button type="button" class="btn btn-primary btn-big gl-submit" id="gl-submit" disabled>${t('grammarLab.practice.submit')}</button>
       </div>
       <aside class="gl-hint" id="gl-hint" hidden aria-labelledby="gl-hint-h">
