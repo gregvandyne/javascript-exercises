@@ -1255,6 +1255,15 @@ a.course-head:hover h3,a.course-head:focus-visible h3{text-decoration:underline}
 /* Grammar Lab's Learn card (server/views/grammar-lab.js learnCard): the course's cover in place of the emoji. */
 .gl-learncover{flex:none;width:72px;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:var(--card-2)}
 .gl-learn{margin-top:8px}
+/* Grammar Lab in search (views/grammar-lab.js searchCard): the course card, then the units the search names. */
+.gl-search{margin-bottom:20px}
+.gl-search-k{text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px}
+.gl-searchcard{max-width:720px}
+.gl-search-uh{margin:0 0 6px;font-weight:700}
+.gl-search-ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.gl-search-u{display:grid;gap:2px;min-height:48px;padding:8px 12px;border-radius:14px;background:var(--card-2);color:inherit;text-decoration:none}
+.gl-search-u:hover .gl-search-ut,.gl-search-u:focus-visible .gl-search-ut{text-decoration:underline}
+.gl-search-ut{font-weight:700}
 .course-ht h3{margin:0;font-size:1.25rem}
 .course-ht h3 a{color:inherit;text-decoration:none}
 .course-ht p{margin:2px 0 0;color:var(--muted)}
@@ -2376,6 +2385,7 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .oomba-subjects .chip{flex:none}
 .oomba-list{border-top:1px solid var(--line)}
 .oomba-game[hidden]{display:none}
+.oomba-desc{margin:4px 0 0;color:var(--text-2)}
 .oomba-live{color:var(--accent-ink);font-weight:700}
 .lib-oomba .shelf-head{padding:4px 0 12px;border-bottom:0}
 .lib-oomba .oomba-bar,.lib-oomba .oomba-subjects{margin:0 0 12px}

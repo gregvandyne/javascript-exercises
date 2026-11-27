@@ -638,7 +638,8 @@
     "gameCount": "{count, plural, one {# game} other {# games}}",
     "noMatch": "Geen games gevonden voor “{text}”",
     "noneYet": "Hier zijn nog geen games",
-    "tryCategory": "Probeer liever een categorie:"
+    "tryCategory": "Probeer liever een categorie:",
+    "courses": "Cursussen"
   },
   "info": {
     "safety": {
@@ -16926,6 +16927,12 @@
       "band": "{mastered} beheerst · {started} bezig",
       "unit": "{started} bezig",
       "unitHead": "{mastered} van {total} beheerst · {started} bezig"
+    },
+    "listing": {
+      "desc": "Grammatica en schrijven voor groep K tot en met 12: vier niveaus, een uitlegkaart voor elk onderwerp, oefenen tot je het beheerst en nakijkkamers.",
+      "tags": "Engels, grammatica, schrijven",
+      "terms": "grammatica, interpunctie, komma’s, kommas, hoofdletters, zelfstandige naamwoorden, werkwoorden, schrijven, Engels",
+      "units": "Units voor ‘{text}’"
     }
   }
 }

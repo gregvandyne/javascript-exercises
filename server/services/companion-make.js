@@ -179,7 +179,8 @@ export const studentCount = c => S.roster(c.id).filter(r => r.role === 'student'
  * started, are late, have answers waiting to be read), Needs a look (how many students for each reason, each student a
  * placeholder the page names in the browser: who), Grammar Lab (topics mastered and started, for a teacher it lets in)
  * and courses begun. Never a name, an answer, a score of one student, or whether a student has supports.
- * -> { students, assignments, needsLook, grammarLab?, courses?, who }
+ * Grammar Lab also in all (grammarLabAll: how many students mastered a topic, and how many topics in all, assigned or not).
+ * -> { students, assignments, needsLook, grammarLab?, grammarLabAll?, courses?, who }
  */
 export function classReport(u, c, { lang = 'en', names = studentNames(u) } = {}) {
   const n = studentCount(c);
@@ -206,6 +207,11 @@ export function classReport(u, c, { lang = 'en', names = studentNames(u) } = {})
     if (g.units && g.units.length) {
       out.grammarLab = g.units.slice(0, 8).map(un => ({ unit: un.title, topics: un.topics.slice(0, 12).map(tp => ({ topic: tp.title, mastered: (g.counts[tp.id] || {}).mastered || 0, started: (g.counts[tp.id] || {}).started || 0 })) }));
     }
+    // and what the class mastered in all of Grammar Lab, assigned or not (students practice on their own where it is
+    // open to everyone): counts only, never who
+    const per = S.roster(c.id).filter(r => r.role === 'student').map(p => GL.masteredSet(p).size);
+    const any = per.filter(x => x > 0).length;
+    if (any) out.grammarLabAll = { studentsWithTopicsMastered: any, topicsMastered: per.reduce((a, b) => a + b, 0) };
   }
   const studs = S.roster(c.id).filter(r => r.role === 'student');
   const courses = [];
@@ -246,7 +252,12 @@ export function findByName(u, words, { classId = null, names = studentNames(u) }
       if (g && gameHidden(g) && (hit(g.title) || hit(m.slug)) && !out.mine.some(x => x.id === m.slug)) out.hidden.push({ id: m.slug, title: g.title, turnedOff: true });
     }
   }
-  if (GA.mayAssignGrammarLab(u)) out.grammarLab = grammarFind(words).slice(0, 6);
+  if (GA.mayAssignGrammarLab(u)) {
+    // the class's own grade band first (a 4th grade class: the grades 3-5 unit before the K-2 one)
+    const c = classId ? S.getClass(classId) : null, g = c ? GL.gradeNumber(c.grade) : null, pref = g === null ? null : GL.bandOfGrade(g);
+    const found = grammarFind(words);
+    out.grammarLab = (pref ? [...found.filter(x => x.band === pref), ...found.filter(x => x.band !== pref)] : found).slice(0, 6);
+  }
   return out;
 }
 /** The closest open lesson for a turned-off game: an open official game that shares one of its topics exactly (never a
@@ -268,21 +279,36 @@ export function closestOpen(slug) {
 export const hiddenLine = (t, x) => (x.folder ? t('js.companion.find.hiddenFolder', { title: x.title, folder: x.folder }) : t('js.companion.find.hidden', { title: x.title }));
 
 // ---------------------------------------------------------------- Grammar Lab: find and assign
-/** Grammar Lab units and topics that fit the words: [{ what: 'unit' | 'topic', unit, band, topic?, title }]. */
+/** Words a teacher puts around a Grammar Lab topic ("practice for commas", "a grammar lesson on nouns"), never part of
+ *  what they look for. */
+const GL_STOP = new Set(['a', 'an', 'the', 'and', 'or', 'for', 'of', 'to', 'in', 'on', 'with', 'about', 'some', 'my', 'our', 'me', 'please', 'practice',
+  'practise', 'lesson', 'lessons', 'unit', 'units', 'topic', 'topics', 'grammar', 'lab', 'class', 'students', 'kids', 'grade', 'grades', 'assign',
+  'find', 'give', 'work', 'help', 'skill', 'skills', 'game', 'games', 'worksheet', 'quiz', 'review', 'using', 'use', 'vs', 'k']);
+// a word's start, either way round: "comma" finds "Commas", "capitals" finds "Capital Letters" and "Capitalizing"
+const glStem = w => (w.length > 4 ? w.replace(/(ies|es|s)$/, '') : w);
+const glHit = (w, title) => fold(title).split(' ').some(h => h.startsWith(glStem(w)) || (h.length > 3 && w.startsWith(glStem(h))));
+/** Grammar Lab units and topics that fit the words: [{ what: 'unit' | 'topic', unit, band, topic?, title }], best first:
+ *  the exact title, then a title holding the words, then one where every word the teacher used (without the words
+ *  around a topic: practice, for, lesson...) starts a word of the title. */
 export function grammarFind(words) {
   const w = fold(words); if (!w) return [];
-  const terms = w.split(' ').filter(x => x.length > 2);
-  const score = title => { const t = fold(title); if (t === w) return 10; if (t.includes(w)) return 6; return terms.filter(x => t.includes(x) || t.includes(x.replace(/s$/, ''))).length; };
+  const terms = w.split(' ').filter(x => x.length > 1 && !GL_STOP.has(x) && !/^\d+$/.test(x));
+  if (!terms.length) return [];
+  const score = title => {
+    const t = fold(title); if (t === w) return 10; if (w.length > 3 && ` ${t} `.includes(` ${w} `)) return 6;
+    const n = terms.filter(x => glHit(x, title)).length;
+    return n === terms.length ? 2 + n : n >= Math.max(2, Math.ceil(terms.length * 2 / 3)) ? n : 0;
+  };
   const out = [], seen = new Set();
   for (const b of GL.bands()) {
     for (const p of GL.pathwaysOf(b.id)) {
       if (!p) continue;
       const su = score(p.title);
-      if (su >= Math.max(1, Math.ceil(terms.length / 2))) out.push({ s: su + 0.5, x: { what: 'unit', unit: p.id, band: p.band, title: p.title, topics: p.topics.length } });
+      if (su > 0) out.push({ s: su + 0.5, x: { what: 'unit', unit: p.id, band: p.band, title: p.title, topics: p.topics.length } });
       for (const id of p.topics) {
         const tp = GL.topic(id); if (!tp || seen.has(`${b.id}:${id}`)) continue;
         const st = score(tp.title);
-        if (st >= Math.max(1, Math.ceil(terms.length / 2))) { seen.add(`${b.id}:${id}`); out.push({ s: st, x: { what: 'topic', unit: p.id, band: p.band, topic: id, title: tp.title } }); }
+        if (st > 0) { seen.add(`${b.id}:${id}`); out.push({ s: st, x: { what: 'topic', unit: p.id, band: p.band, topic: id, title: tp.title } }); }
       }
     }
   }

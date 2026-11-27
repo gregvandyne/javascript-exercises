@@ -637,7 +637,8 @@
     "gameCount": "{count, plural, one {# jeu} other {# jeux}}",
     "noMatch": "Aucun jeu ne correspond à « {text} »",
     "noneYet": "Pas encore de jeux ici",
-    "tryCategory": "Essaie plutôt une catégorie :"
+    "tryCategory": "Essaie plutôt une catégorie :",
+    "courses": "Cours"
   },
   "info": {
     "safety": {
@@ -16925,6 +16926,12 @@
       "band": "{mastered} maîtrisés · {started} en cours",
       "unit": "{started} en cours",
       "unitHead": "{mastered} sur {total} maîtrisés · {started} en cours"
+    },
+    "listing": {
+      "desc": "Grammaire et écriture de la maternelle à la terminale (K à 12) : quatre niveaux, une fiche de cours pour chaque thème, de l’entraînement jusqu’à la maîtrise et des salles de relecture.",
+      "tags": "Anglais, grammaire, écriture",
+      "terms": "grammaire, ponctuation, virgules, majuscules, noms, verbes, écriture, anglais",
+      "units": "Unités pour « {text} »"
     }
   }
 }

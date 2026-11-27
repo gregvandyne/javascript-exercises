@@ -84,7 +84,7 @@ export function cardBody(t, tp, { small = false } = {}) {
     ${c.example ? html`<div class="gl-example"><p class="gl-label">${t('grammarLab.card.example')}</p>
       ${[c.example, ...(c.example.more || [])].map(u => exampleUnit(t, u, { italic }))}</div>` : ''}
     <p class="gl-how"><b>${t('grammarLab.card.how')}</b> ${c.how}</p>
-    ${small ? '' : html`<div class="gl-tips"><p class="gl-label">${t('grammarLab.card.tips')}</p><ul>${c.tips.map(x => exampleUnit(t, x, { italic, tag: 'li' }))}</ul></div>`}
+    ${small ? '' : html`<div class="gl-tips"><p class="gl-label">${t('grammarLab.card.tips')}</p><ul role="list">${c.tips.map(x => exampleUnit(t, x, { italic, tag: 'li' }))}</ul></div>`}
   </div>`;
 }
 
@@ -191,6 +191,19 @@ export function learnCard({ t, staff = false, done = 0, total = 0, begun = false
       <div class="course-foot">${staff ? html`<a class="btn btn-primary" href="/teach/grammar-lab" id="gl-learn-assign">📌 ${t('learn.tab.assignCourse')}</a><a class="btn btn-ghost" href="${base}">${t('grammarLab.learn.see')}</a>`
         : html`<a class="btn btn-primary" href="${base}" id="gl-learn-go">▶ ${begun ? t('courses.continue') : t('courses.start')}</a>`}</div>
     </article></div></div></section>`;
+}
+
+/** Grammar Lab in site search (routes/discover.js; services/grammar-lab-listing.js): the course card, with its tags,
+ *  grades and short description, and the units the search names as deep links (unit titles are course text: English). */
+export function searchCard({ t, units = [], text = '', meta = '' }) {
+  return html`<section class="gl-search" aria-labelledby="gl-search-h"><h2 class="small muted gl-search-k">${t('search.courses')}</h2>
+    <article class="course-card gl-searchcard">
+      <a class="course-head" href="${base}"><img class="gl-learncover" src="/covers/grammar-lab.jpg" alt="" width="72" height="96" loading="lazy">
+        <div class="course-ht"><h3 id="gl-search-h">${t('grammarLab.title')}</h3><p>${t('grammarLab.listing.desc')}</p>${meta ? html`<p class="gmeta course-meta">${meta}</p>` : ''}</div>
+        <span class="course-go flip" aria-hidden="true">›</span></a>
+      ${units.length ? html`<div class="gl-search-units"><p class="small muted gl-search-uh">${t('grammarLab.listing.units', { text })}</p>
+        <ul class="gl-search-ul">${units.map(x => html`<li><a class="gl-search-u" href="${x.href}"><span class="gl-search-ut"${en}>${x.title}</span><span class="small muted">${t('grammarLab.band', { grades: x.grades })}${x.topic ? html` · <span${en}>${x.topic}</span>` : ''}</span></a></li>`)}</ul></div>` : ''}
+    </article></section>`;
 }
 
 /** A topic's practice: every screen of the flow, shown one at a time by public/js/grammar-lab.js: the welcome, the

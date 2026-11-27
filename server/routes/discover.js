@@ -20,6 +20,8 @@ import { isStaff, classesOf } from '../services/schools.js';
 import { toDoFor } from '../services/progress.js';
 import { openForClass } from '../services/classlive-sessions.js';
 import { courseOwned } from '../services/course-catalog.js';
+import * as GLL from '../services/grammar-lab-listing.js';
+import { searchCard as glSearchCard } from '../views/grammar-lab.js';
 /** A student in a class: "Your class" at the top of Home: a live game their teacher just opened, else the next lesson to
  *  do (soonest due) with Continue, so Home never pulls them away from what's assigned. '' for everyone else. */
 export function classStrip(req) {
@@ -171,13 +173,17 @@ function searchResults(req) {
   const list = games.search(u, { text, category: cat, order: sort, limit: 60 });
   // Children's names never reach a signed-out page (search engines included): signed out, only the official account.
   const builders = text ? games.searchBuilders(u, text).filter(b => u || b.username === OFFICIAL) : [];
+  // Grammar Lab, where it lets this visitor in (services/grammar-lab-listing.js): its card when the words are a grammar
+  // search, with the units they name; never with a category picked (it is not a game of one).
+  const gl = text && !cat && GLL.listedFor(u) && GLL.matches(text, t, u) ? { units: GLL.unitsFor(text, u, { t }) } : null;
   const markup = html`
+    ${gl ? glSearchCard({ t, units: gl.units, text, meta: GLL.metaLine(t) }) : ''}
     ${builders.length ? html`<section aria-labelledby="bh" style="margin-bottom:20px"><h2 id="bh" class="small muted" style="text-transform:uppercase;letter-spacing:.05em">${t('search.builders')}</h2>
       <div class="cardgrid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${builders.map(b => { const inner = html`${avatar(b, 48)}<span style="flex:1;min-width:0"><span class="nm">${b.display_name}</span><br><span class="sub"><bdi>@${b.username}</bdi> · ${t('search.gameCount', { count: b.games })}</span></span>`; return isGrownup(u) ? html`<div class="person panel" style="padding:12px">${inner}</div>` : html`<a class="person panel" style="padding:12px" href="/u/${b.username}">${inner}</a>`; })}</div></section>` : ''}
-    ${list.length ? html`<h2 class="sr-only">${t('search.games')}</h2>${cardGrid(list, { user: u, category: cat })}` :
+    ${list.length ? html`<h2 class="sr-only">${t('search.games')}</h2>${cardGrid(list, { user: u, category: cat })}` : gl ? '' :
       html`${emptyState({ emoji: '🔭', title: text ? t('search.noMatch', { text }) : t('search.noneYet'), text: t('search.tryCategory') })}
       <div class="chips" style="justify-content:center">${games.CATEGORIES.map(([k, e]) => html`<a class="chip" href="/search?cat=${k}">${e} ${categoryLabel(k, t)}</a>`)}</div>`}`;
-  return { text, cat, sort, list, builders, markup };
+  return { text, cat, sort, list, builders, gl, markup };
 }
 router.get('/search', (req, res) => {
   const t = req.t;
@@ -202,7 +208,7 @@ router.get('/search', (req, res) => {
 });
 router.get('/api/search', rateLimit('search', 120, 60e3), (req, res) => {
   const r = searchResults(req);
-  res.json({ html: String(r.markup), count: r.list.length, builders: r.builders.length });
+  res.json({ html: String(r.markup), count: r.list.length, builders: r.builders.length, courses: r.gl ? 1 : 0 });
 });
 router.get('/api/live', (req, res) => {
   const ids = String(req.query.ids || '').split(',').filter(Boolean).slice(0, 100);

@@ -638,7 +638,8 @@
     "gameCount": "{count, plural, =0 {# jogos} one {# jogo} other {# jogos}}",
     "noMatch": "Nenhum jogo combina com “{text}”",
     "noneYet": "Nenhum jogo aqui ainda",
-    "tryCategory": "Tente uma categoria:"
+    "tryCategory": "Tente uma categoria:",
+    "courses": "Cursos"
   },
   "info": {
     "safety": {
@@ -16927,6 +16928,12 @@
       "band": "{mastered} dominados · {started} em andamento",
       "unit": "{started} em andamento",
       "unitHead": "{mastered} de {total} dominados · {started} em andamento"
+    },
+    "listing": {
+      "desc": "Gramática e escrita do K ao 12.º ano: quatro níveis, um cartão de ensino para cada tema, prática até o domínio e salas de revisão.",
+      "tags": "Inglês, gramática, escrita",
+      "terms": "gramática, pontuação, vírgulas, letras maiúsculas, substantivos, verbos, escrita, inglês",
+      "units": "Unidades para “{text}”"
     }
   }
 }

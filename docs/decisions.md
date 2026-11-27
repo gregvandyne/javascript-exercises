@@ -16713,3 +16713,30 @@ oomba_jobs, migration 0147) and the chat stays usable while they run.
 - **Unchanged**: students' names never go to the AI (job inputs are what the tools already checked and scrubbed); the
   messages-an-hour limit; the budget. Finished jobs are kept 7 days (the card keeps what was made); they go with the
   chat and with the account. Tests: tests/unit/oomba-jobs.test.js.
+
+## Grammar Lab listed everywhere (27 Nov 2026)
+
+Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.
+One module says who sees it and what finds it: `services/grammar-lab-listing.js`.
+- **Gated on the flag.** Listed only where `mayOpenGrammarLab` lets the visitor in: nowhere with GRAMMAR_LAB off; for a
+  restricted list, only the listed accounts (and students with assigned work); signed out, and in the sitemap, only
+  while it is open to all (`listedForAll`, the same condition /compare uses).
+- **Where:** the Learn card (now also signed out while open to all, and under Learn's Words subject and grade filters),
+  the Words subject page (/learn/word-games), the teachers' Find on Oomba catalog (first, with See the course and
+  Assign to /teach/grammar-lab), site search (a "Courses" card above the games, with deep links to the units a search
+  names) and the sitemap (/courses/grammar-lab, English only, like the other course pages). Grown-up (parent) accounts
+  still get no Learn card, as before.
+- **Tags and grades:** "English, grammar, writing · Grades K-12" and a short description, in every language
+  (grammarLab.listing.*). Unit and topic titles stay English.
+- **Search words:** grammar, Grammar Lab, punctuation, commas, capital letters, nouns, verbs, writing and other grammar
+  terms, plus each language's own (grammarLab.listing.terms). One word of a topic title alone ("math", "space") does
+  not find it; two words of a title ("who vs whom") do.
+- **Oomba (the chat):** for a teacher Grammar Lab lets in, the prompt and explainOomba describe it (K-12, four bands,
+  teaching cards, mastery, proofread rooms); findLesson and searchGames list its units and topics (the words around a
+  topic like "practice for" are ignored; the class's grade band first); classProgress adds what the class mastered in all
+  of Grammar Lab, in counts; howTo has "assign-grammar" and "grammar-progress". With the flag off none of it is said.
+- **Teaching cards:** MORE EXAMPLES is unbulleted, the same blocks as EXAMPLE (still a list, role="list").
+- **Pressing a tile:** a topic tile's link covers the whole tile (the ⋯ button sits over it as its own target), and the
+  hover, press and focus ring are the tile's, so the highlight is never split; a unit row and a band's fold do the same.
+- Tests: tests/unit/grammar-lab-listing.test.js, grammar-lab-press-browser.test.js, companion-make.test.js,
+  companion-help.test.js.

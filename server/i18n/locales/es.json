@@ -637,7 +637,8 @@
     "gameCount": "{count, plural, one {# juego} other {# juegos}}",
     "noMatch": "Ningún juego coincide con “{text}”",
     "noneYet": "Todavía no hay juegos aquí",
-    "tryCategory": "Mejor prueba una categoría:"
+    "tryCategory": "Mejor prueba una categoría:",
+    "courses": "Cursos"
   },
   "info": {
     "safety": {
@@ -16925,6 +16926,12 @@
       "band": "{mastered} dominados · {started} en curso",
       "unit": "{started} en curso",
       "unitHead": "{mastered} de {total} dominados · {started} en curso"
+    },
+    "listing": {
+      "desc": "Gramática y escritura para los grados K a 12: cuatro niveles, una tarjeta de enseñanza para cada tema, práctica hasta dominarlo y salas de corrección.",
+      "tags": "Inglés, gramática, escritura",
+      "terms": "gramática, puntuación, comas, mayúsculas, sustantivos, verbos, escritura, inglés",
+      "units": "Unidades para «{text}»"
     }
   }
 }

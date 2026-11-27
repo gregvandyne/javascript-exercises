@@ -638,7 +638,8 @@
     "gameCount": "{count, plural, one {# game} other {# games}}",
     "noMatch": "No games match “{text}”",
     "noneYet": "No games here yet",
-    "tryCategory": "Try a category instead:"
+    "tryCategory": "Try a category instead:",
+    "courses": "Courses"
   },
   "info": {
     "safety": {
@@ -18668,6 +18669,12 @@
       "band": "{mastered} mastered · {started} in progress",
       "unit": "{started} in progress",
       "unitHead": "{mastered} of {total} mastered · {started} in progress"
+    },
+    "listing": {
+      "desc": "Grammar and writing for grades K to 12: four grade bands, a teaching card for every topic, practice until it is mastered, and proofread rooms.",
+      "tags": "English, grammar, writing",
+      "terms": "grammar, punctuation, commas, capital letters, nouns, verbs, writing, English",
+      "units": "Units for “{text}”"
     }
   }
 }

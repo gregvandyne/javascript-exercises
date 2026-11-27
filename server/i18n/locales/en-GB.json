@@ -1249,6 +1249,9 @@
   "grammarLab": {
     "topic": {
       "again": "Practise again"
+    },
+    "listing": {
+      "desc": "Grammar and writing for US grades K to 12: four grade bands, a teaching card for every topic, practice until it is mastered, and proofread rooms."
     }
   },
   "schoolWelcome": {

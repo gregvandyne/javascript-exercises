@@ -23,6 +23,7 @@ import { gcAssignField } from './gclassroom.js';
 import { SUBJECTS, SHELF_INFO, shelfGrades } from '../learn.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { slugHidden, openSubjects } from '../services/game-focus.js';
+import * as GLL from '../services/grammar-lab-listing.js';
 
 /** A grown-up's or teacher's account (school staff, or signed up as a teacher): "All my games" offers Find Oomba games.
  *  Kids and students keep their own folders on Build as before, without it. */
@@ -214,6 +215,22 @@ function oombaRow(req, ctx, g0, idp) {
     </div></div></li>`;
 }
 
+/** Grammar Lab in Find Oomba games (services/grammar-lab-listing.js), first in the list where it lets this teacher in:
+ *  its cover, "English, grammar, writing · Grades K-12", its short description, See the course and Assign (the course's
+ *  own page, /teach/grammar-lab, picks the unit or topic and the class). data-q holds its search words and unit titles,
+ *  so the box finds it by "commas" or "capital letters" too. */
+function grammarRow(req, ctx) {
+  const t = req.t, meta = GLL.metaLine(t);
+  return html`<li class="mygame shelf-game oomba-game oomba-course" data-q="${GLL.filterText(t)}">
+    <a class="mg-cover" href="${GLL.HREF}" tabindex="-1" aria-hidden="true"><div class="coverart has-shot cover-sunset"><img src="${GLL.COVER}" alt="" loading="lazy" decoding="async" width="540" height="720"><span class="shot-icon" aria-hidden="true">📝</span></div></a>
+    <div class="mg-body"><h3><a href="${GLL.HREF}">${t('grammarLab.title')}</a></h3>
+      <p class="small muted shelf-kind">${meta}</p><p class="small oomba-desc">${t('grammarLab.listing.desc')}</p></div>
+    <div class="mg-actions"><div class="mg-row">
+      <a class="btn" href="${GLL.HREF}">${t('grammarLab.learn.see')}</a>
+      <a class="btn btn-primary" href="/teach/grammar-lab">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>
+    </div></div></li>`;
+}
+
 /** The right side for Find Oomba games: a search box, a grade and the subjects in one strip, then the games. idp keeps
  *  the phone's copy's ids apart from the wider screens'. */
 function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
@@ -221,9 +238,11 @@ function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
   const all = games.listVisible(req.user, { shelf: 'learn', official: true, order: 'plays', limit: 60 }).filter(g => SHELF_INFO[g.slug]);
   const q = f.q.toLowerCase();
   const list = all.filter(g => oombaFits(SHELF_INFO[g.slug], f) && (!q || games.localizeGame(g).title.toLowerCase().includes(q)));
+  const gl = GLL.listedFor(req.user) && oombaFits(GLL.INFO, f) && (!q || GLL.matches(q, t, req.user) || q.split(/\s+/).every(w => GLL.filterText(t).includes(w)));
+  const n = list.length + (gl ? 1 : 0);
   const chip = (on, href, label, emoji = '') => html`<a class="chip${on ? ' on' : ''}" href="${href}" data-shelf-go${on ? raw(' aria-current="true"') : ''}>${emoji ? html`<span aria-hidden="true">${emoji}</span> ` : ''}${label}</a>`;
   const gradeLabel = g => (g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g }));
-  return html`<div class="shelf-head"><div class="shelf-title"><h2 id="${heading}" tabindex="-1">${ico('🦉', { size: 28 })} ${t('folders.oomba.title')}</h2><p class="small muted" data-oomba-count data-one="${t('folders.gamesN', { count: 1 })}" data-many="${t('folders.gamesN', { count: 2 }).replace('2', '{n}')}">${t('folders.gamesN', { count: list.length })}</p></div></div>
+  return html`<div class="shelf-head"><div class="shelf-title"><h2 id="${heading}" tabindex="-1">${ico('🦉', { size: 28 })} ${t('folders.oomba.title')}</h2><p class="small muted" data-oomba-count data-one="${t('folders.gamesN', { count: 1 })}" data-many="${t('folders.gamesN', { count: 2 }).replace('2', '{n}')}">${t('folders.gamesN', { count: n })}</p></div></div>
     <form class="oomba-bar" method="get" action="${ctx.base}" role="search" data-oomba-form>
       <input type="hidden" name="view" value="oomba">${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}
       <label class="sr-only" for="${idp}-q">${t('folders.oomba.search')}</label>
@@ -236,8 +255,8 @@ function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
       ${chip(!f.subject, oombaHref(ctx, f, { subject: '' }), t('learn.tab.subjects.all'))}
       ${openSubjects(SUBJECTS, SHELF_INFO).map(x => chip(f.subject === x.key, oombaHref(ctx, f, { subject: x.key }), t(`learn.tab.subjects.${x.key}`), x.emoji))}
     </div>
-    ${list.length ? html`<ul class="mygames shelf-games oomba-list">${list.map(g => oombaRow(req, ctx, g, idp))}</ul>` : ''}
-    <div class="shelf-empty oomba-none"${list.length ? raw(' hidden') : ''}>${emptyState({ emoji: '🦉', title: t('folders.oomba.none'), text: '' })}</div>`;
+    ${n ? html`<ul class="mygames shelf-games oomba-list">${gl ? grammarRow(req, ctx) : ''}${list.map(g => oombaRow(req, ctx, g, idp))}</ul>` : ''}
+    <div class="shelf-empty oomba-none"${n ? raw(' hidden') : ''}>${emptyState({ emoji: '🦉', title: t('folders.oomba.none'), text: '' })}</div>`;
 }
 
 /** "Assign all N" (the class page, in a folder): each game the class can play and doesn't have yet, one due day. */

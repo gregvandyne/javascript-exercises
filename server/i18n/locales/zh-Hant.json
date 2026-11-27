@@ -637,7 +637,8 @@
     "gameCount": "{count} 個遊戲",
     "noMatch": "沒有符合「{text}」的遊戲",
     "noneYet": "這裡還沒有遊戲",
-    "tryCategory": "改試試看分類："
+    "tryCategory": "改試試看分類：",
+    "courses": "課程"
   },
   "info": {
     "safety": {
@@ -16925,6 +16926,12 @@
       "band": "已精通 {mastered} · 進行中 {started}",
       "unit": "進行中 {started}",
       "unitHead": "已精通 {mastered}／{total} · 進行中 {started}"
+    },
+    "listing": {
+      "desc": "K 到 12 年級的文法與寫作：四個年級段、每個主題一張教學卡、練到精熟為止，還有校對室。",
+      "tags": "英語、文法、寫作",
+      "terms": "文法, 標點符號, 逗號, 大寫字母, 名詞, 動詞, 寫作, 英語",
+      "units": "「{text}」的單元"
     }
   }
 }

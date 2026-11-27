@@ -76,7 +76,10 @@ test('flag on: the admin and the listed accounts get in, through the COURSES gat
   flag(true, ['*']);
   assert.equal((await get('/courses/grammar-lab', null)).status, 200);
   assert.equal((await get('/courses/grammar-lab', other)).status, 200);
-  // Kept out of the public catalog, search and the sitemap.
+  // Open to all, it is listed like a course (the owner, 27 Nov 2026; services/grammar-lab-listing.js): on Learn, in
+  // search and in the sitemap, signed out too. Restricted to testers, never on those pages for a visitor without a session.
+  for (const p of ['/learn', '/sitemap.xml', '/search?q=grammar']) assert.match((await get(p, null)).text, /courses\/grammar-lab/, p);
+  flag(true, [listed.username]);
   for (const p of ['/learn', '/sitemap.xml', '/search?q=grammar']) assert.doesNotMatch((await get(p, null)).text, /courses\/grammar-lab/, p);
 });
 

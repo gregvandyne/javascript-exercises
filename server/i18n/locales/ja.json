@@ -637,7 +637,8 @@
     "gameCount": "{count}本のゲーム",
     "noMatch": "「{text}」に合うゲームはありません",
     "noneYet": "ここにはまだゲームがありません",
-    "tryCategory": "かわりにカテゴリからさがしてみよう："
+    "tryCategory": "かわりにカテゴリからさがしてみよう：",
+    "courses": "コース"
   },
   "info": {
     "safety": {
@@ -16925,6 +16926,12 @@
       "band": "マスター {mastered} · とちゅう {started}",
       "unit": "とちゅう {started}",
       "unitHead": "マスター {mastered} / {total} · とちゅう {started}"
+    },
+    "listing": {
+      "desc": "K から 12 年生までの文法とライティング。4 つの学年帯、トピックごとの学習カード、身につくまでの練習、校正ルームがあります。",
+      "tags": "英語、文法、ライティング",
+      "terms": "文法, 句読点, コンマ, 大文字, 名詞, 動詞, ライティング, 作文, 英語",
+      "units": "「{text}」のユニット"
     }
   }
 }

@@ -638,7 +638,8 @@
     "gameCount": "{count, plural, one {# gioco} other {# giochi}}",
     "noMatch": "Nessun gioco corrisponde a «{text}»",
     "noneYet": "Ancora nessun gioco qui",
-    "tryCategory": "Prova invece una categoria:"
+    "tryCategory": "Prova invece una categoria:",
+    "courses": "Corsi"
   },
   "info": {
     "safety": {
@@ -16926,6 +16927,12 @@
       "band": "{mastered} padroneggiati · {started} in corso",
       "unit": "{started} in corso",
       "unitHead": "{mastered} su {total} padroneggiati · {started} in corso"
+    },
+    "listing": {
+      "desc": "Grammatica e scrittura dal grado K al 12: quattro livelli, una scheda per ogni argomento, esercizi fino alla padronanza e stanze di correzione.",
+      "tags": "Inglese, grammatica, scrittura",
+      "terms": "grammatica, punteggiatura, virgole, maiuscole, nomi, verbi, scrittura, inglese",
+      "units": "Unità per «{text}»"
     }
   }
 }
