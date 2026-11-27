@@ -106,8 +106,8 @@ test('the English switch on: the card, the question and the hint are read throug
     assert.equal(await page.evaluate(() => window.__said), 0, 'never the device voice');
     // every call was the shared speak path, by ids only: no text from the page
     for (const c of calls) { assert.equal(c.ctx, 'grammar'); assert.equal(c.text, undefined); }
-    // a 3-5 lesson is not read aloud
-    await page.goto(`${env.base}/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs`);
+    // a 6-8 lesson is not read aloud (K-2 and 3-5 are)
+    await page.goto(`${env.base}/courses/grammar-lab/6-8/active-and-passive-voice/active-voice-verbs`);
     assert.equal(await page.$('#gl-say'), null);
   } finally { await ctx.close(); }
   assert.deepEqual(errors, []);

@@ -78,7 +78,7 @@ export async function phoneRun(env, band, size, { lang = 'en', themes = ['light'
     box.q = null;
     await page.goto(`${base}/courses/grammar-lab/${band}/${unit}/${topic}`);
     await page.waitForSelector('#gl-welcome:not([hidden])');
-    await check('05-intro', { keys: ['#gl-skip'] });
+    await check('05-intro', { keys: ['#gl-skip', '#gl-welcome-h'] });
     await page.click('#gl-go');
     await page.waitForSelector('#gl-quiz:not([hidden])');
     await H.closeTip(page);

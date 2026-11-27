@@ -433,3 +433,9 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
   .gl-welcome-art{max-width:min(520px,calc(26vh * 1.5));margin-top:20px}
   .gl-done .gl-stage-mastery{max-width:min(520px,calc(26vh * 1.5))}
 }
+/* A very short phone (320 x 568 and similar): the welcome picture steps aside, so the heading and Start come first. */
+@media (max-height:600px){
+  .gl-welcome-art{display:none}
+  .gl-welcome .gl-skip{position:static;display:block;margin:0 0 4px auto}
+  .gl-welcome #gl-welcome-h{font-size:clamp(20px,6.4vw,24px);margin-top:0}
+}
