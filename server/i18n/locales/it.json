@@ -10189,8 +10189,8 @@
     },
     "faq": {
       "h": "Domande degli insegnanti su Oomba Live",
-      "q1": "Oomba Live ha pubblicità?",
-      "a1": "No. Condurre lezioni dal vivo, i set iniziali, i tuoi set e i risultati sono tutti senza pubblicità.",
+      "q1": "Oomba Live è gratis?",
+      "a1": "Sì. Condurre lezioni dal vivo, i set iniziali, i tuoi set e i risultati non costano nulla, e lo stesso vale per i corsi pronti che puoi insegnare e dare ai tuoi studenti: {courses}. Il <a href=\"{plans}\">piano Insegnante</a> facoltativo aggiunge gli strumenti a pagamento: l'Hub, Chiedi a Oomba, i Manipolativi e le loro stanze dal vivo, Figures e una riserva giornaliera condivisa di creazioni con l'IA.",
       "q2": "I miei studenti hanno bisogno di un account?",
       "a2": "Non per una stanza aperta: gli studenti scrivono il codice e ricevono un soprannome inventato. In una stanza di classe usano gli account scolastici che lei ha creato per loro, e i loro punteggi vanno nel suo registro.",
       "q3": "Quanti studenti possono giocare?",
@@ -10198,7 +10198,8 @@
       "q4": "Posso usare le mie domande?",
       "a4": "Sì, in qualsiasi materia e livello. Scrivi un set fino a {items} domande con 2-4 risposte ciascuna, incollane uno da un foglio di calcolo, fai scrivere all’IA una bozza da modificare o trasforma le domande di uno dei tuoi piani di lezione in un quiz dal vivo.",
       "q5": "Di cosa hanno bisogno gli studenti?",
-      "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Mostri la lezione alla lavagna dal tuo computer."
+      "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Mostri la lezione alla lavagna dal tuo computer.",
+      "a1NoCourses": "Sì. Condurre lezioni dal vivo, i set iniziali, i tuoi set e i risultati non costano nulla. Il <a href=\"{plans}\">piano Insegnante</a> facoltativo aggiunge gli strumenti a pagamento: l'Hub, Chiedi a Oomba, i Manipolativi e le loro stanze dal vivo, Figures e una riserva giornaliera condivisa di creazioni con l'IA."
     },
     "own": {
       "h": "Le sue domande, a modo suo",

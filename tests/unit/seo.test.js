@@ -387,6 +387,24 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   assert.doesNotMatch(page.text, /grown-ups\/signup|href="\/login\?next=%2Flive"/);
   assert.match(page.text, /href="\/join"/);
   assert.match(page.text, /Up to 60 in a class room/);
+  // "Is Oomba Live free?", answered honestly: what costs nothing, what the Teacher plan adds; no amount, and a link to
+  // /plans only while paid plans are on for everyone.
+  const liveFaq = /<section class="lp-sec lp-alt" id="faq"[\s\S]*?<\/section>/.exec(page.text)[0];
+  assert.match(liveFaq, /<h3>Is Oomba Live free\?<\/h3>[\s\S]*?cost nothing[\s\S]*?The optional Teacher plan adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures/);
+  assert.doesNotMatch(liveFaq, /href="\/plans"|\$\s?\d/);
+  {
+    const { config } = await import('../../server/config.js');
+    const keep = { key: config.stripeApiKey, hook: config.stripeWebhookSecret, pub: config.billingPublic };
+    try {
+      Object.assign(config, { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: 'whsec_fake_live', billingPublic: true });
+      const on = (await get('/teachers/live')).text;
+      assert.match(on, /The optional <a href="\/plans">Teacher plan<\/a> adds the paid tools/);
+      assert.doesNotMatch(on, /\$\s?\d|\b119\b/);
+    } finally { Object.assign(config, { stripeApiKey: keep.key, stripeWebhookSecret: keep.hook, billingPublic: keep.pub }); }
+  }
+  // No "free" for teachers anywhere above the questions: the hero, the header, the buttons, the badges.
+  const top = page.text.slice(0, page.text.indexOf('id="faq"')).replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
+  assert.doesNotMatch(top.replace(/free-text/g, ''), /\bfree\b/i);
   assert.match((await get('/teachers')).text, /href="\/teachers\/live"/);
   assert.match((await get('/sitemap.xml')).text, /\/teachers\/live<\/loc>/);
   assert.equal((await get('/es/teachers/live')).status, 200);

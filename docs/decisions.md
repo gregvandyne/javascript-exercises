@@ -16381,6 +16381,12 @@ The owner approved a mockup of /teachers and /teachers/live in the homepage's de
   (the tour); your own questions; the tools and the safety rules side by side; "More than a quiz" as the dark band; the
   questions; the last call.
 - How it works on /parents keeps views/how.js `howSteps` and its script and styles.
+- **"Is Oomba Live free?" stays, answered honestly** (the owner): yes, hosting live lessons, the question sets, the results
+  and the ready-made courses (CS Quest, Number Quest, Cyber Defenders, while COURSES is on) cost nothing; the optional
+  Teacher plan adds the paid tools (the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, the shared
+  daily pool of AI builds: plans.teacher.li5, teacher-tools.js toolAccess). No amount; the words "Teacher plan" link to
+  /plans only while paid plans are on for everyone. No "free" anywhere else on /teachers/live for teachers: not in the
+  title, the hero, the header, the buttons or the badges.
 ## Welcome messages match the product today (27 Nov 2026)
 
 Every welcome a kid, a student, a parent or a teacher gets now says what Oomba Academy is today ("The one classroom

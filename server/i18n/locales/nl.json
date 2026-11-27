@@ -10189,8 +10189,8 @@
     },
     "faq": {
       "h": "Vragen van leerkrachten over Oomba Live",
-      "q1": "Zit er reclame in Oomba Live?",
-      "a1": "Nee. Live lessen leiden, de startsets met vragen, je eigen sets en de resultaten zijn allemaal zonder reclame.",
+      "q1": "Is Oomba Live gratis?",
+      "a1": "Ja. Live lessen leiden, de startsets met vragen, je eigen sets en de resultaten kosten niets, en de kant-en-klare cursussen die je kunt geven en aan je leerlingen kunt geven ook niet: {courses}. Het optionele <a href=\"{plans}\">Leerkrachtabonnement</a> voegt de betaalde hulpmiddelen toe: de Hub, Vraag het Oomba, de Materialen en hun live ruimtes, Figures en een gedeelde dagelijkse voorraad AI-builds.",
       "q2": "Hebben mijn leerlingen een account nodig?",
       "a2": "Niet voor een open ruimte: leerlingen typen de code en krijgen een verzonnen bijnaam. In een klasruimte gebruiken ze de schoolaccounts die je voor ze hebt gemaakt, en hun scores gaan naar je cijferboek.",
       "q3": "Hoeveel leerlingen kunnen meedoen?",
@@ -10198,7 +10198,8 @@
       "q4": "Kan ik mijn eigen vragen gebruiken?",
       "a4": "Ja, in elk vak en op elk niveau. Schrijf een set van maximaal {items} vragen met elk 2 tot 4 antwoorden, plak er een uit een spreadsheet, laat AI er een opstellen om te bewerken, of maak van de vragen in een van je lesplannen een live quiz.",
       "q5": "Wat hebben leerlingen nodig?",
-      "a5": "Elk apparaat met een actuele browser: Chromebooks, tablets, laptops of telefoons. Niets te installeren. Je toont de les op het bord vanaf je eigen computer."
+      "a5": "Elk apparaat met een actuele browser: Chromebooks, tablets, laptops of telefoons. Niets te installeren. Je toont de les op het bord vanaf je eigen computer.",
+      "a1NoCourses": "Ja. Live lessen leiden, de startsets met vragen, je eigen sets en de resultaten kosten niets. Het optionele <a href=\"{plans}\">Leerkrachtabonnement</a> voegt de betaalde hulpmiddelen toe: de Hub, Vraag het Oomba, de Materialen en hun live ruimtes, Figures en een gedeelde dagelijkse voorraad AI-builds."
     },
     "own": {
       "h": "Jouw vragen, op jouw manier",

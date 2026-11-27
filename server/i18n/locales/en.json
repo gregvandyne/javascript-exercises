@@ -11603,8 +11603,8 @@
     },
     "faq": {
       "h": "Questions teachers ask about Oomba Live",
-      "q1": "Are there ads in Oomba Live?",
-      "a1": "No. Hosting live lessons, the starter question sets, your own sets and the results all come with no ads.",
+      "q1": "Is Oomba Live free?",
+      "a1": "Yes. Hosting live lessons, the starter question sets, your own sets and the results cost nothing, and so do the ready-made courses you can teach and give your students: {courses}. The optional <a href=\"{plans}\">Teacher plan</a> adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, and a shared daily pool of AI builds.",
       "q2": "Do my students need accounts?",
       "a2": "Not for an open room: students type the code and get a made-up nickname. In a class room, they use the school accounts you made for them, and their scores go into your gradebook.",
       "q3": "How many students can play?",
@@ -11612,7 +11612,8 @@
       "q4": "Can I use my own questions?",
       "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lesson plans into a live quiz.",
       "q5": "What do students need?",
-      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the lesson on the board from your own computer."
+      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the lesson on the board from your own computer.",
+      "a1NoCourses": "Yes. Hosting live lessons, the starter question sets, your own sets and the results cost nothing. The optional <a href=\"{plans}\">Teacher plan</a> adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, and a shared daily pool of AI builds."
     },
     "own": {
       "h": "Your questions, your way",

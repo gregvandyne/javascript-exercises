@@ -55,7 +55,7 @@ import { KINDS as FIGURE_KINDS } from '../../public/js/figures-catalog.js';
 import { grammarCompareOn, grammarFacts } from './compare.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { seeIt, readyVideos, videoLink, videoReady, videoDialog } from '../views/see-it.js';
-import { toolAccess } from '../services/teacher-tools.js';
+import { toolAccess, plansOn } from '../services/teacher-tools.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 
 export const router = Router();
@@ -67,8 +67,15 @@ export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 // The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 const hasDemo = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
-/** The questions on /teachers/live, in order (teachersLive.faq.q<n>, a<n>). */
+/** The questions on /teachers/live, in order (teachersLive.faq.q<n>, a<n>). The first, "Is Oomba Live free?", answers
+ *  honestly (the owner, 27 Nov 2026): hosting, the question sets, the results and the ready-made courses cost nothing;
+ *  the Teacher plan adds the paid tools (plans.teacher.li5, teacher-tools.js toolAccess, homeroom.js canUse). No amount:
+ *  prices are on /plans only, and the answer links there only while paid plans are on for everyone. */
 const LIVE_FAQ = [1, 2, 3, 4, 5];
+/** The free courses by name (the courses' own names), for that answer; none while COURSES is off. */
+const courseNames = req => { const t = req.t; const names = ['cs', 'nq', 'cd'].map(k => t(`landing.courses.${k}.name`));
+  if (/^en/.test(req.locale || 'en')) return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+  try { return new Intl.ListFormat(t.intl || req.locale || 'en', { type: 'conjunction' }).format(names); } catch { return names.join(', '); } };
 
 /** lang/dir for an element whose text is still the English (see routes/info.js). */
 export const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -86,16 +93,17 @@ export function launchGame(slug) {
   return games.localizeGame(g);
 }
 /** FAQ pairs [question key, answer key] -> markup, plus the plain text for FAQPage structured data. */
-export function faqBlock(req, pairs, headingKey, vars = {}, { fold = false, lp: lpLook = false } = {}) {
+export function faqBlock(req, pairs, headingKey, vars = {}, { fold = false, lp: lpLook = false, unlink = [] } = {}) {
   const t = req.t;
   const ld = seo.faqLd(pairs.map(([qk, ak]) => [t(qk), seo.plainText(t(ak, vars))]));
   // lp: the teacher site's look (/teachers, /teachers/live; public/css/landing.css): the homepage's questions, each a card
-  // that opens, the first one open.
+  // that opens, the first one open. unlink: answers whose links are left out (a link to a page that is not there).
   if (lpLook) {
+    const answer = ak => (unlink.includes(ak) ? raw(String(el(t, 'p', ak, vars)).replace(/<\/?a\b[^>]*>/g, '')) : el(t, 'p', ak, vars));
     return {
       markup: html`<section class="lp-sec lp-alt" id="faq" aria-labelledby="faq-h"><div class="lp-wrap lp-narrow">
     <header class="lp-head lp-c">${el(t, 'p', 'landing.nav.faq', {}, ' class="lp-eyebrow"')}${el(t, 'h2', headingKey, {}, ' id="faq-h"')}</header>
-    <div class="lp-faq">${pairs.map(([qk, ak], i) => html`<details class="lp-card"${i === 0 ? raw(' open') : ''}><summary>${el(t, 'h3', qk)}<span class="lp-plus" aria-hidden="true"></span></summary>${el(t, 'p', ak, vars)}</details>`)}</div>
+    <div class="lp-faq">${pairs.map(([qk, ak], i) => html`<details class="lp-card"${i === 0 ? raw(' open') : ''}><summary>${el(t, 'h3', qk)}<span class="lp-plus" aria-hidden="true"></span></summary>${answer(ak)}</details>`)}</div>
   </div></section>`,
       ld,
     };
@@ -529,8 +537,10 @@ router.get('/teachers/live', (req, res, next) => {
   // parents' sign-up, which made a parent account for a teacher.)
   const hostHref = host ? '/live' : '/teachers/host';
   const BADGES = ['ads', 'noAccounts', 'browser', 'languages'];
-  const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
-  const faq = faqBlock(req, LIVE_FAQ.map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars, { lp: true });
+  const courseOn = !focus.coursesHidden();
+  const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items, plans: '/plans', courses: courseOn ? courseNames(req) : '' };
+  const a1 = courseOn ? 'teachersLive.faq.a1' : 'teachersLive.faq.a1NoCourses';
+  const faq = faqBlock(req, LIVE_FAQ.map(n => [`teachersLive.faq.q${n}`, n === 1 ? a1 : `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars, { lp: true, unlink: plansOn() ? [] : [a1] });
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
   const modes = [['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugRemoved(A_MODES[MODE_ID[k]]));

@@ -10189,8 +10189,8 @@
     },
     "faq": {
       "h": "Häufige Fragen von Lehrkräften zu Oomba Live",
-      "q1": "Gibt es in Oomba Live Werbung?",
-      "a1": "Nein. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle ohne Werbung.",
+      "q1": "Ist Oomba Live kostenlos?",
+      "a1": "Ja. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse kosten nichts, ebenso die fertigen Kurse, die Sie unterrichten und Ihren Schülerinnen und Schülern geben können: {courses}. Der optionale <a href=\"{plans}\">Lehrkräfte-Plan</a> bringt die kostenpflichtigen Werkzeuge: den Hub, Frag Oomba, die Arbeitsmittel und ihre Live-Räume, Figures und ein gemeinsames tägliches Kontingent an KI-Builds.",
       "q2": "Brauchen meine Schülerinnen und Schüler Konten?",
       "a2": "Nicht für einen offenen Raum: Die Kinder geben den Code ein und bekommen einen ausgedachten Spitznamen. In einem Klassenraum nutzen sie die Schulkonten, die Sie für sie angelegt haben, und ihre Punkte kommen in Ihr Notenbuch.",
       "q3": "Wie viele Kinder können mitspielen?",
@@ -10198,7 +10198,8 @@
       "q4": "Kann ich eigene Fragen verwenden?",
       "a4": "Ja, in jedem Fach und auf jedem Niveau. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, fügen Sie eines aus einer Tabelle ein, lassen Sie die KI eines zum Bearbeiten entwerfen oder machen Sie aus den Fragen eines Ihrer Unterrichtspläne ein Live-Quiz.",
       "q5": "Was brauchen die Schülerinnen und Schüler?",
-      "a5": "Jedes Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen die Lektion von Ihrem eigenen Computer aus an der Tafel."
+      "a5": "Jedes Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen die Lektion von Ihrem eigenen Computer aus an der Tafel.",
+      "a1NoCourses": "Ja. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse kosten nichts. Der optionale <a href=\"{plans}\">Lehrkräfte-Plan</a> bringt die kostenpflichtigen Werkzeuge: den Hub, Frag Oomba, die Arbeitsmittel und ihre Live-Räume, Figures und ein gemeinsames tägliches Kontingent an KI-Builds."
     },
     "own": {
       "h": "Ihre Fragen, ganz nach Ihren Wünschen",
