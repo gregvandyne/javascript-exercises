@@ -6,11 +6,11 @@ Every lesson of the Grammar Lab course, written out in full, in Oomba's own word
 
 # Grammar Lab, K-2 Lessons
 
-Band: K-2. Pathways: 6. Topics: 11. All lesson text is original, written fresh for Oomba. Sentences are short and concrete, about animals, toys, food, and school. US spelling throughout. No em dashes anywhere.
+Band: K-2. Pathways: 6. Topics: 12. All lesson text is original, written fresh for Oomba. Sentences are short and concrete, about animals, toys, food, and school. US spelling throughout. No em dashes anywhere.
 
-Topic count check: 9 topics are written in full below, and 2 topics are shared with another pathway and are cross-referenced. 9 plus 2 is 11, which matches the map. Quiz items: 9 full topics times 12 items is 108 items.
+Topic count check: 10 topics are written in full below, and 2 topics are shared with another pathway and are cross-referenced. 10 plus 2 is 12, which matches the map. Quiz items: 10 full topics times 12 items is 120 items.
 
-## Pathway 1: Adjectives and Adverbs (1 topic)
+## Pathway 1: Adjectives and Adverbs (2 topics)
 
 ### Topic: Identifying Adjectives
 
@@ -18,7 +18,7 @@ Topic count check: 9 topics are written in full below, and 2 topics are shared w
 - Definition: An adjective is a word that tells about a noun. It tells what kind, how many, or which one.
 - Worked example: "The fluffy kitten slept in the basket." Fluffy is the adjective. Kitten is the noun it tells about.
 - How it works: Fluffy tells what kind of kitten it is.
-- Tip box: "The yellow bus." Yellow tells about bus. "Five birds." Five tells how many birds.
+- Tip box: "The yellow bus." Yellow tells about the bus. "Five birds." Five tells how many birds.
 
 **Quiz**
 1. "The round ball rolled down the hill." Answer: round. Hint: Look for the word that tells what shape the ball is.
@@ -33,6 +33,28 @@ Topic count check: 9 topics are written in full below, and 2 topics are shared w
 10. "The hot soup warmed my hands." Answer: hot. Hint: Look for the word that tells how the soup feels.
 11. "A gentle horse walked down the path." Answer: gentle. Hint: Look for the word that tells what kind of horse it is.
 12. "The spotted pup chased the ball." Answer: spotted. Hint: Look for the word that tells what the pup looks like.
+
+### Topic: Identifying Adverbs
+
+**Teaching Card**
+- Definition: An adverb is a word that tells about a verb. Some adverbs tell how something is done. Many of these adverbs end in -ly.
+- Worked example: "The puppy ate quickly." Quickly is the adverb. Ate is the verb it tells about.
+- How it works: Quickly tells how the puppy ate.
+- Tip box: "The bee buzzed loudly." Loudly tells how the bee buzzed. "Nia hums softly." Softly tells how Nia hums.
+
+**Quiz**
+1. "The cat slowly licked its paw." Answer: slowly. Hint: Look for the word that tells how the cat licked its paw.
+2. "Priya sang loudly at school." Answer: loudly. Hint: Look for the word that tells how Priya sang.
+3. "Softly, the kitten purred." Answer: Softly. Hint: Look for the word that tells how the kitten purred.
+4. "The dog wagged its tail happily." Answer: happily. Hint: Look for the word that tells how the dog wagged its tail.
+5. "Mateo carefully carried the eggs." Answer: carefully. Hint: Look for the word that tells how Mateo carried the eggs.
+6. "Amara runs fast in the race." Answer: fast. Hint: Look for the word that tells how Amara runs.
+7. "The baby clapped her hands gently." Answer: gently. Hint: Look for the word that tells how the baby clapped her hands.
+8. "Kenji draws well." Answer: well. Hint: Look for the word that tells how Kenji draws.
+9. "Zoe neatly folded her shirt." Answer: neatly. Hint: Look for the word that tells how Zoe folded her shirt.
+10. "Quickly, the bear grabbed the fish." Answer: Quickly. Hint: Look for the word that tells how the bear grabbed the fish.
+11. "The class waited quietly for lunch." Answer: quietly. Hint: Look for the word that tells how the class waited.
+12. "Lily kindly shared her snack with Omar." Answer: kindly. Hint: Look for the word that tells how Lily shared her snack.
 
 ## Pathway 2: Capitalization (2 topics)
 
@@ -229,7 +251,7 @@ Shared with the Identifying Action Verbs topic in Pathway 5: Identifying Parts o
 12. "Tomorrow, Sam will ___ (visit) his grandma." Answer: visit. Hint: Tomorrow means it will happen later, so use will plus the verb.
 # Grammar Lab: Grades 3-5 Lessons
 
-Band: Grades 3-5. Pathways: 17. Topic slots: 27. Distinct lessons written in full: 22 (5 slots are shared across pathways and are cross-referenced, not repeated). Quiz items: 264 (12 per lesson).
+Band: Grades 3-5. Pathways: 17. Topic slots: 28. Distinct lessons written in full: 23 (5 slots are shared across pathways and are cross-referenced, not repeated). Quiz items: 276 (12 per lesson).
 
 All text is original, written fresh for Oomba. US spelling throughout. No em dashes anywhere.
 
@@ -245,7 +267,7 @@ Teaching card:
 - Definition: An adjective is a word that describes a noun. It tells what kind, how many, or which one.
 - Worked example: "The fluffy kitten slept in the sun." Fluffy is the adjective. Kitten is the noun it describes.
 - Explanation: Fluffy tells what kind of kitten it is.
-- Tip box: "The green frog." Green describes frog. "The five balloons." Five tells how many balloons.
+- Tip box: "The green frog." Green describes the frog. "The five balloons." Five tells how many balloons.
 
 Quiz (tap the adjective):
 1. "The brave firefighter climbed the ladder." Answer: brave. Hint: Look for the word that tells what kind of firefighter.
@@ -260,6 +282,28 @@ Quiz (tap the adjective):
 10. "Sam built a wooden bridge from blocks." Answer: wooden. Hint: Look for the word that tells what the bridge is made of.
 11. "The round moon rose over the hills." Answer: round. Hint: Look for the word that tells what shape the moon is.
 12. "The sleepy kittens curled up in the basket." Answer: sleepy. Hint: Look for the word that tells how the kittens feel.
+
+### Topic: Adverbs That Tell How, When, and Where
+
+Teaching card:
+- Definition: An adverb is a word that tells more about a verb. Many adverbs tell how, when, or where an action happens.
+- Worked example: "Nadia whispered softly to her baby brother." Softly is the adverb. It tells how Nadia whispered.
+- Explanation: Ask how, when, or where about the verb. The word that answers is the adverb.
+- Tip box: "We will swim tomorrow." Tomorrow tells when. "Dad waited downstairs." Downstairs tells where.
+
+Quiz (tap the adverb):
+1. "Tomas quietly closed the lid of the piano." Answer: quietly. Hint: Look for the word that tells how Tomas closed the lid.
+2. "Yesterday our class planted sunflower seeds in the garden." Answer: Yesterday. Hint: Look for the word that tells when the class planted the seeds.
+3. "The children played outside during recess." Answer: outside. Hint: Look for the word that tells where the children played.
+4. "Grandma searched everywhere for her reading glasses." Answer: everywhere. Hint: Look for the word that tells where Grandma searched.
+5. "Kwame carefully poured the lemonade into each cup." Answer: carefully. Hint: Look for the word that tells how Kwame poured the lemonade.
+6. "The new library books will arrive soon." Answer: soon. Hint: Look for the word that tells when the books will arrive.
+7. "We visited the aquarium today with our cousins." Answer: today. Hint: Look for the word that tells when we visited the aquarium.
+8. "Mr. Haddad asked us to stack the chairs here." Answer: here. Hint: Look for the word that tells where we should stack the chairs.
+9. "The puppy proudly carried the stick across the yard." Answer: proudly. Hint: Look for the word that tells how the puppy carried the stick.
+10. "Jin finished her science project early." Answer: early. Hint: Look for the word that tells when Jin finished her project.
+11. "Cheerfully, Rafael greeted every guest at the party." Answer: Cheerfully. Hint: Look for the word that tells how Rafael greeted the guests.
+12. "The kitten followed Ayesha upstairs after dinner." Answer: upstairs. Hint: Look for the word that tells where the kitten followed Ayesha.
 
 ---
 
@@ -808,10 +852,10 @@ Quiz (fix the tense shift):
 ## Verification
 
 - Pathways covered: 17 of 17.
-- Topic slots covered: 27 of 27.
-- Distinct lessons written in full: 22.
+- Topic slots covered: 28 of 28.
+- Distinct lessons written in full: 23.
 - Shared slots cross-referenced (not repeated): Identifying Adjectives (Pathways 1 and 12); Rules of Capitalizing Titles (Pathways 3 and 4); Identifying Coordinating Conjunctions (Pathways 7 and 13); Identifying Action Verbs (Pathways 11, 12, and 16).
-- Quiz items: 264 (12 per distinct lesson).
+- Quiz items: 276 (12 per distinct lesson).
 - Topics not written: none.
 # Grammar Lab, Grades 6-8, Part 1
 
