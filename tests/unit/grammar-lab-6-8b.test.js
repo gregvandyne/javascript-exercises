@@ -108,7 +108,7 @@ test('6-8 part 2 in full: 26 units, 114 topic slots, 93 topics (67 new, 26 from 
   assert.equal(heads.length, 26);
   assert.deepEqual(PART2.map(p => PLAN.pathways[p].parts.flatMap(x => x.topics).length), heads.map(h => +h[2]));
   // a topic written twice in the source is one topic, read from the place chosen
-  assert.equal(PLAN.topics['restrictive-clauses'].source.line, 3672, 'Punctuating Restrictive and Nonrestrictive Clauses: the Phrases and Dependent Clauses one');
+  assert.equal(PLAN.topics['restrictive-clauses'].source.line, 3716, 'Punctuating Restrictive and Nonrestrictive Clauses: the Phrases and Dependent Clauses one');
   // (the 9-12 band uses these units too: here, the 6-8 band's own)
   assert.deepEqual(units68('restrictive-clauses'), ['phrases-and-clauses', 'restrictive-clauses']);
   assert.deepEqual(units68('identifying-modifiers'), ['modifiers', 'verbals']);
@@ -310,8 +310,8 @@ test('playing part 2 topics over the API: one wrong answer each, mastery shared 
   assert.ok(sva[0].open && !sva[1].open, 'locks follow the order');
   // Parts of Speech II is all part 1 topics: mastering them in part 1 fills its ring
   for (const id of topicsOf(['parts-of-speech-2'])) master(kid, id);
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('parts-of-speech-2', '6-8')), { done: 9, total: 9 });
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('parts-of-speech-6-8', '6-8')), { done: 5, total: 5 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('parts-of-speech-2', '6-8')), { done: 9, total: 9, started: 0 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('parts-of-speech-6-8', '6-8')), { done: 5, total: 5, started: 0 });
   // the next topic is worked out live, never a mastered one
   const next = GL.nextTopic(kid, GL.pathway('parts-of-speech-3', '6-8'));
   assert.ok(next && !GL.masteredSet(kid).has(next.id));

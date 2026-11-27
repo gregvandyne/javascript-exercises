@@ -175,7 +175,7 @@ test('a unit, a topic and a room: assigned to a class, a student or a group, don
   TOOLS.plansOn(); TOOLS.givePlan(tess.id);
   try {
     const ho = HO.handOutGrammar(tess, T2, { key: 'k-2/adjectives-and-adverbs', to: { kind: 'desk', id: lee.id } });
-    assert.ok(ho.ok, JSON.stringify(ho)); assert.equal(ho.n, 1);
+    assert.ok(ho.ok, JSON.stringify(ho)); assert.equal(ho.n, 2, 'the K-2 unit: Identifying Adjectives and Identifying Adverbs');
     const desk = HO.deskView(T2, lee);
     const card = desk.find(x => x.id === ho.classLesson.id);
     assert.ok(card && card.grammar, 'on the desk'); assert.equal(card.href, '/courses/grammar-lab/k-2/adjectives-and-adverbs'); assert.equal(card.done, false);
