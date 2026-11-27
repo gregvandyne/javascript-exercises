@@ -7654,7 +7654,8 @@
         "h": "Enseigner avec les outils",
         "p": "Demandez une fiche à Oomba dans le chat : il rédige les questions, Figures dessine chaque figure à l’échelle et calcule les réponses. Ou lancez une salle de maths en direct avec des manipulables virtuels.",
         "alt": "Le créateur de fiches Figures avec le chat d’Oomba ouvert à côté : une fiche intitulée Area and volume practice, sa première question avec un rectangle dessiné à l’échelle et la réponse 12 m², et la liste de ce qui a changé dans le chat."
-      }
+      },
+      "kicker": "Comment ça marche"
     },
     "build": {
       "h": "Créer pour apprendre",
@@ -10139,7 +10140,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Chacun touche le pays sur sa propre carte du monde : le pays, son drapeau, sa capitale ou ce qui le rend célèbre. Le grand écran montre où toute la classe a touché, et viser tout près rapporte aussi."
-      }
+      },
+      "kicker": "Jeux en direct"
     },
     "tools": {
       "h": "Les outils demandés par les enseignants",
@@ -10908,7 +10910,8 @@
       "ask": "Demander à Oomba",
       "tour": "Visite",
       "videos": "Vidéos",
-      "compare": "Comparer"
+      "compare": "Comparer",
+      "signupShort": "S'inscrire"
     },
     "hero": {
       "kicker": "Pour les enseignants de la maternelle à la 4e",

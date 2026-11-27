@@ -8736,7 +8736,8 @@
         "h": "Teach with the tools",
         "p": "Ask Oomba for a worksheet in the chat: it drafts the questions, Figures draws every figure to scale and works out the answers. Or run a live math room with virtual manipulatives.",
         "alt": "The Figures worksheet builder with Oomba’s chat open beside it: a worksheet called Area and volume practice, its first question with a rectangle drawn to scale and the answer 12 m², and the chat’s list of what changed."
-      }
+      },
+      "kicker": "How it works"
     },
     "build": {
       "h": "Build to learn",
@@ -11554,7 +11555,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. The big screen shows where the whole class tapped, and close guesses still score."
-      }
+      },
+      "kicker": "Live games"
     },
     "tools": {
       "h": "Tools teachers asked for",
@@ -12483,7 +12485,8 @@
       "ask": "Ask Oomba",
       "tour": "Tour",
       "videos": "Videos",
-      "compare": "Compare"
+      "compare": "Compare",
+      "signupShort": "Sign up"
     },
     "hero": {
       "kicker": "For K-8 teachers",

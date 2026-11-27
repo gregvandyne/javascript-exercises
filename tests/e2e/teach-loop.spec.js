@@ -165,10 +165,10 @@ test('/teachers (and the landing at "/", when it is on): the section with its tw
   await p.goto('/teachers');
   const sec = p.locator('#teach-loop');
   await expect(sec.locator('h2')).toContainText('Plan → Play → Check → Feedback');
-  await expect(sec.locator('.tl-step')).toHaveCount(4);
+  await expect(sec.locator('.lp-loop-step')).toHaveCount(4);
   await expect(sec.locator('a')).toHaveCount(0);
   // Two screens side by side: the gradebook and the written feedback (teacher-loop.js PAIR).
-  await expect(sec.locator('.tl-shot img')).toHaveCount(2);
+  await expect(sec.locator('.lp-loop-shot img')).toHaveCount(2);
   const landing = await p.goto('/').then(() => p.locator('#loop').count());
   const paths = ['/teachers', ...(landing ? ['/'] : [])];
   if (landing) {

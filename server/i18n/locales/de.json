@@ -7655,7 +7655,8 @@
         "h": "Mit den Werkzeugen unterrichten",
         "p": "Bitte Oomba im Chat um ein Arbeitsblatt: Es schreibt die Aufgaben, Figures zeichnet jede Figur maßstabsgetreu und rechnet die Lösungen aus. Oder starte einen Live-Matheraum mit virtuellem Material.",
         "alt": "Der Arbeitsblatt-Editor von Figures mit Oombas Chat daneben: ein Arbeitsblatt namens Area and volume practice, die erste Aufgabe mit einem maßstabsgetreuen Rechteck und der Lösung 12 m² sowie die Liste der Änderungen im Chat."
-      }
+      },
+      "kicker": "So funktioniert es"
     },
     "build": {
       "h": "Lernen durch Bauen",
@@ -10140,7 +10141,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Der große Bildschirm zeigt, wo die ganze Klasse getippt hat, und knapp daneben zählt auch."
-      }
+      },
+      "kicker": "Live-Spiele"
     },
     "tools": {
       "h": "Werkzeuge, die sich Lehrkräfte gewünscht haben",
@@ -10909,7 +10911,8 @@
       "ask": "Frag Oomba",
       "tour": "Tour",
       "videos": "Videos",
-      "compare": "Vergleich"
+      "compare": "Vergleich",
+      "signupShort": "Registrieren"
     },
     "hero": {
       "kicker": "Für Lehrkräfte vom Kindergarten bis Klasse 8",

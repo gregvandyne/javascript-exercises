@@ -263,11 +263,11 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   assert.doesNotMatch(visible(home.text), /\$\s?\d|\b119\b/, 'no price on "/"');
   assert.equal(L.HOST_NOW_URL, QL.HOST_URL);
   const t = await call('/teachers');
-  assert.match(t.text, /<a class="btn btn-hot btn-big" href="\/teachers\/host" id="host-now">/);
+  assert.match(t.text, /<a class="lp-btn lp-btn-ghost lp-btn-big" href="\/teachers\/host" id="host-now" data-cta="host">/);
   assert.match((await call('/teachers', { user: teacher })).text, /href="\/live\/quick" id="host-now"/);
   assert.doesNotMatch((await call('/teachers', { user: kid })).text, /id="host-now"/, 'a child is not offered hosting');
   const tl = await call('/teachers/live');
-  assert.match(tl.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live lesson<\/a>/);
+  assert.match(tl.text, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/teachers\/host" data-cta="host">Host a [^<]*live lesson <span class="lp-arrow/);
   assert.doesNotMatch(tl.text, /grown-ups\/signup/, 'a teacher is never sent to the parent sign-up');
   // the landing's click counter knows the new button
   const c = await call('/landing/count/host', { method: 'POST', headers: { 'sec-fetch-site': 'same-origin', 'user-agent': 'Mozilla/5.0 Chrome/141.0' } });

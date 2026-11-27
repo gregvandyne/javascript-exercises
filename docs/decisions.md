@@ -16355,3 +16355,29 @@ offer teachers".
 - **Screens:** tools-board, tools-live and tools-student retaken (scripts/tools-shots.js: the current Manipulatives);
   landing-shots.mjs makes tool-flashcards and tool-grammar-lab for the new cards.
 - /research's three study cards start level (`.trust-find>.panel+.panel`, the #671 fix).
+
+## Teachers pages in the homepage's design (27 Nov 2026)
+
+The owner approved a mockup of /teachers and /teachers/live in the homepage's design and asked for it to be built.
+- **One shell for the teacher site** (server/views/lp-shell.js): "/", /teachers and /teachers/live share the homepage's
+  header, footer and page (public/css/landing.css, public/js/landing.js), not the app's layout. On /teachers and
+  /teachers/live the header's section links go to "/"'s sections (their own tools, videos and questions stay on the
+  page), a signed-in visitor gets Home instead of Sign in, and the footer has no trademark line: only "/" and /compare
+  name other products. The footer's grown-up links (research, compliance, terms, refunds, plans) follow the app
+  footer's rule (layout.js legalReader), and Plans & pricing shows only while /plans is there (familiesOn).
+- **One main button** (lp-shell.js `teacherCta`): the header's button and every hero's main button on all three pages
+  read "Start free trial" and go to the trial while paid plans are on for everyone (teacher-tools.js `plansOn`),
+  otherwise "Create a teacher account" to the teacher sign-up (/signup/for/teacher). The homepage's trust line keeps
+  "No card needed" and "Cancel anytime" for the trial only. Its clicks count as landing.trial or landing.signup.
+- **/teachers, in order:** the centered hero (the main button and Host a live lesson now, the tools' screens in one
+  collage with a student's phone and the Hub's video); every tool as the homepage's cards (six, then "Show all"), each
+  video link playing in the homepage's player; How it works as the homepage's click-through tour (views/how.js
+  `howTour`: every screen whole, light and dark); the teaching loop (teacher-loop.js variant 'landing'); the videos
+  (see-it.js variant 'landing'); Google Classroom while it is on; "And much more", the five folded cards; the questions;
+  the start block (the homepage's dark last call, with setupBlock unchanged inside; a form or thank-you sits on its own
+  light card). "Try a lesson now" moved from the hero to the start block.
+- **/teachers/live, in order:** the hero about live games on every device (the board's code, a phone joining with it, a
+  phone answering; "See it in one minute" under the picture, never over the board); the modes as cards; How it works
+  (the tour); your own questions; the tools and the safety rules side by side; "More than a quiz" as the dark band; the
+  questions; the last call.
+- How it works on /parents keeps views/how.js `howSteps` and its script and styles.

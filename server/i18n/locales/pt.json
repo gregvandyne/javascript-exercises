@@ -7656,7 +7656,8 @@
         "h": "Ensine com as ferramentas",
         "p": "Peça uma folha de atividades ao Oomba no chat: ele escreve as questões, o Figures desenha cada figura em escala e calcula as respostas. Ou abra uma sala de matemática ao vivo com materiais manipuláveis virtuais.",
         "alt": "O criador de folhas do Figures com o chat do Oomba aberto ao lado: uma folha chamada Area and volume practice, a primeira questão com um retângulo desenhado em escala e a resposta 12 m², e a lista do que mudou no chat."
-      }
+      },
+      "kicker": "Como funciona"
     },
     "build": {
       "h": "Criar para aprender",
@@ -10141,7 +10142,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Todos tocam o país no seu próprio mapa-múndi: o país, a bandeira, a capital ou aquilo pelo que é famoso. A tela grande mostra onde a turma toda tocou, e chegar perto também vale."
-      }
+      },
+      "kicker": "Jogos ao vivo"
     },
     "tools": {
       "h": "Ferramentas que os professores pediram",
@@ -10910,7 +10912,8 @@
       "ask": "Pergunte ao Oomba",
       "tour": "Tour",
       "videos": "Vídeos",
-      "compare": "Comparar"
+      "compare": "Comparar",
+      "signupShort": "Cadastre-se"
     },
     "hero": {
       "kicker": "Para professores do K ao 8º ano",

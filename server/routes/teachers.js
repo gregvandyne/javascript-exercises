@@ -38,20 +38,20 @@ import { allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
-import { howArt, howSteps, howHead, howFiles, HOW_SCRIPT } from '../views/how.js';
+import { howFiles, howTour } from '../views/how.js';
+import { lpPage, lpHeader, lpFooter, ctaButton, ARROW } from '../views/lp-shell.js';
 import * as OT from '../standards/official-tags.js';
 import { normId as stdNorm } from '../standards/ccss.js';
 import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
-import { teacherLoop, PAIR } from '../views/teacher-loop.js';
+import { teacherLoop } from '../views/teacher-loop.js';
 import { shotScheme, themedPicture } from '../views/shot.js';
 import { books } from '../services/library.js';
 import * as H from '../services/homeroom.js';
 import { KINDS as FIGURE_KINDS } from '../../public/js/figures-catalog.js';
 import { grammarCompareOn, grammarFacts } from './compare.js';
 import { loopLinks } from '../services/teach-loop.js';
-import { LOOP_CSS } from './teach-loop.js';
-import { seeIt, readyVideos } from '../views/see-it.js';
+import { seeIt, readyVideos, videoLink, videoReady, videoDialog } from '../views/see-it.js';
 import { toolAccess } from '../services/teacher-tools.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 
@@ -64,19 +64,8 @@ export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 // The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 const hasDemo = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
-/** The demo video: no sound, its captions burned in and also as a track, with a written description of what it shows. */
-function demoVideo(req) {
-  if (!hasDemo) return '';
-  const t = req.t;
-  return html`<section class="lp-sec lp-demo" id="demo" aria-labelledby="demo-h">
-    ${el(t, 'h2', 'teachersLive.demo.h', {}, ' id="demo-h"')}
-    <video class="lp-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-demo-poster.jpg" aria-describedby="demo-note">
-      <source src="/video/oomba-demo.mp4" type="video/mp4">
-      <track kind="captions" src="/video/oomba-demo.en.vtt" srclang="en" label="English">
-    </video>
-    ${el(t, 'p', 'teachersLive.demo.note', {}, ' class="small" id="demo-note"')}
-  </section>`;
-}
+/** The questions on /teachers/live, in order (teachersLive.faq.q<n>, a<n>). */
+const LIVE_FAQ = [1, 2, 3, 4, 5];
 
 /** lang/dir for an element whose text is still the English (see routes/info.js). */
 export const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -94,14 +83,26 @@ export function launchGame(slug) {
   return games.localizeGame(g);
 }
 /** FAQ pairs [question key, answer key] -> markup, plus the plain text for FAQPage structured data. */
-export function faqBlock(req, pairs, headingKey, vars = {}, { fold = false } = {}) {
+export function faqBlock(req, pairs, headingKey, vars = {}, { fold = false, lp: lpLook = false } = {}) {
   const t = req.t;
-  // fold: each answer folds away under its question (the /parents and /teachers pages, kept short; the answers are still
-  // on the page and in the FAQ structured data).
+  const ld = seo.faqLd(pairs.map(([qk, ak]) => [t(qk), seo.plainText(t(ak, vars))]));
+  // lp: the teacher site's look (/teachers, /teachers/live; public/css/landing.css): the homepage's questions, each a card
+  // that opens, the first one open.
+  if (lpLook) {
+    return {
+      markup: html`<section class="lp-sec lp-alt" id="faq" aria-labelledby="faq-h"><div class="lp-wrap lp-narrow">
+    <header class="lp-head lp-c">${el(t, 'p', 'landing.nav.faq', {}, ' class="lp-eyebrow"')}${el(t, 'h2', headingKey, {}, ' id="faq-h"')}</header>
+    <div class="lp-faq">${pairs.map(([qk, ak], i) => html`<details class="lp-card"${i === 0 ? raw(' open') : ''}><summary>${el(t, 'h3', qk)}<span class="lp-plus" aria-hidden="true"></span></summary>${el(t, 'p', ak, vars)}</details>`)}</div>
+  </div></section>`,
+      ld,
+    };
+  }
+  // fold: each answer folds away under its question (the /parents page, kept short; the answers are still on the page and
+  // in the FAQ structured data).
   return {
     markup: html`<section class="panel faq lp-faq" id="faq" aria-labelledby="faq-h">${el(t, 'h2', headingKey, {}, ' id="faq-h"')}
       ${pairs.map(([qk, ak]) => (fold ? folded(el(t, 'h3', qk), el(t, 'p', ak, vars)) : html`${el(t, 'h3', qk)}${el(t, 'p', ak, vars)}`))}</section>`,
-    ld: seo.faqLd(pairs.map(([qk, ak]) => [t(qk), seo.plainText(t(ak, vars))])),
+    ld,
   };
 }
 
@@ -277,44 +278,49 @@ export function quotesSection(req, quotes = TEACHER_QUOTES) {
   const preview = !quotes.length && req.query && req.query.quotes === 'preview' && isPlatformAdmin(req.user);
   const list = quotes.length ? quotes : preview ? [QUOTE_PLACEHOLDER, QUOTE_PLACEHOLDER, QUOTE_PLACEHOLDER] : [];
   if (!list.length) return '';
-  return html`<section class="lp-sec lp-quotes${preview ? ' lp-quotes-preview' : ''}" id="teachers-say" aria-labelledby="quotes-h">
-    ${el(t, 'h2', 'teachers.quotes.h', {}, ' id="quotes-h"')}
-    ${preview ? html`<p class="notice" lang="en" dir="ltr">Owner preview: only platform admins see this. The section stays hidden until TEACHER_QUOTES in server/routes/teachers.js has real quotes.</p>` : ''}
-    <ul class="lp-quote-list">${list.map(x => html`<li><figure class="panel lp-quote" lang="${x.lang || 'en'}"><blockquote><p>${x.quote}</p></blockquote>
+  return html`<section class="lp-sec lp-quotes${preview ? ' lp-quotes-preview' : ''}" id="teachers-say" aria-labelledby="quotes-h"><div class="lp-wrap">
+    <header class="lp-head">${el(t, 'h2', 'teachers.quotes.h', {}, ' id="quotes-h"')}</header>
+    ${preview ? html`<p class="lp-plan" lang="en" dir="ltr">Owner preview: only platform admins see this. The section stays hidden until TEACHER_QUOTES in server/routes/teachers.js has real quotes.</p>` : ''}
+    <ul class="lp-quote-list">${list.map(x => html`<li><figure class="lp-card lp-quote" lang="${x.lang || 'en'}"><blockquote><p>${x.quote}</p></blockquote>
       <figcaption><b>${x.name}</b>${x.role ? html`, ${x.role}` : ''}${x.school ? html`, ${x.school}` : ''}</figcaption></figure></li>`)}</ul>
-  </section>`;
+  </div></section>`;
 }
+
+/** A tick list in the teacher site's look: each line a key (vars for all). */
+const ticks = (t, keys, vars = {}, cls = 'lp-list') => html`<ul class="${cls}">${keys.map(k => html`<li><span class="lp-tick" aria-hidden="true">✓</span>${el(t, 'span', k, vars)}</li>`)}</ul>`;
 
 /** Google Classroom for teachers (only when it is on here): the words are teachers.classroom.*, the same as "/". */
 function classroomSection(req) {
   if (!classroomOn()) return '';
   const t = req.t;
-  return html`<section class="panel lp-gc" id="classroom" aria-labelledby="classroom-h">
-    ${el(t, 'h2', 'teachers.classroom.h', {}, ' id="classroom-h"')}${el(t, 'p', 'teachers.classroom.lead')}
-    <ul class="lp-list">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => el(t, 'li', `teachers.classroom.${k}`))}</ul>
-    <p class="small muted">${el(t, 'span', 'teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
-  </section>`;
+  return html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h"><div class="lp-wrap">
+    <header class="lp-head">${el(t, 'p', 'teachers.classroom.kicker', {}, ' class="lp-eyebrow"')}${el(t, 'h2', 'teachers.classroom.h', {}, ' id="classroom-h"')}${el(t, 'p', 'teachers.classroom.lead', {}, ' class="lp-sub"')}</header>
+    <div class="lp-card lp-gc">
+      ${ticks(t, ['li1', 'li2', 'li3', 'li4', 'li5'].map(k => `teachers.classroom.${k}`))}
+      <p class="lp-small">${el(t, 'span', 'teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
+    </div>
+  </div></section>`;
 }
 
 /** Every teaching tool, right under the /teachers hero (docs/decisions.md "Teachers and Parents pages: lead with the
  *  new tools, no 'always free'", and the owner's "show everything we now offer teachers" of 27 Nov 2026): a real
  *  screenshot of each (scripts/tools-shots.js, scripts/how-shots.js --only dash, and the homepage's tool shots from
- *  scripts/landing-shots.mjs), a line, and a link. The first PREVIEW cards show; the rest fold open under "Show all", like
- *  the homepage's manipulative videos. The words are the homepage's own where it says the same thing (landing.tools.*,
- *  landing.hub.*), so the two pages never disagree.
+ *  scripts/landing-shots.mjs), a line, and a link, as the homepage's tool cards (public/css/landing.css .lp-tool). The
+ *  first PREVIEW cards show; the rest fold open under "Show all", like the homepage's manipulative videos. The words are
+ *  the homepage's own where it says the same thing (landing.tools.*, landing.hub.*), so the two pages never disagree.
  *  Links: someone who can open a tool goes to it (with paid plans on, school staff without the Teacher plan get the plan
- *  page at the same address: routes/figures.js planReply); anyone else goes to the tool's one-minute video lower on the
- *  page (views/see-it.js), or to the game's own page for the games anyone may try. Who may use a tool is still
- *  teacher-tools.js toolAccess and homeroom.js canUse.
+ *  page at the same address: routes/figures.js planReply); anyone else plays the tool's one-minute video in the page's
+ *  player (views/see-it.js videoLink; without script, the video file), or goes to the game's own page for the games anyone
+ *  may try. Who may use a tool is still teacher-tools.js toolAccess and homeroom.js canUse.
  *  plan: a Teacher plan tool (the Hub, the Manipulatives and their rooms, Figures), "Available with the Teacher plan"
  *  under its card, as on the homepage, whether or not paid plans are on for everyone yet; the line links to /plans only
  *  while that page is there. No amount here: prices are on /plans only.
  *  Grammar Lab only while it is open to every visitor (compare.js grammarCompareOn, the gate /compare and "/" use). */
-const how = name => ({ src: `/img/how/${name}-d-1024.webp`, srcset: `/img/how/${name}-d-1024.webp 1024w, /img/how/${name}-d-2048.webp 2048w`, w: 1024, h: 640,
+const how = name => ({ name, src: `/img/how/${name}-d-1024.webp`, srcset: `/img/how/${name}-d-1024.webp 1024w, /img/how/${name}-d-2048.webp 2048w`, w: 1024, h: 640,
   dark: fs.existsSync(new URL(`${name}-dark-d-1024.webp`, HOW_DIR)) ? `/img/how/${name}-dark-d-1024.webp 1024w, /img/how/${name}-dark-d-2048.webp 2048w` : null,
   ok: () => howFiles(name).slice(2).every(f => fs.existsSync(new URL(f, HOW_DIR))) });
 const LANDING_DIR = new URL('../../public/img/landing/', import.meta.url);
-const shot = (name, darkName) => ({ src: `/img/landing/${name}-640.webp`, srcset: `/img/landing/${name}-640.webp 640w, /img/landing/${name}-1280.webp 1280w`, w: 640, h: 400,
+const shot = (name, darkName) => ({ name, src: `/img/landing/${name}-640.webp`, srcset: `/img/landing/${name}-640.webp 640w, /img/landing/${name}-1280.webp 1280w`, w: 640, h: 400,
   dark: darkName && fs.existsSync(new URL(`${darkName}-1200.webp`, LANDING_DIR)) ? `/img/landing/${darkName}-1200.webp 1200w, /img/landing/${darkName}-2400.webp 2400w` : null,
   ok: () => fs.existsSync(new URL(`${name}-640.webp`, LANDING_DIR)) && fs.existsSync(new URL(`${name}-1280.webp`, LANDING_DIR)) });
 // The hub's picture is 1200 x 750 (1.6, like the others): its own srcset.
@@ -325,14 +331,15 @@ const bookCount = () => { const n = books().length; return n >= 100 ? `${Math.fl
 const listOf = (req, items) => { if (/^en/.test(req.locale || 'en')) return items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items.at(-1)}` : items.join(''); try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 /** How many cards show before "Show all". */
 export const TOOLS_PREVIEW = 6;
-/** id, icon, picture, and the words: k (own keys under teachers.tools.<id>) or h/p/alt keys of the homepage's. */
+/** id, icon, picture, and the words: k (own keys under teachers.tools.<id>) or h/p/alt keys of the homepage's.
+ *  video: the tool's one-minute video (views/see-it.js VIDEOS) its card plays. */
 export const TOOL_CARDS = [
-  { id: 'hub', icon: '🏫', pic: hubShot(), h: 'landing.hub.kicker', p: 'landing.hub.lead', alt: 'landing.hub.shotAlt', plan: true, video: true,
+  { id: 'hub', icon: '🏫', pic: hubShot(), h: 'landing.hub.kicker', p: 'landing.hub.lead', alt: 'landing.hub.shotAlt', plan: true, video: 'hub-promo',
     staff: '/classes', open: 'teachers.tools.dash.open', can: u => H.canUse(u) },
-  { id: 'board', icon: '🧮', pic: how('tools-board'), plan: true, video: true, staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
-  { id: 'room', icon: '📡', pic: how('tools-live'), plan: true, video: true, staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
-  { id: 'dash', icon: '🖥️', pic: how('dash-teacher'), video: true, staff: '/teach', can: u => isSchoolStaff(u) },
-  { id: 'figures', icon: '📐', pic: shot('tool-figures'), h: 'landing.tools.figures.h', p: 'landing.tools.figures.p', alt: 'landing.tools.figures.alt', plan: true, video: true,
+  { id: 'board', icon: '🧮', pic: how('tools-board'), plan: true, video: 'manipulatives', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'room', icon: '📡', pic: how('tools-live'), plan: true, video: 'room', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'dash', icon: '🖥️', pic: how('dash-teacher'), video: 'dashboard', staff: '/teach', can: u => isSchoolStaff(u) },
+  { id: 'figures', icon: '📐', pic: shot('tool-figures'), h: 'landing.tools.figures.h', p: 'landing.tools.figures.p', alt: 'landing.tools.figures.alt', plan: true, video: 'figures',
     vars: () => ({ count: FIGURE_KINDS.length }) },
   { id: 'live', icon: '🎮', pic: shot('tool-brain-board'), h: 'landing.tools.live.h', p: 'landing.tools.live.p', alt: 'landing.tools.live.alt', show: () => liveOn(),
     href: req => lp(req, '/teachers/live'), linkKey: 'teachers.live.more' },
@@ -343,42 +350,80 @@ export const TOOL_CARDS = [
   { id: 'hunt', icon: '🔍', pic: shot('tool-mistake-hunt'), h: 'landing.tools.grammar.h', p: 'landing.tools.grammar.p', alt: 'landing.tools.grammar.alt', game: 'mistake-hunt' },
   { id: 'grammar', icon: '✏️', pic: shot('tool-grammar-lab'), show: () => grammarCompareOn(), vars: req => { const f = grammarFacts(); return { topics: f.topics, bands: listOf(req, f.bands) }; }, href: () => '/courses/grammar-lab' },
 ];
+/** The cards shown here now: switched on, with their picture, and (games) open to every visitor. */
+const toolCardsNow = () => TOOL_CARDS.filter(c => (!c.show || c.show()) && c.pic.ok() && (!c.game || launchGame(c.game)));
+/** The coloured top edge of each card, in turn (the homepage's). */
+const EDGES = ['var(--mint)', 'var(--spark)', '#3F8FCF', '#7A3FC4', '#E06A00', '#1E8E4E', '#C2185B'];
+/** A tool's picture in the page's theme. */
+const toolPic = (req, c, sizes, { alt = '', lazy = true } = {}) => raw(themedPicture({ scheme: shotScheme(req),
+  img: { src: c.pic.src, srcset: c.pic.srcset, sizes, width: c.pic.w, height: c.pic.h, alt, lazy, type: 'image/webp', dark: c.pic.dark ? { srcset: c.pic.dark } : null } }));
 function toolsShowcase(req) {
   const t = req.t;
-  const scheme = shotScheme(req);
-  const cards = TOOL_CARDS.filter(c => (!c.show || c.show()) && c.pic.ok() && (!c.game || launchGame(c.game)));
+  const cards = toolCardsNow();
   if (!cards.length) return '';
-  const video = readyVideos().length ? '#see-it' : '';
   const planLine = familiesOn(req) ? String(tHtml(t, 'landing.plan.on', { plans: '/plans' })) : String(tHtml(t, 'landing.plan.on', { plans: '/plans' })).replace(/<\/?a\b[^>]*>/g, '');
-  const card = c => {
+  const card = (c, i) => {
     const k = `teachers.tools.${c.id}`, hk = c.h || `${k}.h`, pk = c.p || `${k}.p`, ak = c.alt || `${k}.alt`, vars = c.vars ? c.vars(req) : {};
     const staff = !!req.user && !!c.can && c.can(req.user);
-    const href = staff ? c.staff : c.game ? keepLang(req, `/g/${c.game}`) : c.href ? c.href(req) : c.video ? video : '';
+    const href = staff ? c.staff : c.game ? keepLang(req, `/g/${c.game}`) : c.href ? c.href(req) : '';
     const label = staff ? t(c.open || `${k}.open`) : c.game || (c.href && !c.linkKey) ? t('teachers.tools.try') : c.linkKey ? t(c.linkKey) : t('teachers.tools.watch');
-    const img = { src: c.pic.src, srcset: c.pic.srcset, sizes: '(min-width: 1000px) 340px, (min-width: 700px) 46vw, 92vw', width: c.pic.w, height: c.pic.h, alt: t(ak), lazy: true, dark: c.pic.dark ? { srcset: c.pic.dark } : null };
-    return html`<li class="panel tt-card" id="tool-${c.id}">
-      <figure class="tt-shot">${raw(themedPicture({ scheme, img }))}</figure>
-      ${raw(`<h3 class="tt-h"${fb(t, hk)}>`)}${ico(c.icon, { size: 20 })} ${t(hk, vars)}${raw('</h3>')}
-      ${el(t, 'p', pk, vars, ' class="tt-p"')}
-      ${c.plan ? html`<p class="tt-plan"${fb(t, 'landing.plan.on')}>${raw(planLine)}</p>` : ''}
-      ${href ? html`<p class="tt-link"><a href="${href}">${label} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
-    </li>`;
+    const link = href ? html`<a class="lp-more" href="${href}">${label} ${ARROW}</a>`
+      : c.video && videoReady(c.video) ? videoLink(t, c.video, html`${t('teachers.tools.watch')} ${ARROW}`, 'lp-more') : '';
+    return html`<article class="lp-card lp-tool lp-s2" id="tool-${c.id}" style="--edge:${EDGES[i % EDGES.length]}">
+      <div class="lp-pic">${toolPic(req, c, '(min-width: 1100px) 370px, (min-width: 1000px) 30vw, (min-width: 620px) 46vw, 92vw', { alt: t(ak) })}</div>
+      <div class="lp-tx">${raw(`<h3${fb(t, hk)}>`)}${ico(c.icon, { size: 28, lazy: true })} ${t(hk, vars)}${raw('</h3>')}${el(t, 'p', pk, vars)}
+      ${c.plan ? html`<p class="lp-plan"${fb(t, 'landing.plan.on')}>${raw(planLine)}</p>` : ''}${link}</div>
+    </article>`;
   };
   const first = cards.slice(0, TOOLS_PREVIEW), rest = cards.slice(TOOLS_PREVIEW);
-  return html`<section class="lp-sec tt" id="tools" aria-labelledby="tools-h">
-    ${el(t, 'h2', 'landing.tools.h', {}, ' id="tools-h"')}${el(t, 'p', 'teachers.tools.lead', {}, ' class="tt-lead"')}
-    <ul class="plain tt-grid">${first.map(card)}</ul>
-    ${rest.length ? html`<details class="tt-more"><summary class="btn"><span class="tt-more-o"${fb(t, 'teachers.tools.more')}>${t('teachers.tools.more', { count: cards.length })}</span><span class="tt-more-c"${fb(t, 'teachers.tools.less')}>${t('teachers.tools.less')}</span></summary>
-    <ul class="plain tt-grid">${rest.map(card)}</ul></details>` : ''}
-    ${el(t, 'p', 'teachers.tools.plan', {}, ' class="small muted tt-note"')}
-  </section>`;
+  return html`<section class="lp-sec" id="tools" aria-labelledby="tools-h"><div class="lp-wrap">
+    <header class="lp-head">${el(t, 'p', 'landing.nav.tools', {}, ' class="lp-eyebrow"')}${el(t, 'h2', 'landing.tools.h', {}, ' id="tools-h"')}${el(t, 'p', 'teachers.tools.lead', {}, ' class="lp-sub"')}</header>
+    <div class="lp-tools">${first.map(card)}</div>
+    ${rest.length ? html`<details class="lp-howmore lp-toolsmore"><summary class="lp-btn lp-btn-ghost"><span class="lp-howmore-o"${fb(t, 'teachers.tools.more')}>${t('teachers.tools.more', { count: cards.length })}</span><span class="lp-howmore-c"${fb(t, 'teachers.tools.less')}>${t('teachers.tools.less')}</span></summary>
+    <div class="lp-tools">${rest.map((c, i) => card(c, i + TOOLS_PREVIEW))}</div></details>` : ''}
+    ${el(t, 'p', 'teachers.tools.plan', {}, ' class="lp-small lp-center tt-note"')}
+  </div></section>`;
+}
+
+/** The /teachers hero's picture: the tools' real screens in one collage (the homepage's), a student's screen on a phone
+ *  in front, and the Hub's one-minute video (the homepage's hero video) on it. Decoration: the tiles' names are its label. */
+function toolsCollage(req) {
+  const t = req.t;
+  const by = Object.fromEntries(toolCardsNow().map(c => [c.id, c]));
+  const TILES = [['board', 'lp-t-main', '(min-width: 1100px) 660px, 92vw'], ['hub', 'lp-t-a', '(min-width: 1100px) 360px, 46vw'], ['room', 'lp-t-b', '(min-width: 1100px) 360px, 46vw'], ['dash', 'lp-t-c', '(min-width: 1100px) 360px, 46vw'], ['figures', 'lp-t-d', '(min-width: 1100px) 360px, 46vw']];
+  if (!TILES.every(([id]) => by[id])) return '';
+  const name = c => t(c.h || `teachers.tools.${c.id}.h`, c.vars ? c.vars(req) : {});
+  const phone = 'tools-student';
+  const phoneOk = fs.existsSync(new URL(`${phone}-p-390.webp`, HOW_DIR)) && fs.existsSync(new URL(`${phone}-p-780.webp`, HOW_DIR));
+  return html`<div class="lp-collage">
+      <div class="lp-collage-in" role="img" aria-label="${TILES.map(([id]) => name(by[id])).join(', ')}">
+        ${TILES.map(([id, cls, sizes]) => html`<figure class="lp-tile ${cls}"><div class="lp-shot">${toolPic(req, by[id], sizes, { lazy: false })}</div><figcaption${fb(t, by[id].h || `teachers.tools.${id}.h`)}>${name(by[id])}</figcaption></figure>`)}
+        ${phoneOk ? html`<div class="lp-t-chat lp-t-phone lp-shot"><img src="/img/how/${phone}-p-390.webp" srcset="/img/how/${phone}-p-390.webp 390w, /img/how/${phone}-p-780.webp 780w" sizes="150px" width="390" height="844" alt="" decoding="async"></div>` : ''}
+      </div>
+      ${videoReady('hub-promo') ? videoLink(t, 'hub-promo', html`<i aria-hidden="true"></i><span${fb(t, 'landing.hero.watch')}>${t('landing.hero.watch')}<small${fb(t, 'landing.hero.watchSub')}>${t('landing.hero.watchSub')}</small></span>`, 'lp-playbtn') : ''}
+    </div>`;
+}
+
+/** The teacher site's frame for /teachers and /teachers/live (views/lp-shell.js): its header (the sections of "/", and
+ *  this page's own tools, videos and questions), its footer without the other products' names, and the page. */
+function teacherSite(req, res, { path, langKey, title, description, seo: seoOpts, main, here = {}, app = false }) {
+  const t = req.t;
+  const full = t('layout.titleWith', { title });
+  const desc = seo.clip(description, 160);
+  lpPage(req, res, {
+    title: full, description: desc, seo: seoOpts, app, main,
+    header: lpHeader(req, { here, videos: readyVideos().length > 0 }),
+    footer: lpFooter(req, { path, langs: seo.langsWithKey(langKey) }),
+  });
 }
 
 // ---------------------------------------------------------------------------------------------------- /teachers
-// In order (the owner, 23 Nov 2026: "Overall just need to clean up this page"): the hero with the Manipulatives on a
-// laptop and a student's live room on a phone; the new tools; how it works; the teaching loop (two screens); the tool
-// videos; Google Classroom; a few folded panels; the start panel; the questions. No "always free": prices and what each
-// plan includes are on /plans only.
+// In the homepage's design (docs/decisions.md "Teachers pages in the homepage's design"; public/css/landing.css), in
+// order: the hero (what Oomba does for teachers, the main button and Host a live lesson, the tools' screens in one
+// collage with the Hub's video); every tool; how it works (the homepage's click-through tour); the teaching loop; the
+// tool videos; Google Classroom (while it is on); "And much more", the folded cards; teacher quotes (none yet); the
+// questions; the start block (set up your school). No "always free": prices and what each plan includes are on /plans
+// only. The main button is the teacher site's one call to action (views/lp-shell.js teacherCta), the same as the top bar's.
 router.get('/teachers', (req, res) => {
   const t = req.t;
   const google = googleEnabled();
@@ -392,79 +437,69 @@ router.get('/teachers', (req, res) => {
   // With paid-plan pages on, the first question says what the Teacher plan adds (no prices: those are on /plans).
   const paidFaq = familiesOn(req);
   const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}${i === 0 && paidFaq ? 'paid' : ''}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}${i === 0 && paidFaq ? 'paid' : ''}`]);
-  const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) }, { fold: true });
+  const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) }, { lp: true });
   const plans = familiesOn(req);
-  // The main button: with paid-plan pages on, the Teacher plan's trial (it starts at sign-up, no card: routes/teacher-plan.js
-  // /trial); off, a teacher account (the start panel below, with the school set-up).
-  const mainCta = plans ? html`<a class="btn btn-primary btn-big" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>`;
-  const tryBtn = (cls = 'btn') => (list[0] ? html`<a class="${cls}" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">${ico('▶️', { size: 18 })} ${t('teachers.cta.try')}</a>` : '');
+  const tryBtn = (cls = 'lp-btn lp-btn-onink lp-btn-big') => (list[0] ? html`<a class="${cls}" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">${ico('▶️', { size: 18 })} ${t('teachers.cta.try')}</a>` : '');
+  // Host a live lesson now: the second button, for anyone who may host or might (signed out, a guest), never a child.
+  const hostBtn = liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user))
+    ? html`<a class="lp-btn lp-btn-ghost lp-btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now" data-cta="host">${ico('📡', { size: 24 })} ${el(t, 'span', 'quickLive.cta')}</a>` : '';
   // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
   // that needs fixing (the JavaScript form shows each field's own message instead).
   const sent = req.query.sent === '1', failed = req.query.failed === '1';
-  const startPanel = html`<section class="panel lp-start" id="start" aria-labelledby="start-h">
+  // The start block: the homepage's last call (dark), with the school set-up (setupBlock, unchanged) in it; a form or a
+  // thank-you sits on its own light card there (public/css/landing.css .lp-setup).
+  const startPanel = html`<section class="lp-final lp-start" id="start" aria-labelledby="start-h">
     ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
     ${el(t, 'p', 'teachers.start.p1')}
-    ${setupBlock(req, { sent, failed })}
-    ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }) : ''}
-    <div class="row">
-      ${plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a> <a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
+    <div class="lp-setup">${setupBlock(req, { sent, failed })}</div>
+    ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }, ' class="lp-fine"') : ''}
+    <div class="lp-ctas">
+      ${plans ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="/trial">${t('plans.teacher.start')}</a><a class="lp-btn lp-btn-onink lp-btn-big" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
       ${tryBtn()}
     </div>
-    ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
+    ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="lp-fine"')}
   </section>`;
-  const body = html`<div class="lp">
-  ${sent ? startPanel : ''}
-  <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
-    ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
-    <ul class="lp-badges">${badges.map(k => html`<li>${el(t, 'span', k)}</li>`)}</ul>
-    <div class="row lp-cta">
-      ${mainCta}
-      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">${ico('📡', { size: 28 })} ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
-      ${tryBtn('btn btn-big')}
+  const hero = html`<section class="lp-hero lp-dots" aria-labelledby="lp-h1"><div class="lp-wrap">
+    <div class="lp-hero-copy">
+      ${kickerEl(t, 'teachers.kicker')}
+      ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1" class="lp-h1"')}
+      ${el(t, 'p', 'teachers.lead', {}, ' class="lp-lead"')}
+      <div class="lp-ctas">${ctaButton(req, { big: true, id: 'main-cta' })}${hostBtn}</div>
+      <ul class="lp-trust">${badges.map(k => el(t, 'li', k))}</ul>
+      <p class="lp-small lp-leader">${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
     </div>
-    <p class="small lp-leader">${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
-    ${howArt(req, 'teachers')}
-  </section>
-  ${toolsShowcase(req)}
-  ${howSteps(req, 'teachers')}
-  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), shotNames: PAIR, scheme: shotScheme(req) })}
-  ${seeIt(req, { note: false, promo: true })}
-  ${classroomSection(req)}
-
-  <div class="lp-cols">
-    <section class="panel" id="build" aria-labelledby="build-h">
-      ${folded(el(t, 'h2', 'teachers.build.h', {}, ' id="build-h"'), html`${el(t, 'p', 'teachers.build.p1')}${el(t, 'p', 'teachers.build.p2')}
-      <p><a href="${lp(req, '/learn/make-a-game')}">${t('teachers.build.link')}</a></p>`)}
-    </section>
-    <section class="panel" id="class" aria-labelledby="class-h">
-      ${folded(el(t, 'h2', 'teachers.class.h', {}, ' id="class-h"'), html`<ul class="lp-list">${classItems.map(k => el(t, 'li', `teachers.class.${k}`))}</ul>`)}
-    </section>
-    <section class="panel" id="safe" aria-labelledby="safe-h">
-      ${folded(el(t, 'h2', 'teachers.safe.h', {}, ' id="safe-h"'), html`<ul class="lp-list">${['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
-      <p>${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>`)}
-    </section>
-    ${liveOn() ? html`<section class="panel" id="live" aria-labelledby="live-h">
-      ${folded(el(t, 'h2', 'teachers.live.h', {}, ' id="live-h"'), html`${el(t, 'p', 'teachers.live.p1')}
-      <ul class="lp-list">${['li1', 'li2', 'li3'].map(k => el(t, 'li', `teachers.live.${k}`))}</ul>
-      <p><a class="btn" href="${lp(req, '/teachers/live')}">${t('teachers.live.more')}</a></p>`)}
-    </section>` : ''}
-    <section class="panel" id="uses" aria-labelledby="uses-h">
-      ${folded(el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"'), html`${el(t, 'p', 'teachers.uses.p')}
-      <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `teachers.uses.${k}`))}</ul>
-      ${el(t, 'h2', 'teachers.languages.h', {}, ' class="lp-sub"')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}
+    ${toolsCollage(req)}
+  </div></section>`;
+  // "And much more": the five folded cards (the homepage's questions' look), each its own section.
+  const fold = (id, body) => html`<section class="lp-card lp-foldcard" id="${id}" aria-labelledby="${id}-h"><details><summary>${el(t, 'h3', `teachers.${id}.h`, {}, ` id="${id}-h"`)}<span class="lp-plus" aria-hidden="true"></span></summary><div class="lp-fold-in">${body}</div></details></section>`;
+  const more = html`<section class="lp-sec" id="more" aria-labelledby="more-h"><div class="lp-wrap">
+    <header class="lp-head lp-c lp-head-sm">${el(t, 'h2', 'landing.one.kicker', {}, ' id="more-h" class="lp-eyebrow"')}</header>
+    <div class="lp-faq lp-folds">
+      ${fold('build', html`${el(t, 'p', 'teachers.build.p1')}${el(t, 'p', 'teachers.build.p2')}<p><a class="lp-more" href="${lp(req, '/learn/make-a-game')}">${t('teachers.build.link')} ${ARROW}</a></p>`)}
+      ${fold('class', ticks(t, classItems.map(k => `teachers.class.${k}`)))}
+      ${fold('safe', html`${ticks(t, ['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => `teachers.safe.${k}`))}<p class="lp-small">${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>`)}
+      ${liveOn() ? fold('live', html`${el(t, 'p', 'teachers.live.p1')}${ticks(t, ['li1', 'li2', 'li3'].map(k => `teachers.live.${k}`))}<p><a class="lp-btn lp-btn-primary lp-btn-sm" href="${lp(req, '/teachers/live')}">${t('teachers.live.more')}</a></p>`) : ''}
+      ${fold('uses', html`${el(t, 'p', 'teachers.uses.p')}<ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `teachers.uses.${k}`))}</ul>
+      ${el(t, 'h4', 'teachers.languages.h')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}
       <p><a href="/research">${t('teachers.research.link')}</a> · <a href="${lp(req, '/compare')}">${t('compare.link')}</a></p>`)}
-    </section>
-  </div>
-
+    </div>
+  </div></section>`;
+  const main = html`${sent ? startPanel : ''}${hero}
+  ${toolsShowcase(req)}
+  ${howTour(req, 'teachers', { kicker: 'teachers.how.kicker' })}
+  ${teacherLoop(t, { variant: 'landing', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), scheme: shotScheme(req) })}
+  ${seeIt(req, { variant: 'landing', note: false, promo: true })}
+  ${classroomSection(req)}
+  ${more}
   ${quotesSection(req)}
-  ${sent ? '' : startPanel}
   ${faq.markup}
-  </div>`;
+  ${sent ? '' : startPanel}`;
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers']];
-  page(req, res, {
-    title: t('teachers.title'), description: t('teachers.description'), body, bodyClass: 'lp-page',
-    head: html`${howHead()}${LOOP_CSS}`, scripts: [HOW_SCRIPT],
+  teacherSite(req, res, {
+    path: '/teachers', langKey: 'teachers.h1', title: t('teachers.title'), description: t('teachers.description'), main,
+    here: { tools: '#tools', videos: '#see-it', faq: '#faq' },
+    // The set-up form for signed-in grown-ups and staff posts as JSON with each field's own message (public/js/app.js).
+    app: !signedOut(req.user) && !sent,
     seo: {
       index: true, path: '/teachers', langs: seo.langsWithKey('teachers.h1'), image: '/og/teachers.jpg', imageAlt: t('seo.teachers.imageAlt'),
       jsonld: [seo.graph([
@@ -476,8 +511,10 @@ router.get('/teachers', (req, res) => {
 });
 
 // ---------------------------------------------------------------------------------------------------- /teachers/live
-// Oomba Live for teachers: what a live class game is, real screens of one, the tools and the safety rules, and a way in
-// (hosting needs a teacher or grown-up account: canHost). 404 while live games are off.
+// Oomba Live for teachers, in the homepage's design: live games on every device (the board's code with a phone joining
+// and a phone answering, the one-minute video under them), the modes as cards, how it works (the click-through tour),
+// your own questions, the tools and the safety rules, the rest of Oomba, the questions and a way in (hosting needs a
+// teacher or grown-up account: canHost). 404 while live games are off.
 router.get('/teachers/live', (req, res, next) => {
   if (!liveOn()) return next();
   const t = req.t, u = req.user;
@@ -488,68 +525,76 @@ router.get('/teachers/live', (req, res, next) => {
   // (Signed out: the three-field teacher sign-up and the Quick game chooser, routes/quick-live.js. It used to be the
   // parents' sign-up, which made a parent account for a teacher.)
   const hostHref = host ? '/live' : '/teachers/host';
-  const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
+  const BADGES = ['ads', 'noAccounts', 'browser', 'languages'];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
-  const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
+  const faq = faqBlock(req, LIVE_FAQ.map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars, { lp: true });
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
-  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${ico(emoji, { size: 24 })}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">${ico('👥', { size: 18 })} ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
-  const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
-    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>`;
-  const body = html`<div class="lp">
-  <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${kickerEl(t, 'teachersLive.kicker')}
-    ${el(t, 'h1', 'teachersLive.h1', {}, ' id="lp-h1"')}
-    ${el(t, 'p', 'teachersLive.lead', {}, ' class="lead"')}
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${ico(e, { size: 20 })}</span> ${el(t, 'span', `teachersLive.badges.${k}`, { count: langCount })}</li>`)}</ul>
-    <div class="row lp-cta">
-      ${kid ? '' : html`<a class="btn btn-primary btn-big" href="${hostHref}">▶ ${t('teachersLive.cta.host')}</a>`}
-      <a class="btn btn-big" href="#how-it-works">${t('teachersLive.cta.how')}</a>
+  const modes = [['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugRemoved(A_MODES[MODE_ID[k]]));
+  // Three cards a row; a last row of two takes half the width each.
+  const span = i => (modes.length % 3 === 2 && i >= modes.length - 2 ? 'lp-s3' : 'lp-s2');
+  const mode = ([emoji, k], i) => { const c = capacityFor({ mode: MODE_ID[k] });
+    return html`<article class="lp-card lp-tool lp-noshot lp-mode ${span(i)}" style="--edge:${EDGES[i % EDGES.length]}"><div class="lp-tx">
+      <span class="lp-ico" aria-hidden="true">${ico(emoji, { size: 44, lazy: true })}</span>${el(t, 'h3', `teachersLive.modes.${k}.h`)}${el(t, 'p', `teachersLive.modes.${k}.p`)}
+      <p class="lp-meta"><span class="lp-chip lp-mode-players">${ico('👥', { size: 16 })} ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</span></p></div></article>`; };
+  const mainBtn = kid ? html`<a class="lp-btn lp-btn-primary lp-btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
+    : html`<a class="lp-btn lp-btn-primary lp-btn-big" href="${hostHref}" data-cta="host">${t('teachersLive.cta.host')} ${ARROW}</a>`;
+  // The picture: the board with its code, a phone joining with that code and a phone answering (scripts/how-shots.js
+  // --only live), and under it the one-minute video (its description, for anyone who can't watch it, as the caption).
+  const phone = (slug, cls) => (fs.existsSync(new URL(`${slug}-p-390.webp`, HOW_DIR)) ? html`<div class="lp-phone ${cls}">${raw(themedPicture({ scheme: shotScheme(req),
+    img: { src: `/img/how/${slug}-p-390.webp`, srcset: `/img/how/${slug}-p-390.webp 390w, /img/how/${slug}-p-780.webp 780w`, sizes: '(min-width: 700px) 150px, 96px', width: 390, height: 844, alt: '', type: 'image/webp',
+      dark: fs.existsSync(new URL(`${slug}-dark-p-390.webp`, HOW_DIR)) ? { srcset: `/img/how/${slug}-dark-p-390.webp 390w, /img/how/${slug}-dark-p-780.webp 780w` } : null } }))}</div>` : '');
+  const board = how('live-lobby');
+  const devices = board.ok() ? html`<figure class="lp-devices" id="demo"${hasDemo ? raw(' aria-describedby="demo-note"') : ''}>
+      <div class="lp-devices-in" aria-hidden="true">
+        <div class="lp-shot">${toolPic(req, { pic: board }, '(min-width: 1000px) 840px, 92vw', { lazy: false })}</div>
+        ${phone('live-join', 'lp-phone-a')}${phone('live-play', 'lp-phone-b')}
+      </div>
+      ${hasDemo ? html`<figcaption>${videoLink(t, 'demo', html`<i aria-hidden="true"></i><span${fb(t, 'teachersLive.demo.h')}>${t('teachersLive.demo.h')}</span>`, 'lp-playbtn', t('teachersLive.demo.h'))}
+      ${el(t, 'p', 'teachersLive.demo.note', {}, ' class="lp-small" id="demo-note"')}</figcaption>${videoDialog(t)}` : ''}
+    </figure>` : '';
+  const hero = html`<section class="lp-hero lp-dots" aria-labelledby="lp-h1"><div class="lp-wrap">
+    <div class="lp-hero-copy">
+      ${kickerEl(t, 'teachersLive.kicker')}
+      ${el(t, 'h1', 'teachersLive.h1', {}, ' id="lp-h1" class="lp-h1"')}
+      ${el(t, 'p', 'teachersLive.lead', {}, ' class="lp-lead"')}
+      <div class="lp-ctas">${mainBtn}<a class="lp-btn lp-btn-ghost lp-btn-big" href="#how-it-works">${t('teachersLive.cta.how')}</a></div>
+      <ul class="lp-trust">${BADGES.map(k => el(t, 'li', `teachersLive.badges.${k}`, { count: langCount }))}</ul>
+      ${kid ? '' : html`<p class="lp-small lp-leader"><a href="/join">${t('teachersLive.cta.join')}</a></p>`}
     </div>
-    <p class="small"><a href="/join">${t('teachersLive.cta.join')}</a></p>
-    ${howArt(req, 'teachersLive')}
-  </section>
-  ${demoVideo(req)}
-  ${howSteps(req, 'teachersLive')}
-
-  <section class="lp-sec" id="modes" aria-labelledby="modes-h">
-    ${el(t, 'h2', 'teachersLive.modes.h', {}, ' id="modes-h"')}
-    <div class="lp-modes">${[['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugRemoved(A_MODES[MODE_ID[k]])).map(([e, k]) => mode(e, k))}</div>
-  </section>
-
-  <section class="panel" id="own" aria-labelledby="own-h">
-    ${el(t, 'h2', 'teachersLive.own.h', {}, ' id="own-h"')}${el(t, 'p', 'teachersLive.own.p')}
-    <ul class="lp-list">${[1, 2, 3, 4, 5].map(n => el(t, 'li', `teachersLive.own.li${n}`))}</ul>
-  </section>
-
-  <div class="lp-cols">
-    <section class="panel" id="tools" aria-labelledby="tools-h">
-      ${el(t, 'h2', 'teachersLive.tools.h', {}, ' id="tools-h"')}
-      <ul class="lp-list">${[1, 2, 3, 4, 5, 6, 7].map(n => el(t, 'li', `teachersLive.tools.li${n}`))}</ul>
+    ${devices}
+  </div></section>`;
+  const main = html`${hero}
+  <section class="lp-sec" id="modes" aria-labelledby="modes-h"><div class="lp-wrap">
+    <header class="lp-head">${el(t, 'p', 'teachersLive.modes.kicker', {}, ' class="lp-eyebrow"')}${el(t, 'h2', 'teachersLive.modes.h', {}, ' id="modes-h"')}</header>
+    <div class="lp-tools lp-modes">${modes.map(mode)}</div>
+  </div></section>
+  ${howTour(req, 'teachersLive', { kicker: 'teachers.how.kicker', after: kid ? '' : html`<p class="lp-center lp-after">${mainBtn}</p>` })}
+  <section class="lp-sec" id="own" aria-labelledby="own-h"><div class="lp-wrap">
+    <header class="lp-head">${el(t, 'h2', 'teachersLive.own.h', {}, ' id="own-h"')}${el(t, 'p', 'teachersLive.own.p', {}, ' class="lp-sub"')}</header>
+    <div class="lp-card lp-gc">${ticks(t, [1, 2, 3, 4, 5].map(n => `teachersLive.own.li${n}`), {}, 'lp-list lp-list-2')}</div>
+  </div></section>
+  <section class="lp-sec lp-alt lp-sec-pair" aria-label="${t('teachersLive.tools.h')}, ${t('teachersLive.safe.h')}"><div class="lp-wrap">
+    <div class="lp-pair">
+      <section class="lp-card" id="tools" aria-labelledby="tools-h">${el(t, 'h2', 'teachersLive.tools.h', {}, ' id="tools-h"')}${ticks(t, [1, 2, 3, 4, 5, 6, 7].map(n => `teachersLive.tools.li${n}`))}</section>
+      <section class="lp-card" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'teachersLive.safe.h', {}, ' id="safe-h"')}${ticks(t, [1, 2, 3, 4].map(n => `teachersLive.safe.li${n}`))}
+        ${el(t, 'p', 'teachersLive.safe.link', { safety: lp(req, '/safety') }, ' class="lp-small"')}</section>
+    </div>
+    <section class="lp-band" id="more" aria-labelledby="more-h">
+      <div>${el(t, 'h2', 'teachersLive.more.h', {}, ' id="more-h"')}${el(t, 'p', 'teachersLive.more.p')}</div>
+      <a class="lp-band-link" href="${lp(req, '/teachers')}">${t('teachersLive.more.link')} ${ARROW}</a>
     </section>
-    <section class="panel" id="safe" aria-labelledby="safe-h">
-      ${el(t, 'h2', 'teachersLive.safe.h', {}, ' id="safe-h"')}
-      <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `teachersLive.safe.li${n}`))}</ul>
-      ${el(t, 'p', 'teachersLive.safe.link', { safety: lp(req, '/safety') })}
-    </section>
-  </div>
-
-  <section class="panel" id="more" aria-labelledby="more-h">
-    ${el(t, 'h2', 'teachersLive.more.h', {}, ' id="more-h"')}${el(t, 'p', 'teachersLive.more.p')}
-    <p><a href="${lp(req, '/teachers')}">${t('teachersLive.more.link')}</a></p>
-  </section>
-
-  <section class="panel lp-start" id="start" aria-labelledby="start-h">
+  </div></section>
+  ${faq.markup}
+  <section class="lp-final lp-start" id="start" aria-labelledby="start-h">
     ${el(t, 'h2', 'teachersLive.start.h', {}, ' id="start-h"')}
     ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : 'quickLive.ctaNote')}
-    <div class="row">${startBtns}</div>
-  </section>
-  ${faq.markup}
-  </div>`;
+    <div class="lp-ctas">${mainBtn}${kid ? '' : html`<a class="lp-btn lp-btn-onink lp-btn-big" href="/join">${t('teachersLive.cta.join')}</a>`}</div>
+  </section>`;
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t('teachersLive.kicker'), '/teachers/live']];
-  page(req, res, {
-    title: t('teachersLive.title'), description: t('teachersLive.description'), body, bodyClass: 'lp-page',
-    head: howHead(), scripts: [HOW_SCRIPT],
+  teacherSite(req, res, {
+    path: '/teachers/live', langKey: 'teachersLive.h1', title: t('teachersLive.title'), description: t('teachersLive.description'), main,
+    here: { faq: '#faq' },
     seo: {
       index: true, path: '/teachers/live', langs: seo.langsWithKey('teachersLive.h1'), image: fsOg('teachers-live') ? '/og/teachers-live.jpg' : '/og/teachers.jpg', imageAlt: t('teachersLive.title'),
       jsonld: [seo.graph([

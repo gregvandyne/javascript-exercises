@@ -471,3 +471,121 @@ button{font:inherit;color:inherit}
 .lp-screen picture{display:contents}
 .lp-screen img{width:100%;height:auto}
 .lp-device figcaption{margin-top:10px;font-size:14px;color:var(--muted);text-align:center}
+
+/* ---------------------------------------------------------------- /teachers and /teachers/live (routes/teachers.js)
+   The homepage's sections and cards, and the few things only these pages have. */
+.lp-kicker .fx{margin-inline-end:6px}
+.lp-leader{margin-top:12px}
+/* "Show all": the homepage's fold under a grid of tool cards. */
+.lp-howmore>.lp-tools{width:100%;text-align:start;margin-top:18px}
+.lp-toolsmore:not([open])>summary{margin-top:22px}
+.tt-note{margin-top:22px}
+.lp-tool .lp-more{margin-top:14px}
+/* Cards with no picture (the live modes): the icon on top. */
+.lp-tool.lp-noshot .lp-tx{padding-top:24px;display:flex;flex-direction:column;height:100%}
+.lp-tool.lp-noshot .lp-meta{margin-top:auto;padding-top:12px}
+.lp-ico{display:block;margin-bottom:12px}
+.lp-chip svg,.lp-chip img{width:16px;height:16px;flex:none}
+.lp-chip-link{text-decoration:none}
+.lp-chip-link:hover{text-decoration:underline}
+.lp-check{width:14px;height:14px;flex:none}
+/* How it works: the tour shows each real screen whole (no zoom, no ring). */
+.lp-tstage-full{--vh:62.5;aspect-ratio:16/10}
+.lp-after{margin-top:28px}
+/* The teaching loop: four numbered cards, then the two screens (.lp-loop-shots). */
+.lp-loop{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.lp-loop-step{padding:20px;display:flex;flex-direction:column;gap:8px;border:0;box-shadow:inset 0 4px 0 var(--edge,var(--mint)),0 0 0 1px var(--line),var(--shadow)}
+.lp-loop-step h3{font-size:19px;display:flex;align-items:center;gap:8px}
+.lp-loop-step h3>i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--spark);color:#141414;font-size:14px;flex:none}
+.lp-loop-step>p{font-size:15px;color:var(--text-2);line-height:1.45}
+.lp-loop-step .lp-meta{margin-top:auto;padding-top:6px;gap:8px}
+.lp-loop-make{margin-bottom:20px}
+.lp-loop-cta{margin-top:28px}
+@media (max-width:1000px){.lp-loop{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.lp-loop{grid-template-columns:1fr}}
+/* "And much more": the folded cards in two columns, the homepage's questions' look. */
+.lp-head-sm{margin-bottom:20px}
+.lp-sec h2.lp-eyebrow{font-size:13px;letter-spacing:.14em}
+.lp-folds{align-items:start}
+@media (min-width:900px){.lp-folds{grid-template-columns:1fr 1fr}}
+.lp-foldcard>details>summary{padding:20px 24px}
+.lp-fold-in{padding:0 24px 22px;display:grid;gap:12px;color:var(--text-2)}
+.lp-folds .lp-fold-in p{padding:0}
+.lp-fold-in h4{font-size:1.05rem;color:var(--text);margin:6px 0 0;letter-spacing:-.01em}
+.lp-tags{display:flex;flex-wrap:wrap;gap:8px}
+.lp-tags li{font-size:14px;font-weight:650;padding:6px 12px;border-radius:999px;background:var(--mint-soft);color:var(--link)}
+.lp-list-2{display:grid;gap:12px}
+@media (min-width:900px){.lp-list-2{grid-template-columns:1fr 1fr;gap:14px 32px}}
+/* Teacher quotes (only once real ones exist). */
+.lp-quote-list{display:grid;gap:16px}
+@media (min-width:900px){.lp-quote-list{grid-template-columns:repeat(3,1fr)}}
+.lp-quote{margin:0;padding:22px}
+.lp-quote blockquote{margin:0 0 12px;font-size:17px}
+.lp-quote figcaption{font-size:14px;color:var(--muted)}
+/* The start block: the homepage's last call, with the school set-up (routes/teachers.js setupBlock) in it. */
+.lp-final .lp-fine{font-size:15px;color:#B8B3A1;margin-top:14px}
+.lp-final a:not(.lp-btn){color:#FFFDF2}
+.lp-final .lp-ctas:empty{display:none}
+.lp-setup{max-width:760px;margin:18px auto 0}
+.lp-setup>p{color:#E3DED0;font-size:17px;margin-top:10px}
+.lp-setup .row{margin-top:20px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.lp-setup .small{font-size:15px;color:#B8B3A1}
+.lp-setup .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;font:700 16px/1.1 var(--font);text-decoration:none;border:0;cursor:pointer;background:var(--card);color:var(--text);box-shadow:inset 0 0 0 2px var(--line-2)}
+.lp-setup .btn-big{min-height:56px;padding:0 28px;font-size:17px}
+.lp-setup .btn-primary{background:var(--mint);color:#141414;box-shadow:0 4px 0 var(--leaf);margin-bottom:4px}
+.lp-setup .btn-primary:hover{background:var(--mint-hover)}
+.lp-setup .btn:disabled{opacity:.6;cursor:default}
+.lp-setup .err{color:#FF8A80;font-weight:650}
+.lp-setup .err:empty{display:none}
+/* A form, a thank-you or a note: its own light card, text to the start. */
+.lp-setup:has(form,.notice){text-align:start;padding:clamp(20px,3vw,32px);border-radius:var(--r);background:var(--card);color:var(--text);box-shadow:0 0 0 1px var(--line)}
+.lp-setup:has(form,.notice)>p,.lp-setup:has(form,.notice) .small{color:var(--text-2)}
+.lp-setup:has(form,.notice) a:not(.btn){color:var(--link)}
+.lp-setup:has(form,.notice) .err{color:#B3261E}
+.lp-setup .notice{padding:14px 18px;border-radius:14px;background:var(--mint-soft);color:var(--text);font-weight:600}
+.lp-setup .sr-thanks{background:transparent;padding:0}
+.lp-setup .sr-thanks h3{font-size:22px;margin-bottom:10px}
+.lp-setup .sr-thanks p{font-weight:500;color:var(--text-2);margin-top:8px}
+.lp-setup .sr-today-h{margin:16px 0 8px;font-size:17px}
+.lp-setup .sr-today{display:grid;gap:8px;list-style:disc;padding-inline-start:22px;color:var(--text-2)}
+.lp-setup .sr-form{margin-top:16px}
+.lp-setup .sr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:0 20px}
+.lp-setup .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.lp-setup .field label{font-weight:700}
+.lp-setup .hint{font-size:14px;color:var(--muted)}
+.lp-setup .input{width:100%;min-height:48px;padding:10px 14px;border-radius:12px;border:2px solid var(--line-2);background:var(--bg-2);color:var(--text);font:inherit}
+.lp-setup .input:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.lp-setup .input[aria-invalid="true"]{border-color:#B3261E}
+.lp-setup .sr-hp{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.lp-setup .sr-form>.small{margin-top:14px;font-size:14px}
+.lp-setup .muted{color:var(--muted)}
+/* The app's toasts (a form that posts as JSON: public/js/app.js). */
+.toasts{position:fixed;inset-inline:0;bottom:16px;display:grid;justify-items:center;gap:8px;z-index:200;pointer-events:none}
+.toasts>*{pointer-events:auto;padding:12px 18px;border-radius:14px;background:#141414;color:#FFFDF2;font-weight:650;box-shadow:var(--shadow-lg)}
+/* /teachers hero: the collage's phone is a student's screen. */
+.lp-t-phone{width:150px;inset-inline-end:-14px;bottom:-40px;padding:6px;background:#141414;border:0;border-radius:24px;transform:rotate(2deg)}
+.lp-t-phone img{aspect-ratio:390/700;border-radius:18px;object-fit:cover;object-position:top}
+/* /teachers/live hero: the board with phones in front of it, the one-minute video under them. */
+.lp-devices{max-width:980px;margin:48px auto 0}
+.lp-devices-in{position:relative;padding:0 70px 40px}
+.lp-devices-in>.lp-shot img{aspect-ratio:16/10;object-fit:cover;object-position:top left}
+.lp-phone{position:absolute;bottom:0;width:150px;border-radius:26px;padding:7px;background:#141414;box-shadow:var(--shadow-lg)}
+.lp-phone img{border-radius:20px;aspect-ratio:390/760;object-fit:cover;object-position:top}
+.lp-phone-a{inset-inline-start:0;transform:rotate(-4deg)}
+.lp-phone-b{inset-inline-end:0;transform:rotate(3deg)}
+.lp-devices figcaption{margin:22px auto 0;max-width:760px;text-align:center;display:grid;justify-items:center;gap:14px}
+.lp-devices .lp-playbtn{position:static;transform:none}
+@media (max-width:700px){
+  .lp-devices-in{padding:0 0 56px}
+  .lp-phone{width:96px;border-radius:18px;padding:4px}.lp-phone img{border-radius:14px}
+  .lp-phone-a{inset-inline-start:-6px}.lp-phone-b{inset-inline-end:-6px}
+}
+/* /teachers/live: the tools and the safety rules side by side, then the rest of Oomba as the dark band. */
+.lp-sec-pair{padding-top:clamp(48px,6vw,80px)}
+.lp-pair{display:grid;gap:16px}
+@media (min-width:900px){.lp-pair{grid-template-columns:1fr 1fr}}
+.lp-pair>.lp-card{padding:clamp(20px,2.4vw,28px)}
+.lp-pair h2{font-size:22px;letter-spacing:-.015em;margin-bottom:16px}
+.lp-pair .lp-small{margin-top:16px}
+.lp-band h2{font-size:20px;letter-spacing:-.01em}
+.lp-band>div>p{color:#B8B3A1;font-size:16px;margin-top:4px;max-width:46em}

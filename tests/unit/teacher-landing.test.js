@@ -64,19 +64,41 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
   }
 });
 
-test('the top bar: the sections and Start free trial; every trial button asks who\'s signing up; Just Play in the menu and the footer', async () => {
-  const s = (await call(null, '/')).text;
-  const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
+test('the top bar: the sections and the main button; every main button is the same one (views/lp-shell.js teacherCta); Just Play in the menu and the footer', async () => {
+  const { config } = await import('../../server/config.js');
+  const keep = { key: config.stripeApiKey, hook: config.stripeWebhookSecret, pub: config.billingPublic };
+  const mains = s => [...s.matchAll(/<a [^>]*data-cta="(trial|signup)"[^>]*>/g)].map(m => [m[1], /href="([^"]+)"/.exec(m[0])[1]]);
   assert.equal(L.JUST_PLAY_URL, '/learn', 'Just Play opens Learn (every game; /play answers 301 there)');
   assert.equal(L.TRIAL_URL, '/signup?trial=1');
+  assert.equal(L.SIGNUP_URL, '/signup/for/teacher');
+  // Paid plans off (as here): "Create a teacher account" to the teacher sign-up, in the bar and on every main button;
+  // the trust line leaves out the trial's "No card needed" and "Cancel anytime".
+  let s = (await call(null, '/')).text;
+  let bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.deepEqual([.../<nav class="lp-nav"[\s\S]*?<\/nav>/.exec(bar)[0].matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['#hub', '#tools', '#ask', '#tour', '#videos', '/compare']);
   // The link has a name of its own: on a phone only its short, aria-hidden words show.
-  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
+  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\/for\/teacher" data-cta="signup" aria-label="Create a teacher account"><span class="lp-long">Create a teacher account<\/span><span class="lp-short" aria-hidden="true">Sign up<\/span>/);
+  let all = mains(s);
+  assert.ok(all.length >= 4); assert.ok(all.every(([c, h]) => c === 'signup' && h === '/signup/for/teacher'), all.join());
+  assert.match(s, /<h1 id="lp-h1" class="lp-h1">[^<]+<\/h1>[\s\S]*?<div class="lp-ctas">\s*<a class="lp-btn lp-btn-primary lp-btn-big" href="\/signup\/for\/teacher" data-cta="signup">Create a teacher account<\/a>/, 'the hero says what the bar says');
+  assert.doesNotMatch(s, /No card needed|Cancel anytime/, 'no trial words while there is no trial');
+  assert.match(s, /Unlimited students/);
+  // Paid plans on for everyone: "Start free trial", every one asking who's signing up.
+  try {
+    Object.assign(config, { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: 'whsec_fake_landing', billingPublic: true });
+    s = (await call(null, '/')).text;
+    bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
+    assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
+    all = mains(s);
+    assert.ok(all.length >= 4); assert.ok(all.every(([c, h]) => c === 'trial' && h === '/signup?trial=1'), all.join());
+    assert.match(s, /<div class="lp-ctas">\s*<a class="lp-btn lp-btn-primary lp-btn-big" href="\/signup\?trial=1" data-cta="trial">Start free trial<\/a>/);
+    assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
+    assert.match(s, /href="\/plans" data-cta="pricing"/, 'the footer links the plans while that page is there');
+  } finally { Object.assign(config, { stripeApiKey: keep.key, stripeWebhookSecret: keep.hook, billingPublic: keep.pub }); }
+  s = (await call(null, '/')).text;
+  bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.match(bar, /<nav class="lp-menu-panel"[\s\S]*href="\/learn" data-cta="play">Just Play/, 'Just Play for kids, in the menu');
-  const trials = [...s.matchAll(/<a [^>]*data-cta="trial"[^>]*>/g)].map(m => /href="([^"]+)"/.exec(m[0])[1]);
-  assert.ok(trials.length >= 4); assert.ok(trials.every(h => h === '/signup?trial=1'), trials.join());
-  assert.match(s, /href="\/plans" data-cta="pricing"/);
-  assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
+  assert.doesNotMatch(s, /data-cta="pricing"/, 'paid plans off: no link to the missing /plans');
   assert.match(s, /href="mailto:Greg@oomba\.ai\?subject=/, 'schools: talk to us');
   assert.match(s, /<section class="lp-play" id="play"[\s\S]*?href="\/learn"/, 'old "/#play" links land on a way to the games');
   for (const p of ['/teachers', '/parents', '/learn', '/privacy', '/terms', '/compare']) assert.ok(s.includes(`href="${p}"`), `links ${p}`);
@@ -105,7 +127,7 @@ test('the game pages (Learn and search), signed out: every link (Learn is the in
     assert.match(b, /class="navlink" href="\/teachers"/, `${p}: every link`);
     assert.match(b, /class="btn btn-hot playnow" href="\/learn#play"/, `${p}: Play now goes to Learn's games, not through the landing`);
   }
-  assert.match(bar((await call(null, '/es/teachers')).text), /class="btn btn-hot playnow" href="\/es\/learn#play"/, 'in the page\'s language');
+  assert.match(bar((await call(null, '/es/parents')).text), /class="btn btn-hot playnow" href="\/es\/learn#play"/, 'in the page\'s language');
 });
 
 test('honest page: no prices on "/" (LANDING_SHOW_PRICE off), no ratings, reviews, testimonials or user counts', async () => {

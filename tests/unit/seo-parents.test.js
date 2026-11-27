@@ -302,7 +302,7 @@ test('localized pages stay in one language: no untranslated additions on game, s
     assert.doesNotMatch(gap, /lang="en"[^>]*>For parents|>Parents<|I’m a parent/);
   });
   // 👪 is drawn as the Oomba Grown-ups icon in the top bar (it stands for Fluent's house with garden).
-  assert.match((await get('/es/teachers')).raw, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true"><svg class="fx fx-oo" data-fx="house-with-garden"[^>]*><use href="\/icons\/oomba\/grownups\.svg[^"]*"\/><\/svg><\/span>Familias<\/a>/);
+  assert.match((await get('/es/learn')).raw, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true"><svg class="fx fx-oo" data-fx="house-with-garden"[^>]*><use href="\/icons\/oomba\/grownups\.svg[^"]*"\/><\/svg><\/span>Familias<\/a>/);
   // English keeps all of it.
   assert.match((await get('/g/sum-racer')).text, /Ages 6–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);
@@ -374,16 +374,19 @@ test('/parents and /teachers are short: the extra sections and every FAQ answer 
   const p = (await get('/parents')).text;
   for (const id of ['ages', 'make', 'home', 'guides', 'private']) assert.ok(folds(p, id), `/parents #${id}`);
   for (const id of ['safe']) assert.ok(!folds(p, id), `/parents #${id} stays open`);
+  // /teachers, in the homepage's design: "And much more", a card each that opens (the homepage's questions' look).
   const t = (await get('/teachers')).text;
-  for (const id of ['build', 'class', 'safe', 'uses']) assert.ok(folds(t, id), `/teachers #${id}`);
-  assert.ok(!folds(t, 'tools'), '/teachers #tools (the new tools) stays open');
-  // Gone: the floating folded "For teachers" (Brain Breaks) and "Games by subject", and the game lists.
-  for (const id of ['brain-breaks', 'subjects', 'play']) assert.doesNotMatch(t, new RegExp(`id="${id}"`), `/teachers #${id}`);
+  const tFolds = id => new RegExp(`<section class="lp-card lp-foldcard" id="${id}"[^>]*><details><summary><h3`).test(t);
+  for (const id of ['build', 'class', 'safe', 'uses']) assert.ok(tFolds(id), `/teachers #${id}`);
+  assert.ok(!folds(t, 'tools') && !tFolds('tools'), '/teachers #tools (the new tools) stays open');
+  // Gone: the floating folded "For teachers" (Brain Breaks) and "Games by subject", and the game lists (the footer's
+  // "Here to play?" band is #play on every page of the teacher site, outside <main>).
+  for (const id of ['brain-breaks', 'subjects', 'play']) assert.doesNotMatch(main(t), new RegExp(`id="${id}"`), `/teachers #${id}`);
   for (const id of ['subjects', 'play']) assert.doesNotMatch(p, new RegExp(`id="${id}"`), `/parents #${id}`);
-  for (const h of [p, t]) {
-    const faq = /<section class="panel faq lp-faq" id="faq"[\s\S]*?<\/section>/.exec(h)[0];
+  for (const [h, re, fold] of [[p, /<section class="panel faq lp-faq" id="faq"[\s\S]*?<\/section>/, /<details class="lp-fold"><summary><h3/g], [t, /<section class="lp-sec lp-alt" id="faq"[\s\S]*?<\/section>/, /<details class="lp-card"(?: open)?><summary><h3/g]]) {
+    const faq = re.exec(h)[0];
     const qs = (faq.match(/<h3/g) || []).length;
-    assert.ok(qs >= 5); assert.equal((faq.match(/<details class="lp-fold"><summary><h3/g) || []).length, qs, 'every answer folds');
+    assert.ok(qs >= 5); assert.equal((faq.match(fold) || []).length, qs, 'every answer folds');
     assert.match(h, /"@type":"FAQPage"/, 'the answers are still in the structured data');
   }
 });

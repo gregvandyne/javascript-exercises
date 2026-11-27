@@ -7655,7 +7655,8 @@
         "h": "Insegna con gli strumenti",
         "p": "Chiedi a Oomba una scheda nella chat: scrive le domande, Figures disegna ogni figura in scala e calcola le risposte. Oppure apri un’aula di matematica dal vivo con materiali manipolabili virtuali.",
         "alt": "Il creatore di schede di Figures con la chat di Oomba aperta accanto: una scheda intitolata Area and volume practice, la prima domanda con un rettangolo disegnato in scala e la risposta 12 m², e l’elenco di cosa è cambiato nella chat."
-      }
+      },
+      "kicker": "Come funziona"
     },
     "build": {
       "h": "Creare per imparare",
@@ -10140,7 +10141,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Tutti toccano il paese sulla propria mappa del mondo: il paese, la bandiera, la capitale o ciò per cui è famoso. Lo schermo grande mostra dove ha toccato tutta la classe, e andarci vicino vale comunque."
-      }
+      },
+      "kicker": "Giochi dal vivo"
     },
     "tools": {
       "h": "Gli strumenti chiesti dagli insegnanti",
@@ -10909,7 +10911,8 @@
       "ask": "Chiedi a Oomba",
       "tour": "Tour",
       "videos": "Video",
-      "compare": "Confronto"
+      "compare": "Confronto",
+      "signupShort": "Registrati"
     },
     "hero": {
       "kicker": "Per insegnanti dalla materna alla terza media",

@@ -7655,7 +7655,8 @@
         "h": "Lesgeven met de tools",
         "p": "Vraag Oomba in de chat om een werkblad: Oomba schrijft de vragen, Figures tekent elke figuur op schaal en rekent de antwoorden uit. Of start een live rekenlokaal met virtueel materiaal.",
         "alt": "De werkbladmaker van Figures met de chat van Oomba ernaast open: een werkblad met de naam Area and volume practice, de eerste vraag met een rechthoek op schaal en het antwoord 12 m², en de lijst met wat er in de chat veranderd is."
-      }
+      },
+      "kicker": "Zo werkt het"
     },
     "build": {
       "h": "Bouwend leren",
@@ -10140,7 +10141,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land, de vlag, de hoofdstad of waar het beroemd om is. Het grote scherm laat zien waar de hele klas tikte, en er net naast telt ook."
-      }
+      },
+      "kicker": "Live spellen"
     },
     "tools": {
       "h": "Hulpmiddelen waar leerkrachten om vroegen",
@@ -10909,7 +10911,8 @@
       "ask": "Vraag het Oomba",
       "tour": "Rondleiding",
       "videos": "Video’s",
-      "compare": "Vergelijken"
+      "compare": "Vergelijken",
+      "signupShort": "Aanmelden"
     },
     "hero": {
       "kicker": "Voor leerkrachten van groep 1 tot de tweede klas",
