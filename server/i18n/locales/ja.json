@@ -5802,7 +5802,20 @@
       },
       "gapHolds": "{word} の後の{mark}",
       "mgap": "{word} の後のすき間",
-      "wrongMarks": "おしい。単語のあいだの記号をもう一度見てみよう。2問続けて正解するとこのレベルが終わります。"
+      "wrongMarks": "おしい。単語のあいだの記号をもう一度見てみよう。2問続けて正解するとこのレベルが終わります。",
+      "counterAdded": "{count, plural, other {まちがいで +#}}",
+      "tryAgain": "もう一度やってみよう",
+      "seenBefore": "前に見た問題だよ",
+      "notSent": "答えが届かなかったよ。確かめて、もう一度「送信」を押してね。",
+      "resynced": "続きから始めるよ。",
+      "signedOut": "サインアウトしました。進み具合は保存されています。",
+      "signIn": "もう一度サインイン",
+      "fixed": "なおせたね！",
+      "fixedNote": "連続正解に数えるのは、1回目の答えだけだよ。",
+      "levelLonger": "このレベルは{base}問ではなく{n}問だったよ。まちがえると1問ふえて、2問続けて正解するとレベルクリア。",
+      "doneElsewhere": "このトピックはもう終わっているよ。",
+      "doneAdded": "{base}問と、まちがいでふえた{count, plural, other {#問}}だよ。",
+      "firstTry": "1回目で正解：{n} / {total}"
     }
   },
   "favorites": {
@@ -16362,7 +16375,9 @@
       "started": "つづける",
       "mastered": "マスター",
       "pending": "ログインしてのこそう",
-      "locked": "まず前のトピックをマスターしよう"
+      "locked": "まず前のトピックをマスターしよう",
+      "levelOf": "レベル {level} / {levels}",
+      "also": "ここでも数えるよ：{units}"
     },
     "guest": {
       "title": "ログインして記録をのこそう",
@@ -16374,9 +16389,10 @@
     },
     "welcome": {
       "heading": "{topic} へようこそ",
-      "text": "できるようになるまで答えつづけよう。最後の2問を続けて正解すると、レベルクリアだよ。",
       "go": "はじめよう",
-      "skip": "イントロをとばす"
+      "skip": "イントロをとばす",
+      "rule": "各レベルは{per}問。2問続けて正解するとクリア。連続正解に数えるのは、1回目で正解した答えだけだよ。",
+      "count": "全{total}問。まちがえるたびに1問ふえるよ。"
     },
     "practice": {
       "tip": "ダブルタップのつかいかた",
@@ -16463,6 +16479,12 @@
       "passed": "まちがいさがしの部屋クリア",
       "locked": "まずトピックをひらこう",
       "back": "{topic}にもどる"
+    },
+    "loading": "レッスンを準備中",
+    "progress": {
+      "band": "マスター {mastered} · とちゅう {started}",
+      "unit": "とちゅう {started}",
+      "unitHead": "マスター {mastered} / {total} · とちゅう {started}"
     }
   }
 }
