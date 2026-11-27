@@ -252,6 +252,9 @@ h3{font-size:17px;font-weight:700}
   .pbar{padding:0 10px}
   .boardWrap{border-radius:0;box-shadow:none}
   .side{width:auto;padding:0 12px}
+  /* On a phone the status line and the game buttons (Next, Hint, Retry) come right under the board, so the next
+     puzzle is one tap away without scrolling; the puzzle card, moves and typing box follow. */
+  .side>*{order:2}.side>.statusCard,.side>.rushCard{order:0}.side>.ctl{order:1}
   .moves{max-height:none;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:2px;padding:6px;min-height:44px}
   .mrowM{display:flex;flex:none;background:none!important}
   .mrowM .n{padding:4px 2px 4px 6px}
