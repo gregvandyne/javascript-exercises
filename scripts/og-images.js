@@ -99,6 +99,11 @@ CARDS.push({ file: 'landing.jpg', html: page(`<style>${LANDING_CSS}</style><div 
   <div class="pills" style="position:relative;width:600px"><span>Class dashboards</span><span>AI game Builder</span><span>Live class games</span></div>
   <div class="stack"><img src="${cover('fraction-factory')}"><img src="${cover('quest-race')}"><img src="${cover('robo-route')}"></div><p class="url">oomba.ai</p></div>`) });
 
+// Grammar Lab, a course rather than a game: its card cover is drawn in code (public/js/grammar-lab-art.js, made by
+// `node scripts/grammar-lab-art.js`), not a game screenshot.
+if (fs.existsSync(path.join(COVERS, 'grammar-lab.jpg'))) CARDS.push({ file: 'grammar-lab.jpg', html: page(`<div class="card"><div>${brand()}<span class="kicker">Grammar course</span><h1>Grammar Lab</h1><p class="sub">Short lessons, quick practice, real mastery.</p><div class="pills"><span>Parts of speech</span><span>Punctuation</span><span>Sentences</span></div></div>
+  <div class="one"><img src="${cover('grammar-lab')}"></div><p class="url">oomba.ai</p></div>`) });
+
 const KICKER = { learning: 'Free learning game', words: 'Free word game', board: 'Free board game', music: 'Free music game', puzzle: 'Free puzzle game', arcade: 'Free arcade game', sports: 'Free sports game', adventure: 'Free adventure game', silly: 'Free silly game' };
 for (const f of fs.readdirSync(COVERS).filter(f => f.endsWith('.jpg'))) {
   const slug = f.slice(0, -4); let g; try { g = seed(slug); } catch { continue; }
