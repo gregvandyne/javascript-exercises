@@ -44,6 +44,7 @@ export function wireCatalog(root, { onPick = null, onSelect = null } = {}) {
     if (subj === 'live') return k === 'live';
     if (subj === 'tools') return k === 'tool' || k === 'task' || k === 'figures';
     if (subj === 'mine') return k === 'mine';
+    if (subj === 'grammar') return k === 'grammar';
     if (subj === 'plans') return k === 'plan';
     return (k === 'game' || k === 'live') && li.dataset.subject === subj;
   };

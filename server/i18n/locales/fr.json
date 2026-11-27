@@ -2078,6 +2078,11 @@
       "bigger": "Texte plus grand"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Unité de Grammar Lab",
+        "lead": "Chaque élève travaille les thèmes de l'unité dans Grammar Lab. Elle est terminée quand tous les thèmes sont maîtrisés.",
+        "notMine": "Les unités de Grammar Lab vont sur les bureaux des élèves."
+      },
       "my": {
         "label": "Mon bureau (vous seul voyez ce qui s’y trouve)",
         "title": "Mon bureau",
@@ -5158,6 +5163,8 @@
       "settings": "Réglages et cartes de connexion"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} maîtrisés",
+      "grammarRoom": "Grammar Lab · salle de relecture",
       "deskOf": "{name} · Mon pupitre",
       "empty": "Rien sur ton pupitre pour l’instant",
       "emptyText": "Quand ton enseignant distribue quelque chose, ça arrive ici.",
@@ -5736,6 +5743,7 @@
       "lead": "Elles vont sur les bureaux dans cet ordre. Chacune garde sa notation.",
       "toolBusy": "{tool} est sur les bureaux. Un seul matériel à la fois : retirez-le d’abord de tous les bureaux.",
       "kind": {
+        "grammar": "Unité de Grammar Lab",
         "game": "Leçon",
         "lesson": "Plan de cours",
         "task": "Exercice",
@@ -6422,6 +6430,7 @@
     "minutesN": "{count, plural, one {# minute} other {# minutes}}",
     "assignedN": "{count, plural, one {dans # classe} other {dans # classes}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Jouer à un jeu",
       "gameForTeachers": "Jouer une leçon",
       "build": "Créer un jeu",
@@ -15888,6 +15897,7 @@
       "comingNext": "Bientôt"
     },
     "errors": {
+      "noGrammar": "Grammar Lab n'est pas ouvert pour votre compte.",
       "badStage": "Cela ne peut pas aller sur votre bureau.",
       "deskFull": "Votre bureau est plein. Retirez d’abord quelque chose.",
       "notStaged": "Ce n’est plus sur votre bureau.",
@@ -16170,6 +16180,7 @@
       "liveLead": "En direct pour toute la classe",
       "hostAny": "Animer une leçon en direct",
       "kind": {
+        "grammar": "Unité de Grammar Lab",
         "live": "Jeu en direct",
         "liveSet": "Série de quiz en direct",
         "liveAny": "Quiz, séries et plus",
@@ -16219,6 +16230,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# unité} other {# unités}}",
+    "place": {
+      "askTitle": "Tu es dans quelle classe ?",
+      "askText": "Nous ouvrons d'abord la partie de Grammar Lab pour ta classe. Tu peux quand même visiter toutes les parties.",
+      "ask": "Ta classe",
+      "choose": "Choisis ta classe",
+      "go": "Voir ma partie",
+      "yours": "Tes classes",
+      "other": "Autres classes"
+    },
+    "assigned": {
+      "badge": "De ton enseignant",
+      "lead": "Voici le travail de Grammar Lab que ton enseignant t'a donné."
+    },
+    "learn": {
+      "see": "Voir le cours"
+    },
+    "step": {
+      "open": "Ouvrir dans Grammar Lab",
+      "openRoom": "Ouvrir la salle de relecture",
+      "unitRule": "Terminé quand tous les thèmes de l'unité sont maîtrisés",
+      "topicRule": "Terminé quand le thème est maîtrisé",
+      "roomRule": "Terminé quand tu trouves au moins 80 % des erreurs"
+    },
+    "teach": {
+      "h1": "Grammar Lab pour vos classes",
+      "lead": "Donnez une unité entière, un thème ou une salle de relecture à une classe, un groupe ou un élève. Un thème est terminé quand l'élève le maîtrise, et une unité quand tous ses thèmes sont maîtrisés.",
+      "bands": "Niveaux",
+      "noClasses": "Créez d'abord une classe, puis vous pourrez lui donner des leçons de Grammar Lab.",
+      "newClass": "Créer une classe",
+      "assignUnit": "Assigner l'unité",
+      "assignTopic": "Assigner le thème",
+      "assignRoom": "Assigner la salle de relecture",
+      "assignLabel": "Assigner {title}",
+      "seeTopics": "Thèmes de cette unité",
+      "roomTitle": "Relecture : {topic}",
+      "dialogTitle": "Assigner {title}",
+      "whatUnit": "Une unité entière. Elle est terminée quand tous ses thèmes sont maîtrisés.",
+      "whatTopic": "Un thème. Il est terminé quand l'élève le maîtrise.",
+      "whatRoom": "Une salle de relecture. Elle est terminée quand l'élève trouve au moins 80 % des erreurs.",
+      "class": "Classe",
+      "who": "Pour qui",
+      "wholeClass": "Toute la classe",
+      "groups": "Un groupe",
+      "oneStudent": "Un élève",
+      "due": "Date limite (facultatif)",
+      "dueHint": "Laissez vide pour ne pas fixer de date limite.",
+      "cancel": "Annuler",
+      "assign": "Assigner",
+      "done": "{title} est assigné à {class}.",
+      "errNoClass": "Choisissez une de vos classes.",
+      "errDate": "Choisissez une date ou laissez vide.",
+      "errNoRoom": "Ce thème n'a pas de salle de relecture.",
+      "errAgain": "C'est déjà assigné à la classe.",
+      "errStudent": "Choisissez quelqu'un de cette classe.",
+      "mastered": "Maîtrisé",
+      "level": "Niveau {level} sur {levels}",
+      "levelKey": "En cours (niveau 1 sur 3)",
+      "notStarted": "Pas commencé",
+      "roomPassed": "Salle de relecture réussie",
+      "roomTried": "Salle de relecture essayée",
+      "gridTitle": "Progrès dans Grammar Lab",
+      "gridLead": "Les thèmes de chaque élève dans les unités données à cette classe. Les élèves sont listés par nom, jamais classés.",
+      "gridEmpty": "Rien de Grammar Lab n'est encore assigné à cette classe.",
+      "assignSome": "Assigner des leçons de Grammar Lab",
+      "backProgress": "Retour aux progrès",
+      "backGrid": "Retour aux progrès de la classe dans Grammar Lab",
+      "filterBand": "Niveaux",
+      "filterUnit": "Unité",
+      "all": "Toutes",
+      "show": "Afficher",
+      "noStudents": "Pas encore d'élèves dans cette classe.",
+      "noneFit": "Aucune unité ne correspond à ces filtres.",
+      "counts": "Élèves",
+      "count": "{mastered} maîtrisé · {started} en cours",
+      "studentTitle": "{name} dans Grammar Lab",
+      "placeH": "Niveaux de départ",
+      "placeTeacher": "Niveaux {grades}, choisis par un enseignant.",
+      "placeGrade": "Niveaux {grades}, selon la classe de l'élève ({grade}).",
+      "placeNone": "Classe encore inconnue. L'élève la choisit lors de sa première visite.",
+      "placeSet": "Choisir les niveaux de départ",
+      "placeAuto": "Utiliser la classe de l'élève",
+      "placeSave": "Enregistrer",
+      "placeSaved": "Niveaux de départ enregistrés.",
+      "placeNote": "Votre choix passe toujours avant la classe de l'élève. L'élève peut toujours ouvrir toutes les unités.",
+      "colTopic": "Thème",
+      "colStatus": "État",
+      "colAttempts": "Essais",
+      "colWrong": "Mauvaises réponses",
+      "colRoom": "Salle de relecture",
+      "colLast": "Dernière activité",
+      "never": "Pas encore d'activité",
+      "unitsGiven": "{count, plural, one {# unité assignée} other {# unités assignées}}",
+      "progressLink": "Voir les progrès dans Grammar Lab"
+    },
     "title": "Grammar Lab",
     "sub": "La grammaire et l'écriture, une compétence à la fois",
     "band": "Niveaux {grades}",
@@ -16228,6 +16334,7 @@
     "backTo": "Retour à {unit}",
     "noscript": "Cet entraînement a besoin de JavaScript.",
     "topic": {
+      "off": "Ne fait pas encore partie de ton travail",
       "options": "Plus pour {topic}",
       "card": "Fiche de leçon",
       "again": "S'entraîner encore",
@@ -16288,6 +16395,7 @@
       "cancel": "Annuler"
     },
     "done": {
+      "nextLabel": "Thème suivant",
       "heading": "Tu maîtrises {topic} !",
       "back": "Retour à {unit}"
     },

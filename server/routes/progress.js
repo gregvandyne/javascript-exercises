@@ -46,6 +46,9 @@ import * as FS from '../services/figures-steps.js';
 import { classroomOverview } from './homeroom-overview.js';
 import { figuresStepHtml } from '../views/figures-step.js';
 import * as PS from '../services/proof-steps.js';
+import * as GLA from '../services/grammar-lab-assign.js';
+import * as GLV from '../views/grammar-lab-teach.js';
+import * as GLAB from '../services/grammar-lab.js';
 import * as MT from '../services/manip-tasks.js';
 import { taskOf as taskOfId } from '../../public/js/manip-tasks.js';
 import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
@@ -62,7 +65,15 @@ router.use(studentRoutes);   // /class/:id/student/:uid: one student's page for 
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚', figures: '📐', proofread: '🔎' };
+/** A Grammar Lab step on the lesson page: where it opens in the course, and (a student) how far along they are. */
+function grammarStepHtml(t, s, student, isDone) {
+  const snap = GLA.snapOf(s); if (!snap) return html`<p class="notice warn">${t('lessons.view.notReady')}</p>`;
+  const href = snap.what === 'unit' ? `/courses/grammar-lab/${snap.band}/${snap.unit}` : snap.what === 'room' ? GLAB.roomHref(snap.unit, snap.topic, snap.band) : `/courses/grammar-lab/${snap.band}/${snap.unit}/${snap.topic}`;
+  const pr = student ? GLA.progressFor(student, snap) : null;
+  return html`<div class="row"><a class="btn${student && !isDone ? ' btn-primary btn-big' : ''}" href="${href}">▶ ${t(snap.what === 'room' ? 'grammarLab.step.openRoom' : 'grammarLab.step.open')}</a></div>
+    <p class="small muted">${snap.what === 'room' ? t('grammarLab.step.roomRule') : snap.what === 'unit' ? t('grammarLab.step.unitRule') : t('grammarLab.step.topicRule')}${pr && snap.what !== 'room' ? html` · ${t('grammarLab.ringLabel', { done: pr.done, total: pr.total })}` : ''}</p>`;
+}
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚', figures: '📐', proofread: '🔎', manip: '🧮', grammar: '🔤' };
 /** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
  *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
  *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
@@ -241,6 +252,10 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
+  // Grammar Lab (behind GRAMMAR_LAB, for a teacher it lets in): once the class has been given Grammar Lab work, a panel
+  // with how many started and the way to its grid (routes/grammar-lab-teach.js).
+  let glPanel = '';
+  if (GLA.canView(req.user, c)) { const g = GLA.classGrid(c); if (g.assignments) glPanel = GLV.progressPanel({ t, c, g }); }
   // Typing Zoo: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
   // free play counts too. Shown once a student in this class has finished a typing lesson.
   const typing = gb.students.length ? TY.classTyping(gb.students) : null;
@@ -306,7 +321,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), typingPanel ? ['typing', `⌨️ ${t('progress.typing.title')}`] : null, livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
   // Homeroom teachers (step 2c): the Classroom tab's calm overview of the last weeks, above everything that was here.
   const overview = classroomOverview(req, c);
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${overview}${nav}${body}${coursePanels}${typingPanel}${livePanel}`,
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${overview}${nav}${body}${coursePanels}${glPanel}${typingPanel}${livePanel}`,
     head: overview ? raw(`${CSS}<link rel="stylesheet" href="/css/homeroom-overview.css?v=${VERSION}">`) : CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(overview ? ['/js/homeroom-overview.js'] : [])] });
 });
 
@@ -647,6 +662,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
       return isDone ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('manip.set.doneScore', { right: qz ? qz.right : 0, total: n })}</p><div class="row"><a class="btn" href="${MT.hrefOf(cl.id, s.id)}">${ico('🧮', { size: 18 })} ${t('manip.set.review')}</a></div>`
         : html`<div class="row"><a class="btn btn-primary btn-big" href="${MT.hrefOf(cl.id, s.id)}">▶ ${t(answered ? 'manip.set.continue' : 'manip.set.start')}</a></div><p class="small muted">${t('manip.set.progress', { done: answered, total: n })}</p>`;
     }
+    // Grammar Lab work (services/grammar-lab-assign.js): done in the course (mastery, or a passed room); the count here.
+    if (s.kind === L.GRAMMAR_KIND) return grammarStepHtml(t, s, u, isDone);
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>
         <label class="sr-only" for="ans-${s.id}">${t('progress.student.yourAnswer')}</label>
@@ -670,6 +687,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const preview = s => (s.kind === L.FIGURES_KIND ? figuresStepHtml(t, FS.viewFor(s, cl, null, { lang: req.locale || 'en', teacher: true }), { stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at })
     : s.kind === L.PROOF_KIND ? proofTeacherHtml(t, PS.viewFor(s, cl, null, { teacher: true }), { showAnswers: !!s.show_answers, lang: req.locale || 'en' })
     // A Manipulatives practice set: the teacher tries each task on the Manipulatives page (Preview)
+    : s.kind === L.GRAMMAR_KIND ? grammarStepHtml(t, s, null, false)
     : s.kind === L.MANIP_KIND ? html`<div class="row">${(MT.snapOf(s) || { tasks: [] }).tasks.map(id => html`<a class="btn" href="/manipulatives#practice/${id}">${ico('🧮', { size: 18 })} ${t('manip.set.preview', { title: (taskOfId(id) || { task: { title: id } }).task.title })}</a>`)}</div><p class="small muted">${t('manip.set.teacherNote', { count: MT.countOf(s) })}</p>`
     : s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');

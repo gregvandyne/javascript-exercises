@@ -2078,6 +2078,11 @@
       "bigger": "Texto más grande"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Unidad de Grammar Lab",
+        "lead": "Cada estudiante trabaja los temas de la unidad en Grammar Lab. Se completa cuando domina todos los temas.",
+        "notMine": "Las unidades de Grammar Lab van en los escritorios de los estudiantes."
+      },
       "my": {
         "label": "Mi escritorio (solo tú ves lo que hay)",
         "title": "Mi escritorio",
@@ -5158,6 +5163,8 @@
       "settings": "Ajustes y tarjetas de inicio de sesión"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} dominados",
+      "grammarRoom": "Grammar Lab · sala de corrección",
       "deskOf": "{name} · Mi pupitre",
       "empty": "Todavía no hay nada en tu pupitre",
       "emptyText": "Cuando tu docente reparta algo, aparecerá aquí.",
@@ -5736,6 +5743,7 @@
       "lead": "Irán a los pupitres en este orden. Cada una conserva su forma de calificar.",
       "toolBusy": "{tool} está en los pupitres. Un manipulativo a la vez: quítalo primero de todos.",
       "kind": {
+        "grammar": "Unidad de Grammar Lab",
         "game": "Lección",
         "lesson": "Plan de clase",
         "task": "Práctica",
@@ -6422,6 +6430,7 @@
     "minutesN": "{count, plural, one {# minuto} other {# minutos}}",
     "assignedN": "{count, plural, one {en # clase} other {en # clases}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Jugar un juego",
       "gameForTeachers": "Jugar una lección",
       "build": "Crear un juego",
@@ -15888,6 +15897,7 @@
       "comingNext": "Muy pronto"
     },
     "errors": {
+      "noGrammar": "Grammar Lab no está abierto para tu cuenta.",
       "badStage": "Eso no puede ir en tu escritorio.",
       "deskFull": "Tu escritorio está lleno. Quita algo primero.",
       "notStaged": "Eso ya no está en tu escritorio.",
@@ -16170,6 +16180,7 @@
       "liveLead": "En vivo para toda la clase",
       "hostAny": "Dirigir una lección en vivo",
       "kind": {
+        "grammar": "Unidad de Grammar Lab",
         "live": "Juego en vivo",
         "liveSet": "Serie de quiz en vivo",
         "liveAny": "Quiz, series y más",
@@ -16219,6 +16230,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# unidad} other {# unidades}}",
+    "place": {
+      "askTitle": "¿En qué grado estás?",
+      "askText": "Primero abrimos la parte de Grammar Lab para tu grado. Puedes visitar todas las partes.",
+      "ask": "Tu grado",
+      "choose": "Elige tu grado",
+      "go": "Mostrar mi parte",
+      "yours": "Tus grados",
+      "other": "Otros grados"
+    },
+    "assigned": {
+      "badge": "De tu maestro",
+      "lead": "Este es el trabajo de Grammar Lab que te dio tu maestro."
+    },
+    "learn": {
+      "see": "Ver el curso"
+    },
+    "step": {
+      "open": "Abrir en Grammar Lab",
+      "openRoom": "Abrir la sala de corrección",
+      "unitRule": "Se completa cuando dominas todos los temas de la unidad",
+      "topicRule": "Se completa cuando dominas el tema",
+      "roomRule": "Se completa cuando encuentras al menos el 80% de los errores"
+    },
+    "teach": {
+      "h1": "Grammar Lab para tus clases",
+      "lead": "Asigna una unidad completa, un tema o una sala de corrección a una clase, un grupo o un estudiante. Un tema se completa cuando el estudiante lo domina, y una unidad cuando domina todos sus temas.",
+      "bands": "Grados",
+      "noClasses": "Primero crea una clase; luego podrás darle lecciones de Grammar Lab.",
+      "newClass": "Crear una clase",
+      "assignUnit": "Asignar unidad",
+      "assignTopic": "Asignar tema",
+      "assignRoom": "Asignar sala de corrección",
+      "assignLabel": "Asignar {title}",
+      "seeTopics": "Temas de esta unidad",
+      "roomTitle": "Corregir: {topic}",
+      "dialogTitle": "Asignar {title}",
+      "whatUnit": "Una unidad completa. Se completa cuando se dominan todos sus temas.",
+      "whatTopic": "Un tema. Se completa cuando el estudiante lo domina.",
+      "whatRoom": "Una sala de corrección. Se completa cuando el estudiante encuentra al menos el 80% de los errores.",
+      "class": "Clase",
+      "who": "Para quién",
+      "wholeClass": "Toda la clase",
+      "groups": "Un grupo",
+      "oneStudent": "Un estudiante",
+      "due": "Fecha de entrega (opcional)",
+      "dueHint": "Déjala vacía si no hay fecha de entrega.",
+      "cancel": "Cancelar",
+      "assign": "Asignar",
+      "done": "{title} está asignado a {class}.",
+      "errNoClass": "Elige una de tus clases.",
+      "errDate": "Elige una fecha o déjala vacía.",
+      "errNoRoom": "Este tema no tiene sala de corrección.",
+      "errAgain": "Esto ya está asignado a la clase.",
+      "errStudent": "Elige a alguien de esta clase.",
+      "mastered": "Dominado",
+      "level": "Nivel {level} de {levels}",
+      "levelKey": "En curso (nivel 1 de 3)",
+      "notStarted": "Sin empezar",
+      "roomPassed": "Sala de corrección completada",
+      "roomTried": "Sala de corrección intentada",
+      "gridTitle": "Progreso en Grammar Lab",
+      "gridLead": "Los temas de cada estudiante en las unidades asignadas a esta clase. Los estudiantes aparecen por nombre, nunca en un ranking.",
+      "gridEmpty": "Todavía no hay nada de Grammar Lab asignado a esta clase.",
+      "assignSome": "Asignar lecciones de Grammar Lab",
+      "backProgress": "Volver a Progreso",
+      "backGrid": "Volver al progreso de la clase en Grammar Lab",
+      "filterBand": "Grados",
+      "filterUnit": "Unidad",
+      "all": "Todas",
+      "show": "Mostrar",
+      "noStudents": "Todavía no hay estudiantes en esta clase.",
+      "noneFit": "Ninguna unidad coincide con estos filtros.",
+      "counts": "Estudiantes",
+      "count": "{mastered} dominado · {started} en curso",
+      "studentTitle": "{name} en Grammar Lab",
+      "placeH": "Grados de inicio",
+      "placeTeacher": "Grados {grades}, elegido por un maestro.",
+      "placeGrade": "Grados {grades}, según el grado del estudiante ({grade}).",
+      "placeNone": "Todavía no se conoce el grado. El estudiante lo elige en su primera visita.",
+      "placeSet": "Elegir los grados de inicio",
+      "placeAuto": "Usar el grado del estudiante",
+      "placeSave": "Guardar",
+      "placeSaved": "Grados de inicio guardados.",
+      "placeNote": "Tu elección siempre va antes que el grado del estudiante. El estudiante puede abrir todas las unidades.",
+      "colTopic": "Tema",
+      "colStatus": "Estado",
+      "colAttempts": "Intentos",
+      "colWrong": "Respuestas incorrectas",
+      "colRoom": "Sala de corrección",
+      "colLast": "Última actividad",
+      "never": "Sin actividad todavía",
+      "unitsGiven": "{count, plural, one {# unidad asignada} other {# unidades asignadas}}",
+      "progressLink": "Ver el progreso en Grammar Lab"
+    },
     "title": "Grammar Lab",
     "sub": "Gramática y escritura, una habilidad a la vez",
     "band": "Grados {grades}",
@@ -16228,6 +16334,7 @@
     "backTo": "Volver a {unit}",
     "noscript": "Esta práctica necesita JavaScript activado.",
     "topic": {
+      "off": "Todavía no es parte de tu trabajo",
       "options": "Más de {topic}",
       "card": "Ficha de la lección",
       "again": "Practicar otra vez",
@@ -16288,6 +16395,7 @@
       "cancel": "Cancelar"
     },
     "done": {
+      "nextLabel": "Siguiente tema",
       "heading": "¡Dominaste {topic}!",
       "back": "Volver a {unit}"
     },

@@ -62,7 +62,7 @@ import * as PROG from '../services/progress.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { LOCALES } from '../i18n/index.js';
 import * as GLAB from '../services/grammar-lab.js';
-import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
+import { mayOpenGrammarLab, reachOf, unitInReach } from '../services/grammar-lab-access.js';
 import { COMMUNITY_CSS } from './social.js';
 import { ADMIN_BODY, ADMIN_CSS, note } from '../views/admin-ui.js';
 import * as COURSES from '../services/courses.js';
@@ -181,6 +181,9 @@ function resolve(req, b) {
     if (!mayOpenGrammarLab(req.user)) return { error: [404, 'off'] };
     const tp = typeof b.topic === 'string' ? GLAB.topic(b.topic) : null;
     if (!tp || !GLAB.readsAloud(tp)) return { error: [404, 'off'] };
+    // a student who reaches only assigned work hears only those units' cards
+    const reach = reachOf(req.user);
+    if (!reach.all && !GLAB.unitsWith(tp.id).some(p => unitInReach(reach, p.id))) return { error: [404, 'off'] };
     return { text: GLAB.cardSpoken(tp), locale: 'en', role: 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'placement') {

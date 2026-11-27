@@ -262,3 +262,93 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-asis[aria-pressed="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
 .gl-section-body{margin:4px 0 8px}
 .gl-title-w{font-style:italic}
+
+/* A word and the marks stuck to it (and its comma gap) as one piece that never breaks: a line never starts with a mark. */
+.gl-tok{white-space:nowrap}
+@media (max-width:360px){
+  .gl-band-k-2 .gl-sentence{font-size:25px}
+  .gl-sentence{font-size:21px}
+}
+
+/* Focus rings follow each button's own shape (the site's ring would square a pill off): a box-shadow ring with an even
+   gap all round, shown for the keyboard only. A dialog or overlay that takes the focus itself after a tap shows none. */
+/* (one radius per button, focused or not: --gl-btn-r) */
+.gl .btn{--gl-btn-r:999px;border-radius:var(--gl-btn-r)}
+.gl .btn-big,.gl-done-go .btn,.gl-overlay-card .btn{--gl-btn-r:var(--r)}
+.gl .btn:focus-visible{outline:none;border-radius:var(--gl-btn-r);box-shadow:0 0 0 3px var(--card),0 0 0 6px var(--focus)}
+.gl .btn:focus:not(:focus-visible){outline:none}
+.gl-dialog:focus,.gl-overlay-card:focus,.gl [tabindex="-1"]:focus{outline:none}
+
+/* The mastery screen's ways on: full width, stacked, the same size; a long name wraps inside its button. Next is two
+   lines (a small "Next topic", then the name in bold). The level overlay's button gets the same shape. */
+.gl-done-go{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:12px;width:100%;max-width:520px;margin-inline:auto}
+.gl-done-go .btn,.gl-overlay-card .btn{width:100%;min-height:48px;padding:10px 20px;white-space:normal;text-align:center;line-height:1.25;overflow-wrap:anywhere}
+.gl-done-go .btn-big{min-height:56px}
+.gl-done-next{flex-direction:column;gap:2px}
+.gl-next-k{font-size:.85rem;font-weight:600;color:var(--muted)}
+.gl-next-t{font-weight:800}
+
+/* The course page: the student's band first, the others folded; the grade question on a first visit. */
+.gl-badge-yours{background:var(--accent-soft);color:var(--accent-ink)}
+.gl-other-h{margin-top:24px}
+.gl-bandfold>summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;min-height:48px;cursor:pointer;font-weight:800;font-size:20px}
+.gl-bandfold[open]>summary{margin-bottom:12px}
+.gl-ask-grade{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:16px;margin-bottom:20px}
+.gl-ask-grade h2{margin-top:0}
+.gl-ask-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+.gl-ask-form .gl-label{flex-basis:100%;margin:0}
+.gl-ask-form .input{flex:1 1 200px;min-height:48px}
+
+/* Teachers (server/views/grammar-lab-teach.js): the units to assign, the class grid and one student. */
+.glt{max-width:1100px}
+.glt-bands{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.glt-units{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.glt-unit{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 2px var(--line);padding:14px 16px}
+.glt-unit-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+.glt-unit-head h2{margin:0;font-size:20px}
+.glt-unit-head p{margin:0}
+.glt-topics>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:var(--text-2)}
+.glt-tlist{margin:6px 0 0;padding-inline-start:22px;display:grid;gap:8px}
+.glt-tlist li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.glt-tname{font-weight:600}
+.glt-tacts{display:flex;flex-wrap:wrap;gap:6px}
+.glt-dialog .glt-form{display:grid;gap:6px}
+.glt-dialog .input{width:100%;min-height:44px}
+.glt-dialog .gl-label{margin-top:8px}
+.glt-gridh{margin:16px 0 4px}
+.glt-filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:12px 0}
+.glt-filters label{display:grid;gap:4px;flex:1 1 180px;max-width:320px}
+.glt-filters .input{min-height:44px}
+.glt-key{display:flex;flex-wrap:wrap;gap:6px 16px}
+.glt-gridsec{min-width:0;max-width:100%;overflow:hidden}
+.glt-gridsec h2{font-size:19px;margin:0 0 10px}
+.glt-wrap{overflow-x:auto;max-width:100%;min-width:0}
+.glt-grid{border-collapse:separate;border-spacing:0;min-width:100%}
+.glt-grid th,.glt-grid td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);vertical-align:middle}
+.glt-grid .glt-name{text-align:start;position:sticky;inset-inline-start:0;background:var(--card);z-index:1;min-width:120px;max-width:200px;overflow-wrap:anywhere}
+.glt-th{min-width:116px;max-width:160px;font-size:13px;font-weight:700;vertical-align:bottom}
+.glt-thn{display:block;color:var(--muted)}
+.glt-tht{display:block;overflow-wrap:normal;word-break:normal;hyphens:auto}
+/* names (students, topics) as written: never the table's capitals */
+.glt-grid th,.glt-stable tbody th{text-transform:none;letter-spacing:normal}
+.glt-grid .glt-name a{font-weight:700}
+.glt-ci{font-weight:800}
+.glt-mastered{background:var(--ok-bg);color:var(--ok)}
+.glt-started{background:var(--spark-soft)}
+.glt-none{color:var(--muted)}
+.glt-room{display:inline-block;margin-inline-start:4px;opacity:.55}
+.glt-room.on{opacity:1}
+.glt-count{color:var(--muted)}
+.glt-sname{margin:8px 0 12px}
+.glt-place h3,.glt-sunit h3{margin:0}
+.glt-placeform{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:8px 0}
+.glt-placeform .gl-label{flex-basis:100%;margin:0}
+.glt-placeform .input{flex:1 1 200px;max-width:320px;min-height:44px}
+.glt-stable{width:100%}
+.glt-stable th,.glt-stable td{padding:8px 10px;text-align:start;border-bottom:1px solid var(--line)}
+@media (max-width:640px){
+  .glt-stable thead{display:none}
+  .glt-stable tr{display:grid;gap:4px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .glt-stable th,.glt-stable td{border:0;padding:2px 0}
+  .glt-stable td::before{content:attr(data-label) ": ";color:var(--muted);font-weight:600}
+}

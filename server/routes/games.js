@@ -59,7 +59,7 @@ import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 import { fenceLets } from './family.js';
 import * as GLAB from '../services/grammar-lab.js';
-import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
+import { mayOpenGrammarLab, reachOf, unitInReach } from '../services/grammar-lab-access.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
 export const FRAME_STYLES = Object.freeze(['cartoon', 'breeze']);
@@ -363,8 +363,9 @@ router.get('/play/:slug', (req, res) => {
   const glRoom = !lesson && !inMatch && u && !isGrownup(u) && typeof req.query.glroom === 'string' && typeof req.query.unit === 'string' && g.slug === PS.SLUG && g.source === 'seed' && mayOpenGrammarLab(u)
     ? (() => {
       const tp = GLAB.topic(req.query.glroom), p = tp && GLAB.room(tp.id) ? GLAB.unitFor(req.query.unit, req.query.band) : null;
-      const st = p && p.topics.includes(tp.id) ? GLAB.unitStates(u, p).find(x => x.topic.id === tp.id) : null;
-      return st && st.open ? { topic: tp.id, unit: p.id, back: `/courses/grammar-lab/${p.band}/${p.id}#gl-topic-${tp.id}`, title: tp.title } : null;
+      const reach = reachOf(u);
+      const st = p && p.topics.includes(tp.id) && unitInReach(reach, p.id) ? GLAB.unitStates(u, p, reach).find(x => x.topic.id === tp.id) : null;
+      return st && st.room && st.room.open ? { topic: tp.id, unit: p.id, back: `/courses/grammar-lab/${p.band}/${p.id}#gl-topic-${tp.id}`, title: tp.title } : null;
     })() : null;
   const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}), ...(glRoom ? { gr: [glRoom.topic, glRoom.unit] } : {}), ...(frame && frame.support ? { sp: frame.support } : {}) }, 15 * 60);
   // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that

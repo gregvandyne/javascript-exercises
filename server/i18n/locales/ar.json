@@ -2079,6 +2079,11 @@
       "bigger": "نص أكبر"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "وحدة من Grammar Lab",
+        "lead": "يعمل كل طالب على مواضيع الوحدة في Grammar Lab. تكتمل عند إتقان كل المواضيع.",
+        "notMine": "وحدات Grammar Lab توضع على مكاتب الطلاب."
+      },
       "my": {
         "label": "مكتبي (أنت وحدك ترى ما عليه)",
         "title": "مكتبي",
@@ -5159,6 +5164,8 @@
       "settings": "إعدادات الدخول والبطاقات"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · أتقن {done}/{count}",
+      "grammarRoom": "Grammar Lab · غرفة التدقيق",
       "deskOf": "{name} · مكتبي",
       "empty": "لا يوجد شيء على مكتبك بعد",
       "emptyText": "عندما يوزّع معلمك شيئًا، سيصل إلى هنا.",
@@ -5737,6 +5744,7 @@
       "lead": "تصل إلى المقاعد بهذا الترتيب. ولكل منها طريقة تقييمها.",
       "toolBusy": "{tool} على المقاعد الآن. أداة واحدة في كل مرة: أزلها أولًا من كل المقاعد.",
       "kind": {
+        "grammar": "وحدة من Grammar Lab",
         "game": "درس",
         "lesson": "خطة درس",
         "task": "تدريب",
@@ -6423,6 +6431,7 @@
     "minutesN": "{count, plural, zero {# دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}",
     "assignedN": "{count, plural, zero {ليس في أي فصل} one {في فصل واحد} two {في فصلين} few {في # فصول} many {في # فصلًا} other {في # فصل}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "العب لعبة",
       "gameForTeachers": "العب درسًا",
       "build": "اصنع لعبة",
@@ -15889,6 +15898,7 @@
       "comingNext": "قريبًا"
     },
     "errors": {
+      "noGrammar": "Grammar Lab غير مفتوح لحسابك.",
       "badStage": "لا يمكن وضع هذا على مكتبك.",
       "deskFull": "مكتبك ممتلئ. أزل شيئًا أولًا.",
       "notStaged": "لم يعد هذا على مكتبك.",
@@ -16171,6 +16181,7 @@
       "liveLead": "مباشرة للصف كله",
       "hostAny": "قدّم درسًا مباشرًا",
       "kind": {
+        "grammar": "وحدة من Grammar Lab",
         "live": "لعبة مباشرة",
         "liveSet": "مجموعة اختبار مباشر",
         "liveAny": "اختبارات ومجموعات والمزيد",
@@ -16220,6 +16231,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, zero {لا وحدات} one {وحدة واحدة} two {وحدتان} few {# وحدات} many {# وحدة} other {# وحدة}}",
+    "place": {
+      "askTitle": "في أي صف أنت؟",
+      "askText": "نفتح أولًا جزء Grammar Lab الخاص بصفك. ويمكنك زيارة كل الأجزاء.",
+      "ask": "صفك",
+      "choose": "اختر صفك",
+      "go": "اعرض جزئي",
+      "yours": "صفوفك",
+      "other": "صفوف أخرى"
+    },
+    "assigned": {
+      "badge": "من معلمك",
+      "lead": "هذا عمل Grammar Lab الذي أعطاك إياه معلمك."
+    },
+    "learn": {
+      "see": "اعرض المساق"
+    },
+    "step": {
+      "open": "افتح في Grammar Lab",
+      "openRoom": "افتح غرفة التدقيق",
+      "unitRule": "يكتمل عند إتقان كل مواضيع الوحدة",
+      "topicRule": "يكتمل عند إتقان الموضوع",
+      "roomRule": "يكتمل عندما تجد 80% من الأخطاء على الأقل"
+    },
+    "teach": {
+      "h1": "Grammar Lab لصفوفك",
+      "lead": "أعطِ وحدة كاملة أو موضوعًا واحدًا أو غرفة تدقيق لصف أو مجموعة أو طالب واحد. يكتمل الموضوع عندما يتقنه الطالب، وتكتمل الوحدة عند إتقان كل مواضيعها.",
+      "bands": "الصفوف",
+      "noClasses": "أنشئ صفًا أولًا، ثم يمكنك أن تعطيه دروس Grammar Lab.",
+      "newClass": "أنشئ صفًا",
+      "assignUnit": "أسند الوحدة",
+      "assignTopic": "أسند الموضوع",
+      "assignRoom": "أسند غرفة التدقيق",
+      "assignLabel": "أسند {title}",
+      "seeTopics": "مواضيع هذه الوحدة",
+      "roomTitle": "تدقيق: {topic}",
+      "dialogTitle": "أسند {title}",
+      "whatUnit": "وحدة كاملة. تكتمل عند إتقان كل مواضيعها.",
+      "whatTopic": "موضوع واحد. يكتمل عندما يتقنه الطالب.",
+      "whatRoom": "غرفة تدقيق. تكتمل عندما يجد الطالب 80% من الأخطاء على الأقل.",
+      "class": "الصف",
+      "who": "لمن",
+      "wholeClass": "الصف كله",
+      "groups": "مجموعة",
+      "oneStudent": "طالب واحد",
+      "due": "موعد التسليم (اختياري)",
+      "dueHint": "اتركه فارغًا إن لم يكن هناك موعد.",
+      "cancel": "إلغاء",
+      "assign": "أسند",
+      "done": "تم إسناد {title} إلى {class}.",
+      "errNoClass": "اختر أحد صفوفك.",
+      "errDate": "اختر تاريخًا أو اتركه فارغًا.",
+      "errNoRoom": "ليس لهذا الموضوع غرفة تدقيق.",
+      "errAgain": "هذا مسند إلى الصف من قبل.",
+      "errStudent": "اختر أحدًا من هذا الصف.",
+      "mastered": "متقن",
+      "level": "المستوى {level} من {levels}",
+      "levelKey": "قيد العمل (المستوى 1 من 3)",
+      "notStarted": "لم يبدأ",
+      "roomPassed": "اجتاز غرفة التدقيق",
+      "roomTried": "جرّب غرفة التدقيق",
+      "gridTitle": "التقدم في Grammar Lab",
+      "gridLead": "مواضيع كل طالب في الوحدات التي أُعطيت لهذا الصف. الطلاب مرتبون بالاسم، ولا يوجد ترتيب بينهم.",
+      "gridEmpty": "لم يُسند شيء من Grammar Lab إلى هذا الصف بعد.",
+      "assignSome": "أسند دروس Grammar Lab",
+      "backProgress": "العودة إلى التقدم",
+      "backGrid": "العودة إلى تقدم الصف في Grammar Lab",
+      "filterBand": "الصفوف",
+      "filterUnit": "الوحدة",
+      "all": "الكل",
+      "show": "اعرض",
+      "noStudents": "لا يوجد طلاب في هذا الصف بعد.",
+      "noneFit": "لا توجد وحدات تطابق هذه المرشحات.",
+      "counts": "الطلاب",
+      "count": "أتقن: {mastered} · قيد العمل: {started}",
+      "studentTitle": "{name} في Grammar Lab",
+      "placeH": "صفوف البداية",
+      "placeTeacher": "الصفوف {grades}، اختارها معلم.",
+      "placeGrade": "الصفوف {grades}، حسب صف الطالب ({grade}).",
+      "placeNone": "لا يُعرف الصف بعد. يختاره الطالب في زيارته الأولى.",
+      "placeSet": "اختر صفوف البداية",
+      "placeAuto": "استخدم صف الطالب",
+      "placeSave": "حفظ",
+      "placeSaved": "حُفظت صفوف البداية.",
+      "placeNote": "اختيارك يأتي دائمًا قبل صف الطالب. ويمكن للطالب أن يفتح كل الوحدات.",
+      "colTopic": "الموضوع",
+      "colStatus": "الحالة",
+      "colAttempts": "المحاولات",
+      "colWrong": "الإجابات الخاطئة",
+      "colRoom": "غرفة التدقيق",
+      "colLast": "آخر نشاط",
+      "never": "لا نشاط بعد",
+      "unitsGiven": "{count, plural, zero {لا وحدات مسندة} one {وحدة واحدة مسندة} two {وحدتان مسندتان} few {# وحدات مسندة} many {# وحدة مسندة} other {# وحدة مسندة}}",
+      "progressLink": "اعرض التقدم في Grammar Lab"
+    },
     "title": "Grammar Lab",
     "sub": "القواعد والكتابة، مهارة واحدة في كل مرة",
     "band": "الصفوف {grades}",
@@ -16229,6 +16335,7 @@
     "backTo": "العودة إلى {unit}",
     "noscript": "يحتاج هذا التمرين إلى تشغيل JavaScript.",
     "topic": {
+      "off": "ليس من عملك بعد",
       "options": "المزيد عن {topic}",
       "card": "بطاقة الدرس",
       "again": "تدرّب مرة أخرى",
@@ -16289,6 +16396,7 @@
       "cancel": "إلغاء"
     },
     "done": {
+      "nextLabel": "الموضوع التالي",
       "heading": "أتقنت {topic}!",
       "back": "العودة إلى {unit}"
     },

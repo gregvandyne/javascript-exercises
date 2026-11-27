@@ -96,6 +96,8 @@ import { ico } from '../views/icon.js';
 import { page, VERSION, onEveryPage } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as H from '../services/homeroom.js';
+import * as GLA from '../services/grammar-lab-assign.js';
+import * as GLAB from '../services/grammar-lab.js';
 import * as HO from '../services/homeroom-handouts.js';
 import * as HL from '../services/homeroom-lessons.js';
 import * as HV from '../services/homeroom-live.js';
@@ -265,7 +267,11 @@ function deskLists(req) {
   // hands out N questions, each student their own variations
   const tasks = manip ? practiceTasks().map(x => ({ id: `T:task:${x.id}`, icon: MANIP_TOOLS.find(tl => tl.slug === x.slug).emoji, title: x.task.title, tool: x.slug, grades: { from: gradeNum(x.task.grade), to: gradeNum(x.task.grade) }, ccss: x.task.ccss })) : [];
   const figures = toolAccess(u, config.figures) === 'yes' ? [{ id: 'T:figures', icon: '📐', title: t('homeroom.panel.figures'), mineOnly: true }] : [];
-  return { mine, folders, shared, favorites, oomba, live, subjects, more, tools, tasks, figures };
+  // Grammar Lab's units (behind GRAMMAR_LAB, for a teacher it lets in: services/grammar-lab-assign.js), by band: each
+  // hands out like a Manipulatives task, a graded class assignment that is done when every topic in it is mastered.
+  const grammar = GLA.canAssignTo(u, req.homeroomClass) ? GLAB.bands().flatMap(b => GLAB.pathwaysOf(b.id).map(p => ({ id: `T:gl:${b.id}/${p.id}`, icon: '🔤', title: p.title, band: b.id,
+    grades: { from: b.id === 'k-2' ? 0 : Number(b.id.split('-')[0]), to: Number(b.id.split('-')[1]) }, sub: `grammar ${t('grammarLab.title')} ${t('grammarLab.band', { grades: b.grades })}`, n: p.topics.length }))) : [];
+  return { mine, folders, shared, favorites, oomba, live, subjects, more, tools, tasks, figures, grammar };
 }
 const gradeLabel = (t, g) => (!g ? '' : g.from === g.to ? (g.from ? t('learn.tab.gradeN', { n: g.from }) : t('learn.tab.gradeK')) : t('learn.grades', { from: g.from ? String(g.from) : 'K', to: g.to ? String(g.to) : 'K' }));
 const searchText = (...parts) => parts.filter(Boolean).join(' ').toLowerCase();
@@ -309,13 +315,16 @@ function catalogHtml(req, lists) {
   const taskGroups = [...new Set(L.tasks.map(x => x.tool))].map(slug => { const tl = L.tools.find(x => x.id === `T:manip:${slug}`);
     return group(`mt-${slug}`, html`${tl ? tl.icon : '🧮'} ${t('homeroom.catalog.toolLessons', { tool: tl ? tl.title : slug })}`, L.tasks.filter(x => x.tool === slug).map(x => ({ ...x, sub: `manipulatives ${tl ? tl.title : ''} ${x.ccss}` })), 'task', t('homeroom.catalog.kind.practice'), { head: true }); });
   const lessonKind = t('homeroom.catalog.kind.lesson');
-  const total = L.mine.length + L.oomba.length + L.tools.length + L.tasks.length + L.figures.length + L.favorites.length + L.folders.reduce((n, f) => n + f.items.length, 0) + L.shared.reduce((n, f) => n + f.items.length, 0);
+  const glBands = [...new Set((L.grammar || []).map(x => x.band))];
+  const glGroups = glBands.map(bid => group(`gl-${bid}`, html`🔤 ${t('grammarLab.band', { grades: (GLAB.band(bid) || {}).grades || bid })}`, L.grammar.filter(x => x.band === bid), 'grammar', x => t('homeroom.catalog.kind.grammar', { count: x.n }), { head: true }));
+  const total = (L.grammar || []).length + L.mine.length + L.oomba.length + L.tools.length + L.tasks.length + L.figures.length + L.favorites.length + L.folders.reduce((n, f) => n + f.items.length, 0) + L.shared.reduce((n, f) => n + f.items.length, 0);
   const hasMine = L.mine.length || L.folders.length || L.shared.length || L.favorites.length;
   const chips = [{ key: '', label: t('learn.tab.subjects.all') }, { key: 'recent', label: t('homeroom.catalog.recent'), emoji: '🕘', hidden: true },
     ...(L.oomba.length ? [{ key: 'games', label: t('homeroom.catalog.games'), emoji: '🎮' }] : []),
     ...L.subjects.map(x => ({ key: x.key, label: t(`learn.tab.subjects.${x.key}`), emoji: x.emoji })),
     ...(L.live.length ? [{ key: 'live', label: t('homeroom.catalog.live'), emoji: '📡' }] : []),
     ...(L.tools.length ? [{ key: 'tools', label: t('homeroom.catalog.tools'), emoji: '🧮' }] : []),
+    ...((L.grammar || []).length ? [{ key: 'grammar', label: t('grammarLab.title'), emoji: '🔤' }] : []),
     ...(hasMine ? [{ key: 'mine', label: t('homeroom.catalog.mine'), emoji: '🧑‍🏫' }] : []),
     { key: 'plans', label: t('homeroom.catalog.plans'), emoji: '📄' }];
   return html`<div class="hr-catalog" data-catalog>
@@ -332,6 +341,7 @@ function catalogHtml(req, lists) {
     ${L.oomba.length ? html`<section class="hr-csec" data-csec="games"><h2 class="hr-cap">${t('homeroom.catalog.games')}</h2>${bySubject}${seeAll}</section>` : ''}
     ${L.live.length ? html`<section class="hr-csec" data-csec="live"><h2 class="hr-cap">${t('homeroom.catalog.live')}</h2>${group('live', html`📡 ${t('homeroom.catalog.liveLead')}`, L.live, 'live', liveKind)}${seeAll}</section>` : ''}
     ${L.tools.length || L.figures.length ? html`<section class="hr-csec" data-csec="tools"><h2 class="hr-cap" data-ctools>${t('homeroom.catalog.tools')}</h2>${byCat}${taskGroups}${L.figures.length ? group('figures', html`📐 ${t('homeroom.panel.figures')}`, L.figures, 'figures') : ''}${seeAll}</section>` : ''}
+    ${(L.grammar || []).length ? html`<section class="hr-csec" data-csec="grammar"><h2 class="hr-cap">${t('grammarLab.title')}</h2>${glGroups}${seeAll}</section>` : ''}
     <section class="hr-csec" data-csec="lessons"><h2 class="hr-cap">${t('homeroom.catalog.lessons')}</h2>
       ${L.mine.length ? group('mine', html`🧑‍🏫 ${t('homeroom.catalog.allMine')}`, L.mine, 'mine', lessonKind) : ''}
       ${L.folders.map((f, i) => group(`f-${i}`, html`📁 ${f.name}`, f.items, 'mine', lessonKind))}
@@ -599,6 +609,14 @@ router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), 
   // each student their own variations, graded like any handout.
   if (x.task || x.tasks) {
     const r = HO.handOutTask(req.user, c, { tasks: x.tasks || [String(x.task)], count: x.count, to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
+    if (!r.ok) return hoFail(req, res, r);
+    const also = await alsoPost(req, [r.classLesson]);
+    const toast = r.students ? req.t('homeroom.handout.done', { title: r.title, count: r.students }) : req.t('homeroom.handout.forLater', { title: r.title });
+    return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
+  }
+  // Grammar Lab (services/homeroom-handouts.js handOutGrammar): a unit, done when every topic in it is mastered.
+  if (typeof x.grammar === 'string') {
+    const r = HO.handOutGrammar(req.user, c, { key: x.grammar, to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
     if (!r.ok) return hoFail(req, res, r);
     const also = await alsoPost(req, [r.classLesson]);
     const toast = r.students ? req.t('homeroom.handout.done', { title: r.title, count: r.students }) : req.t('homeroom.handout.forLater', { title: r.title });

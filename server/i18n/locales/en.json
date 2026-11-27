@@ -2081,6 +2081,11 @@
       "bigger": "Bigger text"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab unit",
+        "lead": "Each student works through the unit's topics in Grammar Lab. It is done when every topic is mastered.",
+        "notMine": "Grammar Lab units go on students' desks."
+      },
       "my": {
         "label": "My desk (only you see what's on it)",
         "title": "My desk",
@@ -5687,6 +5692,8 @@
       }
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} mastered",
+      "grammarRoom": "Grammar Lab · proofread room",
       "deskOf": "{name} · My desk",
       "empty": "Nothing on your desk yet",
       "emptyText": "When your teacher hands something out, it lands here.",
@@ -6800,6 +6807,7 @@
       "lead": "They go on the desks in this order. Each keeps its own grading.",
       "toolBusy": "{tool} is on desks now. One Manipulatives tool at a time: take it off every desk first.",
       "kind": {
+        "grammar": "Grammar Lab unit",
         "game": "Lesson",
         "lesson": "Lesson plan",
         "task": "Practice",
@@ -7487,6 +7495,7 @@
     "minutesN": "{count, plural, one {# minute} other {# minutes}}",
     "assignedN": "{count, plural, one {in # class} other {in # classes}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Play a game",
       "gameForTeachers": "Play a lesson",
       "build": "Build a game",
@@ -17434,6 +17443,7 @@
       "chooseBook": "Choose a book"
     },
     "errors": {
+      "noGrammar": "Grammar Lab isn't open for your account.",
       "badStage": "That can't go on your desk.",
       "deskFull": "Your desk is full. Take something off first.",
       "notStaged": "That isn't on your desk anymore.",
@@ -17904,6 +17914,7 @@
       "liveLead": "Hosted live for the whole class",
       "hostAny": "Host a live lesson",
       "kind": {
+        "grammar": "Grammar Lab unit",
         "live": "Live game",
         "liveSet": "Live quiz set",
         "liveAny": "Quizzes, sets and more",
@@ -17964,6 +17975,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# unit} other {# units}}",
+    "place": {
+      "askTitle": "Which grade are you in?",
+      "askText": "We open the part of Grammar Lab for your grade first. You can still visit every part.",
+      "ask": "Your grade",
+      "choose": "Choose your grade",
+      "go": "Show my part",
+      "yours": "Your grades",
+      "other": "Other grades"
+    },
+    "assigned": {
+      "badge": "From your teacher",
+      "lead": "Here is the Grammar Lab work your teacher gave you."
+    },
+    "learn": {
+      "see": "See the course"
+    },
+    "step": {
+      "open": "Open in Grammar Lab",
+      "openRoom": "Open the proofread room",
+      "unitRule": "Done when every topic in the unit is mastered",
+      "topicRule": "Done when the topic is mastered",
+      "roomRule": "Done when you find at least 80% of the mistakes"
+    },
+    "teach": {
+      "h1": "Grammar Lab for your classes",
+      "lead": "Give a whole unit, one topic or a proofread room to a class, a group or one student. A topic is done when the student masters it, and a unit when every topic in it is mastered.",
+      "bands": "Grades",
+      "noClasses": "Make a class first, then you can give it Grammar Lab lessons.",
+      "newClass": "Make a class",
+      "assignUnit": "Assign unit",
+      "assignTopic": "Assign topic",
+      "assignRoom": "Assign proofread room",
+      "assignLabel": "Assign {title}",
+      "seeTopics": "Topics in this unit",
+      "roomTitle": "Proofread: {topic}",
+      "dialogTitle": "Assign {title}",
+      "whatUnit": "A whole unit. It is done when every topic in it is mastered.",
+      "whatTopic": "One topic. It is done when the student masters it.",
+      "whatRoom": "A proofread room. It is done when the student finds at least 80% of the mistakes.",
+      "class": "Class",
+      "who": "Who",
+      "wholeClass": "Whole class",
+      "groups": "A group",
+      "oneStudent": "One student",
+      "due": "Due date (optional)",
+      "dueHint": "Leave it empty for no due date.",
+      "cancel": "Cancel",
+      "assign": "Assign",
+      "done": "{title} is assigned to {class}.",
+      "errNoClass": "Choose one of your classes.",
+      "errDate": "Choose a date, or leave it empty.",
+      "errNoRoom": "This topic has no proofread room.",
+      "errAgain": "This is already assigned to the class.",
+      "errStudent": "Choose someone in this class.",
+      "mastered": "Mastered",
+      "level": "Level {level} of {levels}",
+      "levelKey": "In progress (level 1 of 3)",
+      "notStarted": "Not started",
+      "roomPassed": "Proofread room done",
+      "roomTried": "Proofread room tried",
+      "gridTitle": "Grammar Lab progress",
+      "gridLead": "Each student's topics in the units this class was given. Students are listed by name, never ranked.",
+      "gridEmpty": "Nothing from Grammar Lab is assigned to this class yet.",
+      "assignSome": "Assign Grammar Lab lessons",
+      "backProgress": "Back to Progress",
+      "backGrid": "Back to the class's Grammar Lab progress",
+      "filterBand": "Grades",
+      "filterUnit": "Unit",
+      "all": "All",
+      "show": "Show",
+      "noStudents": "No students in this class yet.",
+      "noneFit": "No units fit these filters.",
+      "counts": "Students",
+      "count": "{mastered} mastered · {started} in progress",
+      "studentTitle": "{name} in Grammar Lab",
+      "placeH": "Starting grades",
+      "placeTeacher": "Grades {grades}, set by a teacher.",
+      "placeGrade": "Grades {grades}, from the student's grade ({grade}).",
+      "placeNone": "No grade known yet. The student chooses one on their first visit.",
+      "placeSet": "Set the starting grades",
+      "placeAuto": "Use the student's grade",
+      "placeSave": "Save",
+      "placeSaved": "Starting grades saved.",
+      "placeNote": "Your choice always comes before the student's grade. The student can still open every unit.",
+      "colTopic": "Topic",
+      "colStatus": "Status",
+      "colAttempts": "Attempts",
+      "colWrong": "Wrong answers",
+      "colRoom": "Proofread room",
+      "colLast": "Last active",
+      "never": "No activity yet",
+      "unitsGiven": "{count, plural, one {# unit assigned} other {# units assigned}}",
+      "progressLink": "See Grammar Lab progress"
+    },
     "title": "Grammar Lab",
     "sub": "Grammar and writing, one skill at a time",
     "band": "Grades {grades}",
@@ -17973,6 +18079,7 @@
     "backTo": "Back to {unit}",
     "noscript": "This practice needs JavaScript turned on.",
     "topic": {
+      "off": "Not part of your work yet",
       "options": "More for {topic}",
       "card": "Teaching card",
       "again": "Practice again",
@@ -18033,6 +18140,7 @@
       "cancel": "Cancel"
     },
     "done": {
+      "nextLabel": "Next topic",
       "heading": "You mastered {topic}!",
       "back": "Back to {unit}"
     },

@@ -2079,6 +2079,11 @@
       "bigger": "Texto maior"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Unidade do Grammar Lab",
+        "lead": "Cada aluno trabalha os tópicos da unidade no Grammar Lab. É concluída quando todos os tópicos são dominados.",
+        "notMine": "As unidades do Grammar Lab vão para as mesas dos alunos."
+      },
       "my": {
         "label": "Minha mesa (só você vê o que está nela)",
         "title": "Minha mesa",
@@ -5159,6 +5164,8 @@
       "settings": "Ajustes e cartões de entrada"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} dominados",
+      "grammarRoom": "Grammar Lab · sala de revisão",
       "deskOf": "{name} · Minha carteira",
       "empty": "Ainda não há nada na sua carteira",
       "emptyText": "Quando seu professor entregar algo, vai aparecer aqui.",
@@ -5737,6 +5744,7 @@
       "lead": "Vão para as mesas nesta ordem. Cada uma mantém sua avaliação.",
       "toolBusy": "{tool} está nas mesas. Um material por vez: tire-o primeiro de todas as mesas.",
       "kind": {
+        "grammar": "Unidade do Grammar Lab",
         "game": "Aula",
         "lesson": "Plano de aula",
         "task": "Prática",
@@ -6424,6 +6432,7 @@
     "minutesN": "{count, plural, one {# minuto} other {# minutos}}",
     "assignedN": "{count, plural, one {em # turma} other {em # turmas}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Jogar um jogo",
       "gameForTeachers": "Jogar uma aula",
       "build": "Criar um jogo",
@@ -15890,6 +15899,7 @@
       "comingNext": "Em breve"
     },
     "errors": {
+      "noGrammar": "O Grammar Lab não está aberto para a sua conta.",
       "badStage": "Isso não pode ir para a sua mesa.",
       "deskFull": "Sua mesa está cheia. Tire algo primeiro.",
       "notStaged": "Isso não está mais na sua mesa.",
@@ -16172,6 +16182,7 @@
       "liveLead": "Ao vivo para a turma toda",
       "hostAny": "Conduzir uma aula ao vivo",
       "kind": {
+        "grammar": "Unidade do Grammar Lab",
         "live": "Jogo ao vivo",
         "liveSet": "Conjunto de quiz ao vivo",
         "liveAny": "Quizzes, conjuntos e mais",
@@ -16221,6 +16232,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# unidade} other {# unidades}}",
+    "place": {
+      "askTitle": "Em que ano você está?",
+      "askText": "Abrimos primeiro a parte do Grammar Lab para o seu ano. Você ainda pode visitar todas as partes.",
+      "ask": "Seu ano",
+      "choose": "Escolha seu ano",
+      "go": "Mostrar minha parte",
+      "yours": "Seus anos",
+      "other": "Outros anos"
+    },
+    "assigned": {
+      "badge": "Do seu professor",
+      "lead": "Este é o trabalho do Grammar Lab que seu professor passou para você."
+    },
+    "learn": {
+      "see": "Ver o curso"
+    },
+    "step": {
+      "open": "Abrir no Grammar Lab",
+      "openRoom": "Abrir a sala de revisão",
+      "unitRule": "Concluído quando todos os tópicos da unidade forem dominados",
+      "topicRule": "Concluído quando o tópico for dominado",
+      "roomRule": "Concluído quando você encontrar pelo menos 80% dos erros"
+    },
+    "teach": {
+      "h1": "Grammar Lab para suas turmas",
+      "lead": "Passe uma unidade inteira, um tópico ou uma sala de revisão para uma turma, um grupo ou um aluno. Um tópico é concluído quando o aluno o domina, e uma unidade quando todos os seus tópicos são dominados.",
+      "bands": "Anos",
+      "noClasses": "Crie uma turma primeiro. Depois você pode passar lições do Grammar Lab para ela.",
+      "newClass": "Criar uma turma",
+      "assignUnit": "Atribuir unidade",
+      "assignTopic": "Atribuir tópico",
+      "assignRoom": "Atribuir sala de revisão",
+      "assignLabel": "Atribuir {title}",
+      "seeTopics": "Tópicos desta unidade",
+      "roomTitle": "Revisão: {topic}",
+      "dialogTitle": "Atribuir {title}",
+      "whatUnit": "Uma unidade inteira. É concluída quando todos os seus tópicos são dominados.",
+      "whatTopic": "Um tópico. É concluído quando o aluno o domina.",
+      "whatRoom": "Uma sala de revisão. É concluída quando o aluno encontra pelo menos 80% dos erros.",
+      "class": "Turma",
+      "who": "Para quem",
+      "wholeClass": "Turma toda",
+      "groups": "Um grupo",
+      "oneStudent": "Um aluno",
+      "due": "Data de entrega (opcional)",
+      "dueHint": "Deixe vazio para não ter data de entrega.",
+      "cancel": "Cancelar",
+      "assign": "Atribuir",
+      "done": "{title} foi atribuído a {class}.",
+      "errNoClass": "Escolha uma das suas turmas.",
+      "errDate": "Escolha uma data ou deixe vazio.",
+      "errNoRoom": "Este tópico não tem sala de revisão.",
+      "errAgain": "Isto já está atribuído à turma.",
+      "errStudent": "Escolha alguém desta turma.",
+      "mastered": "Dominado",
+      "level": "Nível {level} de {levels}",
+      "levelKey": "Em andamento (nível 1 de 3)",
+      "notStarted": "Não começou",
+      "roomPassed": "Sala de revisão concluída",
+      "roomTried": "Sala de revisão tentada",
+      "gridTitle": "Progresso no Grammar Lab",
+      "gridLead": "Os tópicos de cada aluno nas unidades passadas para esta turma. Os alunos aparecem pelo nome, nunca em ranking.",
+      "gridEmpty": "Ainda não há nada do Grammar Lab atribuído a esta turma.",
+      "assignSome": "Atribuir lições do Grammar Lab",
+      "backProgress": "Voltar ao Progresso",
+      "backGrid": "Voltar ao progresso da turma no Grammar Lab",
+      "filterBand": "Anos",
+      "filterUnit": "Unidade",
+      "all": "Todas",
+      "show": "Mostrar",
+      "noStudents": "Ainda não há alunos nesta turma.",
+      "noneFit": "Nenhuma unidade corresponde a estes filtros.",
+      "counts": "Alunos",
+      "count": "{mastered} dominado · {started} em andamento",
+      "studentTitle": "{name} no Grammar Lab",
+      "placeH": "Anos de início",
+      "placeTeacher": "Anos {grades}, escolhido por um professor.",
+      "placeGrade": "Anos {grades}, pelo ano do aluno ({grade}).",
+      "placeNone": "Ano ainda desconhecido. O aluno escolhe na primeira visita.",
+      "placeSet": "Escolher os anos de início",
+      "placeAuto": "Usar o ano do aluno",
+      "placeSave": "Salvar",
+      "placeSaved": "Anos de início salvos.",
+      "placeNote": "Sua escolha sempre vem antes do ano do aluno. O aluno ainda pode abrir todas as unidades.",
+      "colTopic": "Tópico",
+      "colStatus": "Situação",
+      "colAttempts": "Tentativas",
+      "colWrong": "Respostas erradas",
+      "colRoom": "Sala de revisão",
+      "colLast": "Última atividade",
+      "never": "Ainda sem atividade",
+      "unitsGiven": "{count, plural, one {# unidade atribuída} other {# unidades atribuídas}}",
+      "progressLink": "Ver o progresso no Grammar Lab"
+    },
     "title": "Grammar Lab",
     "sub": "Gramática e escrita, uma habilidade de cada vez",
     "band": "Anos {grades}",
@@ -16230,6 +16336,7 @@
     "backTo": "Voltar para {unit}",
     "noscript": "Esta prática precisa do JavaScript ativado.",
     "topic": {
+      "off": "Ainda não faz parte do seu trabalho",
       "options": "Mais de {topic}",
       "card": "Ficha da lição",
       "again": "Praticar de novo",
@@ -16290,6 +16397,7 @@
       "cancel": "Cancelar"
     },
     "done": {
+      "nextLabel": "Próximo tópico",
       "heading": "Você dominou {topic}!",
       "back": "Voltar para {unit}"
     },

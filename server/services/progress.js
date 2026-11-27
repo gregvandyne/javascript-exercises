@@ -82,6 +82,7 @@ export function markDone(u, clId, stepId, isDone = true) {
   if (c.step.kind === 'question') return fail('answerFirst');
   if (c.step.kind === 'story') return fail('notFound');   // done by reading to the end and answering (storyStep)
   if (L.HANDIN_KINDS.includes(c.step.kind) || c.step.kind === L.MANIP_KIND) return fail('notFound');   // done by handing in (figuresAnswer, proofAnswer) or answering (manipAnswer)
+  if (c.step.kind === L.GRAMMAR_KIND) return fail('notFound');   // done by the course: mastery, or a passed room (courseStep)
   if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
@@ -500,6 +501,19 @@ export function firstNewAnswers(classId) {
 export function lessonSummaries(classId) {
   const gb = classProgress(classId);
   return Object.fromEntries(gb.lessons.map((cl, i) => [cl.id, { done: gb.students.filter(p => p.cells[i].total && p.cells[i].done >= p.cells[i].total).length, students: gb.students.filter(p => !p.cells[i].na).length, some: !!cl.some, toRead: gb.students.reduce((n, p) => n + (p.cells[i].toRead || 0), 0) }]));
+}
+
+// ---------------------------------------------------------------- Grammar Lab work (services/grammar-lab-assign.js)
+/** The course's word on a Grammar Lab step for one student: { done (mastered / passed), started, answer (what the
+ *  teacher's views read: JSON { done, total }) }. Written only by the course, never by the student; a step once done
+ *  stays done (mastery is never taken back). -> the row, or null when nothing changed. */
+export function courseStep(clId, stepId, userId, { done: isDone, started, answer = '' }) {
+  const old = get(clId, stepId, userId);
+  if (old && old.status === 'done') return old.answer === answer ? null : (q.run('UPDATE step_progress SET answer=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', answer, clId, stepId, userId), get(clId, stepId, userId));
+  if (isDone) return upsert(clId, stepId, userId, { answer, label: 'grammar', ...done(old) });
+  if (!started) return null;
+  if (old && old.answer === answer) return null;
+  return upsert(clId, stepId, userId, { answer, ...(old ? {} : { status: 'started' }) });
 }
 
 // ---------------------------------------------------------------- Manipulatives practice sets (services/manip-tasks.js)
