@@ -5267,6 +5267,35 @@
             "ended": "“{title}” tolto dagli schermi di {class}."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {Lo sto preparando ora: la sua scheda qui sotto si completa quando è pronto.} other {Li sto preparando ora: le # schede qui sotto si completano quando sono pronti.}}",
+        "step": "Ho iniziato a preparare {q}",
+        "retry": "Riprova",
+        "kind": {
+          "sheet": "Scheda di esercizi",
+          "lesson": "Piano di lezione",
+          "board": "Lavagna"
+        },
+        "waiting": {
+          "sheet": "In attesa di preparare la scheda di esercizi…",
+          "lesson": "In attesa di preparare il piano di lezione…",
+          "board": "In attesa di preparare la lavagna…"
+        },
+        "making": {
+          "sheet": "Sto preparando la scheda di esercizi…",
+          "lesson": "Sto preparando il piano di lezione…",
+          "board": "Sto preparando la lavagna…"
+        },
+        "fail": {
+          "budgetDay": "L’IA di Oomba ha esaurito il budget di oggi, quindi non è stato preparato e non è stato salvato nulla. Riprova domani.",
+          "budgetMonth": "L’IA di Oomba ha esaurito il budget di questo mese, quindi non è stato preparato e non è stato salvato nulla.",
+          "ai": "L’IA non è riuscita a scriverlo adesso, quindi non è stato salvato nulla.",
+          "gone": "Alla fine non è stato possibile salvarlo, quindi non è stato salvato nulla.",
+          "restart": "Oomba si è riavviato durante la preparazione, quindi non è stato salvato nulla.",
+          "notAllowed": "Questo account non può prepararlo adesso, quindi non è stato salvato nulla.",
+          "error": "Qualcosa è andato storto durante la preparazione, quindi non è stato salvato nulla."
+        }
       }
     },
     "companion-greet": {

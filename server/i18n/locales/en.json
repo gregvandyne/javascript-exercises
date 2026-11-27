@@ -5725,6 +5725,35 @@
             "ended": "Took “{title}” off the screens of {class}."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {It is being made now: its card below fills in when it is ready.} other {They are being made now: the # cards below fill in when they are ready.}}",
+        "step": "Started making {q}",
+        "retry": "Try again",
+        "kind": {
+          "sheet": "Worksheet",
+          "lesson": "Lesson plan",
+          "board": "Board"
+        },
+        "waiting": {
+          "sheet": "Waiting to make the worksheet…",
+          "lesson": "Waiting to make the lesson plan…",
+          "board": "Waiting to make the board…"
+        },
+        "making": {
+          "sheet": "Making the worksheet…",
+          "lesson": "Making the lesson plan…",
+          "board": "Making the board…"
+        },
+        "fail": {
+          "budgetDay": "Oomba's AI has used up today's budget, so this wasn't made and nothing was saved. Try again tomorrow.",
+          "budgetMonth": "Oomba's AI has used up this month's budget, so this wasn't made and nothing was saved.",
+          "ai": "The AI couldn't write it right now, so nothing was saved.",
+          "gone": "It couldn't be saved after all, so nothing was saved.",
+          "restart": "Oomba restarted while making this, so nothing was saved.",
+          "notAllowed": "This account can't make this right now, so nothing was saved.",
+          "error": "Something went wrong while making this, so nothing was saved."
+        }
       }
     },
     "companion-greet": {

@@ -5266,6 +5266,35 @@
             "ended": "« {title} » retiré des écrans de {class}."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {En cours de création : sa carte ci-dessous se remplit dès que c’est prêt.} other {En cours de création : les # cartes ci-dessous se remplissent dès que c’est prêt.}}",
+        "step": "Création de {q} lancée",
+        "retry": "Réessayer",
+        "kind": {
+          "sheet": "Fiche d’exercices",
+          "lesson": "Plan de leçon",
+          "board": "Tableau"
+        },
+        "waiting": {
+          "sheet": "En attente pour créer la fiche d’exercices…",
+          "lesson": "En attente pour créer le plan de leçon…",
+          "board": "En attente pour créer le tableau…"
+        },
+        "making": {
+          "sheet": "Création de la fiche d’exercices…",
+          "lesson": "Création du plan de leçon…",
+          "board": "Création du tableau…"
+        },
+        "fail": {
+          "budgetDay": "L’IA d’Oomba a utilisé tout le budget du jour, donc rien n’a été créé ni enregistré. Réessaie demain.",
+          "budgetMonth": "L’IA d’Oomba a utilisé tout le budget du mois, donc rien n’a été créé ni enregistré.",
+          "ai": "L’IA n’a pas pu l’écrire pour le moment, donc rien n’a été enregistré.",
+          "gone": "Finalement, ça n’a pas pu être enregistré, donc rien n’a été enregistré.",
+          "restart": "Oomba a redémarré pendant la création, donc rien n’a été enregistré.",
+          "notAllowed": "Ce compte ne peut pas créer ceci pour le moment, donc rien n’a été enregistré.",
+          "error": "Un problème est survenu pendant la création, donc rien n’a été enregistré."
+        }
       }
     },
     "companion-greet": {

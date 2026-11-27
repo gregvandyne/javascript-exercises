@@ -89,6 +89,8 @@ function start() {
     helloHtml: c => { const g = greeting(t, new Date(), PAGE.name || '', via('hello', c) || ''); return `<span class="oc-greet"><b>${esc(g.title)}</b><span>${esc(g.line)}</span></span>`; },
     ideas: () => [],
     ideasAfter: () => [],
+    // A job still waiting or being made: the chat keeps asking how it is going (oomba-chat.js polls while this is true).
+    working: c => (c.turns || []).some(x => x.note && (x.note.jobs || []).some(j => j.state === 'queued' || j.state === 'running')),
     placeholder: c => via('placeholder', c) || L('placeholder'),
     leave: L('leave'),
     stepText: (k, state) => t(`js.companion.prog.${k}.${state === 'done' ? 'done' : 'now'}`),
@@ -373,7 +375,7 @@ function start() {
   }
   // ---------------------------------------------------------------- Oomba's answers
   function stepsHtml(n) {
-    const rows = (n.steps || []).map(s => `<li>${ic('✓', 14)} <span>${esc(t(`js.companion.step.${s.k}`, { n: s.n || 0, q: s.q || '' }))}</span></li>`).join('');
+    const rows = (n.steps || []).map(s => `<li>${ic('✓', 14)} <span>${esc(t(s.k === 'job' ? 'js.companion.job.step' : `js.companion.step.${s.k}`, { n: s.n || 0, q: s.q || '' }))}</span></li>`).join('');
     const sum = t('js.companion.stepsSum', { n: (n.steps || []).length, s: Math.max(1, Math.round((n.ms || 0) / 1000)) });
     return (n.steps || []).length ? `<div class="oc-did"><ul>${rows}</ul><span class="oc-sum">${esc(sum)}</span></div>` : '';
   }
@@ -386,6 +388,7 @@ function start() {
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
     if (n.made) parts.push(madeHtml(n.made));
+    if (n.jobs && n.jobs.length) parts.push(jobsHtml(x, n.jobs));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
@@ -428,6 +431,23 @@ function start() {
     const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[m.kind] || '✨';
     if (m.failed) return `<div class="oc-made oc-made-no" role="note"><p>${ic('⚠️', 16)} ${esc(L(`made.no.${m.kind}`))}</p></div>`;
     return `<div class="oc-made" data-made="${esc(m.kind)}"><h4>${ic(ico, 18)} <span dir="auto">${esc(m.title || '')}</span></h4><p class="oc-hsub">${ic('✓', 14)} ${esc(t(`js.companion.made.${m.kind}`, { n: m.n || 0 }))}</p><div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(m.href)}" data-oc-made="${esc(m.id)}">${esc(L(`made.open.${m.kind}`))}</a></div></div>`;
+  }
+  /** Background jobs (services/oomba-jobs.js): one card per make an answer started. Waiting or making: a spinner and
+   *  "Making the worksheet..."; done: the same card the answer itself shows (open that exact worksheet, lesson or board);
+   *  failed: the reason in plain words and Try again (once). The chat's polling fills them in (working() below). */
+  const JOB_FAILS = ['budgetDay', 'budgetMonth', 'ai', 'gone', 'restart', 'notAllowed'];
+  function jobsHtml(x, list) {
+    return `<div class="oc-jobs">${list.map(j => {
+      if (j.state === 'done' && j.made) return madeHtml(j.made);
+      const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[j.kind] || '✨';
+      const head = `<h4>${ic(ico, 18)} <span dir="auto">${esc(j.title || L(`job.kind.${j.kind}`))}</span></h4>`;
+      if (j.state === 'failed') {
+        const why = L(`job.fail.${JOB_FAILS.includes(j.error) ? j.error : 'error'}`);
+        const again = j.retried ? '' : `<div class="oc-acts"><button type="button" class="btn btn-sm" data-c="act" data-act="jobRetry" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${esc(L('job.retry'))}</button></div>`;
+        return `<div class="oc-made oc-made-no oc-job" role="note">${head}<p>${ic('⚠️', 16)} ${esc(why)}</p>${again}</div>`;
+      }
+      return `<div class="oc-made oc-job" aria-busy="true">${head}<p class="oc-hsub"><span class="oc-pulse" aria-hidden="true"></span> <span role="status">${esc(L(`job.${j.state === 'running' ? 'making' : 'waiting'}.${j.kind}`))}</span></p></div>`;
+    }).join('')}</div>`;
   }
   function handoffHtml(x, h) {
     const facts = [h.grade ? [L('hand.grade'), h.grade] : null, ...(h.facts || []).map(f => [L(`hand.${f.k}`), f.v])].filter(Boolean);
@@ -667,7 +687,7 @@ function start() {
     }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || act === 'actionDo' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || act === 'actionDo' || act === 'jobRetry' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
       if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {

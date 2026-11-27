@@ -5267,6 +5267,35 @@
             "ended": "“{title}” van de schermen van {class} gehaald."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {Wordt nu gemaakt: de kaart hieronder vult zich zodra het klaar is.} other {Worden nu gemaakt: de # kaarten hieronder vullen zich zodra ze klaar zijn.}}",
+        "step": "Begonnen met {q}",
+        "retry": "Opnieuw proberen",
+        "kind": {
+          "sheet": "Werkblad",
+          "lesson": "Lesplan",
+          "board": "Bord"
+        },
+        "waiting": {
+          "sheet": "Wacht om het werkblad te maken…",
+          "lesson": "Wacht om het lesplan te maken…",
+          "board": "Wacht om het bord te maken…"
+        },
+        "making": {
+          "sheet": "Het werkblad wordt gemaakt…",
+          "lesson": "Het lesplan wordt gemaakt…",
+          "board": "Het bord wordt gemaakt…"
+        },
+        "fail": {
+          "budgetDay": "De AI van Oomba heeft het budget van vandaag op, dus dit is niet gemaakt en er is niets opgeslagen. Probeer het morgen opnieuw.",
+          "budgetMonth": "De AI van Oomba heeft het budget van deze maand op, dus dit is niet gemaakt en er is niets opgeslagen.",
+          "ai": "De AI kon het nu niet schrijven, dus er is niets opgeslagen.",
+          "gone": "Het kon toch niet worden opgeslagen, dus er is niets opgeslagen.",
+          "restart": "Oomba is opnieuw gestart terwijl dit werd gemaakt, dus er is niets opgeslagen.",
+          "notAllowed": "Dit account kan dit nu niet maken, dus er is niets opgeslagen.",
+          "error": "Er ging iets mis tijdens het maken, dus er is niets opgeslagen."
+        }
       }
     },
     "companion-greet": {
