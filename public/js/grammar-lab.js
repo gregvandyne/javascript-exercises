@@ -81,6 +81,18 @@ function renderAsk(text) {
     } else ask.append(part);
   });
 }
+/** One word as one piece that never breaks: the marks stuck to it (and its comma gap) stay on its line, so a line never
+ *  starts with a mark. Only the word itself is tappable; the marks are plain text beside it. */
+function tok(...parts) {
+  const s = document.createElement('span'); s.className = 'gl-tok';
+  s.append(...parts.filter(x => x !== '' && x !== null && x !== undefined));
+  return s;
+}
+/** A blank (or a press-to-cycle control) with what touches it on either side (no space between): one piece. */
+function glued(box, before, el, after) {
+  const b = /\S*$/.exec(before || '')[0], a = /^\S*/.exec(after || '')[0];
+  box.append((before || '').slice(0, (before || '').length - b.length), tok(b, el, a), (after || '').slice(a.length));
+}
 function renderQuestion() {
   marked.clear(); picked = null; asIs = false;
   gapMarks = new Map(question.start || []);
@@ -109,24 +121,22 @@ function renderQuestion() {
       box.append(b);
     });
   } else if (q.kind === 'choice' && q.cycle) {
-    box.append(q.before, cycleButton(q.options, false), q.after);
+    glued(box, q.before, cycleButton(q.options, false), q.after);
   } else if (q.kind === 'choice') {
     // pills about a sentence: the sentence, with the word the question names in bold
     if (q.plain && q.words) q.words.forEach((w, i) => {
       if (i) box.append(' ');
-      box.append(w.pre);
       const s = document.createElement(q.focus.includes(i) ? 'b' : 'span'); s.textContent = w.t;
       if (q.focus.includes(i)) s.className = 'gl-focus';
       // a book or movie title stays in italics
       if (q.titleAt && q.titleAt.includes(i)) s.classList.add('gl-title-w');
-      box.append(s, w.post);
+      box.append(tok(w.pre, s, w.post));
     });
     else if (q.plain) box.append(q.before);
     else if (!q.whole) {
-      box.append(q.before);
       const blank = document.createElement('span');
       blank.className = `gl-blank${q.italic ? ' gl-title' : ''}`; blank.id = 'gl-blank'; blank.setAttribute('aria-label', t('js.grammar-lab.blank'));
-      box.append(blank, q.after);
+      glued(box, q.before, blank, q.after);
     }
     q.options.forEach((o, k) => {
       const b = document.createElement('button');
@@ -137,22 +147,21 @@ function renderQuestion() {
   } else {
     q.words.forEach((w, i) => {
       if (i) box.append(' ');
-      if (w.pre) box.append(w.pre);
       if (q.kind === 'gaps') {
-        const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t; box.append(s);
-        if (w.post) box.append(w.post);
+        const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t;
+        let g = null;
         if (i < q.words.length - 1) {
-          const g = document.createElement('button');
+          g = document.createElement('button');
           g.type = 'button'; g.className = 'gl-gap'; g.dataset.g = String(i); g.setAttribute('aria-pressed', 'false');
           g.setAttribute('aria-label', t('js.grammar-lab.gap', { word: w.t }));
-          box.append(g);
         }
+        // (the gap after a word stays with that word)
+        box.append(tok(w.pre, s, w.post, g));
         return;
       }
       const b = document.createElement('button');
       b.type = 'button'; b.className = `gl-w${q.focus && q.focus.includes(i) ? ' gl-focus' : ''}${q.titleAt && q.titleAt.includes(i) ? ' gl-title-w' : ''}`; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
-      box.append(b);
-      if (w.post) box.append(w.post);
+      box.append(tok(w.pre, b, w.post));
     });
   }
   notice(null);
@@ -223,15 +232,14 @@ function renderMarks(q) {
   const box = $('#gl-sentence');
   q.words.forEach((w, i) => {
     if (i) box.append(' ');
-    if (w.pre) box.append(w.pre);
-    const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t; box.append(s);
-    if (w.post) box.append(w.post);
+    const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t;
+    let g = null;
     if (i < q.words.length - 1) {
-      const g = document.createElement('button');
+      g = document.createElement('button');
       g.type = 'button'; g.className = 'gl-gap gl-mgap'; g.dataset.m = String(i);
       paintGap(g, w.t);
-      box.append(g);
     }
+    box.append(tok(w.pre, s, w.post, g));
   });
 }
 function paintGap(g, word) {
@@ -384,7 +392,7 @@ function levelDone(level) {
   $('#gl-level-text').textContent = t('js.grammar-lab.levelText');
   o.hidden = false;
   scene('levelGreet', $('#gl-level-greet'), mountGreeting);
-  $('#gl-level-next').focus();
+  focusIn($('#gl-level-next'), o.querySelector('.gl-overlay-card'));
 }
 $('#gl-level-next').addEventListener('click', () => {
   $('#gl-level').hidden = true; renderQuestion();
@@ -399,7 +407,8 @@ function done(closing) {
   const guest = $('#gl-done-guest');
   if (guest) guest.hidden = closing.win !== 'pending';
   const next = $('#gl-done-next');
-  if (closing.next) { next.hidden = false; next.href = closing.next.href; next.textContent = t('js.grammar-lab.next', { topic: closing.next.title }); }
+  // Next is two lines: a small "Next topic", then the topic's name (a long name wraps inside the button)
+  if (closing.next) { next.hidden = false; next.href = closing.next.href; next.querySelector('.gl-next-t').textContent = closing.next.title; next.setAttribute('aria-label', t('js.grammar-lab.next', { topic: closing.next.title })); }
   const room = $('#gl-done-room');
   if (room && closing.room) { room.hidden = false; room.href = closing.room; }
   $('#gl-done-h').focus && $('#gl-done-h').setAttribute('tabindex', '-1');
@@ -430,21 +439,33 @@ $('#gl-go').addEventListener('click', start);
 $('#gl-skip').addEventListener('click', start);
 
 // ---------------------------------------------------------------------------------------------- the tip, levels, flag
+// Keyboard focus shows its ring (round the button's own shape: public/css/grammar-lab.css); after a tap or a click, a
+// dialog or overlay that opens takes the focus itself, so no ring shows on a touch screen, and Tab reaches its button.
+let keyed = false;
+document.addEventListener('keydown', e => { if (!e.metaKey && !e.ctrlKey && !e.altKey) keyed = true; }, true);
+document.addEventListener('pointerdown', () => { keyed = false; }, true);
+/** Focus a dialog's (or overlay's) button for a keyboard user, else the box itself (no ring after a tap). */
+function focusIn(btn, box) {
+  if (keyed || !box) { btn.focus(); return; }
+  if (!box.hasAttribute('tabindex')) box.setAttribute('tabindex', '-1');
+  box.focus({ preventScroll: true });
+}
+const openDialog = dlg => { if (!dlg.open) dlg.showModal(); focusIn(dlg.querySelector('.gl-dialog-go .btn-primary') || dlg.querySelector('button'), dlg); };
 function openTip() {
   const dlg = $('#gl-tip');
   if (!dlg.open) dlg.showModal();
   scene('tip', $('#gl-tip-stage'), mountTapTip, { before: d.tip.before, word: d.tip.word, after: d.tip.after, def: d.tip.def, replayLabel: d.tip.replay });
-  $('#gl-tip-ok').focus();
+  focusIn($('#gl-tip-ok'), dlg);
 }
 $('#gl-tip-ok').addEventListener('click', () => $('#gl-tip').close());
 $('#gl-tip').addEventListener('close', () => { store(TIP_KEY, '1'); if (scenes.tip) { scenes.tip.destroy(); delete scenes.tip; } });
 $('#gl-tip-btn').addEventListener('click', openTip);
 $('#gl-levels-btn').addEventListener('click', () => {
   if (summary) $('#gl-levels-now').textContent = t('js.grammar-lab.levelsNow', { n: summary.level, total: summary.levels });
-  $('#gl-levels').showModal();
+  openDialog($('#gl-levels'));
 });
 $('#gl-levels-ok').addEventListener('click', () => $('#gl-levels').close());
-$('#gl-flag').addEventListener('click', () => $('#gl-flagbox').showModal());
+$('#gl-flag').addEventListener('click', () => openDialog($('#gl-flagbox')));
 $('#gl-flag-no').addEventListener('click', () => $('#gl-flagbox').close());
 $('#gl-flag-yes').addEventListener('click', async () => {
   $('#gl-flagbox').close();

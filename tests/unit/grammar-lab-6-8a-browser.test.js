@@ -189,7 +189,7 @@ async function playLesson(page, box, tag, L) {
   await page.waitForSelector('#gl-done:not([hidden])');
   assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
   // the next topic, worked out now in this band (never a mastered one)
-  if (L.next) assert.equal(await page.textContent('#gl-done-next'), `Next: ${L.next}`);
+  if (L.next) assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), `Next: ${L.next}`);
   assert.match(await page.getAttribute('#gl-done-next', 'href'), /^\/courses\/grammar-lab\/6-8\//);
   await page.waitForTimeout(2600);
   await shot(page, T, '07-mastered');

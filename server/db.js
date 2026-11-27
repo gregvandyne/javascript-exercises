@@ -1640,6 +1640,14 @@ export const MIGRATIONS = [
   ['0145_grammar_lab_quiz', `
     CREATE TABLE IF NOT EXISTS grammar_lab_quiz (user_id TEXT NOT NULL, topic TEXT NOT NULL, state TEXT NOT NULL,
       started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, topic));`],
+  // Grammar Lab placement (services/grammar-lab.js placeOf, Number Quest's pattern): one row per student. grade and
+  // grade_declared_at: a grade the student declared on the course page (it moves up each September 1, to grade 12);
+  // band: a teacher's (or the platform admin's) choice of band, which always wins over the grade; set_by: who chose it.
+  // No row: the band comes from the grade the platform already knows (Number Quest's declaration, the school's roster
+  // grade, the class's grade). Guests never get a row. Goes with the account.
+  ['0146_grammar_lab_place', `
+    CREATE TABLE IF NOT EXISTS grammar_lab_place (user_id TEXT PRIMARY KEY, grade INTEGER, grade_declared_at INTEGER,
+      band TEXT, set_by TEXT, updated_at INTEGER NOT NULL);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

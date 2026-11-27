@@ -1244,6 +1244,9 @@ a.course-head:hover h3,a.course-head:focus-visible h3{text-decoration:underline}
 .course-units[open]>summary{margin-bottom:8px}
 .course-emo{font-size:2rem;line-height:1;flex:none}
 .course-emo.big{font-size:3rem}
+/* Grammar Lab's Learn card (server/views/grammar-lab.js learnCard): the course's cover in place of the emoji. */
+.gl-learncover{flex:none;width:72px;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:var(--card-2)}
+.gl-learn{margin-top:8px}
 .course-ht h3{margin:0;font-size:1.25rem}
 .course-ht h3 a{color:inherit;text-decoration:none}
 .course-ht p{margin:2px 0 0;color:var(--muted)}

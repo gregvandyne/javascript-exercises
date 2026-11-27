@@ -10,7 +10,8 @@ import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimi
 import { log } from '../services/log.js';
 import * as seo from '../seo.js';
 import * as GL from '../services/grammar-lab.js';
-import { mayOpenGrammarLab, GRAMMAR_LAB_PATH } from '../services/grammar-lab-access.js';
+import { mayOpenGrammarLab, GRAMMAR_LAB_PATH, reachOf, unitInReach } from '../services/grammar-lab-access.js';
+import * as GLA from '../services/grammar-lab-assign.js';
 import { honourPendingWins } from './courses.js';
 import * as V from '../views/grammar-lab.js';
 
@@ -30,7 +31,9 @@ function ensureUser(req, res) {
   const guest = createGuest(); startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
   return guest;
 }
-const honor = u => { if (u && !u.is_guest && !isGrownup(u)) honourPendingWins(u); };
+// Pending wins honored, and the student's Grammar Lab assignments brought up to date (a topic mastered before it was
+// assigned counts at once).
+const honor = u => { if (u && !u.is_guest && !isGrownup(u)) { honourPendingWins(u); GLA.syncUser(u); } };
 const guestOf = u => !u || !!u.is_guest;
 
 /** The unit and topic of a topic URL, the topic's state in that unit, or null (a 404 already sent). */
@@ -38,25 +41,44 @@ function loadTopic(req, res) {
   const { band, unit, topic } = req.params;
   const p = ID.test(unit) && ID.test(band) ? GL.pathway(unit, band) : null;
   const tp = p && ID.test(topic) && p.topics.includes(topic) ? GL.topic(topic) : null;
-  if (!tp) { notFound(req, res); return null; }
-  const s = GL.unitStates(req.user, p).find(x => x.topic.id === tp.id);
+  const reach = reachOf(req.user);
+  if (!tp || !unitInReach(reach, p.id)) { notFound(req, res); return null; }
+  const s = GL.unitStates(req.user, p, reach).find(x => x.topic.id === tp.id);
   return { p, tp, s };
 }
 
 router.get('/courses/grammar-lab', (req, res) => {
   const t = req.t, u = req.user;
   honor(u);
-  const list = GL.bands().map(b => ({ band: b, units: GL.pathwaysOf(b.id).map(p => ({ p, prog: GL.unitProgress(u, p) })) }));
+  const reach = reachOf(u);
+  // Placement (services/grammar-lab.js placeOf): the band a teacher chose, else the student's grade's; a visit that
+  // asks for a band (?band=, or a guest's ?grade=) opens that one. With none, the page asks for the grade.
+  const place = GL.placeOf(u);
+  const asked = GL.BAND_IDS.includes(req.query.band) ? req.query.band : req.query.grade !== undefined && GL.gradeNumber(req.query.grade) !== null ? GL.bandOfGrade(GL.gradeNumber(req.query.grade)) : null;
+  const open = asked || place.band;
+  // A student who reaches only assigned work sees those units, in their bands.
+  const list = GL.bands().map(b => ({ band: b, units: GL.pathwaysOf(b.id).filter(p => unitInReach(reach, p.id)).map(p => ({ p, prog: GL.unitProgress(u, p, reach), assigned: !reach.all })) }))
+    .filter(x => x.units.length);
   const pending = GL.pendingSet(u).size > 0;
-  page(req, res, { title: t('grammarLab.title'), active: 'learn', head: V.HEAD, body: V.coursePage({ t, list, guest: guestOf(u), pending }), description: t('grammarLab.sub') });
+  page(req, res, { title: t('grammarLab.title'), active: 'learn', head: V.HEAD, body: V.coursePage({ t, list, guest: guestOf(u), pending, open, place, all: reach.all, askGrade: reach.all && !open }),
+    description: t('grammarLab.sub') });
+});
+/** The student's grade, declared on the course page (accounts only; a guest's pick is only for that visit). */
+router.post('/api/courses/grammar-lab/grade', rateLimit('grammar-lab-grade', 30, 60e3), (req, res) => {
+  const u = req.user;
+  if (!u || u.is_guest || isGrownup(u)) return res.status(401).json({ error: req.t('errors.api.signInFirst') });
+  const p = GL.declareGrade(u, (req.body || {}).grade);
+  if (!p) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  res.json({ ok: true, place: p, redirect: `/courses/grammar-lab#gl-band-${p.band}` });
 });
 
 router.get('/courses/grammar-lab/:band/:unit', (req, res) => {
   const t = req.t, u = req.user;
   const p = ID.test(req.params.unit) && ID.test(req.params.band) ? GL.pathway(req.params.unit, req.params.band) : null;
-  if (!p) return notFound(req, res);
+  const reach = reachOf(u);
+  if (!p || !unitInReach(reach, p.id)) return notFound(req, res);
   honor(u);
-  page(req, res, { title: `${p.title} · ${t('grammarLab.title')}`, active: 'learn', head: V.HEAD, body: V.unitPage({ t, p, states: GL.unitStates(u, p), guest: guestOf(u) }) });
+  page(req, res, { title: `${p.title} · ${t('grammarLab.title')}`, active: 'learn', head: V.HEAD, body: V.unitPage({ t, p, states: GL.unitStates(u, p, reach), guest: guestOf(u) }) });
 });
 
 router.get('/courses/grammar-lab/:band/:unit/:topic', (req, res) => {
@@ -101,15 +123,17 @@ router.get('/courses/grammar-lab/:band/:unit/:topic/review', (req, res) => {
 
 // ------------------------------------------------------------------------------------------------- APIs
 const api = [rateLimit('grammar-lab', 240, 60e3)];
-function apiTopic(req, res) {
+function apiTopic(req, res, { forRoom = false } = {}) {
   const tp = ID.test(req.params.topic) ? GL.topic(req.params.topic) : null;
   // The unit the page names, in the band it was opened in (a topic shared from K-2 into a 3-5 unit answers there too).
   const p = tp && typeof (req.body || {}).unit === 'string' && ID.test(req.body.unit) ? GL.unitFor(req.body.unit, req.body.band) : null;
   if (!tp || !p || !p.topics.includes(tp.id)) { res.status(404).json({ error: req.t('errors.api.notFound') }); return null; }
   const u = req.user;
   if (!u || isGrownup(u)) { res.status(401).json({ error: req.t('errors.api.signInFirst') }); return null; }
-  const s = GL.unitStates(u, p).find(x => x.topic.id === tp.id);
-  if (!s.open) { res.status(403).json({ error: req.t('errors.api.notFound') }); return null; }
+  const reach = reachOf(u);
+  const s = unitInReach(reach, p.id) ? GL.unitStates(u, p, reach).find(x => x.topic.id === tp.id) : null;
+  // (a proofread room assigned on its own opens without its topic)
+  if (!s || !(forRoom && s.room ? s.room.open : s.open)) { res.status(403).json({ error: req.t('errors.api.notFound') }); return null; }
   return { tp, p, u };
 }
 /** Start a run (a run in progress is kept; again: true starts over). */
@@ -142,7 +166,7 @@ router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) =
 /** A Mistake Hunt room's fixes, from the game (public/js/play.js proofForGame): { unit, edits, handIn?, hint? }. Saved,
  *  hinted or handed in and checked here (services/grammar-lab.js roomSave); the key never goes to the page before. */
 router.post('/api/courses/grammar-lab/topic/:topic/room', ...api, (req, res) => {
-  const x = apiTopic(req, res); if (!x) return;
+  const x = apiTopic(req, res, { forRoom: true }); if (!x) return;
   if (!GL.room(x.tp.id)) return res.status(404).json({ error: req.t('errors.api.notFound') });
   const b = req.body || {};
   const r = GL.roomSave(x.u, x.tp.id, b.edits, { handIn: b.handIn === true, hint: Number.isInteger(b.hint) ? b.hint : null });

@@ -96,7 +96,7 @@ export function assignToField(t, classes, { idp, picked = [], shown = '' } = {})
 }
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400));
 const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('lessons.errors.notFound') }) : notFound(req, res, req.t('lessons.errors.notFound')));
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', figures: '📐', proofread: '🔎', manip: '🧮' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', figures: '📐', proofread: '🔎', manip: '🧮', grammar: '🔤' };
 const isoDay = t => (t ? new Date(t).toISOString().slice(0, 10) : '');
 const paras = text => String(text || '').split(/\n{2,}/).filter(Boolean).map(p => html`<p dir="auto">${p.split('\n').map((line, i) => html`${i ? raw('<br>') : ''}${line}`)}</p>`);
 /** "Subject (optional)": the field name and the shared "(optional)" word. */
@@ -517,7 +517,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
   const staff = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
   // A game step shows its game's own emoji (a game's picture, never an icon); the other kinds their icon.
   const iconOf = cl => { const e = icon(cl); return cl.kind === 'game' && cl.first_game ? e : ico(e, { size: 18 }); };
-  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : cl.kind === 'figures' ? '📐' : cl.kind === 'proofread' ? '🔎' : cl.kind === 'manip' ? '🧮' : '📚'; };
+  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : cl.kind === 'figures' ? '📐' : cl.kind === 'proofread' ? '🔎' : cl.kind === 'manip' ? '🧮' : cl.kind === 'grammar' ? '🔤' : '📚'; };
   const pane = () => {
     const sums = count ? P.lessonSummaries(c.id) : {};
     const lessonRow = (cl, i, n) => {

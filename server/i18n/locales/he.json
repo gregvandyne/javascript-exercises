@@ -2079,6 +2079,11 @@
       "bigger": "טקסט גדול יותר"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "יחידת Grammar Lab",
+        "lead": "כל תלמיד עובר על נושאי היחידה ב-Grammar Lab. היא הושלמה כשכל הנושאים נשלטים.",
+        "notMine": "יחידות Grammar Lab מגיעות לשולחנות של התלמידים."
+      },
       "my": {
         "label": "השולחן שלי (רק את/ה רואה מה עליו)",
         "title": "השולחן שלי",
@@ -5159,6 +5164,8 @@
       "settings": "הגדרות כניסה וכרטיסים"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · נשלט {done}/{count}",
+      "grammarRoom": "Grammar Lab · חדר הגהה",
       "deskOf": "{name} · השולחן שלי",
       "empty": "עדיין אין כלום על השולחן שלך",
       "emptyText": "כשהמורה יחלק משהו, הוא יגיע לכאן.",
@@ -5737,6 +5744,7 @@
       "lead": "הם יגיעו לשולחנות בסדר הזה. לכל אחד הציון שלו.",
       "toolBusy": "{tool} נמצא עכשיו על השולחנות. אמצעי אחד בכל פעם: הסירו אותו קודם מכל השולחנות.",
       "kind": {
+        "grammar": "יחידת Grammar Lab",
         "game": "שיעור",
         "lesson": "מערך שיעור",
         "task": "תרגול",
@@ -6428,6 +6436,7 @@
     "minutesN": "{count, plural, one {דקה אחת} two {שתי דקות} other {# דקות}}",
     "assignedN": "{count, plural, one {בכיתה אחת} two {בשתי כיתות} other {ב-# כיתות}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "לשחק במשחק",
       "gameForTeachers": "לשחק בשיעור",
       "build": "לבנות משחק",
@@ -15908,6 +15917,7 @@
       "comingNext": "בקרוב"
     },
     "errors": {
+      "noGrammar": "Grammar Lab לא פתוח לחשבון שלכם.",
       "badStage": "אי אפשר לשים את זה על השולחן שלכם.",
       "deskFull": "השולחן שלכם מלא. הורידו משהו קודם.",
       "notStaged": "זה כבר לא על השולחן שלכם.",
@@ -16190,6 +16200,7 @@
       "liveLead": "בשידור חי לכל הכיתה",
       "hostAny": "להפעיל שיעור חי",
       "kind": {
+        "grammar": "יחידת Grammar Lab",
         "live": "משחק חי",
         "liveSet": "סט חידון חי",
         "liveAny": "חידונים, סטים ועוד",
@@ -16239,6 +16250,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {יחידה אחת} two {שתי יחידות} other {# יחידות}}",
+    "place": {
+      "askTitle": "באיזו כיתה אתם?",
+      "askText": "קודם נפתח את החלק של Grammar Lab לכיתה שלכם. אפשר עדיין לבקר בכל החלקים.",
+      "ask": "הכיתה שלכם",
+      "choose": "בחרו כיתה",
+      "go": "הראו את החלק שלי",
+      "yours": "הכיתות שלכם",
+      "other": "כיתות אחרות"
+    },
+    "assigned": {
+      "badge": "מהמורה",
+      "lead": "זו העבודה ב-Grammar Lab שהמורה נתן לכם."
+    },
+    "learn": {
+      "see": "לקורס"
+    },
+    "step": {
+      "open": "פתיחה ב-Grammar Lab",
+      "openRoom": "פתיחת חדר ההגהה",
+      "unitRule": "הושלם כשכל נושאי היחידה נשלטים",
+      "topicRule": "הושלם כשהנושא נשלט",
+      "roomRule": "הושלם כשמוצאים לפחות 80% מהטעויות"
+    },
+    "teach": {
+      "h1": "Grammar Lab לכיתות שלכם",
+      "lead": "תנו יחידה שלמה, נושא אחד או חדר הגהה לכיתה, לקבוצה או לתלמיד אחד. נושא הושלם כשהתלמיד שולט בו, ויחידה כשכל הנושאים בה נשלטים.",
+      "bands": "כיתות",
+      "noClasses": "צרו קודם כיתה, ואז תוכלו לתת לה שיעורי Grammar Lab.",
+      "newClass": "יצירת כיתה",
+      "assignUnit": "הקצאת יחידה",
+      "assignTopic": "הקצאת נושא",
+      "assignRoom": "הקצאת חדר הגהה",
+      "assignLabel": "הקצאה: {title}",
+      "seeTopics": "הנושאים ביחידה",
+      "roomTitle": "הגהה: {topic}",
+      "dialogTitle": "הקצאה: {title}",
+      "whatUnit": "יחידה שלמה. היא הושלמה כשכל הנושאים בה נשלטים.",
+      "whatTopic": "נושא אחד. הוא הושלם כשהתלמיד שולט בו.",
+      "whatRoom": "חדר הגהה. הוא הושלם כשהתלמיד מוצא לפחות 80% מהטעויות.",
+      "class": "כיתה",
+      "who": "למי",
+      "wholeClass": "כל הכיתה",
+      "groups": "קבוצה",
+      "oneStudent": "תלמיד אחד",
+      "due": "תאריך הגשה (לא חובה)",
+      "dueHint": "השאירו ריק אם אין תאריך הגשה.",
+      "cancel": "ביטול",
+      "assign": "הקצאה",
+      "done": "{title} הוקצה ל-{class}.",
+      "errNoClass": "בחרו אחת מהכיתות שלכם.",
+      "errDate": "בחרו תאריך או השאירו ריק.",
+      "errNoRoom": "לנושא הזה אין חדר הגהה.",
+      "errAgain": "זה כבר הוקצה לכיתה.",
+      "errStudent": "בחרו מישהו מהכיתה הזו.",
+      "mastered": "נשלט",
+      "level": "שלב {level} מתוך {levels}",
+      "levelKey": "בתהליך (שלב 1 מתוך 3)",
+      "notStarted": "לא התחיל",
+      "roomPassed": "חדר ההגהה הושלם",
+      "roomTried": "ניסה את חדר ההגהה",
+      "gridTitle": "התקדמות ב-Grammar Lab",
+      "gridLead": "הנושאים של כל תלמיד ביחידות שהכיתה קיבלה. התלמידים מופיעים לפי שם, אף פעם לא בדירוג.",
+      "gridEmpty": "עוד לא הוקצה לכיתה הזו שום דבר מ-Grammar Lab.",
+      "assignSome": "הקצאת שיעורי Grammar Lab",
+      "backProgress": "חזרה להתקדמות",
+      "backGrid": "חזרה להתקדמות הכיתה ב-Grammar Lab",
+      "filterBand": "כיתות",
+      "filterUnit": "יחידה",
+      "all": "הכול",
+      "show": "הצגה",
+      "noStudents": "עוד אין תלמידים בכיתה הזו.",
+      "noneFit": "אין יחידות שמתאימות למסננים האלה.",
+      "counts": "תלמידים",
+      "count": "נשלט: {mastered} · בתהליך: {started}",
+      "studentTitle": "{name} ב-Grammar Lab",
+      "placeH": "כיתות התחלה",
+      "placeTeacher": "כיתות {grades}, בבחירת מורה.",
+      "placeGrade": "כיתות {grades}, לפי הכיתה של התלמיד ({grade}).",
+      "placeNone": "הכיתה עוד לא ידועה. התלמיד בוחר אותה בביקור הראשון.",
+      "placeSet": "בחירת כיתות התחלה",
+      "placeAuto": "לפי הכיתה של התלמיד",
+      "placeSave": "שמירה",
+      "placeSaved": "כיתות ההתחלה נשמרו.",
+      "placeNote": "הבחירה שלכם תמיד קודמת לכיתה של התלמיד. התלמיד עדיין יכול לפתוח כל יחידה.",
+      "colTopic": "נושא",
+      "colStatus": "מצב",
+      "colAttempts": "ניסיונות",
+      "colWrong": "תשובות שגויות",
+      "colRoom": "חדר הגהה",
+      "colLast": "פעילות אחרונה",
+      "never": "עוד אין פעילות",
+      "unitsGiven": "{count, plural, one {הוקצתה יחידה אחת} two {הוקצו שתי יחידות} other {הוקצו # יחידות}}",
+      "progressLink": "צפייה בהתקדמות ב-Grammar Lab"
+    },
     "title": "Grammar Lab",
     "sub": "דקדוק וכתיבה, מיומנות אחת בכל פעם",
     "band": "כיתות {grades}",
@@ -16248,6 +16354,7 @@
     "backTo": "חזרה אל {unit}",
     "noscript": "התרגול הזה צריך JavaScript פעיל.",
     "topic": {
+      "off": "עוד לא חלק מהעבודה שלכם",
       "options": "עוד על {topic}",
       "card": "כרטיס השיעור",
       "again": "לתרגל שוב",
@@ -16308,6 +16415,7 @@
       "cancel": "ביטול"
     },
     "done": {
+      "nextLabel": "הנושא הבא",
       "heading": "שלטתם בנושא {topic}!",
       "back": "חזרה אל {unit}"
     },

@@ -25,6 +25,7 @@ import { stashPendingFact, isGuestUser, onPendingWin } from './courses.js';
 import { tokenize, normTyped } from './grammar-lab-text.js';
 import * as M from './grammar-lab-mastery.js';
 import * as PS from './proof-steps.js';
+import { reachOf } from './grammar-lab-access.js';
 
 export const SLUG = 'grammar-lab';
 /** This course's grade store runs to grade 12 (owner, 2026-11-27); Number Quest's stays at 8 (its own deriveGrade). */
@@ -64,17 +65,26 @@ export function masteredSet(user) {
   if (!user || isGuestUser(user)) return new Set();
   return new Set(q.all('SELECT step FROM course_progress WHERE user_id=? AND course=? AND completed_at IS NOT NULL', user.id, SLUG).map(r => r.step));
 }
-/** A guest's topics waiting for sign-in: Set of ids. */
+/** A guest's topics waiting for sign-in: Set of ids (a passed room waits as 'room:<topic>': roomPendingSet). */
 export function pendingSet(user) {
   if (!user || !isGuestUser(user)) return new Set();
-  return new Set(q.all("SELECT step FROM course_pending_wins WHERE user_id=? AND course=? AND kind='win'", user.id, SLUG).map(r => r.step));
+  return new Set(q.all("SELECT step FROM course_pending_wins WHERE user_id=? AND course=? AND kind='win'", user.id, SLUG).map(r => r.step).filter(k => !k.startsWith(ROOM_PREFIX)));
 }
+const ROOM_PREFIX = 'room:';
+// What else wants to know when a player masters a topic or passes a room (services/grammar-lab-assign.js: the class
+// assignments that this completes). Registered on import; called after the row is written.
+const changeHandlers = [];
+export const onGrammarChange = fn => { changeHandlers.push(fn); };
+const changed = (user, what) => { for (const fn of changeHandlers) { try { fn(user, what); } catch { /* an assignment's sync never breaks the quiz */ } } };
 /** Each topic of a unit with its state, worked out now from the rows (never cached):
  *  [{ topic, mastered, pending, open, started, part, mark, room }]. A topic opens when the one before it in the unit is
  *  mastered; a topic mastered anywhere (it is shared) is mastered, and open, in every unit that uses it.
  *  part: the part title above it (on a part's first topic only); mark: 'checkpoint' | 'review' | null; room: null (no
- *  room) or { passed }. */
-export function unitStates(user, p) {
+ *  room) or { passed, open }.
+ *  A student who reaches only assigned work (services/grammar-lab-access.js reachOf): an assigned unit's topics open in
+ *  the unit's order, an assigned topic and an assigned room open at once, and nothing else opens (a topic they mastered
+ *  stays open); assigned says which topics are theirs to do. reach: the visitor's reach, when the caller has it. */
+export function unitStates(user, p, reach = reachOf(user)) {
   const done = masteredSet(user), pend = pendingSet(user), passed = roomPassedSet(user);
   const started = new Set(user ? q.all('SELECT topic FROM grammar_lab_quiz WHERE user_id=?', user.id).map(r => r.topic) : []);
   const admin = !!user && user.role === 'admin';
@@ -85,22 +95,27 @@ export function unitStates(user, p) {
     const t = topic(id);
     const mastered = done.has(id), pending = pend.has(id);
     // A guest's pending win opens the next topic for this sitting, as a guest's facts do in the other courses.
-    const s = { topic: t, mastered, pending, open: admin || prev || mastered || pending, started: started.has(id),
-      part: partOf.get(id) || null, mark: (p.marks || {})[id] || null, room: room(id) ? { passed: passed.has(id) } : null };
+    const inOrder = reach.all || reach.units.has(p.id);
+    const open = admin || mastered || pending || (inOrder && prev) || (!reach.all && reach.topics.has(id));
+    const s = { topic: t, mastered, pending, open, started: started.has(id),
+      assigned: reach.all ? null : reach.units.has(p.id) || reach.topics.has(id),
+      part: partOf.get(id) || null, mark: (p.marks || {})[id] || null,
+      room: room(id) ? { passed: passed.has(id), open: open || (!reach.all && reach.rooms.has(id)) } : null };
     prev = mastered || pending;
     return s;
   });
 }
 /** A unit's ring: { done, total } from the live topic states. */
-export function unitProgress(user, p) {
-  const list = unitStates(user, p);
+export function unitProgress(user, p, reach = reachOf(user)) {
+  const list = unitStates(user, p, reach);
   return { done: list.filter(s => s.mastered).length, total: list.length };
 }
 /** The next topic to master, live, never a mastered one (nor a guest's pending one, nor `afterId`): the first open one in
  *  this unit, else the first open one in the band's other units, in order. -> { ...state, unit } or null. */
 export function nextTopic(user, p, afterId = null) {
+  const reach = reachOf(user);
   const pick = u => {
-    const s = unitStates(user, u).find(x => x.open && !x.mastered && !x.pending && x.topic.id !== afterId);
+    const s = unitStates(user, u, reach).find(x => x.open && !x.mastered && !x.pending && x.topic.id !== afterId);
     return s ? { ...s, unit: u } : null;
   };
   const here = pick(p);
@@ -112,9 +127,15 @@ function markMastered(user, id) {
   const t = now(), b = (topic(id) || {}).band || '';
   q.run('INSERT OR IGNORE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,NULL,NULL,0,NULL,NULL)', user.id, SLUG, id, b);
   q.run('UPDATE course_progress SET read_at=COALESCE(read_at, ?), checked_at=COALESCE(checked_at, ?), completed_at=COALESCE(completed_at, ?) WHERE user_id=? AND course=? AND step=?', t, t, t, user.id, SLUG, id);
+  changed(user, { topic: id });
 }
-// A guest's mastery, once they sign in (services/courses.js applyPendingWins): the topic is mastered for real.
-onPendingWin(SLUG, (user, id) => { if (!topic(id)) return false; markMastered(user, id); return true; });
+// A guest's mastery, once they sign in (services/courses.js applyPendingWins): the topic is mastered for real. A guest's
+// passed room ('room:<topic>') is carried over the same way: the room is passed on the account (its own fixes stay with
+// the guest's sitting; the pass is what counts).
+onPendingWin(SLUG, (user, id) => {
+  if (id.startsWith(ROOM_PREFIX)) { const tid = id.slice(ROOM_PREFIX.length); if (!room(tid)) return false; markRoomPassed(user, tid); return true; }
+  if (!topic(id)) return false; markMastered(user, id); return true;
+});
 
 // ------------------------------------------------------------------------------------------------- the quiz
 function readRun(user, id) {
@@ -138,6 +159,8 @@ export function startRun(user, t, { again = false } = {}) {
   // The questions of the last mastered run stay for "look back" while the student practices again.
   const last = have && (have.mastered ? have.history : have.lastMastered);
   if (last) s.lastMastered = last;
+  // how many times this player started the topic's quiz (the teacher's "attempts")
+  s.runs = ((have && have.runs) || (have ? 1 : 0)) + 1;
   saveRun(user, t.id, s);
   return s;
 }
@@ -346,8 +369,23 @@ export function roomSave(user, id, edits, { handIn = false, hint = null } = {}) 
     if (m.found >= r.need && !st.passed) { st.passed = true; st.passedAt = now(); }
   }
   saveRun(user, ROOM_KEY(id), st);
+  if (handIn && st.passed) {
+    // A guest's pass waits for sign-in, as a mastered topic does (honored by onPendingWin above).
+    if (isGuestUser(user)) stashPendingFact(user, COURSE, { key: `${ROOM_PREFIX}${id}` }, 'win');
+    else changed(user, { room: id });
+  }
   return { ok: true, view: roomViewOf(id, st), ...(h !== undefined ? { hint: h } : {}), ...(handIn ? { passed: st.passed } : {}) };
 }
+/** A room passed on this account without a try here (a guest's pass honored at sign-in): kept when already passed. */
+function markRoomPassed(user, id) {
+  const st = readRoom(user, id);
+  if (st.passed) return;
+  Object.assign(st, { passed: true, passedAt: now() });
+  saveRun(user, ROOM_KEY(id), st);
+  changed(user, { room: id });
+}
+/** A room's tries for one player: { passed, tries, found, passedAt } (the teacher's views). */
+export const roomInfo = (user, id) => { const st = readRoom(user, id); return { passed: st.passed, tries: st.tries, found: st.found, passedAt: st.passedAt }; };
 /** The link that opens a topic's room in the Mistake Hunt game (the band too when the unit is opened in a band other
  *  than its first, so "back" returns there). */
 export const roomHref = (unitId, id, bandId = null) => {
@@ -383,8 +421,71 @@ export function deriveGrade(declared, declaredAt, at = now()) {
   return Math.min(GRADE_CAP, g + roll);
 }
 
-// A school account merged into a student's own account brings its quiz runs (the student's own rows win).
+// ------------------------------------------------------------------------------------------------- placement
+// Number Quest's pattern (services/number-quest-placement.js: the grade seeds the start, a grown-up's override is
+// absolute), without a placement game: the grade the platform knows picks the band, and a teacher's choice of band
+// always wins. The grade, first found of: the grade the student declared here (grammar_lab_place, moving up each
+// September 1 by deriveGrade, to grade 12), Number Quest's declared grade (moving the same way, here to grade 12), the
+// school's roster grade, the class's grade. A guest has none stored: their band is the one they pick for this visit.
+export const BAND_IDS = Object.freeze(['k-2', '3-5', '6-8', '9-12']);
+/** The band of a grade (0 is K): K-2, 3-5, 6-8 or 9-12. */
+export const bandOfGrade = g => (g <= 2 ? 'k-2' : g <= 5 ? '3-5' : g <= 8 ? '6-8' : '9-12');
+/** A grade as people write it ("K", "4", "Grade 4", "3-4": the first one) -> 0..12, or null. */
+export function gradeNumber(v) {
+  const m = /(?:^|\D)(k|\d{1,2})(?!\d)/i.exec(String(v == null ? '' : v).trim());
+  if (!m) return null;
+  const g = m[1].toLowerCase() === 'k' ? 0 : Number(m[1]);
+  return g >= 0 && g <= GRADE_CAP ? g : null;
+}
+const placeRow = id => (id ? q.get('SELECT * FROM grammar_lab_place WHERE user_id=?', id) : null) || null;
+/** The student's grade now, and where it came from: { grade (0..12) | null, from: 'declared' | 'number-quest' |
+ *  'school' | 'class' | null }. */
+export function gradeOf(user) {
+  if (!user || !user.id || isGuestUser(user)) return { grade: null, from: null };
+  const row = placeRow(user.id);
+  if (row && row.grade !== null) { const g = deriveGrade(row.grade, row.grade_declared_at); if (g !== null) return { grade: g, from: 'declared' }; }
+  const nq = q.get('SELECT grade, grade_declared_at FROM nq_placement WHERE user_id=?', user.id);
+  if (nq && nq.grade !== null) { const g = deriveGrade(nq.grade, nq.grade_declared_at); if (g !== null) return { grade: g, from: 'number-quest' }; }
+  for (const r of q.all("SELECT grade FROM school_members WHERE user_id=? AND role='student' AND status='active' ORDER BY joined_at", user.id)) {
+    const g = gradeNumber(r.grade); if (g !== null) return { grade: g, from: 'school' };
+  }
+  for (const r of q.all(`SELECT c.grade FROM class_members m JOIN classrooms c ON c.id=m.class_id AND c.archived_at IS NULL
+      WHERE m.user_id=? AND m.role='student' AND m.status='active' ORDER BY m.joined_at`, user.id)) {
+    const g = gradeNumber(r.grade); if (g !== null) return { grade: g, from: 'class' };
+  }
+  return { grade: null, from: null };
+}
+/** Where this student starts: { band (a band id) | null, grade, from: 'teacher' (a teacher's choice, absolute) |
+ *  'grade' (seeded by the grade) | null (nothing known yet), setBy }. */
+export function placeOf(user) {
+  const g = gradeOf(user), row = user && user.id && !isGuestUser(user) ? placeRow(user.id) : null;
+  if (row && row.band && BAND_IDS.includes(row.band)) return { band: row.band, grade: g.grade, gradeFrom: g.from, from: 'teacher', setBy: row.set_by || null };
+  if (g.grade !== null) return { band: bandOfGrade(g.grade), grade: g.grade, gradeFrom: g.from, from: 'grade', setBy: null };
+  return { band: null, grade: null, gradeFrom: null, from: null, setBy: null };
+}
+/** The student's own grade, declared on the course page (0..12; 'K' is 0). Never for a guest. -> placeOf | null */
+export function declareGrade(user, grade) {
+  const g = gradeNumber(grade);
+  if (!user || !user.id || isGuestUser(user) || g === null) return null;
+  const t = now();
+  q.run(`INSERT INTO grammar_lab_place(user_id, grade, grade_declared_at, band, set_by, updated_at) VALUES (?,?,?,NULL,NULL,?)
+    ON CONFLICT(user_id) DO UPDATE SET grade=excluded.grade, grade_declared_at=excluded.grade_declared_at, updated_at=excluded.updated_at`, user.id, g, t, t);
+  return placeOf(user);
+}
+/** A teacher's choice of band for a student (absolute: it wins over any grade), or null to go back to the grade. The
+ *  caller checks who may (services/grammar-lab-assign.js setBand). -> placeOf */
+export function setBandFor(student, band, byId) {
+  const b = band === null || band === '' ? null : BAND_IDS.includes(band) ? band : undefined;
+  if (!student || !student.id || isGuestUser(student) || b === undefined) return null;
+  q.run(`INSERT INTO grammar_lab_place(user_id, grade, grade_declared_at, band, set_by, updated_at) VALUES (?,NULL,NULL,?,?,?)
+    ON CONFLICT(user_id) DO UPDATE SET band=excluded.band, set_by=excluded.set_by, updated_at=excluded.updated_at`, student.id, b, b ? byId : null, now());
+  return placeOf(student);
+}
+
+// A school account merged into a student's own account brings its quiz runs and placement (the student's own rows win).
 onAccountMerge(({ from, into }) => {
   q.run('UPDATE OR IGNORE grammar_lab_quiz SET user_id=? WHERE user_id=?', into, from);
   q.run('DELETE FROM grammar_lab_quiz WHERE user_id=?', from);
+  q.run('UPDATE OR IGNORE grammar_lab_place SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM grammar_lab_place WHERE user_id=?', from);
 });

@@ -2079,6 +2079,11 @@
       "bigger": "Grotere tekst"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab-onderdeel",
+        "lead": "Elke leerling werkt de onderwerpen van het onderdeel door in Grammar Lab. Het is klaar als elk onderwerp beheerst is.",
+        "notMine": "Grammar Lab-onderdelen gaan naar de tafels van leerlingen."
+      },
       "my": {
         "label": "Mijn bureau (alleen jij ziet wat erop ligt)",
         "title": "Mijn bureau",
@@ -5159,6 +5164,8 @@
       "settings": "Instellingen en inlogkaarten"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} beheerst",
+      "grammarRoom": "Grammar Lab · nakijkkamer",
       "deskOf": "{name} · Mijn tafel",
       "empty": "Nog niets op je tafel",
       "emptyText": "Als je leraar iets uitdeelt, komt het hier.",
@@ -5737,6 +5744,7 @@
       "lead": "Ze komen in deze volgorde op de tafels. Elk houdt zijn eigen beoordeling.",
       "toolBusy": "{tool} staat nu op de tafels. Eén rekenmateriaal tegelijk: haal het eerst van alle tafels.",
       "kind": {
+        "grammar": "Grammar Lab-onderdeel",
         "game": "Les",
         "lesson": "Lesplan",
         "task": "Oefenen",
@@ -6427,6 +6435,7 @@
     "minutesN": "{count, plural, one {# minuut} other {# minuten}}",
     "assignedN": "{count, plural, one {in # klas} other {in # klassen}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Speel een game",
       "gameForTeachers": "Een les spelen",
       "build": "Bouw een game",
@@ -15907,6 +15916,7 @@
       "comingNext": "Binnenkort"
     },
     "errors": {
+      "noGrammar": "Grammar Lab is niet open voor je account.",
       "badStage": "Dat kan niet op je bureau.",
       "deskFull": "Je bureau is vol. Haal er eerst iets af.",
       "notStaged": "Dat ligt niet meer op je bureau.",
@@ -16189,6 +16199,7 @@
       "liveLead": "Live voor de hele klas",
       "hostAny": "Live-les starten",
       "kind": {
+        "grammar": "Grammar Lab-onderdeel",
         "live": "Live-spel",
         "liveSet": "Live-quizset",
         "liveAny": "Quizzen, sets en meer",
@@ -16238,6 +16249,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# onderdeel} other {# onderdelen}}",
+    "place": {
+      "askTitle": "In welke groep zit je?",
+      "askText": "We openen eerst het deel van Grammar Lab voor jouw groep. Je kunt nog steeds elk deel bezoeken.",
+      "ask": "Jouw groep",
+      "choose": "Kies je groep",
+      "go": "Laat mijn deel zien",
+      "yours": "Jouw groepen",
+      "other": "Andere groepen"
+    },
+    "assigned": {
+      "badge": "Van je leerkracht",
+      "lead": "Dit is het Grammar Lab-werk dat je leerkracht je heeft gegeven."
+    },
+    "learn": {
+      "see": "Bekijk de cursus"
+    },
+    "step": {
+      "open": "Openen in Grammar Lab",
+      "openRoom": "Open de nakijkkamer",
+      "unitRule": "Klaar als elk onderwerp van het onderdeel beheerst is",
+      "topicRule": "Klaar als het onderwerp beheerst is",
+      "roomRule": "Klaar als je minstens 80% van de fouten vindt"
+    },
+    "teach": {
+      "h1": "Grammar Lab voor je klassen",
+      "lead": "Geef een heel onderdeel, één onderwerp of een nakijkkamer aan een klas, een groepje of één leerling. Een onderwerp is klaar als de leerling het beheerst, een onderdeel als elk onderwerp erin beheerst is.",
+      "bands": "Groepen",
+      "noClasses": "Maak eerst een klas, dan kun je die Grammar Lab-lessen geven.",
+      "newClass": "Maak een klas",
+      "assignUnit": "Onderdeel toewijzen",
+      "assignTopic": "Onderwerp toewijzen",
+      "assignRoom": "Nakijkkamer toewijzen",
+      "assignLabel": "{title} toewijzen",
+      "seeTopics": "Onderwerpen in dit onderdeel",
+      "roomTitle": "Nakijken: {topic}",
+      "dialogTitle": "{title} toewijzen",
+      "whatUnit": "Een heel onderdeel. Het is klaar als elk onderwerp erin beheerst is.",
+      "whatTopic": "Eén onderwerp. Het is klaar als de leerling het beheerst.",
+      "whatRoom": "Een nakijkkamer. Die is klaar als de leerling minstens 80% van de fouten vindt.",
+      "class": "Klas",
+      "who": "Voor wie",
+      "wholeClass": "Hele klas",
+      "groups": "Een groepje",
+      "oneStudent": "Eén leerling",
+      "due": "Inleverdatum (niet verplicht)",
+      "dueHint": "Laat leeg voor geen inleverdatum.",
+      "cancel": "Annuleren",
+      "assign": "Toewijzen",
+      "done": "{title} is toegewezen aan {class}.",
+      "errNoClass": "Kies een van je klassen.",
+      "errDate": "Kies een datum of laat het leeg.",
+      "errNoRoom": "Dit onderwerp heeft geen nakijkkamer.",
+      "errAgain": "Dit is al toegewezen aan de klas.",
+      "errStudent": "Kies iemand uit deze klas.",
+      "mastered": "Beheerst",
+      "level": "Niveau {level} van {levels}",
+      "levelKey": "Bezig (niveau 1 van 3)",
+      "notStarted": "Niet begonnen",
+      "roomPassed": "Nakijkkamer gehaald",
+      "roomTried": "Nakijkkamer geprobeerd",
+      "gridTitle": "Voortgang in Grammar Lab",
+      "gridLead": "De onderwerpen van elke leerling in de onderdelen die deze klas kreeg. Leerlingen staan op naam, nooit in een ranglijst.",
+      "gridEmpty": "Er is nog niets uit Grammar Lab aan deze klas toegewezen.",
+      "assignSome": "Grammar Lab-lessen toewijzen",
+      "backProgress": "Terug naar Voortgang",
+      "backGrid": "Terug naar de Grammar Lab-voortgang van de klas",
+      "filterBand": "Groepen",
+      "filterUnit": "Onderdeel",
+      "all": "Alle",
+      "show": "Tonen",
+      "noStudents": "Nog geen leerlingen in deze klas.",
+      "noneFit": "Geen onderdeel past bij deze filters.",
+      "counts": "Leerlingen",
+      "count": "{mastered} beheerst · {started} bezig",
+      "studentTitle": "{name} in Grammar Lab",
+      "placeH": "Startgroepen",
+      "placeTeacher": "Groepen {grades}, gekozen door een leerkracht.",
+      "placeGrade": "Groepen {grades}, volgens de groep van de leerling ({grade}).",
+      "placeNone": "Nog geen groep bekend. De leerling kiest die bij het eerste bezoek.",
+      "placeSet": "Startgroepen kiezen",
+      "placeAuto": "De groep van de leerling gebruiken",
+      "placeSave": "Opslaan",
+      "placeSaved": "Startgroepen opgeslagen.",
+      "placeNote": "Jouw keuze gaat altijd voor de groep van de leerling. De leerling kan nog steeds elk onderdeel openen.",
+      "colTopic": "Onderwerp",
+      "colStatus": "Stand",
+      "colAttempts": "Pogingen",
+      "colWrong": "Foute antwoorden",
+      "colRoom": "Nakijkkamer",
+      "colLast": "Laatst actief",
+      "never": "Nog geen activiteit",
+      "unitsGiven": "{count, plural, one {# onderdeel toegewezen} other {# onderdelen toegewezen}}",
+      "progressLink": "Bekijk de Grammar Lab-voortgang"
+    },
     "title": "Grammar Lab",
     "sub": "Grammatica en schrijven, één vaardigheid tegelijk",
     "band": "Groepen {grades}",
@@ -16247,6 +16353,7 @@
     "backTo": "Terug naar {unit}",
     "noscript": "Voor deze oefening moet JavaScript aan staan.",
     "topic": {
+      "off": "Nog geen deel van je werk",
       "options": "Meer bij {topic}",
       "card": "Leskaart",
       "again": "Nog een keer oefenen",
@@ -16307,6 +16414,7 @@
       "cancel": "Annuleren"
     },
     "done": {
+      "nextLabel": "Volgend onderwerp",
       "heading": "Je beheerst {topic}!",
       "back": "Terug naar {unit}"
     },

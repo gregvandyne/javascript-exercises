@@ -2078,6 +2078,11 @@
       "bigger": "文字を大きく"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab のユニット",
+        "lead": "生徒それぞれが Grammar Lab でユニットのトピックに取り組みます。すべてのトピックをマスターすると完了です。",
+        "notMine": "Grammar Lab のユニットは生徒の机に出します。"
+      },
       "my": {
         "label": "自分の机（ここにあるものはあなただけが見られます）",
         "title": "自分の机",
@@ -5158,6 +5163,8 @@
       "settings": "サインインの設定とカード"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · マスター {done}/{count}",
+      "grammarRoom": "Grammar Lab · 校正ルーム",
       "deskOf": "{name} · わたしの机",
       "empty": "まだ机に何もありません",
       "emptyText": "先生が何かを配ると、ここに届きます。",
@@ -5736,6 +5743,7 @@
       "lead": "この順で机に並びます。採点方法はそれぞれのままです。",
       "toolBusy": "{tool}が机に出ています。算数ツールは一度に1つです。先にすべての机から外してください。",
       "kind": {
+        "grammar": "Grammar Lab のユニット",
         "game": "レッスン",
         "lesson": "授業プラン",
         "task": "練習",
@@ -6426,6 +6434,7 @@
     "minutesN": "{count, plural, other {#分}}",
     "assignedN": "{count, plural, other {#クラスに割り当て済み}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "ゲームであそぶ",
       "gameForTeachers": "レッスンで遊ぶ",
       "build": "ゲームをつくる",
@@ -15906,6 +15915,7 @@
       "comingNext": "近日公開"
     },
     "errors": {
+      "noGrammar": "このアカウントでは Grammar Lab は開いていません。",
       "badStage": "それは自分の机に置けません。",
       "deskFull": "自分の机がいっぱいです。先に何か外してください。",
       "notStaged": "それはもう自分の机にありません。",
@@ -16188,6 +16198,7 @@
       "liveLead": "クラス全員でライブ",
       "hostAny": "ライブレッスンを始める",
       "kind": {
+        "grammar": "Grammar Lab のユニット",
         "live": "ライブゲーム",
         "liveSet": "ライブクイズのセット",
         "liveAny": "クイズやセットなど",
@@ -16237,6 +16248,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, other {# ユニット}}",
+    "place": {
+      "askTitle": "何年生ですか？",
+      "askText": "まずあなたの学年の Grammar Lab を開きます。ほかの学年もいつでも見られます。",
+      "ask": "あなたの学年",
+      "choose": "学年をえらぶ",
+      "go": "わたしの学年を見る",
+      "yours": "あなたの学年",
+      "other": "ほかの学年"
+    },
+    "assigned": {
+      "badge": "先生から",
+      "lead": "先生が出した Grammar Lab の課題です。"
+    },
+    "learn": {
+      "see": "コースを見る"
+    },
+    "step": {
+      "open": "Grammar Lab で開く",
+      "openRoom": "校正ルームを開く",
+      "unitRule": "ユニットのトピックをすべてマスターすると完了",
+      "topicRule": "トピックをマスターすると完了",
+      "roomRule": "まちがいの80%以上を見つけると完了"
+    },
+    "teach": {
+      "h1": "クラスのための Grammar Lab",
+      "lead": "ユニット全体、1つのトピック、または校正ルームを、クラス、グループ、1人の生徒に出せます。トピックは生徒がマスターすると完了し、ユニットはすべてのトピックがマスターされると完了します。",
+      "bands": "学年",
+      "noClasses": "まずクラスを作ると、Grammar Lab のレッスンを出せます。",
+      "newClass": "クラスを作る",
+      "assignUnit": "ユニットを出す",
+      "assignTopic": "トピックを出す",
+      "assignRoom": "校正ルームを出す",
+      "assignLabel": "{title} を出す",
+      "seeTopics": "このユニットのトピック",
+      "roomTitle": "校正：{topic}",
+      "dialogTitle": "{title} を出す",
+      "whatUnit": "ユニット全体。すべてのトピックがマスターされると完了します。",
+      "whatTopic": "1つのトピック。生徒がマスターすると完了します。",
+      "whatRoom": "校正ルーム。生徒がまちがいの80%以上を見つけると完了します。",
+      "class": "クラス",
+      "who": "だれに",
+      "wholeClass": "クラス全員",
+      "groups": "グループ",
+      "oneStudent": "1人の生徒",
+      "due": "期限（任意）",
+      "dueHint": "期限なしなら空のままにします。",
+      "cancel": "キャンセル",
+      "assign": "出す",
+      "done": "{title} を {class} に出しました。",
+      "errNoClass": "自分のクラスを1つえらんでください。",
+      "errDate": "日付をえらぶか、空のままにしてください。",
+      "errNoRoom": "このトピックには校正ルームがありません。",
+      "errAgain": "これはすでにクラスに出されています。",
+      "errStudent": "このクラスの人をえらんでください。",
+      "mastered": "マスター",
+      "level": "レベル {level}/{levels}",
+      "levelKey": "とちゅう（レベル 1/3）",
+      "notStarted": "まだ始めていない",
+      "roomPassed": "校正ルーム完了",
+      "roomTried": "校正ルームに挑戦",
+      "gridTitle": "Grammar Lab の進み具合",
+      "gridLead": "このクラスに出したユニットでの、生徒ごとのトピックです。生徒は名前順で、順位はつけません。",
+      "gridEmpty": "このクラスにはまだ Grammar Lab の課題がありません。",
+      "assignSome": "Grammar Lab のレッスンを出す",
+      "backProgress": "進み具合にもどる",
+      "backGrid": "クラスの Grammar Lab の進み具合にもどる",
+      "filterBand": "学年",
+      "filterUnit": "ユニット",
+      "all": "すべて",
+      "show": "表示",
+      "noStudents": "このクラスにはまだ生徒がいません。",
+      "noneFit": "この条件に合うユニットはありません。",
+      "counts": "生徒",
+      "count": "マスター {mastered} · とちゅう {started}",
+      "studentTitle": "Grammar Lab の {name}",
+      "placeH": "スタートの学年",
+      "placeTeacher": "{grades} 年生、先生がえらびました。",
+      "placeGrade": "{grades} 年生、生徒の学年（{grade}）から。",
+      "placeNone": "学年はまだわかりません。生徒が最初の訪問でえらびます。",
+      "placeSet": "スタートの学年をえらぶ",
+      "placeAuto": "生徒の学年を使う",
+      "placeSave": "保存",
+      "placeSaved": "スタートの学年を保存しました。",
+      "placeNote": "先生のえらんだものが、生徒の学年よりいつも優先されます。生徒はどのユニットも開けます。",
+      "colTopic": "トピック",
+      "colStatus": "状態",
+      "colAttempts": "挑戦した回数",
+      "colWrong": "まちがえた答え",
+      "colRoom": "校正ルーム",
+      "colLast": "最後の活動",
+      "never": "まだ活動なし",
+      "unitsGiven": "{count, plural, other {# ユニットを出しました}}",
+      "progressLink": "Grammar Lab の進み具合を見る"
+    },
     "title": "Grammar Lab",
     "sub": "文法と書く力を、ひとつずつ",
     "band": "{grades} 年生",
@@ -16246,6 +16352,7 @@
     "backTo": "{unit} にもどる",
     "noscript": "この練習には JavaScript が必要です。",
     "topic": {
+      "off": "まだあなたの課題ではありません",
       "options": "{topic} のメニュー",
       "card": "まなびカード",
       "again": "もう一度練習する",
@@ -16306,6 +16413,7 @@
       "cancel": "やめる"
     },
     "done": {
+      "nextLabel": "次のトピック",
       "heading": "{topic} をマスターしたよ！",
       "back": "{unit} にもどる"
     },
