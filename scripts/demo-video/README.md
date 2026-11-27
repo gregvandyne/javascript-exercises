@@ -9,7 +9,8 @@ small scripts live here; every recording, clip and mix goes to `/tmp/claude-0/` 
 A real-time screen recording of headless Chrome with software 3D stutters. `vc.mjs` installs a virtual clock in every
 page and game frame (performance.now, Date, requestAnimationFrame, timers, CSS and Web Animations); `Capture` steps it
 exactly 1/30 s before each screenshot, so every frame is drawn. Typing, clicks and the cursor are driven on the same
-timeline (`glide`, `setCursor`).
+timeline (`glide`, `setCursor`); when `glide` needs the page scrolled it scrolls smoothly over a few captured frames
+(a jump in one frame reads as a glitch).
 
 ## Steps
 
@@ -20,22 +21,32 @@ The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: 
    (seed the official games with `node scripts/seed.js` against that data dir and make the made-up accounts used by the
    scripts: `MayaMakes` / `secret123`, a teacher for Oomba Live).
    Oomba Live is recorded on a second server whose game clock is slowed to the capture speed:
-   `LIVE_CLOCK=0.055 PORT=3350 BRB_DATA_DIR=/tmp/claude-0/demo2/data-live node --import ./scripts/demo-video/slowclock.mjs server/index.js`
+   `LIVE_CLOCK=0.055 LIVE_CLOCK_PORT=3351 PORT=3350 BRB_DATA_DIR=/tmp/claude-0/demo2/data-live node --import ./scripts/demo-video/slowclock.mjs server/index.js`
+   With `LIVE_CLOCK_PORT`, `rec-live.mjs` drives that clock frame by frame with the one the host and the phones share
+   (`Capture.wall`), so the timers on the board and on the phone agree.
    Both servers run on the default config (`ARCADE` off), so every scene shows only what a visitor can find today.
    `rec-safety.mjs` opens the studio in `DEMO_STUDIO` (the Category Board MayaMakes built with `rec-builder.mjs`).
 2. Record the clips (each takes `land` or `port`):
    - `node scripts/demo-video/rec-games.mjs land` - Atlas Quest (the hook's lit globe, a Find it question), Word Hunt,
-     Crossword, Castle Clash
+     Crossword, Castle Clash. The hook's globe is lit in its region colors (the flag pictures are left out for that clip:
+     lit countries painted with their flags read as a jumble at that size) with the side panel put away. The games are
+     recorded in a window shaped like the band under the caption (1440 x 700, or wider for a game that needs the height)
    - `node scripts/demo-video/rec-builder.mjs land` - a kid describes a Category Board for the class, the build and the
      automatic playtest, then a question played on the sideways preview
-   - `LIVE_B=http://localhost:3350 node scripts/demo-video/rec-live.mjs land` - Oomba Live: the host steps (game, questions,
-     an open room for guests, so phones join with a code and a made-up name), a phone joining, a Question Battle question
-     and the top five
+   - `LIVE_B=http://localhost:3350 node scripts/demo-video/rec-live.mjs land` - Oomba Live: the host steps (Brain Board, a
+     level, an open room for guests in two teams, so phones join with a code and a made-up name), a phone joining, the
+     teacher opening a tile, everyone answering and the team scores. Question Battle and Tug of Math are off the site
+     (`server/services/game-focus.js`), so the video doesn't show them. A room left open by an earlier run is ended
    - `node scripts/demo-video/rec-safety.mjs land` - sign-up with a made-up name, a friend code, the publish choices
 3. Captions and cards: `node scripts/demo-video/cards.mjs` (teacher) and `node scripts/demo-video/cards-parents.mjs`.
-4. Cut the silent masters: `node scripts/demo-video/assemble.mjs land|port` (teacher, into `/tmp/claude-0/demo/v2`)
+4. Cut the silent masters: `node scripts/demo-video/assemble.mjs` (teacher, 16:9 only, into `/tmp/claude-0/demo/v2`)
    and `node scripts/demo-video/assemble-parents.mjs land|port` (into `/tmp/claude-0/demo/parents`). Each writes
-   `timeline.json` (scene starts) and the captions (`.en.vtt`).
+   `timeline.json` (scene starts) and the captions (`.en.vtt`). The teacher cut keeps the UI readable at 720p: captions
+   sit in a strip at the top and the app plays in the band under them (never under a caption); the live room is
+   cropped to the board (or the join code) beside the phone, the Builder to its chat and preview. Captions are one
+   layer over the joined scenes, so two never cross-fade into each other, and the end card fades in from its own
+   color after the games fade to it. (The parents cut still uses the old clip shapes: re-check it before re-rendering
+   it from these clips.)
 5. Music: `node scripts/demo-video/fit-music.mjs <teacher|parents> <track> [--start S] [--cut A,B] [--hit T]` writes the
    project's `music.wav`, exactly as long as the video with a 1.5 s fade out (`--hit T` puts the track's moment T, such as
    a downbeat, on the end card). `compose-music.py` makes the original synthesized track. Any third-party track needs
@@ -51,6 +62,8 @@ The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: 
    and `.en.vtt`; a new one is one entry in its `VIDEOS` list plus `teachers.videos.<id>.*` in the locale files.
 7. Check: `node scripts/demo-video/sheet.mjs 0.5 5x5 384 <video>` makes a contact sheet; look at it, and run
    `ffmpeg -i <video> -vf freezedetect=n=0.001:d=0.5 -an -f null -` over the game scenes (only still UI may freeze).
+   Look at full-size frames around every scene change too (`ffmpeg -ss T -i <video> -frames:v 1 f.png`).
+   No price and no "free" in the teacher video (cards, captions, voice-over).
 
 ## Adding the voice-over (needs an OpenAI key)
 

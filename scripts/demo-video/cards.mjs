@@ -27,7 +27,7 @@ async function png(name, w, h, html, transparent = true) {
 const CAPS = {
   live1: 'Pick <b>any subject</b>, any level',
   live2: 'Students join with a code: <b>a safe made-up name</b>',
-  live3: 'Everyone answers. <b>Who\'s on top?</b>',
+  live3: 'Everyone answers. <b>Which team is on top?</b>',
   build1: 'Kids describe a game in their own words',
   build2: 'The Builder makes it, and <b>plays it to check it works</b>',
   build3: 'Then they play it!',
@@ -37,12 +37,16 @@ for (const [k, t] of Object.entries(CAPS)) {
   await png(`cap-${k}-land`, 1920, 1080, `<div class="cap" style="top:34px;font-size:54px">${t}</div>`);
   await png(`cap-${k}-port`, 1080, 1920, `<div class="cap wrap" style="top:110px;font-size:62px">${t}</div>`);
 }
-// The hook: a big title over gameplay (dark bottom gradient)
+// The hook. Wide: the lit globe turns on the left, the title stands on the right (no shade over the game). Tall: a big
+// title over the gameplay (dark bottom gradient).
+const hookLand = `<div style="position:absolute;left:1130px;right:70px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;color:#141414">
+<div style="font-size:112px;font-weight:800;line-height:1.02;letter-spacing:-.025em">Live class games your students <span style="background:#FFD23F;border-radius:18px;padding:0 .12em">love</span></div>
+<div style="font-size:52px;font-weight:700;margin-top:.5em;color:#1F9D63;line-height:1.1">And they can build their own.</div></div>`;
 const hook = (W, H, fs1, fs2, pad) => `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,20,0) 35%,rgba(20,20,20,.78) 100%)"></div>
 <div style="position:absolute;left:${pad}px;right:${pad}px;bottom:${pad}px;color:#FFFDF2">
 <div style="font-size:${fs1}px;font-weight:800;line-height:1;letter-spacing:-.02em;text-shadow:0 4px 18px rgba(0,0,0,.35)">Live class games<br>your students <span style="color:#FFD23F">love</span></div>
 <div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">And they can build their own.</div></div>`;
-await png('hook-land', 1920, 1080, hook(1920, 1080, 128, 56, 90));
+await png('hook-land', 1920, 1080, hookLand);
 await png('hook-port', 1080, 1920, hook(1080, 1920, 118, 54, 70));
 // End card (opaque)
 const end = (W, H, port) => `<div style="position:absolute;inset:0;background:#FFFDF2"></div>
@@ -50,7 +54,6 @@ const end = (W, H, port) => `<div style="position:absolute;inset:0;background:#F
 <div class="logo" style="height:${port ? 150 : 130}px;font-size:${port ? 150 : 130}px">${logo}</div>
 <div style="font-size:${port ? 78 : 74}px;font-weight:800;line-height:1.05;letter-spacing:-.02em;max-width:${port ? 940 : 1500}px">Live class games your students love, <span style="color:#1F9D63">and they can build their own.</span></div>
 <div style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;font-size:${port ? 44 : 42}px;font-weight:700">
-<span style="background:#66C792;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">Free for teachers</span>
 <span style="background:#FFD23F;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">oomba.ai/teachers/live</span></div></div>`;
 await png('end-land', 1920, 1080, end(1920, 1080, false), false);
 await png('end-port', 1080, 1920, end(1080, 1920, true), false);
