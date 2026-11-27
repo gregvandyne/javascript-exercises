@@ -259,12 +259,14 @@ const STOP = new Set(['a', 'an', 'the', 'and', 'or', 'for', 'of', 'to', 'in', 'o
 const termsOf = s => fold(s).split(' ').filter(w => w.length > 1 && !STOP.has(w) && !/^\d+$/.test(w));
 
 /** Official games that fit. -> [{ id, title, grades, subject, standards, minutes, live, summary }] (best first) */
-export function searchGames({ topic = '', grade = null, subject = '', standard = '', minutes = null, live = null } = {}) {
+/** user: a hidden game this teacher may still open (the platform admin, a class with it assigned: game-focus.js
+ *  mayOpenHidden) is found too, as assign allows it. */
+export function searchGames({ topic = '', grade = null, subject = '', standard = '', minutes = null, live = null } = {}, user = null) {
   const g = gradeNum(grade), terms = termsOf(`${topic} ${subject}`), std = String(standard || '').trim().toUpperCase();
   const out = [];
   for (const m of GAMES_META) {
     const row = games.getGameBySlug(m.slug);
-    if (!row || row.status !== 'published' || gameHidden(row)) continue;   // hidden while ARCADE is off (game-focus.js)
+    if (!row || row.status !== 'published' || (gameHidden(row) && !mayOpenHidden(user, row))) continue;   // hidden (game-focus.js)
     let score = 0;
     if (g !== null) { if (g < m.grades[0] - 1 || g > m.grades[1] + 1) continue; score += g >= m.grades[0] && g <= m.grades[1] ? 3 : 1; }
     if (std) { const hit = m.standards.some(x => x.toUpperCase().startsWith(std) || std.startsWith(x.toUpperCase())); if (hit) score += 4; }
@@ -858,7 +860,7 @@ function GLA_clean({ what, unit, band, topic }) {
   const w = GLA.cleanWhat({ what, unit, band: band || null, topic: topic || null });
   return w.ok ? { what, unit: w.unit.id, band: w.unit.band, topic: w.topic ? w.topic.id || topic : null, title: GLA.titleFor(w) } : null;
 }
-const assignWhy = code => ({ alreadyAssigned: 'The class already has it assigned. Nothing was assigned.', badDate: 'That due day is not a date. Nothing was assigned.', publishFirst: 'That game is not shared with this class yet: the teacher publishes it first. Nothing was assigned.' }[code] || 'It could not be assigned. Nothing was assigned.');
+const assignWhy = code => ({ alreadyAssigned: 'The class already has it assigned. Nothing was assigned.', badDate: 'That due day is not a date. Nothing was assigned.', publishFirst: 'That game is not shared with this class yet: the teacher publishes it first. Nothing was assigned.', someStudents: 'A book goes to the whole class: it cannot be assigned to only some students. Offer the whole class instead. Nothing was assigned.' }[code] || 'It could not be assigned. Nothing was assigned.');
 /** The assignment itself (the Assign pages' own services). -> { ok, classLesson } | { ok: false, code } */
 function runAssign(u, p) {
   const dueAt = p.due || null;
@@ -932,8 +934,8 @@ export const PAGE_TOOLS = Object.freeze({
   'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it. Its result is the worksheet read back after the change (landed, notLanded with why): report only what landed.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
     edits: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['add', 'replace', 'remove'] }, n: { type: 'integer' }, after: { type: ['integer', 'null'] }, item: { type: 'object' } } } } } } },
-  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed.', input_schema: { type: 'object', required: ['items'], properties: {
-    title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
+  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed. To clear the board ("clear it", "start over", "empty the board"), send clear: true and nothing else.', input_schema: { type: 'object', properties: {
+    clear: { type: 'boolean', description: 'true: take everything off the board (items, steps and title). Nothing else is needed.' }, title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
 });
 // The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js): on a class's Homeroom only.
 const PLAN_PICK = { type: 'object', description: 'What it hands out: ONE of gameId (a game id from getPageContext or searchGames), lessonId (one of the teacher\'s lessons) or make (a new lesson: { slug: "arithmetic-lab", op: add | subtract | multiply | divide, title } or { slug: "algebra-builder", mode: solve | multiply | factor, title }).', properties: { gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } };
@@ -1018,7 +1020,7 @@ export function runTool(name, input, ctx) {
       return { result: r, step: { k: r.dashboard ? 'dash' : 'page', n: r.dashboard ? r.dashboard.widgets.length : 0, q: r.dashboard ? r.dashboard.name : '' } };
     }
     case 'searchGames': {
-      const list = searchGames(i);
+      const list = searchGames(i, u);
       for (const g of list) ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g });
       ctx.lastList = list.map(g => `game:${g.id}`);
       return { result: { games: list.map(({ gameId, ...g }) => g) }, step: { k: 'games', n: list.length, q: [i.grade ? `grade ${i.grade}` : '', i.topic || i.subject || '', i.standard || ''].filter(Boolean).join(' · ').slice(0, 60) } };
@@ -1114,7 +1116,7 @@ export function runTool(name, input, ctx) {
       const r = H.howTo(u, String(i.task || ''), { page: ctx.page, lang: ctx.lang });
       if (r.error) return { result: { error: r.error }, step: { k: 'howNo' } };
       for (const l of r.links) ctx.links.add(l);
-      return { result: { title: r.title, steps: r.steps.map((x, k) => `${k + 1}. ${x}`), ...(r.go ? { go: r.go, note: 'One page covers it: you may also call proposeNavigation with this pageType and id.' } : {}), ...(r.action === 'createClass' && !r.noSchool && !r.denied ? { note: 'You can make the class yourself with createClass.' } : {}) }, step: { k: 'howto' } };
+      return { result: { title: r.title, steps: r.steps.map((x, k) => `${k + 1}. ${x}`), ...(r.go ? { go: r.go, note: 'One page covers it: you may also call proposeNavigation with this pageType and id.' } : {}), ...(r.action === 'createClass' && !r.noSchool && !r.denied ? { note: 'You can make the class yourself with createClass.' } : {}), ...(r.action === 'assign' ? { note: 'You can assign it yourself: find the game or book (searchGames, searchBooks), then call assign; the teacher taps Assign on the card. Offer that first, and give these steps only if they want to do it by hand.' } : {}) }, step: { k: 'howto' } };
     }
     case 'assign': {
       if (ctx.out.assign || ctx.out.ask) return { result: { error: 'One assignment per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'assignNo' } };
@@ -1175,12 +1177,15 @@ export function runTool(name, input, ctx) {
     case 'changeBoard': {
       const b = ctx.page.type === 'manip' ? ctx.page.board : null;
       if (!b) return { result: { error: 'There is no board open on this page.' }, step: { k: 'boardNo' } };
-      const r = MC.buildChange(i, b.tool);
+      // "Clear the board": an empty draft is the tool's start board (manip-chat.js readAnswer).
+      const clearing = i.clear === true;
+      const r = MC.buildChange(clearing ? { title: '', steps: [], items: [] } : i, b.tool);
       if (!r.change) {
         ctx.out.manipMiss = true;
         return { result: { applied: false, landed: [], notLanded: [{ why: 'none of the items could be built with this tool\'s settings' }], note: `Nothing on the board changed. ${VC.NOTE}` }, step: { k: 'boardNo' } };
       }
-      ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
+      ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change, ...(clearing ? { cleared: true } : {}) };
+      if (clearing) return { result: { applied: true, landed: { cleared: true, board: MC.readBack(b.tool, r.change) }, notLanded: [], note: `The board is cleared when your answer arrives (everything taken off); the teacher can Undo it. Say it is cleared. ${VC.NOTE}` }, step: { k: 'board', n: 0 } };
       // Checked work: the board as the page will show it, built and read back here (the page puts this exact board on).
       const notLanded = [...(r.change.dropped ? [{ items: r.change.dropped, why: r.change.capped ? `at most ${MC.PRACTICE_MAX} items, and items that failed this tool's checks were left out` : 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [])];
       return { result: { applied: true, landed: { board: MC.readBack(b.tool, r.change), items: r.change.n, steps: r.change.steps }, notLanded, note: `${VC.NOTE} The page puts this board on when your answer arrives; the teacher can Undo it.` }, step: { k: 'board', n: r.change.n } };
@@ -1752,7 +1757,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const perf = { calls: 0, modelMs: 0, toolMs: 0, sys: 0, tools: 0 };
   const sys = system(user, lang, page, settings);
   perf.sys = sys.length; perf.tools = JSON.stringify(tools()).length;
-  let res = null, cutOff = false;
+  let res = null, cutOff = false, cutShort = false;
   try {
     for (let n = 0; ; n++) {
       const last = n >= settings.steps;
@@ -1773,6 +1778,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         log('warn', 'companion reply cut off', { turn: turnId, page: page.type, step: n });
         if (!last && !cutOff && msgs[msgs.length - 1].role === 'user') { cutOff = true; msgs.push(withNote(msgs.pop(), CUT_OFF_NOTE)); continue; }
         res = { ...res, content: (res.content || []).filter(b => b.type === 'text') };
+        cutShort = true;   // cut off a second time: the reply is partial; the note below says the cards are the truth
         break;
       }
       const uses = (res.content || []).filter(b => b.type === 'tool_use');
@@ -1806,6 +1812,8 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
   let reply = guardReply(cleanText(user, fin.text, names), ctx);
+  // A reply cut off twice may stop mid-sentence while earlier steps did land: the app's own words say where the truth is.
+  if (cutShort) reply = `${reply.trim()}${reply.trim() ? '\n\n' : ''}My answer was cut short. The cards below show exactly what was done; anything not on them was not done.`;
   const points = ctx.out.points || [];
   if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
@@ -1877,7 +1885,12 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       const writes = fig.plan.ops.length || fig.plan.title || fig.plan.grade || fig.plan.units;
       const a = writes ? FC.applyPlan(user, w, fig.plan, { first: fig.first }) : {};
       const v = FC.verifyPlan(fig.plan, a, before, FC.readBack(user, w));
-      const verify = FC.verifyCard(v), fix = VC.correction(fig.told, v);
+      const verify = FC.verifyCard(v), changed = VC.correction(fig.told, v);
+      // A question swapped for one from its figure's generator is said in the app's own words under the reply, whatever
+      // the reply says (the card lists it too).
+      const sw = (verify && verify.swapped) || [];
+      const swapNote = sw.length ? `${sw.length === 1 ? `Question ${sw[0]} couldn't` : `Questions ${sw.join(', ')} couldn't`} be drawn as asked, so ${sw.length === 1 ? 'it is a question' : 'they are questions'} from the same kind of figure instead.` : '';
+      const fix = [changed, swapNote].filter(Boolean).join(' ');
       if (fix) log('warn', 'companion change landed other than told', { turn: turnId, told: fig.told.landed.length, landed: v.landed.length });
       if (a.code || !a.change) return { note, verify, ...(fix ? { correction: fix } : {}) };
       return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
@@ -2072,6 +2085,19 @@ export function act(u, turnId, a, value = '') {
   if (a === 'assign' || a === 'assignNo') return assignAct(u, row, turn, a);
   if (a === 'bookDelete' || a === 'bookKeep') return deleteAct(u, row, turn, a);
   if (/^book[A-Z]/.test(a)) return bookAct(u, row, turn, a, value);
+  // The page could not put the board on (or it read back unchanged): the turn says so under Oomba's words, whatever the
+  // reply said, and the card stays "could not be put on" after a refresh.
+  if (a === 'manipFailed') {
+    const m = note.manip; if (!m || m.applied || m.failed) return { ok: false, code: 'notFound' };
+    const fix = 'That board change did not go on your board after all, so the board is as it was. Please try again.';
+    db.transaction(() => {
+      const turns = parse(q.get('SELECT turns FROM oomba_chats WHERE id=?', row.id).turns, []);
+      const t = turns.find(x => x.id === turn.id);
+      if (t) { t.note = { ...note, manip: { ...m, failed: true, failedAt: Date.now() } }; if (!String(t.text || '').includes(fix)) t.text = `${String(t.text || '').trim()}\n\n${fix}`.trim(); }
+      q.run('UPDATE oomba_chats SET turns=? WHERE id=?', JSON.stringify(turns), row.id);
+    })();
+    return C.current(u, SURFACE, KEY);
+  }
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
     return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true, appliedAt: Date.now() } });

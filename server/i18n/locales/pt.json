@@ -4595,7 +4595,10 @@
         "tooLong": "Ficou longo demais. Fale por até um minuto.",
         "tooFast": "São muitas gravações em um minuto. Espere um momento.",
         "daily": "Por hoje não dá para falar mais. Você ainda pode digitar.",
-        "busy": "Falar não está disponível agora. Você ainda pode digitar."
+        "busy": "Falar não está disponível agora. Você ainda pode digitar.",
+        "lost": "O Oomba não conseguiu transformar sua gravação em palavras. Ela fica aqui até você fechá-la.",
+        "retry": "Tentar de novo",
+        "dismiss": "Fechar"
       },
       "web": {
         "on": "Busca na web ligada",

@@ -4594,7 +4594,10 @@
         "tooLong": "C'était trop long. Parle une minute au maximum.",
         "tooFast": "Cela fait beaucoup d'enregistrements en une minute. Attends un instant.",
         "daily": "Tu ne peux plus parler pour aujourd'hui. Tu peux toujours écrire.",
-        "busy": "La parole n'est pas disponible pour l'instant. Tu peux toujours écrire."
+        "busy": "La parole n'est pas disponible pour l'instant. Tu peux toujours écrire.",
+        "lost": "Oomba n’a pas pu transformer ton enregistrement en mots. Il reste ici jusqu’à ce que tu le fermes.",
+        "retry": "Réessayer",
+        "dismiss": "Fermer"
       },
       "web": {
         "on": "Recherche web activée",

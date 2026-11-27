@@ -16555,3 +16555,21 @@ room had no bubble; Send was greyed out for "Assign it".
   Lessons tab and Studio, short messages and a made board opened, a plotting worksheet; laptop and 390 px, light and
   dark; `COMPANION_SHOTS=<dir>` saves pictures), and the existing companion tests updated where the old behavior was
   the audit's complaint (a number question swapped silently, a one-letter message refused, the empty class's point).
+
+## Oomba chat: the second audit's open items (27 Nov 2026)
+
+What the round-2 audit listed and #686 had not covered:
+
+- **Clear a board**: `changeBoard` takes `clear: true` (the tool's start board); the board rules say so, and the tool
+  result says "cleared".
+- **A board the page could not put on**: the page tells the server (`manipFailed`, once); the turn's words get the
+  app's own line under Oomba's ("did not go on your board after all") and the card stays "could not be put on" after a
+  refresh.
+- **A Figures question swapped for its generator's** (only generator-made items swap now; the rest are rejected, #686):
+  a line under the reply names the questions, whatever the reply says.
+- **Search and assign agree**: `searchGames` finds a hidden game for a teacher who may open it (`mayOpenHidden`).
+- **A book for some students**: refused with the reason (a book goes to the whole class).
+- **Cut off twice**: the reply ends with "My answer was cut short. The cards below show exactly what was done".
+- **Voice**: when live words and the upload both fail, the clip stays in the page (never stored on the server) with
+  Try again and Dismiss.
+- **How-to "assign"** now tells the AI it can assign itself (find, then `assign`), steps only if the teacher wants to.

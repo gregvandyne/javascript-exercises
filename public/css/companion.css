@@ -93,6 +93,8 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-ibtn[hidden]{display:none}
 .oc-ibtn:focus-visible,.oc-pill:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .oc-mic-on{background:var(--bad, #D93B3B)!important;border-radius:999px;box-shadow:0 0 0 6px color-mix(in srgb,var(--bad, #D93B3B) 25%,transparent)}
+.oc-lost{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--warn, #F2B84B) 22%,var(--card, #fff));font-size:.9rem}
+.oc-lost>span{flex:1 1 180px}
 .oc-listen{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:var(--bad-bg);font-size:.86rem;font-weight:800;color:var(--text)}
 .oc-wave{display:inline-flex;gap:3px;align-items:center;height:18px}
 .oc-wave i{width:3px;border-radius:2px;background:var(--bad, #D93B3B)}

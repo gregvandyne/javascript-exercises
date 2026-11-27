@@ -336,12 +336,29 @@ function start() {
     const blob = m.parts.length ? new Blob(m.parts, { type: (m.rec && m.rec.mimeType || 'audio/webm').split(';')[0] }) : null;
     m.parts = [];
     if (!m.upload || m.cancel || !blob) { box.classList.remove('interim'); box.readOnly = false; return; }
+    await upload(m, blob);
+  }
+  /** The clip, uploaded once to be turned into words. When that fails too (the live words failed already), the clip is
+   *  kept here in the page, never on the server, with Try again until the teacher dismisses it, so no words are lost. */
+  async function upload(m, blob) {
     try {
       const res = await fetch('/api/companion/transcribe', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type, 'X-Clip-Ms': String(Date.now() - m.t0), ...(m.live && m.live.liveId ? { 'X-Live-Id': m.live.liveId } : {}) }, body: blob });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || L('mic.failed'));
+      lostClip(null);
       setBox(joined(m.base, data.text || ''), false); box.focus();
-    } catch (e) { setBox(m.base, false); chat.showErr(e.message || L('mic.failed')); }
+    } catch { setBox(m.base, false); lostClip({ m, blob }); }
+  }
+  function lostClip(k) {
+    let el = document.getElementById('oc-lost');
+    if (!k) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('div'); el.id = 'oc-lost'; el.className = 'oc-lost'; el.setAttribute('role', 'alert'); bar.after(el); }
+    el.innerHTML = `<span>${esc(L('mic.lost'))}</span><button type="button" class="btn btn-sm btn-primary" data-lost="retry">${esc(L('mic.retry'))}</button><button type="button" class="btn btn-sm" data-lost="drop">${esc(L('mic.dismiss'))}</button>`;
+    el.onclick = e => {
+      const b = e.target.closest('[data-lost]'); if (!b) return;
+      if (b.dataset.lost === 'drop') { lostClip(null); return; }
+      b.disabled = true; upload(k.m, k.blob);
+    };
   }
   function drawMic(m) {
     micBtn.classList.toggle('oc-mic-on', !!m);

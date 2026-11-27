@@ -151,6 +151,7 @@ export function workflowRules(ctx) {
     'box: "answer" when students write an answer under the item, "build" when they build or set it themselves, "none" for something to look at or talk about.',
     `items: at most ${PRACTICE_MAX}, every item different. steps: 1 to ${STEPS_MAX} short steps for the students, in order, one idea each, under 100 characters. title: under 60 characters. label: optional, at most 4 words; usually leave it out.`,
     'Board text is for children: US English, plain and friendly. No names of people, no links, no brands or product names.',
+    'To clear the board (take everything off), call changeBoard with clear: true and nothing else; never send the current board back for that.',
     'changeBoard takes the WHOLE new board: keep the title, steps and every item the teacher did not ask to change exactly as they are now, and change only what they asked for. Use only the settings listed for this tool; numbers as numbers, lists as arrays. Its result is the board read back as the page will show it: after it, say in one to three short sentences what is on the board now, only from that result, and say plainly what was left out and why.',
     'The board now (items in the same form as a draft; answerKey is the answer the app expects; "free" lists what was put on the board by hand, not as items):',
     `<board>\n${say({ title: ctx.title || null, ...ctx.board }).slice(0, CHAT.CONTEXT_MAX)}\n</board>`,
