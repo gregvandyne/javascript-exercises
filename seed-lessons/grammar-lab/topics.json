@@ -39301,6 +39301,7 @@
      "right": "Leo and she won the race.",
      "rule": "compound",
      "spot": 2,
+     "cycle": true,
      "hint": "Cover up Leo and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39317,6 +39318,7 @@
      "right": "The prize went to Leo and her.",
      "rule": "compound",
      "spot": 6,
+     "cycle": true,
      "hint": "Cover up Leo and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39333,6 +39335,7 @@
      "right": "Ana and he built the fort.",
      "rule": "compound",
      "spot": 2,
+     "cycle": true,
      "hint": "Cover up Ana and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39349,6 +39352,7 @@
      "right": "The teacher praised Ana and him.",
      "rule": "compound",
      "spot": 5,
+     "cycle": true,
      "hint": "Cover up Ana and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39365,6 +39369,7 @@
      "right": "She and Sam read the map.",
      "rule": "compound",
      "spot": 0,
+     "cycle": true,
      "hint": "Cover up Sam and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39381,6 +39386,7 @@
      "right": "The coach thanked Mia and her.",
      "rule": "compound",
      "spot": 5,
+     "cycle": true,
      "hint": "Cover up Mia and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39397,6 +39403,7 @@
      "right": "He and Leo carried the table.",
      "rule": "compound",
      "spot": 0,
+     "cycle": true,
      "hint": "Cover up Leo and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39413,6 +39420,7 @@
      "right": "The invitation went to Ana and him.",
      "rule": "compound",
      "spot": 6,
+     "cycle": true,
      "hint": "Cover up Ana and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39429,6 +39437,7 @@
      "right": "She and Ben baked cookies.",
      "rule": "compound",
      "spot": 0,
+     "cycle": true,
      "hint": "Cover up Ben and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39445,6 +39454,7 @@
      "right": "The dog followed Sam and her home.",
      "rule": "compound",
      "spot": 5,
+     "cycle": true,
      "hint": "Cover up Sam and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39461,6 +39471,7 @@
      "right": "He and Mia planted the seeds.",
      "rule": "compound",
      "spot": 0,
+     "cycle": true,
      "hint": "Cover up Mia and say the sentence with only the pronoun. Which form sounds right?"
     },
     {
@@ -39477,6 +39488,7 @@
      "right": "The librarian helped Leo and him.",
      "rule": "compound",
      "spot": 5,
+     "cycle": true,
      "hint": "Cover up Leo and say the sentence with only the pronoun. Which form sounds right?"
     }
    ],
@@ -39769,6 +39781,7 @@
      ],
      "right": "Ana taught herself to juggle.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39785,6 +39798,7 @@
      ],
      "right": "Leo hurt himself on the trail.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39801,6 +39815,7 @@
      ],
      "right": "They built themselves a fort.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same group."
     },
     {
@@ -39817,6 +39832,7 @@
      ],
      "right": "I made myself a sandwich.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39833,6 +39849,7 @@
      ],
      "right": "She looked at herself in the mirror.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39849,6 +39866,7 @@
      ],
      "right": "We enjoyed ourselves at the fair.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same group."
     },
     {
@@ -39865,6 +39883,7 @@
      ],
      "right": "The cat cleaned itself after the rain.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same thing."
     },
     {
@@ -39881,6 +39900,7 @@
      ],
      "right": "You should believe in yourself.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39897,6 +39917,7 @@
      ],
      "right": "Mia reminded herself to bring the book.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39913,6 +39934,7 @@
      ],
      "right": "Sam and Ana introduced themselves to the class.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same group."
     },
     {
@@ -39929,6 +39951,7 @@
      ],
      "right": "He blamed himself for the loss.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same person."
     },
     {
@@ -39945,6 +39968,7 @@
      ],
      "right": "The team congratulated itself on the win.",
      "rule": "reflexive",
+     "cycle": true,
      "hint": "The reflexive pronoun points back to the subject when the subject and object are the same group."
     }
    ]

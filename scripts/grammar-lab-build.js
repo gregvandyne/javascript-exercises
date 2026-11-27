@@ -52,8 +52,10 @@
 //           missing capital; a missing comma, an end mark outside the marks, a small letter to start the quote.
 //   items   grades 6-8 (and up): a topic whose quiz mixes question shapes; each line is read by the first reader that
 //           knows its shape and keeps its own format (tap with phrases, capfix both ways, marks: punctuation chips,
-//           choice, passage, fix). The code and its rules are under "grades 6-8" below; pathways.json read.* holds a
-//           topic's notes for them (its independent check, pills, chips, fix kind, optional commas, "right as it is").
+//           choice, passage, fix). The code and its rules are under "grades 6-8" and "grades 6-8, part 2" below;
+//           pathways.json read.* holds a topic's notes for them (its independent check, pills, chips, fix kind,
+//           optional commas, "right as it is", press-to-cycle, and read.bare: what a line written as only its
+//           sentence asks). source.line picks one of a topic written twice in the source.
 // No option is ever pre-selected: the page opens every question with nothing chosen and Submit off.
 //
 // Mistake Hunt rooms (phase0.md): a topic whose pathways.json entry has room.kinds gets a passage built from its own
@@ -1642,7 +1644,9 @@ const READERS_2 = [
     if (!r.bare) return null;
     const read = BARE[def.read.bare];
     if (!read) { problems.push(`${at}: read.bare "${def.read.bare}" is not built`); return false; }
-    return read(r, def, problems, at);
+    const it = read(r, def, problems, at);
+    // read.cycle: a blank's choices as press-to-cycle
+    return it && def.read.cycle && it.format === 'choice' && it.text.includes('___') ? { ...it, cycle: true } : it;
   },
   // "Choose the correct verb: "The dog (bark / barks) at the mail carrier.""
   function givenPair(r, def, problems, at) {
