@@ -169,14 +169,14 @@ export const placeholder = i => `Student ${String.fromCharCode(65 + (i % 26))}${
 /**
  * What Oomba may see of the list (services/companion.js needsLook): each student as a placeholder, the reasons as
  * codes and counts, the handouts' titles with every student's name taken out (titles are the teacher's). Never a name,
- * a username or an id; the page maps the placeholders back to names in the browser (who: placeholder -> student id,
+ * a username or an id, and never whether a student has Hub supports (a disability or IEP hint stays in the app); the page maps the placeholders back to names in the browser (who: placeholder -> student id,
  * kept with the chat turn, never sent to the AI). -> { students, who }
  */
 export function forAi(u, items) {
   const names = studentNames(u), who = {};
   const students = items.map((x, i) => {
     const p = placeholder(i); who[p] = x.id;
-    return { student: p, hasSupports: !!x.sup, atHome: !!x.home, reasons: x.reasons.map(r => ({ reason: r.rule, ...(r.title ? { handout: scrub(String(r.title).slice(0, 80), names).text } : {}),
+    return { student: p, atHome: !!x.home, reasons: x.reasons.map(r => ({ reason: r.rule, ...(r.title ? { handout: scrub(String(r.title).slice(0, 80), names).text } : {}),
       ...(r.minutes !== undefined ? { minutes: r.minutes } : {}), ...(r.total ? { right: r.right, outOf: r.total } : {}), ...(r.rule === 'overdue' ? { handoutsAfterDue: r.count } : r.rule === 'tries' ? { tries: r.count } : {}) })) };
   });
   return { students, who };

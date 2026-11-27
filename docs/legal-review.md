@@ -744,7 +744,7 @@ SDK's default host api.anthropic.com; model `COMPANION_MODEL` or `BUILDER_MODEL`
   scrubbed, saved plan names); the searches over Oomba's own catalog; `findMyPages` (ids, scrubbed names, grades).
 - **Needs a look** (`needsLook`, homeroom-look.js `forAi`): each flagged student as "Student A", "Student B"..., with the
   rule's reason and its numbers (minutes stuck, tries, handouts after due, right out of total on a reading quiz under 60
-  percent), whether the student has Hub supports and whether they work at home. No name, no account id, no answers or
+  percent) and whether they work at home. No name, no account id, no answers or
   work. This is pseudonymous progress information about individual students; the text says so ("a quiz score").
 - **Web search:** Anthropic's server web search tool (builder/search.js), queries screened and logged, no location.
 - **Not Anthropic:** the microphone goes to the STT_PROVIDER (OpenAI api.openai.com or ElevenLabs api.elevenlabs.io;
@@ -753,10 +753,10 @@ SDK's default host api.anthropic.com; model `COMPANION_MODEL` or `BUILDER_MODEL`
 
 Questions for the lawyer:
 
-1. Needs a look sends per-student, pseudonymous progress signals (a quiz score, minutes stuck, a "has supports" flag).
+1. Needs a look sends per-student, pseudonymous progress signals (a quiz score, minutes stuck).
    Is "never names or work" plus "a placeholder with the reason, such as a quiz score" an adequate description for
    FERPA and the state laws, or should /privacy's companion section (which says "never students' names, answers or
-   work") name these signals too? The "has supports" flag in particular may count as sensitive.
+   work") name these signals too? (The "has supports" flag was removed on 2026-11-27 by the owner: whether a child has a support is a disability or IEP hint and is no longer sent.)
 2. A teacher can attach a document or a picture of their choosing (a worksheet photo, for example); names on our
    rosters are taken out, but the content is the teacher's choice. Is the in-app guidance enough, or does the item need
    to say that attachments are sent as the teacher chooses them?
