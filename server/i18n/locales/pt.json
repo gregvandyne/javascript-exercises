@@ -7758,7 +7758,7 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Aulas como Shark Plank e as primeiras pistas do Sum Racer servem para os menores. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Jogos como Word Hunt, que lê uma palavra em voz alta quando você toca nela, servem para os menores. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
@@ -7828,7 +7828,7 @@
     "live": {
       "h": "Aulas ao vivo para a turma",
       "p1": "Conduza uma corrida de quiz ao vivo ou qualquer aula pronta para o ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Entre os modos prontos estão Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas), Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil), Would You Rather, Atlas Quest e Doodle Hoot.",
+      "li1": "Entre os modos prontos estão Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil), Would You Rather, Atlas Quest e Doodle Hoot.",
       "li2": "Use um conjunto inicial, digite um rápido ou transforme as perguntas de um plano de aula num quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
@@ -8006,19 +8006,19 @@
         "title": "Jogos de inglês grátis: leitura e ortografia",
         "description": "Caça-palavras, jogo da forca e palavra do dia em inglês para 5 a 14 anos, com as palavras lidas em voz alta. Grátis, sem anúncios, em qualquer navegador.",
         "h1": "Jogos de leitura e ortografia em inglês para quem está aprendendo a ler",
-        "lead": "Três jogos de palavras em inglês que desenvolvem a ortografia e o vocabulário. Shark Plank e Word Hunt leem as palavras em voz alta, então servem para quem está começando a ler. Word Peek é um desafio diário para quem já escreve com confiança.",
-        "tips": "Use um tema do Word Hunt como aquecimento para um assunto, resolvam juntos a Palavra do dia do Word Peek na lousa conversando sobre cada palpite, ou deixe o Shark Plank para quem termina antes.",
+        "lead": "Jogos de palavras para ortografia e vocabulário. O Word Hunt lê uma palavra em voz alta quando você toca nela, então serve para quem está começando a ler. O Word Peek é um enigma diário de palavras para quem já escreve com segurança.",
+        "tips": "Use um tema do Word Hunt como aquecimento para um assunto, ou resolvam juntos o Daily Peek no quadro e conversem sobre cada palpite.",
         "faq": {
           "q1": "Os jogos leem as palavras em voz alta?",
-          "a1": "O Shark Plank lê cada palavra em voz alta, e no Word Hunt os alunos podem tocar em qualquer palavra para ouvi-la.",
+          "a1": "Sim. No Word Hunt os alunos podem tocar em qualquer palavra para ouvi-la em voz alta.",
           "q2": "Tem um desafio do dia?",
           "a2": "Sim. O Word Hunt e o Word Peek têm um desafio novo todo dia, e no Word Peek o aluno pode escolher uma palavra secreta para um amigo.",
           "q3": "Posso usar a minha própria lista de palavras?",
           "a3": "Ainda não nestes jogos. Você pode descrever para o Construtor um jogo de ortografia com as suas palavras, e ele cria um para a sua turma.",
           "q4": "Qual jogo de palavras em inglês combina com o nível de leitura do meu filho?",
-          "a4": "Shark Plank e Word Hunt leem as palavras em voz alta, então servem para quem ainda está aprendendo a ler em inglês. Word Peek é para quem já escreve as palavras com confiança."
+          "a4": "O Word Hunt lê as palavras em voz alta, então serve para crianças que ainda estão aprendendo a ler. O Word Peek é para quem já escreve com segurança."
         },
-        "home": "Faça da Palavra do dia um hábito da família no café da manhã e conversem sobre cada palpite, ou deixe uma criança menor jogar Shark Plank com o som ligado, para ouvir cada palavra em voz alta."
+        "home": "Façam do Daily Peek um hábito da família no café da manhã e conversem sobre cada palpite, ou deixe um leitor mais novo jogar Word Hunt com o som ligado e tocar em qualquer palavra para ouvi-la."
       },
       "strategy": {
         "name": "Jogos de xadrez e estratégia",
@@ -8026,19 +8026,19 @@
         "title": "Jogos de xadrez e estratégia grátis para crianças",
         "description": "Aprenda xadrez com lições curtas e desafios, depois jogue contra um amigo ou um robô. E ainda quatro em linha e blocos que caem, grátis para 5 a 14 anos.",
         "h1": "Jogos de xadrez e estratégia que desenvolvem o raciocínio",
-        "lead": "Jogos de estratégia pedem que os alunos planejem as jogadas, percebam padrões e pensem no que o outro jogador vai fazer. Castle Clash ensina xadrez desde o primeiro movimento. Drop Four e Brick Drop são jogos rápidos de planejamento e padrões.",
-        "tips": "Monte um clube de xadrez da turma com as lições e os desafios do Castle Clash, ou coloque dois alunos no mesmo aparelho para uma partida de Drop Four.",
+        "lead": "Jogos de estratégia pedem para planejar, perceber padrões e pensar no que o outro jogador vai fazer. O Castle Clash ensina xadrez desde o primeiro lance, com aulas, problemas e um robô para enfrentar.",
+        "tips": "Monte um clube de xadrez com as aulas e os problemas do Castle Clash, ou coloque dois alunos para jogar um contra o outro no mesmo aparelho.",
         "faq": {
           "q1": "As crianças conseguem aprender xadrez do zero?",
           "a1": "Sim. O Castle Clash tem uma lição curta para cada peça e 24 desafios de xeque-mate, e depois um robô para jogar em quatro níveis.",
           "q2": "Dois alunos podem jogar no mesmo aparelho?",
-          "a2": "Sim. O Castle Clash e o Drop Four têm modo para dois jogadores na mesma tela.",
+          "a2": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela.",
           "q3": "O robô é muito difícil?",
-          "a3": "O robô do Castle Clash tem quatro níveis, e o robô do Drop Four tem Fácil, Normal e Difícil.",
+          "a3": "O robô do Castle Clash tem quatro níveis, de um começo tranquilo a um desafio de verdade.",
           "q4": "Posso aprender xadrez junto com meu filho?",
           "a4": "Pode. As lições do Castle Clash começam pelo movimento de cada peça, então um adulto que nunca jogou também aprende e depois pode jogar contra a criança na mesma tela."
         },
-        "home": "Aprendam xadrez juntos: uma lição do Castle Clash por dia e depois uma partida um contra o outro na mesma tela. E o Drop Four cabe em qualquer cinco minutinhos livres."
+        "home": "Aprendam xadrez juntos: uma aula do Castle Clash por dia e depois uma partida um contra o outro na mesma tela."
       },
       "music": {
         "name": "Jogos de música",
@@ -8070,7 +8070,7 @@
           "q1": "Quanto tempo deve durar uma pausa?",
           "a1": "Muitos professores usam de 3 a 5 minutos. Estes jogos têm rodadas curtas, então é fácil parar na hora certa.",
           "q2": "A turma inteira pode jogar na mesma tela?",
-          "a2": "Sim. Coloque um jogo na lousa e revezem. Beat Lanes e Swish Flick funcionam muito bem com a turma torcendo junto."
+          "a2": "Sim. Coloque um jogo no quadro e revezem, com a turma toda torcendo."
         }
       },
       "makeAGame": {
@@ -8191,9 +8191,9 @@
         },
         "faq": {
           "q2": "Os jogos são difíceis demais para uma criança de 8 anos?",
-          "a2": "Cada um começa fácil. O Sum Racer começa com adição até 10, o robô do Castle Clash tem um nível fácil e o Shark Plank lê todas as palavras em voz alta.",
+          "a2": "Todos começam fáceis. O robô do Castle Clash tem um nível fácil, e o Word Hunt lê uma palavra em voz alta quando você toca nela.",
           "q3": "Duas crianças podem jogar no mesmo aparelho?",
-          "a3": "Sim. Sum Racer, Castle Clash e Drop Four têm modo para dois jogadores na mesma tela.",
+          "a3": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular.",
           "q4": "Uma criança de 8 anos consegue usar o Construtor com IA?",
           "a4": "Sim. A criança digita a ideia, então ajuda se ela já souber escrever uma ou duas frases, e um adulto por perto ajuda no começo. O Construtor segue regras fixas de segurança infantil."
         }
@@ -8222,9 +8222,9 @@
         },
         "faq": {
           "q2": "Os jogos são fáceis demais para uma criança de 10 anos?",
-          "a2": "Não. O Sum Racer vai até todas as tabuadas e a divisão, o Castle Clash tem 24 desafios de xeque-mate e o Word Peek é um desafio diário de verdade.",
+          "a2": "Não. O Castle Clash tem 24 problemas de xeque-mate, e o Word Peek é um desafio diário de verdade.",
           "q3": "Meu filho pode jogar com um irmão ou um amigo?",
-          "a3": "Sim. Sum Racer e Castle Clash têm modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular de mão em mão.",
+          "a3": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular.",
           "q4": "O Construtor com IA é seguro para uma criança de 11 anos?",
           "a4": "O Construtor só cria jogos e segue regras fixas de segurança infantil, como nada de violência sangrenta, nada de apostas, nada de marcas reais e nada de links para fora. <a href=\"{ai}\">Veja todas as regras que ele segue</a>. Os jogos ficam privados até a criança compartilhar."
         }
@@ -8276,7 +8276,7 @@
         },
         "faq": {
           "q2": "Meu filho pode jogar se ainda não sabe ler?",
-          "a2": "Em alguns jogos, sim. Word Trail e Shark Plank leem cada palavra em voz alta, Word Hunt lê uma palavra quando você toca nela, e Sum Racer usa números. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
+          "a2": "Em alguns jogos, sim. O Word Hunt lê uma palavra em voz alta quando você toca nela. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
           "q3": "Os cursos são para esta idade?",
           "a3": "Um deles, sim. Number Quest, nosso curso de matemática, começa na educação infantil: a rua Launchpad vai da educação infantil ao 2º ano, e seus jogos leem cada instrução em voz alta. CS Quest e Cyber Defenders começam no 3º ano, por volta dos 8 anos.",
           "q4": "Uma criança de 6 anos pode usar o Construtor com IA?",
@@ -8453,7 +8453,7 @@
       "a1": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias para criar os próprios jogos. Não há anúncios nem nada para a criança comprar.",
       "a1paid": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias. As famílias podem escolher um plano opcional para ter mensagens extras para o Construtor, e as crianças nunca são convidadas a pagar. <a href=\"{plans}\">Ver os planos</a>.",
       "q2": "Para quais idades é indicado?",
-      "a2": "Crianças da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como o Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos.",
+      "a2": "Crianças da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Jogos como Word Hunt, que lê uma palavra em voz alta quando você toca nela, servem para os menores.",
       "q3": "Meu filho precisa de conta ou de e-mail?",
       "a3": "Não. Qualquer pessoa pode jogar na hora, sem cadastro. Para guardar os jogos e as pontuações, a criança pode criar uma conta só com um nome inventado e uma senha. Nunca pedimos e-mail.",
       "q4": "Tem anúncios ou compras dentro do app?",
@@ -10131,13 +10131,13 @@
       "lead": "Telas reais de uma aula ao vivo numa escola de demonstração com nomes inventados.",
       "s1": {
         "h": "Escolha uma aula e suas perguntas",
-        "p": "Escolha Quest Race ou Brain Board e depois as perguntas: o banco por matéria e idade (6 a 14), seu próprio conjunto, um que um colega compartilhou ou as perguntas de um dos seus planos de aula.",
-        "alt": "O primeiro passo para conduzir uma aula ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores aceita."
+        "p": "Escolha Brain Board e depois as perguntas: o banco por matéria e idade (6 a 14), seu próprio conjunto, um que um colega compartilhou ou as perguntas de um dos seus planos de aula.",
+        "alt": "O primeiro passo para conduzir uma aula ao vivo, «O que você quer jogar?»: Brain Board, Would You Rather (ao vivo) e Atlas Quest, cada um com o número de jogadores ideal."
       },
       "s2": {
         "h": "Mostre o código na lousa",
         "p": "Os alunos abrem a página de entrada no aparelho e digitam o código de 7 dígitos, ou leem o QR code. Os nomes aparecem conforme eles entram.",
-        "alt": "A tela do projetor antes de a aula começar: um personagem de desenho contra quem a turma toda joga, um código grande de 7 dígitos, um QR code e quantos jogadores entraram."
+        "alt": "A tela do projetor antes de a aula começar: a sala de espera do Brain Board com um cartão para cada aluno que entrou, um código grande de 7 dígitos, um código QR e quantos jogadores entraram."
       },
       "s3": {
         "h": "Os alunos entram em segundos",
@@ -10147,7 +10147,7 @@
       "s4": {
         "h": "Todos respondem ao mesmo tempo",
         "p": "A pergunta fica na lousa e os botões de resposta, em cada aparelho. Quanto mais rápida a resposta certa, mais pontos ela vale.",
-        "alt": "O celular de um aluno durante uma pergunta: no alto, o personagem de desenho contra quem a turma joga; depois a pergunta e quatro botões de resposta."
+        "alt": "A tela de um aluno durante uma pergunta: uma pergunta de Ciências do Brain Board valendo 100 pontos, um cronômetro e quatro botões de resposta."
       },
       "s5": {
         "h": "Veja quem sabe o quê",
@@ -11655,13 +11655,13 @@
       "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
       "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
       "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso.",
-      "games": "As aulas com níveis para vários anos (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para o ano do plano de aula, ou para o nível em que o passo está fixado. Num plano de aula sem ano, elas aparecem só em Coberto por.",
+      "games": "Aulas com níveis para várias séries contam como prática só para a série do plano de aula, ou para o nível em que o passo está fixado. Num plano de aula sem série, aparecem só em «Coberto por».",
       "live": "As aulas ao vivo como Tug of Math Live não registram qual pergunta era de qual padrão, então as respostas de um aluno são divididas entre os padrões da aula. Esses números são estimativas.",
       "courses": "O Number Quest conta o trabalho feito com uma conta da escola, ou desde que o aluno entrou nesta turma. Uma única verificação (3 perguntas) não basta para atingir um padrão."
     },
     "empty": {
       "title": "Ainda não há padrões Common Core",
-      "text": "Marque seus planos de aula com padrões ou atribua planos de aula com aulas do Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
+      "text": "Marque seus planos de aula com padrões, ou atribua planos de aula com aulas de Aprender marcadas com eles, e eles aparecem aqui."
     },
     "csvCols": {
       "code": "Código",

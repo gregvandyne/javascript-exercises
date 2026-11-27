@@ -263,7 +263,7 @@ async function parentShots({ person, shot }) {
   // 2. A learning game, signed out.
   await both('parents-play', async kind => {
     const p = await person(kind);
-    await p.goto('/play/sum-racer');
+    await p.goto('/play/sudoku');
     await playStart(p);
     const f = await shot(p, `parents-play-${kind}`); await p.context().close(); return f;
   });
@@ -348,17 +348,11 @@ async function playStart(p) {
   })();
   await frame.waitForFunction(() => typeof window.BRB === 'object');
   await p.waitForTimeout(800);
-  // Sum Racer opens on its track list: pick the first track, then let the race run a moment.
-  await frame.locator('#playBtn').click();
-  let card = null;
-  for (let i = 0; i < 100 && !card; i++) {
-    for (const f of p.frames()) { const c = f.locator('.tcard:visible').first(); if (await c.count().catch(() => 0)) { card = c; break; } }
-    if (!card) await p.waitForTimeout(200);
-  }
-  if (!card) throw new Error('Sum Racer: no track to pick');
-  await card.click();
-  // Past the 3-2-1 countdown, so a sum and its answers show.
-  await p.waitForTimeout(5500);
+  // Sudoku (Sum Racer and the other arcade games are not on the site): start the first puzzle and fill a few cells, so a
+  // game in progress shows.
+  const go = frame.locator('#playBtn, .play-btn, button:has-text("Play"), button:has-text("Start")').first();
+  if (await go.count()) await go.click().catch(() => {});
+  await p.waitForTimeout(1500);
 }
 /** Scrolls the Builder's chat so the last message from the child that says `text` is at its top. */
 async function logFrom(p, text) {
@@ -418,15 +412,10 @@ async function teacherShots({ person, shot }, ids) {
 }
 
 // ---------------------------------------------------------------- Oomba Live (/teachers/live)
-// Ms. Rivera hosts a Question Battle for her class; the five demo students join with their own school accounts (a class
-// room shows account names). live-pick: her /live landing; live-lobby: the projector page with the code, QR and the
+// Ms. Rivera hosts a Brain Board for her class (Quest Race and Question Battle are not on the site: services/game-focus.js);
+// the five demo students join with their own school accounts (a class room shows account names). live-pick: her /live landing; live-lobby: the projector page with the code, QR and the
 // class joined; live-join: a student's /join with the code typed; live-play: a student's question card; live-results:
 // the results page after the last question.
-const LIVE_ITEMS = [
-  { q: 'Which planet is closest to the Sun?', choices: ['Mercury', 'Venus', 'Earth', 'Mars'], answer: 0, secs: 30 },
-  { q: 'What do plants need to make food?', choices: ['Sunlight', 'Sand', 'Salt', 'Snow'], answer: 0, secs: 30 },
-  { q: 'How many legs does a spider have?', choices: ['8', '6', '10', '4'], answer: 0, secs: 30 },
-];
 async function liveShots({ person, shot }, ids) {
   const made = [];
   const liveFrame = async (page, ready) => {
@@ -455,8 +444,8 @@ async function liveShots({ person, shot }, ids) {
       if (!made.ok()) throw new Error(`live: question set ${made.status()}`);
     }
     await p.goto('/live');
-    // Question Battle, so the question-set picker shows too.
-    await p.locator('input[name="pick"][value="mode:battle"]').check({ force: true }).catch(() => {});
+    // Brain Board, so the question picker shows too.
+    await p.locator('input[name="pick"][value="mode:board"]').check({ force: true }).catch(() => {});
     await p.locator('#lv-new').dispatchEvent('change');
     const cls = p.locator('input[name="audience"][value="class"]');
     if (await cls.count()) await cls.check().catch(() => {});
@@ -471,7 +460,7 @@ async function liveShots({ person, shot }, ids) {
   const host = await person('desk', 'MsRivera');
   host.on('dialog', d => d.accept());
   const origin = new URL(host.url()).origin;
-  const r = await host.request.post('/api/live/sessions', { data: { pick: 'mode:battle', items: LIVE_ITEMS, audience: 'class', classId: ids.classId, replace: true }, headers: { Origin: origin } });
+  const r = await host.request.post('/api/live/sessions', { data: { pick: 'mode:board', starter: 'bank:board:a10:science+geography+math+words+history', audience: 'class', classId: ids.classId, replace: true }, headers: { Origin: origin } });
   if (r.status() !== 200) throw new Error(`live: session ${r.status()} ${await r.text()}`);
   const hostUrl = (await r.json()).redirect;
   await host.goto(hostUrl);
@@ -509,12 +498,18 @@ async function liveShots({ person, shot }, ids) {
     await host.goto(hostUrl); await liveFrame(host); await host.waitForTimeout(800);
   }
 
-  // 4. The first question on Pixel Panda's phone and Nova Newt's laptop, before answering.
+  // 4. Three tiles: Ms. Rivera picks one on the board, the class answers; the first question on Pixel Panda's phone and
+  // Nova Newt's laptop, before answering. Then she ends the game (the results).
   const frames = [];
   for (const s of students) frames.push({ ...s, f: await liveFrame(s.p) });
   await act(host, 'start');
-  for (let i = 0; i < LIVE_ITEMS.length; i++) {
-    for (const s of frames) await until(async () => { const st = await state(s.f); return st.phase === 'playing' && st.question && st.question.i === i; }, `question ${i}`);
+  const ROUNDS = 3;
+  let lastQ = '';
+  for (let i = 0; i < ROUNDS; i++) {
+    const hf = await liveFrame(host, st => st.phase === 'between');
+    await hf.locator('#grid .bb-tile.can').nth(i * 6).click();
+    for (const s of frames) await until(async () => { const st = await state(s.f); return st.phase === 'playing' && st.question && st.question.q !== lastQ; }, `question ${i}`);
+    lastQ = (await state(frames[0].f)).question.q;
     if (i === 0) {
       for (const [name, kind] of [['Nova Newt', 'desk'], ['Pixel Panda', 'phone']]) {
         const s = frames.find(x => x.rosterName === name);
@@ -522,17 +517,20 @@ async function liveShots({ person, shot }, ids) {
         made.push({ slug: 'live-play', kind, png: await shot(s.p, `live-play-${kind}`, { names: true }) });
       }
     }
-    // Most are right; a couple miss one, so the results have something to show.
+    // Different answers, so the results have something to show.
     for (const [k, s] of frames.entries()) {
-      const q = (await state(s.f)).question, right = q.choices.indexOf(LIVE_ITEMS[i].choices[0]);
-      const pick = (k + i) % 4 === 3 ? (right + 1) % q.choices.length : right;
-      await s.f.locator('.qb-a').nth(pick).click();
+      const q = (await state(s.f)).question;
+      await s.f.locator('.bb-a').nth((k + i) % q.choices.length).click();
       await s.p.waitForTimeout(150 + k * 120);
     }
     for (const s of frames) await until(async () => (await state(s.f)).phase !== 'playing', `reveal ${i}`);
     await host.waitForTimeout(600);
-    await act(host, 'next');
+    // Back to the board (Next after the reveal, when the room waits for it).
+    const hs = await state(await liveFrame(host));
+    if (hs.phase !== 'between' && i < ROUNDS - 1) await act(host, 'next').catch(() => {});
   }
+  await act(host, 'end');
+  await host.locator('.ob-dialog [data-ob="ok"]').click();   // "End the game?" asks first (app.js ask)
   await host.waitForURL(/\/live\/results\//, { timeout: 30_000 });
   const results = host.url();
 
