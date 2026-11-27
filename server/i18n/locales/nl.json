@@ -16464,6 +16464,10 @@
       "listen": "Lees het voor",
       "stop": "Stop",
       "practice": "Begin met oefenen",
+      "start": "Begin met de vragen",
+      "skip": "Naar de vragen",
+      "lead": "Lees de kaart en begin dan met de vragen. Je kunt hem altijd opnieuw openen.",
+      "close": "Sluiten",
       "question": "Vraag jezelf af"
     },
     "review": {

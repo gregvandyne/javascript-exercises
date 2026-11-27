@@ -150,7 +150,7 @@ async function playLesson(page, box, tag, L) {
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -243,7 +243,7 @@ test('the other part 2 shapes on a phone, dark, and a capitalization Mistake Hun
     for (const [unit, topic, key] of [['pronoun-case', 'reflexive-pronouns', 'cycle'], ['modifiers', 'misplaced-meaning', 'tap'], ['phrases-and-clauses', 'restrictive-clauses', 'chips'],
       ['perfect-progressive', 'progressive-tenses', 'pills'], ['thesis-statements', 'thesis-fact-opinion', 'passage'], ['modifiers', 'fixing-misplaced', 'whole']]) {
       await page.goto(`${base}/courses/grammar-lab/6-8/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));

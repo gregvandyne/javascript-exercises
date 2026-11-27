@@ -78,6 +78,11 @@ async function playToMastery(page, tag, { guest = false } = {}) {
   await shot(page, tag, '04-welcome');
   await noSideScroll(page, 'welcome');
   await page.click('#gl-go');
+  // The teaching card, the lesson's next step.
+  await page.waitForSelector('#gl-cardstep:not([hidden])');
+  await shot(page, tag, '04-card-step');
+  await noSideScroll(page, 'card step');
+  await page.click('#gl-card-go');
   // First visit: the double-tap tip.
   await page.waitForSelector('#gl-tip[open]');
   await page.waitForTimeout(2300);

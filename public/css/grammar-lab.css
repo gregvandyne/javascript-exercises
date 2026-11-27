@@ -118,17 +118,22 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-def{font-size:20px;font-weight:600;margin:0 0 12px}
 .gl-example,.gl-tips{margin:0 0 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2)}
 .gl-card-small .gl-example{background:var(--card)}
-.gl-ex-text{font-size:22px;font-weight:600;line-height:2.4;margin:0}
+.gl-ex-text{font-size:22px;font-weight:600;line-height:1.6;margin:0}
 .gl-ex-note{color:var(--text-2);margin:0}
 .gl-tips ul{margin:0;padding-inline-start:20px}
 .gl-tips li{margin:4px 0}
 .gl-tips .gl-ex-text{font-size:20px}
 .gl-how{margin:0 0 12px}
-.gl-mk{position:relative;display:inline-block;padding:0 .18em;border-radius:8px;line-height:1.3}
-.gl-mk-tag{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;color:var(--text-2)}
-.gl-mk-adjective,.gl-mk-adverb{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
-.gl-mk-noun,.gl-mk-subject,.gl-mk-pronoun{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
-.gl-mk-verb,.gl-mk-article,.gl-mk-conjunction,.gl-mk-preposition{background:var(--hover);box-shadow:inset 0 -3px 0 var(--edge)}
+/* A marked word: the highlighted word over its small label, both in the line's flow (they used to hang the label under
+   the word on its own, so a label wider than its word ran into the next word's label, and on a phone into the next
+   line). The mark is as wide as the wider of the word and the label's longest word (a long label wraps under a short
+   word), it sits on the line's baseline like the text around it, and a line with a label grows to fit it. */
+.gl-mk{display:inline-flex;flex-direction:column;align-items:center;width:min-content;vertical-align:baseline;line-height:1.3}
+.gl-mk-w{display:block;padding:0 .18em;border-radius:8px;white-space:nowrap}
+.gl-mk-tag{display:block;margin-top:1px;font-size:12px;font-weight:700;font-style:normal;line-height:1.15;white-space:normal;text-align:center;overflow-wrap:normal;color:var(--text-2)}
+.gl-mk-adjective>.gl-mk-w,.gl-mk-adverb>.gl-mk-w{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-mk-noun>.gl-mk-w,.gl-mk-subject>.gl-mk-w,.gl-mk-pronoun>.gl-mk-w{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
+.gl-mk-verb>.gl-mk-w,.gl-mk-article>.gl-mk-w,.gl-mk-conjunction>.gl-mk-w,.gl-mk-preposition>.gl-mk-w{background:var(--hover);box-shadow:inset 0 -3px 0 var(--edge)}
 
 /* The green confirmation, the level overlay and the dialogs. */
 .gl-flash{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);text-align:center;cursor:pointer}
@@ -209,13 +214,16 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-opt-whole{flex:1 1 100%;border-radius:var(--r);font-weight:600}
 .gl-band-k-2 .gl-opt{font-size:clamp(22px,5.6vw,28px)}
 /* The card's examples: a lead-in, the sentence, its note, and a fix's "after" sentence. */
-.gl-ex{margin:0 0 6px;line-height:2.2}
+.gl-ex{margin:0 0 10px;line-height:1.6}
 .gl-ex .gl-ex-text{display:inline;margin:0}
 .gl-ex-lead,.gl-ex .gl-ex-note{color:var(--text-2)}
 .gl-ex .gl-ex-note{display:inline}
-.gl-mk-capital{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
-.gl-mk-comma{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press);padding:0 .12em}
-.gl-mk-key{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-mk-capital>.gl-mk-w{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
+/* (a comma's label is centered under the comma but takes no width on the line: the words on either side are never
+   labeled with it, so the comma stays against its word and the next word keeps a normal space) */
+.gl-mk-comma>.gl-mk-w{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press);padding:0 .12em}
+.gl-mk-comma>.gl-mk-tag{display:flex;justify-content:center;width:0;white-space:nowrap}
+.gl-mk-key>.gl-mk-w{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
 .gl-opt.gl-title,.gl-blank.gl-title,.gl-title .gl-mk{font-style:italic}
 
 /* Grades 3-5: the band's own size, the prompt above a choice, passage sentences, press-to-cycle and the fix box. */
@@ -439,3 +447,29 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
   .gl-welcome .gl-skip{position:static;display:block;margin:0 0 4px auto}
   .gl-welcome #gl-welcome-h{font-size:clamp(20px,6.4vw,24px);margin-top:0}
 }
+
+/* The teaching card as a step of the lesson (between the welcome and the questions), and the same card in a sheet over
+   the questions: a bottom sheet on a phone, a side panel on a wide screen (public/js/grammar-lab.js). */
+.gl-cardstep-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin:0 0 4px}
+.gl-cardstep-top .gl-label{margin:0}
+.gl-cardstep-lead{margin:0 0 10px;color:var(--text-2);font-weight:600}
+.gl-cardstep .gl-card{padding:0;box-shadow:none;background:none;border-radius:0}
+.gl .gl-card-h{font-size:clamp(24px,5.6vw,30px);line-height:1.15;margin:4px 0 8px}
+.gl-cardstep .gl-card-go{margin:18px 0 0}
+.gl-cardstep #gl-card-go{min-width:min(260px,100%)}
+.gl-cardstep{scroll-margin-top:calc(var(--top) + 12px)}
+.gl-card-go{scroll-margin-bottom:calc(16px + env(safe-area-inset-bottom))}
+@media (max-width:820px){.gl-card-go{scroll-margin-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 16px)}}
+.gl-sheet{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:100%;max-height:88dvh;padding:0;border:0;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--card);color:var(--text);box-shadow:var(--shadow-lg);overflow:hidden}
+.gl-sheet[open]{display:flex;flex-direction:column}
+.gl-sheet::backdrop{background:rgba(20,20,20,.55)}
+.gl-sheet:focus{outline:none}
+.gl-sheet-bar{display:flex;justify-content:flex-end;padding:10px 12px 6px;border-bottom:1px solid var(--line)}
+.gl-sheet-x{min-height:40px}
+.gl-sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:12px 16px calc(20px + env(safe-area-inset-bottom))}
+.gl-sheet .gl-card{padding:0;box-shadow:none;background:none;border-radius:0}
+@media (min-width:821px){
+  .gl-sheet{inset:var(--top,0px) 0 0 auto;width:min(460px,92vw);height:calc(100dvh - var(--top,0px));max-height:calc(100dvh - var(--top,0px));border-radius:var(--r-lg) 0 0 0}
+}
+@media (max-width:520px){.gl-sheet-body{padding:10px 12px calc(18px + env(safe-area-inset-bottom))}}

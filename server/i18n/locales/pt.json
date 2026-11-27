@@ -16465,6 +16465,10 @@
       "listen": "Leia para mim",
       "stop": "Parar",
       "practice": "Começar a praticar",
+      "start": "Começar as perguntas",
+      "skip": "Ir para as perguntas",
+      "lead": "Leia a ficha e depois comece as perguntas. Você pode abri-la de novo quando quiser.",
+      "close": "Fechar",
       "question": "Pergunte a si mesmo"
     },
     "review": {

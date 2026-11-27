@@ -16464,6 +16464,10 @@
       "listen": "Vorlesen",
       "stop": "Stopp",
       "practice": "Üben starten",
+      "start": "Fragen starten",
+      "skip": "Zu den Fragen",
+      "lead": "Lies die Karte und starte dann die Fragen. Du kannst sie jederzeit wieder öffnen.",
+      "close": "Schließen",
       "question": "Frag dich"
     },
     "review": {
