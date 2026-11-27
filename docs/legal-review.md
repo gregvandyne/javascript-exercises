@@ -769,6 +769,32 @@ Questions for the lawyer (with the /compare questions above):
    should each have a sourced line (as on /compare) or be left out?
 3. Is the trademark line enough, or should it also name a contact for corrections, as the /compare notice does?
 
+### NoRedInk named beside Grammar Lab, on /compare and the homepage (2026-11-27; owner request; LAWYER REVIEW PENDING)
+
+No legal page changed; LEGAL_UPDATED is unchanged. A third exception to "never name other products", and only while
+Grammar Lab is open to every visitor (`grammarCompareOn` in server/routes/compare.js: GRAMMAR_LAB on and '*' on
+GRAMMAR_LAB_USERS). With Grammar Lab closed, or open to testers only, nothing below appears.
+
+- /compare gets a "Grammar practice, side by side" section: Grammar Lab and NoRedInk by classroom need, Yes, No or Not
+  stated, each NoRedInk Yes with the exact words from noredink.com, the address and the day (docs/compare-sources.md
+  "NoRedInk"). Grammar Lab's own No rows say what it does not do (no guided essay writing, no feedback on student
+  writing, no class assigning or reports yet). No prices, theirs or ours.
+- **The trademark notice on /compare changes** while the section is shown: "Kahoot!, Classroomscreen, Brainingcamp and
+  NoRedInk are trademarks of their owners; Oomba is not affiliated with them."
+- The homepage gets a fourth side-by-side card (NoRedInk), quoting only /compare's NoRedInk words, and **its footer
+  trademark line becomes** "Kahoot!, Classroomscreen, Blooket, Brainingcamp, Typing.com and NoRedInk are trademarks of
+  their owners. Oomba Academy is not affiliated with them." The "One subscription instead of five" strip keeps the
+  five: Grammar Lab does not replace NoRedInk (no guided writing), so the page does not say it does.
+- The NoRedInk words were read through a web search, not on the rendered pages (noredink.com was not reachable from
+  the session); docs/compare-sources.md asks for them to be confirmed word for word before Grammar Lab opens.
+
+Questions for the lawyer (with the /compare and homepage questions above):
+
+1. Is naming NoRedInk in a factual comparison, with the trademark line and no logo, fine under the same rules as the
+   other products (nominative fair use, the Lanham Act; Directive 2006/114/EC; the UK's BPRs 2008)?
+2. NoRedInk's pages say it is now part of IXL Learning. Should the trademark line name the owner, or is "their owners"
+   enough?
+
 ### Book pictures: Google (Gemini API) as a processor (2026-11-23; LAWYER REVIEW PENDING)
 
 Addendum; LEGAL_UPDATED is 2026-11-23. The book maker (teachers only; docs/storybook-builder.md "Pictures") now has its

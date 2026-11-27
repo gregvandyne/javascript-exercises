@@ -19,8 +19,11 @@
 //
 // Other products: the owner's second exception to "never name other products" (docs/decisions.md "Homepage: the one
 // classroom tool for everything"; the first is /compare). This page may name exactly the five in NAMED below, as plain
-// text, never a logo. The side-by-side cards quote only what /compare already quotes from each product's own website
-// (routes/compare.js CELLS, with its address and the day it was read), and the footer carries the trademark line.
+// text, never a logo, and a sixth, NoRedInk (routes/compare.js GRAMMAR_RIVAL), only while Grammar Lab is open to every
+// visitor (compare.js grammarCompareOn, the same one condition /compare uses): then it gets a side-by-side card for
+// Grammar Lab and joins the trademark line, but not the "instead of five" strip (Grammar Lab does not replace it). The
+// side-by-side cards quote only what /compare already quotes from each product's own website (routes/compare.js CELLS
+// and GRAMMAR_CELLS, with its address and the day it was read), and the footer carries the trademark line.
 // tests/unit/compare.test.js keeps every other page and file free of the names.
 //
 // Prices: kids are never sold to, and amounts appear only on /plans (tests/unit/billing*.test.js). The page links to
@@ -51,7 +54,7 @@ import { leadIcon } from '../../public/js/icons.js';
 import * as focus from '../services/game-focus.js';
 import { readyVideos } from '../views/see-it.js';
 import { books } from '../services/library.js';
-import { COMPETITORS, CELLS, COMPARE_CHECKED } from './compare.js';
+import { COMPETITORS, CELLS, COMPARE_CHECKED, GRAMMAR_RIVAL, GRAMMAR_CELLS, GRAMMAR_CHECKED, grammarCompareOn, grammarFacts } from './compare.js';
 import { TOOLS as MANIP_TOOLS, TUTORIALS, tutorialOf } from '../../public/js/manip-data.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
 import { KINDS as FIGURE_KINDS } from '../../public/js/figures-catalog.js';
@@ -79,12 +82,19 @@ export const wantsLanding = req => landingAtRoot() && !req.user;
 /** The five products this page may name (the owner's decision; plain text, no logos). Product names are never
  *  translated. The three with sourced facts on /compare get a side-by-side card; Blooket and Typing.com are only named. */
 export const NAMED = ['Kahoot!', 'Classroomscreen', 'Blooket', 'Brainingcamp', 'Typing.com'];
+/** Every product this page names now: the five, and NoRedInk while Grammar Lab is open to every visitor (the
+ *  trademark line). The strip always shows NAMED only. */
+export const namedNow = () => (grammarCompareOn() ? [...NAMED, GRAMMAR_RIVAL.name] : NAMED);
 /** The side-by-side cards: /compare's quotes only (routes/compare.js CELLS), by row. */
 export const VERSUS = [
   { id: 'kahoot', rows: ['games', 'devices'], adds: 'liveGames' },
   { id: 'classroomscreen', rows: ['dashboard', 'routines'], adds: 'classScreen' },
   { id: 'brainingcamp', rows: ['manip', 'room', 'grades'], adds: 'mathTools' },
 ];
+/** The Grammar Lab card, while Grammar Lab is open to every visitor: /compare's grammar quotes only (GRAMMAR_CELLS). */
+export const VERSUS_GRAMMAR = { id: 'noredink', rows: ['practice', 'essays', 'grades'], adds: 'grammar', us: 'grammarUs' };
+/** The cards on the page now. */
+export const versusNow = () => (grammarCompareOn() ? [...VERSUS, VERSUS_GRAMMAR] : VERSUS);
 /** The video behind the hero's play button ("Watch the 1-minute video"): the Hub in 60 seconds (scripts/hub-promo.mjs),
  *  with its English captions as the player's track. It also leads the video strip (the two-minute overview follows). */
 export const HERO_VIDEO = 'hub-promo';
@@ -316,17 +326,21 @@ export function renderLanding(req, res) {
 
   // ---- 7. side by side: what each product says it does (its own words, as /compare quotes them) and what Oomba adds
   const checked = longDate(req, COMPARE_CHECKED);
+  const cards = versusNow();
+  const glVars = cards.includes(VERSUS_GRAMMAR) ? grammarFacts() : {};
   const versus = html`<section class="lp-sec lp-alt" id="side-by-side" aria-labelledby="vs-h"><div class="lp-wrap">
     <header class="lp-head">${T('p', 'landing.vs.kicker', ' class="lp-eyebrow"')}${T('h2', 'landing.vs.h', ' id="vs-h"')}${T('p', 'landing.vs.lead', ' class="lp-sub"')}</header>
-    <div class="lp-vs">${VERSUS.map(v => {
-      const comp = COMPETITORS.find(c => c.id === v.id);
-      const quotes = v.rows.map(r => CELLS[r] && CELLS[r][v.id]).filter(c => c && c.s !== 'notStated' && c.src);
+    <div class="lp-vs${cards.length === 4 ? ' lp-vs-4' : ''}">${cards.map(v => {
+      const grammar = v === VERSUS_GRAMMAR;
+      const comp = grammar ? GRAMMAR_RIVAL : COMPETITORS.find(c => c.id === v.id);
+      const cells = grammar ? GRAMMAR_CELLS : CELLS;
+      const quotes = v.rows.map(r => cells[r] && cells[r][v.id]).filter(c => c && c.s !== 'notStated' && c.src);
       const sites = [...new Set(quotes.map(c => new URL(c.src.url).hostname.replace(/^www\./, '')))];
       return html`<article class="lp-card lp-vs-card">
         <h3 lang="en" dir="ltr">${comp.name}</h3>
         <div class="lp-col">${T('b', 'landing.vs.does', '', { name: comp.name })}<ul>${quotes.map(c => html`<li><q lang="en" dir="ltr">${c.src.quote}</q> <a href="${c.src.url}" rel="noopener nofollow" class="lp-src-link" lang="en" dir="ltr">${new URL(c.src.url).hostname.replace(/^www\./, '')}</a></li>`)}</ul></div>
-        <div class="lp-col lp-us">${T('b', 'landing.vs.adds')}${T('p', `landing.vs.${v.adds}`, '', { count: WIDGETS.length, tools: MANIP_TOOLS.length, tasks: TASK_COUNT })}</div>
-        <p class="lp-src"${fb('landing.vs.source')}>${t('landing.vs.source', { site: sites.join(', '), date: checked })}</p>
+        <div class="lp-col lp-us">${T('b', `landing.vs.${v.us || 'adds'}`)}${T('p', `landing.vs.${v.adds}`, '', { count: WIDGETS.length, tools: MANIP_TOOLS.length, tasks: TASK_COUNT, ...glVars })}</div>
+        <p class="lp-src"${fb('landing.vs.source')}>${t('landing.vs.source', { site: sites.join(', '), date: grammar ? longDate(req, GRAMMAR_CHECKED) : checked })}</p>
       </article>`;
     })}</div>
     <p class="lp-center"><a class="lp-more" href="${lp('/compare')}"${fb('landing.vs.more')}>${t('landing.vs.more')} ${ARROW}</a></p>
@@ -453,7 +467,7 @@ export function renderLanding(req, res) {
     <p class="lp-theme"><span>${t('landing.footer.theme')}:</span> <a href="?theme=light" rel="nofollow"${theme === 'light' ? raw(' aria-current="true"') : ''}>${ico('☀️', { size: 18 })} ${t('landing.footer.light')}</a> <a href="?theme=dark" rel="nofollow"${theme === 'dark' ? raw(' aria-current="true"') : ''}>${ico('🌙', { size: 18 })} ${t('landing.footer.dark')}</a></p>
     <p class="lp-copy">© ${new Date().getFullYear()} ${BRAND}</p>
   </div>
-  <div class="lp-wrap">${TH('p', 'landing.footer.trademarks', ' class="lp-tm"', { names: joinNames(req, NAMED) })}</div>
+  <div class="lp-wrap">${TH('p', 'landing.footer.trademarks', ' class="lp-tm"', { names: joinNames(req, namedNow()) })}</div>
 </footer>`;
 
   const jsonld = seo.graph([
