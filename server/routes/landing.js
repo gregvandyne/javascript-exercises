@@ -85,9 +85,9 @@ export const VERSUS = [
   { id: 'classroomscreen', rows: ['dashboard', 'routines'], adds: 'classScreen' },
   { id: 'brainingcamp', rows: ['manip', 'room', 'grades'], adds: 'mathTools' },
 ];
-/** The overview video behind the hero's play button ("Watch the 2-minute overview"): the Hub in 2 minutes
- *  (scripts/hub-video.mjs), with its English captions as the player's track. It also leads the video strip. */
-export const HERO_VIDEO = 'hub';
+/** The video behind the hero's play button ("Watch the 1-minute video"): the Hub in 60 seconds (scripts/hub-promo.mjs),
+ *  with its English captions as the player's track. It also leads the video strip (the two-minute overview follows). */
+export const HERO_VIDEO = 'hub-promo';
 
 /** Clicks counted by the page's beacon (POST /landing/count/<cta>): funnel steps, a daily total each, nothing else. */
 const CTAS = new Map([['host', 'landing.host'], ['trial', 'landing.trial'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);

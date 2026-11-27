@@ -20,23 +20,30 @@ test.beforeEach(() => { process.env.LANDING_AT_ROOT = '1'; resetLimits(); });
 const get = async path => { const r = await fetch(base + path, { headers: { accept: 'text/html' } }); return { status: r.status, text: await r.text(), type: r.headers.get('content-type') }; };
 
 const ALL = ['manipulatives', 'figures', 'room', 'dashboard'];
-// The Hub in 2 minutes (scripts/hub-video.mjs): the homepage's overview, not one of the "a minute each" tool videos.
-const OVERVIEW = 'hub';
+// The Hub's own videos, the homepage's, not among the "a minute each" tool videos: the 60-second promo
+// (scripts/hub-promo.mjs, behind the hero) and the two-minute overview (scripts/hub-video.mjs).
+const OVERVIEWS = ['hub-promo', 'hub'];
 
 test('the overview and the four videos, their posters and captions are in public/video and ready', () => {
-  for (const id of [OVERVIEW, ...ALL]) {
+  for (const id of [...OVERVIEWS, ...ALL]) {
     for (const f of videoFiles(id)) assert.ok(fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)), f);
     const vtt = fs.readFileSync(new URL(`../../public/video/oomba-${id}.en.vtt`, import.meta.url), 'utf8');
     assert.match(vtt, /^WEBVTT\n/, `${id}: a WebVTT file`);
     assert.doesNotMatch(vtt, /\u2014/, `${id}: no em dashes in the captions`);
   }
-  assert.deepEqual(readyVideos().map(v => v.id), [OVERVIEW, ...ALL]);
-  assert.deepEqual(readyVideos().filter(v => v.overview).map(v => v.id), [OVERVIEW]);
+  assert.deepEqual(readyVideos().map(v => v.id), [...OVERVIEWS, ...ALL]);
+  assert.deepEqual(readyVideos().filter(v => v.overview).map(v => v.id), OVERVIEWS);
   // the overview: 1280 x 720 H.264 like the others, under about 8 MB, captions for each step and the end card
   assert.ok(fs.statSync(new URL('../../public/video/oomba-hub.mp4', import.meta.url)).size < 8 * 1048576);
   const cues = fs.readFileSync(new URL('../../public/video/oomba-hub.en.vtt', import.meta.url), 'utf8').split('\n\n').slice(1);
   assert.ok(cues.length >= 15, `${cues.length} captions`);
   assert.match(cues.at(-1), /The Hub\. Available with the Teacher plan\./);
+  // the promo: about a minute, under about 8 MB at 1080p, a caption for each headline and the end card
+  assert.ok(fs.statSync(new URL('../../public/video/oomba-hub-promo.mp4', import.meta.url)).size < 8 * 1048576);
+  const promo = fs.readFileSync(new URL('../../public/video/oomba-hub-promo.en.vtt', import.meta.url), 'utf8').split('\n\n').slice(1);
+  assert.equal(promo.length, 7);
+  assert.match(promo[0], /Every desk\. Live\./);
+  assert.match(promo.at(-1), /The one classroom tool for everything\. The Hub\. Available with the Teacher plan\./);
   // A listed video without its files is left out, never an empty player.
   assert.ok(VIDEOS.every(v => readyVideos().includes(v) || !videoFiles(v.id).every(f => fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)))));
 });
@@ -80,12 +87,13 @@ for (const path of ['/teachers']) {
   });
 }
 
-test('/: the Hub overview first, then the same four videos in the homepage\'s own player (posters, captions, no autoplay), and no link into the tools', async () => {
+test('/: the Hub\'s promo and overview first, then the same four videos in the homepage\'s own player (posters, captions, no autoplay), and no link into the tools', async () => {
   const page = await get('/');
   const sec = page.text.slice(page.text.indexOf('id="videos"'), page.text.indexOf('</section>', page.text.indexOf('id="videos"')));
-  assert.deepEqual([...sec.matchAll(/class="lp-vid[^"]*" href="\/video\/oomba-([a-z]+)\.mp4"/g)].map(m => m[1]), [OVERVIEW, ...ALL]);
+  assert.deepEqual([...sec.matchAll(/class="lp-vid[^"]*" href="\/video\/oomba-([a-z-]+)\.mp4"/g)].map(m => m[1]), [...OVERVIEWS, ...ALL]);
+  assert.match(sec, /<b>The Hub in 60 seconds<\/b>/);
   assert.match(sec, /<b>The Hub in 2 minutes<\/b>/);
-  for (const id of [OVERVIEW, ...ALL]) assert.match(sec, new RegExp(`href="/video/oomba-${id}\\.mp4" data-video="/video/oomba-${id}\\.mp4" data-poster="/video/oomba-${id}-poster\\.jpg" data-vtt="/video/oomba-${id}\\.en\\.vtt"`), id);
+  for (const id of [...OVERVIEWS, ...ALL]) assert.match(sec, new RegExp(`href="/video/oomba-${id}\\.mp4" data-video="/video/oomba-${id}\\.mp4" data-poster="/video/oomba-${id}-poster\\.jpg" data-vtt="/video/oomba-${id}\\.en\\.vtt"`), id);
   assert.match(sec, /<video class="lp-vd-v" controls playsinline muted preload="none"/);
   assert.doesNotMatch(sec, /autoplay|\$\d|\u2014/);
   assert.doesNotMatch(sec, /href="\/(manipulatives|figures|dashboard|class\/)/);
