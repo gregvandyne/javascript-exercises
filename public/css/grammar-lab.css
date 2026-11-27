@@ -110,6 +110,8 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-hint{margin:14px 0 0;padding:14px 16px;border-radius:var(--r);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
 .gl-hint-h{margin:0 0 4px;font-weight:800}
 .gl-hint-text{margin:0 0 10px;font-size:18px}
+.gl-say{margin:0 0 10px;gap:6px}.gl-say[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent-press)}
+#gl-say{margin:8px 0 0}
 
 /* The worked example: the key word and the word it tells about, color-coded and labeled. */
 .gl-card-body{font-size:18px}
@@ -413,4 +415,21 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
   .gl-band-k-2 .gl-opt{font-size:clamp(20px,5.4vw,26px)}
   .gl-notice{margin-bottom:10px;padding:10px 12px}
   .gl-flag{margin-top:8px}
+}
+
+/* Phase 4 phone checks (320 x 568 up to 390 x 844, light and dark, English, German and Arabic). */
+/* A narrow phone: a unit's card gives its name more room (a long name like "Punctuation with Conjunctions: All" no
+   longer breaks inside a word, which left its colon starting a line). */
+@media (max-width:360px){
+  .gl-bandsec{padding:12px}
+  .gl-unit{gap:10px;padding:10px 12px}
+  .gl-unit .gl-ring{width:46px;height:46px}
+  .gl-unit .gl-ring span{width:34px;height:34px;font-size:12px}
+  .gl-unit-name{font-size:17px}
+  .gl-go{font-size:22px}
+}
+/* A short screen: the welcome and mastery pictures shrink, so the heading and its line show above the bottom nav. */
+@media (max-height:700px){
+  .gl-welcome-art{max-width:min(520px,calc(26vh * 1.5));margin-top:20px}
+  .gl-done .gl-stage-mastery{max-width:min(520px,calc(26vh * 1.5))}
 }

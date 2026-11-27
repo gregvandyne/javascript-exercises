@@ -22,7 +22,10 @@
 //                  any step). The server reads the slide: the page never sends text.
 //     ctx 'grammar' { topic }  a Grammar Lab topic's teaching card, read in English (services/grammar-lab.js cardSpoken),
 //                  only where the card is read aloud (the K-2 band) and only for a visitor GRAMMAR_LAB lets in. The server
-//                  reads the card: the page never sends text.
+//                  reads the card: the page never sends text. { topic, unit, band, part: 'question' | 'hint', id }: the
+//                  question on this player's screen (questionSpoken), or its hint once a wrong answer shows it
+//                  (hintSpoken), in a K-2 unit, while that question (id) is the one on screen. English voice: the "en"
+//                  switch at /admin/voices governs it, whatever the page's language.
 //     ctx 'placement' { runId }  the item a Number Quest placement run (the Sorting Game, or a unit test-out) is
 //                  serving now, regenerated on the server from the run's stored template and seed — the same
 //                  regeneration that grades it. Only the run's own student, only while the run is active, read in
@@ -184,6 +187,18 @@ function resolve(req, b) {
     // a student who reaches only assigned work hears only those units' cards
     const reach = reachOf(req.user);
     if (!reach.all && !GLAB.unitsWith(tp.id).some(p => unitInReach(reach, p.id))) return { error: [404, 'off'] };
+    // The question on screen, or its hint once it shows: this player's own run, in a unit of a band that reads aloud.
+    // id: the question the page shows (a question that moved on reads nothing). The server reads it: never the page's
+    // text, never the student's name or anything typed.
+    if (b.part === 'question' || b.part === 'hint') {
+      const p = typeof b.unit === 'string' ? GLAB.unitFor(b.unit, b.band) : null;
+      if (!req.user || !p || !p.topics.includes(tp.id) || !GLAB.readsAloud(tp, p) || !unitInReach(reach, p.id)) return { error: [404, 'off'] };
+      const run = GLAB.currentRun(req.user, tp.id), on = run && GLAB.questionFor(tp, run);
+      if (!on || on.id !== b.id) return { error: [404, 'notNow'] };
+      const text = b.part === 'hint' ? GLAB.hintSpoken(tp, run) : GLAB.questionSpoken(tp, run);
+      if (!text) return { error: [404, 'notNow'] };
+      return { text, locale: 'en', role: 'narrator', rate: 'normal' };
+    }
     return { text: GLAB.cardSpoken(tp), locale: 'en', role: 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'placement') {

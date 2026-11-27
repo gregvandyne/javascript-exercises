@@ -18100,7 +18100,7 @@
       "noStudents": "No students in this class yet.",
       "noneFit": "No units fit these filters.",
       "counts": "Students",
-      "count": "{mastered} mastered · {started} in progress",
+      "count": "{mastered} mastered · {started} in progress",
       "studentTitle": "{name} in Grammar Lab",
       "placeH": "Starting grades",
       "placeTeacher": "Grades {grades}, set by a teacher.",
@@ -18170,7 +18170,9 @@
       "levelNext": "Next level",
       "fixLabel": "Fix the sentence here",
       "chips": "Marks to place",
-      "asIs": "It's right as it is"
+      "asIs": "It's right as it is",
+      "listen": "Read the question to me",
+      "listenHint": "Read the hint to me"
     },
     "levels": {
       "heading": "Levels and mastery",
@@ -18247,9 +18249,9 @@
     },
     "loading": "Getting your lesson ready",
     "progress": {
-      "band": "{mastered} mastered · {started} in progress",
+      "band": "{mastered} mastered · {started} in progress",
       "unit": "{started} in progress",
-      "unitHead": "{mastered} of {total} mastered · {started} in progress"
+      "unitHead": "{mastered} of {total} mastered · {started} in progress"
     }
   }
 }

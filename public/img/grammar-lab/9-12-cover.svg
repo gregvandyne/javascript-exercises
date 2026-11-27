@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" aria-hidden="true" focusable="false"><g style="stroke-linejoin:round;stroke-linecap:round"><rect width="800" height="450" style="fill:#F4F1E6;"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" lang="en" aria-hidden="true" focusable="false"><g style="stroke-linejoin:round;stroke-linecap:round"><rect width="800" height="450" style="fill:#F4F1E6;"/>
 <text x="650" y="380" text-anchor="middle" style="fill:#E2DDCB;font-size:420px;font-weight:300;font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">¶</text>
 <rect x="58" y="44" width="452" height="370" rx="6" style="fill:#141414;opacity:.08" transform="translate(8 8)"/>
 <rect x="58" y="44" width="452" height="370" rx="6" style="fill:#FFFDF2;stroke:#141414;stroke-width:3;"/>

@@ -16357,7 +16357,7 @@
       "noStudents": "Ainda não há alunos nesta turma.",
       "noneFit": "Nenhuma unidade corresponde a estes filtros.",
       "counts": "Alunos",
-      "count": "{mastered} dominado · {started} em andamento",
+      "count": "{mastered} dominado · {started} em andamento",
       "studentTitle": "{name} no Grammar Lab",
       "placeH": "Anos de início",
       "placeTeacher": "Anos {grades}, escolhido por um professor.",
@@ -16427,7 +16427,9 @@
       "levelNext": "Próximo nível",
       "fixLabel": "Corrija a frase aqui",
       "chips": "Sinais para colocar",
-      "asIs": "Está certo assim"
+      "asIs": "Está certo assim",
+      "listen": "Leia a pergunta para mim",
+      "listenHint": "Leia a dica para mim"
     },
     "levels": {
       "heading": "Níveis e domínio",
@@ -16504,9 +16506,9 @@
     },
     "loading": "Preparando a sua lição",
     "progress": {
-      "band": "{mastered} dominados · {started} em andamento",
+      "band": "{mastered} dominados · {started} em andamento",
       "unit": "{started} em andamento",
-      "unitHead": "{mastered} de {total} dominados · {started} em andamento"
+      "unitHead": "{mastered} de {total} dominados · {started} em andamento"
     }
   }
 }

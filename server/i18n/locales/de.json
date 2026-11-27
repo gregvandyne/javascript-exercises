@@ -16356,7 +16356,7 @@
       "noStudents": "Noch keine Kinder in dieser Klasse.",
       "noneFit": "Keine Einheit passt zu diesen Filtern.",
       "counts": "Kinder",
-      "count": "{mastered} gemeistert · {started} in Arbeit",
+      "count": "{mastered} gemeistert · {started} in Arbeit",
       "studentTitle": "{name} in Grammar Lab",
       "placeH": "Start-Klassenstufen",
       "placeTeacher": "Klassen {grades}, von einer Lehrkraft gewählt.",
@@ -16426,7 +16426,9 @@
       "levelNext": "Nächstes Level",
       "fixLabel": "Verbessere den Satz hier",
       "chips": "Zeichen zum Setzen",
-      "asIs": "Es ist richtig, so wie es ist"
+      "asIs": "Es ist richtig, so wie es ist",
+      "listen": "Frage vorlesen",
+      "listenHint": "Tipp vorlesen"
     },
     "levels": {
       "heading": "Level und Meistern",
@@ -16503,9 +16505,9 @@
     },
     "loading": "Deine Lektion wird vorbereitet",
     "progress": {
-      "band": "{mastered} gemeistert · {started} in Arbeit",
+      "band": "{mastered} gemeistert · {started} in Arbeit",
       "unit": "{started} in Arbeit",
-      "unitHead": "{mastered} von {total} gemeistert · {started} in Arbeit"
+      "unitHead": "{mastered} von {total} gemeistert · {started} in Arbeit"
     }
   }
 }

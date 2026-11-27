@@ -16357,7 +16357,7 @@
       "noStudents": "עוד אין תלמידים בכיתה הזו.",
       "noneFit": "אין יחידות שמתאימות למסננים האלה.",
       "counts": "תלמידים",
-      "count": "נשלט: {mastered} · בתהליך: {started}",
+      "count": "נשלט: {mastered} · בתהליך: {started}",
       "studentTitle": "{name} ב-Grammar Lab",
       "placeH": "כיתות התחלה",
       "placeTeacher": "כיתות {grades}, בבחירת מורה.",
@@ -16427,7 +16427,9 @@
       "levelNext": "לשלב הבא",
       "fixLabel": "תקנו את המשפט כאן",
       "chips": "סימנים להצבה",
-      "asIs": "זה נכון כמו שזה"
+      "asIs": "זה נכון כמו שזה",
+      "listen": "להקריא לי את השאלה",
+      "listenHint": "להקריא לי את הרמז"
     },
     "levels": {
       "heading": "שלבים ושליטה",
@@ -16504,9 +16506,9 @@
     },
     "loading": "מכינים את השיעור שלכם",
     "progress": {
-      "band": "נשלט: {mastered} · בתהליך: {started}",
+      "band": "נשלט: {mastered} · בתהליך: {started}",
       "unit": "בתהליך: {started}",
-      "unitHead": "נשלט: {mastered} מתוך {total} · בתהליך: {started}"
+      "unitHead": "נשלט: {mastered} מתוך {total} · בתהליך: {started}"
     }
   }
 }

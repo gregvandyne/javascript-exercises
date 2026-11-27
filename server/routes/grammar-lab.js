@@ -12,6 +12,7 @@ import * as seo from '../seo.js';
 import * as GL from '../services/grammar-lab.js';
 import { mayOpenGrammarLab, grammarLabOn, GRAMMAR_LAB_PATH, reachOf, unitInReach } from '../services/grammar-lab-access.js';
 import * as GLA from '../services/grammar-lab-assign.js';
+import { localeOn } from '../services/tts.js';
 import { honourPendingWins } from './courses.js';
 import * as V from '../views/grammar-lab.js';
 
@@ -43,6 +44,10 @@ function ensureUser(req, res) {
 // assigned counts at once).
 const honor = u => { if (u && !u.is_guest && !isGrownup(u)) { honourPendingWins(u); GLA.syncUser(u); } };
 const guestOf = u => !u || !!u.is_guest;
+/** Is this topic read aloud here: a K-2 card or question (services/grammar-lab.js readsAloud), and the AI voice on for
+ *  English (the course text is English, so the "en" switch at /admin/voices governs it, whatever the page's language).
+ *  Off: no speaker button on the page and no request to the voice at all. */
+const voiceOn = (tp, p) => GL.readsAloud(tp, p) && localeOn('en');
 
 /** The unit and topic of a topic URL, the topic's state in that unit, or null (a 404 already sent). */
 function loadTopic(req, res) {
@@ -111,16 +116,18 @@ router.get('/courses/grammar-lab/:band/:unit/:topic', (req, res) => {
     unitTitle: p.title,
     signedIn: !!(u && !u.is_guest),
     login: `/login?next=${encodeURIComponent(V.topicHref(p, tp.id))}`,
+    // K-2 read-aloud: the question's and the hint's listen buttons (only when the English voice is on)
+    ...(voiceOn(tp, p) ? { listen: { label: t('grammarLab.practice.listen'), stop: t('grammarLab.card.stop') } } : {}),
   };
   page(req, res, { title: `${tp.title} · ${t('grammarLab.title')}`, active: 'learn', mid: true, head: V.PRACTICE_HEAD, bodyClass: 'gl-page',
-    body: V.practicePage({ t, p, tp, data, guest: guestOf(u) }), scripts: ['/js/grammar-lab.js'] });
+    body: V.practicePage({ t, p, tp, data, guest: guestOf(u), listen: !!data.listen }), scripts: ['/js/grammar-lab.js'] });
 });
 
 router.get('/courses/grammar-lab/:band/:unit/:topic/card', (req, res) => {
   const x = loadTopic(req, res); if (!x) return;
-  const { p, tp } = x, t = req.t;
+  const { p, tp } = x, t = req.t, listen = voiceOn(tp, p);
   page(req, res, { title: `${tp.title} · ${t('grammarLab.card.heading')}`, active: 'learn', mid: true, head: V.HEAD,
-    body: V.cardPage({ t, p, tp, listen: GL.readsAloud(tp, p) }), scripts: ['/js/grammar-lab-card.js'] });
+    body: V.cardPage({ t, p, tp, listen }), scripts: listen ? ['/js/grammar-lab-card.js'] : [] });
 });
 
 router.get('/courses/grammar-lab/:band/:unit/:topic/review', (req, res) => {
