@@ -7685,7 +7685,7 @@
       "s4": {
         "h": "Les élèves jouent, créent et répondent",
         "p": "Chaque élève avance dans le plan de cours à son rythme, sur n’importe quel appareil.",
-        "alt": "Ce que voit un élève dans un plan de cours : l’étape de jeu, Échauffement calcul mental, est marquée Fait avec un meilleur score de 47 et un bouton Jouer à Sum Racer. Viennent ensuite une étape de création avec un bouton Commencer à créer, puis une question écrite, le ticket de sortie."
+        "alt": "Ce que voit un élève d’un plan de cours : l’étape de jeu « Number-puzzle warm-up » est marquée Terminé, avec un meilleur score de 47 et un bouton Jouer à Sudoku. Viennent ensuite une étape de création de jeu avec le bouton Commencer à créer, puis une question écrite, le billet de sortie."
       },
       "s5": {
         "h": "Suivre la progression et le carnet de notes",
@@ -8374,7 +8374,7 @@
       "s2": {
         "h": "Jouer à des jeux éducatifs",
         "p": "Les jeux de maths, de lecture, de logique et de musique fonctionnent directement dans le navigateur, sur téléphone, tablette, Chromebook et ordinateur. Les enfants peuvent en essayer un sans s’inscrire.",
-        "alt": "Sum Racer, un jeu de course de calcul, en pleine course : des voitures de dessin animé sur une route, une addition et quatre grands boutons de réponse."
+        "alt": "Sudoku, un casse-tête de chiffres, en pleine partie : une petite grille 4×4 avec quelques chiffres remplis, et de grands boutons de chiffres avec Annuler, Effacer, Notes, Indice et Vérifier."
       },
       "s3": {
         "h": "Le décrire, y jouer, le modifier",

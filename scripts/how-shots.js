@@ -355,6 +355,9 @@ async function playStart(p) {
   // game in progress shows.
   const go = frame.locator('#playBtn, .play-btn, button:has-text("Play"), button:has-text("Start")').first();
   if (await go.count()) await go.click().catch(() => {});
+  await p.waitForTimeout(800);
+  // The puzzle list: the first Easy one (a 4x4), then a few cells filled in.
+  await frame.locator('button:has-text("Easy")').first().click().catch(() => {});
   await p.waitForTimeout(1500);
 }
 /** Scrolls the Builder's chat so the last message from the child that says `text` is at its top. */

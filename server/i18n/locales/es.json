@@ -7685,7 +7685,7 @@
       "s4": {
         "h": "Los estudiantes juegan, crean y responden",
         "p": "Cada alumno avanza por el plan de clase a su ritmo en cualquier dispositivo.",
-        "alt": "La vista de un alumno de un plan de clase: el paso de juego, Calentamiento de cálculo, aparece como Hecho con una mejor puntuación de 47 y un botón Jugar a Sum Racer. Después vienen un paso de crear un juego con un botón Empezar a crear y una pregunta escrita, el boleto de salida."
+        "alt": "La vista de un alumno de un plan de clase: el paso de juego «Number-puzzle warm-up» está marcado como hecho, con una mejor puntuación de 47 y un botón Jugar a Sudoku. Después vienen un paso de crear un juego con el botón Empezar a crear y una pregunta escrita, el ticket de salida."
       },
       "s5": {
         "h": "Vea el progreso y el registro de calificaciones",
@@ -8374,7 +8374,7 @@
       "s2": {
         "h": "Jugar juegos educativos",
         "p": "Los juegos de matemáticas, lectura, lógica y música funcionan directamente en el navegador en teléfonos, tabletas, Chromebooks y computadoras. Los niños pueden probar uno sin registrarse.",
-        "alt": "Sum Racer, un juego de carreras de matemáticas, en plena carrera: autos de caricatura en una carretera, una suma y cuatro botones grandes de respuesta."
+        "alt": "Sudoku, un rompecabezas de números, en plena partida: una cuadrícula pequeña de 4×4 con algunos números y grandes botones de números con Deshacer, Borrar, Notas, Pista y Comprobar."
       },
       "s3": {
         "h": "Descríbelo, juégalo, cámbialo",

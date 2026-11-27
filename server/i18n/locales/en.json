@@ -8767,7 +8767,7 @@
       "s4": {
         "h": "Students play, build and answer",
         "p": "Each student works through the lesson plan at their own pace on any device.",
-        "alt": "A student’s view of a lesson plan: the play step, Quick-math warm-up, is marked Done with a best score of 47 and a Play Sum Racer button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
+        "alt": "A student’s view of a lesson plan: the play step, Number-puzzle warm-up, is marked Done with a best score of 47 and a Play Sudoku button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
       },
       "s5": {
         "h": "See progress and the gradebook",
@@ -9789,7 +9789,7 @@
       "s2": {
         "h": "Play learning games",
         "p": "Math, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
-        "alt": "Sum Racer, a math racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+        "alt": "Sudoku, a number puzzle, in the middle of a game: a Tiny 4×4 grid with some numbers filled in, and big number buttons with Undo, Erase, Notes, Hint and Check."
       },
       "s3": {
         "h": "Describe it, play it, change it",
