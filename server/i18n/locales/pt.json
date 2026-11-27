@@ -5144,7 +5144,7 @@
       "pictures": "Figuras",
       "undo": "Desfazer",
       "waitSecs": "Tente de novo em {n} segundos.",
-      "welcome": "Bem-vindo, {name}!"
+      "welcome": "Você entrou! Sua mesa está pronta."
     },
     "homeroom-signin-panel": {
       "closed": "A entrada está fechada",
@@ -11334,7 +11334,7 @@
       "lessonFolder": "Pasta de aulas",
       "openClass": "Abrir a turma",
       "openLive": "Abrir a aula ao vivo",
-      "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
+      "schoolReady": "{school} está pronta, e você é o administrador da escola. Crie sua primeira turma abaixo e adicione seus alunos, depois abra o Hub dela para distribuir sua primeira lição. Vamos analisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
       "allClasses": "Todas as turmas"
     },
     "loop": {

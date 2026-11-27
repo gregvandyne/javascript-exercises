@@ -5143,7 +5143,7 @@
       "pictures": "Imágenes",
       "undo": "Deshacer",
       "waitSecs": "Inténtalo de nuevo en {n} segundos.",
-      "welcome": "¡Bienvenido, {name}!"
+      "welcome": "¡Ya entraste! Tu pupitre está listo."
     },
     "homeroom-signin-panel": {
       "closed": "El inicio de sesión está cerrado",
@@ -11332,7 +11332,7 @@
       "lessonFolder": "Carpeta de lecciones",
       "openClass": "Abrir la clase",
       "openLive": "Abrir la lección en vivo",
-      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo.",
+      "schoolReady": "{school} está lista y tú eres su administrador escolar. Crea tu primera clase abajo y añade a tus alumnos; luego abre su Hub para repartir tu primera lección. Revisaremos tu escuela en 1 día escolar y te enviaremos una guía breve por correo.",
       "allClasses": "Todas las clases"
     },
     "loop": {

@@ -5143,7 +5143,7 @@
       "pictures": "Images",
       "undo": "Annuler",
       "waitSecs": "Réessaie dans {n} secondes.",
-      "welcome": "Bienvenue, {name} !"
+      "welcome": "C'est parti ! Ton bureau est prêt."
     },
     "homeroom-signin-panel": {
       "closed": "La connexion est fermée",
@@ -11332,7 +11332,7 @@
       "lessonFolder": "Dossier de leçons",
       "openClass": "Ouvrir la classe",
       "openLive": "Ouvrir la leçon en direct",
-      "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous, puis ajoutez vos élèves. Nous examinerons votre école sous 1 jour d'école et vous enverrons un court guide par e-mail.",
+      "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous et ajoutez vos élèves, puis ouvrez son Hub pour distribuer votre première leçon. Nous examinerons votre école sous 1 jour d'école et vous enverrons un petit guide par e-mail.",
       "allClasses": "Toutes les classes"
     },
     "loop": {

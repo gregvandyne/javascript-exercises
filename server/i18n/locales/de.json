@@ -5144,7 +5144,7 @@
       "pictures": "Bilder",
       "undo": "Rückgängig",
       "waitSecs": "Versuche es in {n} Sekunden noch einmal.",
-      "welcome": "Willkommen, {name}!"
+      "welcome": "Du bist drin! Dein Platz ist bereit."
     },
     "homeroom-signin-panel": {
       "closed": "Die Anmeldung ist geschlossen",
@@ -11333,7 +11333,7 @@
       "lessonFolder": "Lektionsordner",
       "openClass": "Klasse öffnen",
       "openLive": "Live-Lektion öffnen",
-      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
+      "schoolReady": "{school} ist bereit, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge deine Schülerinnen und Schüler hinzu, dann öffne ihren Hub, um deine erste Lektion auszuteilen. Wir sehen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
       "allClasses": "Alle Klassen"
     },
     "loop": {

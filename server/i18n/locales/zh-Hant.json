@@ -5143,7 +5143,7 @@
       "pictures": "圖案",
       "undo": "復原",
       "waitSecs": "{n} 秒後再試一次。",
-      "welcome": "歡迎，{name}！"
+      "welcome": "你進來了！你的書桌準備好了。"
     },
     "homeroom-signin-panel": {
       "closed": "登入已關閉",
@@ -11332,7 +11332,7 @@
       "lessonFolder": "課程資料夾",
       "openClass": "開啟班級",
       "openLive": "開啟即時課程",
-      "schoolReady": "{school} 已準備就緒，你是學校的管理員。請在下方建立第一個班級，再加入學生。我們會在一個上課日內查看你的學校，並寄給你一份簡短指南。",
+      "schoolReady": "{school} 已準備就緒，你是學校管理員。在下方建立你的第一個班級並加入學生，然後打開它的 Hub 發下你的第一堂課。我們會在 1 個上課日內審查你的學校，並寄給你一份簡短指南。",
       "allClasses": "所有班級"
     },
     "loop": {
