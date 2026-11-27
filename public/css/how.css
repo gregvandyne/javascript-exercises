@@ -114,6 +114,8 @@
 .tt-lead{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
 .tt-grid{display:grid;gap:var(--s4);margin:0;padding:0;list-style:none}
 .tt-card{display:flex;flex-direction:column;margin:0;padding:var(--s4);min-width:0}
+/* In the grid the three cards start level: no stacked-panel gap (app.css .panel + .panel) on the second and third. */
+.tt-grid>.panel+.panel{margin-top:0}
 .tt-shot{margin:0 0 var(--s3);border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--card-2)}
 .tt-shot img{display:block;width:100%;height:auto}
 .tt-h{display:flex;align-items:center;gap:8px;margin:0 0 var(--s2);font-size:1.15rem}
