@@ -265,3 +265,26 @@ test('castle-clash: on a phone the game buttons (Next) sit right under the board
     } finally { await ctx.close(); }
   }
 });
+
+test('castle-clash: every puzzle group shows how many of its puzzles are solved, out of its total', { skip, timeout: 90000 }, async () => {
+  // The totals in the game match the bank.
+  const ver = /const PZ_VER = "([^"]+)"/.exec(HTML)[1], themes = JSON.parse(/const PZ_THEMES = (\[[^\]]*\])/.exec(HTML)[1]);
+  const totals = JSON.parse(/const PZ_THEME_TOTAL = (\{[^}]*\})/.exec(HTML)[1]);
+  const ctx = vm.createContext({ window: {} }), dir = path.join(ROOT, 'public/vendor/data/castle-clash', ver);
+  for (const f of fs.readdirSync(dir)) vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx);
+  const all = Object.values(ctx.window.CCPuzzles).flat();
+  for (const [th, n] of Object.entries(totals)) assert.equal(all.filter(x => (x[4] >>> 0) & (1 << themes.indexOf(th))).length, n, th);
+  // The hub, the in-puzzle chip and the progress page say "n of total solved".
+  const save = { 'castle-clash-v1': JSON.stringify({ v: 2, puzzles: { 0: true, 1: true }, pz: { themes: { mateIn1: [5, 7], fork: [0, 2] } } }) };
+  const { ctx: bctx, frame, errors } = await open({ save });
+  try {
+    await T(frame, "T.show('puzzle'); return 1;");
+    const packs = await frame.evaluate(() => Object.fromEntries([...document.querySelectorAll('#packGrid .pack')].map(b => [b.dataset.theme, b.querySelector('small').textContent])));
+    assert.equal(packs.mateIn1, '5 of 336 solved'); assert.equal(packs.fork, '0 of 451 solved'); assert.equal(packs.endgame, '0 of 1,920 solved');
+    assert.equal(await frame.evaluate(() => document.getElementById('puzSum').textContent), '2 of 24 solved');
+    await T(frame, "T.show('progress'); return 1;");
+    assert.match(await frame.evaluate(() => document.getElementById('progThemes').textContent), /5 of 336 solved/);
+    assert.match(await frame.evaluate(() => document.getElementById('progPath').textContent), /2 of 24 solved/);
+    assert.deepEqual(errors, []);
+  } finally { await bctx.close(); }
+});
