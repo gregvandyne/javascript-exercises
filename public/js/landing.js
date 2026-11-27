@@ -137,3 +137,10 @@ if (tourBox) startTour(tourBox);
 const player = document.getElementById('lp-vd');
 if (player) startVideos(player);
 document.documentElement.classList.add('lp-ready');
+
+// ---- the how-it-works videos: closing "Show fewer" from the bottom of the long list keeps the button in view.
+document.querySelectorAll('.lp-howmore').forEach(d => d.addEventListener('toggle', () => {
+  if (d.open) return;
+  const s = d.querySelector('summary'); const r = s.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > innerHeight) s.scrollIntoView({ block: 'center' });
+}));

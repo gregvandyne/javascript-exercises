@@ -314,6 +314,11 @@ test('the tour and the videos as sent: six steps on real screens, each zoomed to
   assert.equal([...vids.matchAll(/class="lp-vid( lp-vid-big)?" href="\/video\/oomba-[a-z]+\.mp4"/g)].length, 5);
   assert.match(vids, new RegExp(`class="lp-vid lp-vid-big" href="/video/oomba-${L.HERO_VIDEO}\\.mp4"`), 'the overview first');
   assert.equal([...vids.matchAll(/class="lp-how" href="\/video\/manip\/manip-[a-z-]+\.mp4" data-video="[^"]+" data-poster="\/video\/manip\/manip-[a-z-]+-poster\.jpg" data-vtt="\/video\/manip\/manip-[a-z-]+\.en\.vtt"/g)].length, 18);
+  // Six of them show; the rest fold open under "Show all 18 videos".
+  const [preview, rest] = vids.split('<details class="lp-howmore">');
+  assert.equal([...preview.matchAll(/class="lp-how" href=/g)].length, 6);
+  assert.equal([...rest.matchAll(/class="lp-how" href=/g)].length, 12);
+  assert.match(rest, /<summary class="lp-btn lp-btn-ghost lp-btn-sm"><span class="lp-howmore-o">Show all 18 videos<\/span><span class="lp-howmore-c">Show fewer<\/span><\/summary>/);
   // The hero's play button: the Hub in 2 minutes, with its captions as the player's track.
   assert.equal(L.HERO_VIDEO, 'hub');
   assert.match(s, /<a class="lp-playbtn" href="\/video\/oomba-hub\.mp4" data-video="\/video\/oomba-hub\.mp4" data-poster="\/video\/oomba-hub-poster\.jpg" data-vtt="\/video\/oomba-hub\.en\.vtt" data-title="The Hub in 2 minutes" aria-label="[^"]+"><i aria-hidden="true"><\/i><span>Watch the 2-minute overview<small>The Hub: your whole class on one board<\/small><\/span><\/a>/);

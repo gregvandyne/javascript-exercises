@@ -6846,7 +6846,10 @@
       "wentWrong": "Something went wrong. Try again.",
       "gap": "Comma after {word}",
       "blank": "blank",
-      "nearGaps": "You put in too many commas. Take out the extras, then submit again."
+      "nearGaps": "You put in too many commas. Take out the extras, then submit again.",
+      "cyclePress": "Press to choose",
+      "cycleOf": "{option}, choice {n} of {total}. Press for the next one.",
+      "wrongFix": "Not quite. Now press the sentence to see some fixes, stop on the right one, and submit. Get two right in a row to finish this level."
     }
   },
   "favorites": {
@@ -12808,7 +12811,9 @@
       "lead": "Every video has captions, and the sound stays off until you turn it on.",
       "howH": "How it works, one video per manipulative",
       "play": "Play the video: {title}",
-      "close": "Close the video"
+      "close": "Close the video",
+      "more": "Show all {count} videos",
+      "less": "Show fewer"
     }
   },
   "rubrics": {
@@ -17941,7 +17946,8 @@
       "submit": "Submit",
       "flag": "Report a problem with this question",
       "correct": "Correct!",
-      "levelNext": "Next level"
+      "levelNext": "Next level",
+      "fixLabel": "Fix the sentence here"
     },
     "levels": {
       "heading": "Levels and mastery",
@@ -17975,7 +17981,8 @@
       "tips": "More examples",
       "listen": "Read it to me",
       "stop": "Stop",
-      "practice": "Start practice"
+      "practice": "Start practice",
+      "question": "Ask yourself"
     },
     "review": {
       "heading": "Look back at your questions",

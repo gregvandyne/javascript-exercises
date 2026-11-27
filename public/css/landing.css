@@ -362,6 +362,16 @@ button{font:inherit;color:inherit}
 .lp-how img{border-radius:12px;aspect-ratio:16/9;object-fit:cover;box-shadow:0 0 0 1px var(--line)}
 .lp-howname{display:block;font-size:13px;font-weight:650;margin-top:6px;line-height:1.25}
 .lp-how:hover .lp-howname{text-decoration:underline}
+.lp-howmore{margin-top:14px;text-align:center}
+.lp-howmore>summary{list-style:none;cursor:pointer;display:inline-flex}
+.lp-howmore>summary::-webkit-details-marker{display:none}
+.lp-howmore .lp-howmore-c,.lp-howmore[open] .lp-howmore-o{display:none}
+.lp-howmore[open] .lp-howmore-c{display:inline}
+.lp-howmore>.lp-howrow{text-align:start}
+.lp-howmore[open]{display:flex;flex-direction:column;align-items:center}
+.lp-howmore[open]>summary{order:1;margin-top:14px}
+.lp-howmore[open]::details-content{display:contents}
+.lp-howmore[open]>.lp-howrow{margin-top:0;width:100%}
 @media (max-width:900px){.lp-vids{grid-template-columns:1fr 1fr}.lp-vid-big{grid-column:1/-1;grid-row:auto}.lp-vids>.lp-vid:last-child:nth-child(even){grid-column:1/-1}.lp-vid-big img{aspect-ratio:16/9;height:auto}.lp-howrow{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:520px){.lp-vids{grid-template-columns:1fr}.lp-howrow{grid-template-columns:repeat(2,1fr)}}
 /* the player (a <dialog>; landing.js opens it) */
