@@ -7821,6 +7821,10 @@
         "title": "Klasdashboard",
         "p": "Timers, klassentaken, check-ins en rekenhulpmiddelen voor de hele schooldag, op één scherm."
       },
+      "hub-promo": {
+        "title": "De Hub in 60 seconden",
+        "p": "Elk tafeltje live op één bord: een spel uitdelen, een opgestoken hand beantwoorden, een live spel starten en Oomba iets vragen."
+      },
       "hub": {
         "title": "De Hub in 2 minuten",
         "p": "Werk uitdelen, elk tafeltje live zien, opgestoken handen beantwoorden en het dagplan volgen, allemaal vanaf één bord."
@@ -10848,7 +10852,7 @@
       "trustCancel": "Altijd opzegbaar",
       "trustStudents": "Onbeperkt leerlingen",
       "tour": "Doe de rondleiding",
-      "watch": "Bekijk het overzicht van 2 minuten",
+      "watch": "Bekijk de video van 1 minuut",
       "watchSub": "De Hub: je hele klas op één bord",
       "collageAlt": "Echte schermen uit Oomba Academy: een klasdashboard, breukstroken op een rekenbord, een werkblad met figuren op schaal, de prentenboekenbibliotheek en een live klassenspel."
     },

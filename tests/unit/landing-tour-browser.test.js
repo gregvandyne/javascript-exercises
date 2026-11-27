@@ -208,9 +208,9 @@ test('the video player: opens with the poster and captions, muted; Escape closes
   await dlg.waitFor({ state: 'hidden' });
   assert.equal(await page.evaluate(() => document.activeElement?.classList.contains('lp-how')), true, 'the focus is back on the link');
   assert.equal(await page.evaluate(() => document.querySelector('#lp-vd video source')), null, 'the video is stopped and unloaded');
-  // The hero's overview button and the close button.
+  // The hero's play button (the Hub in 60 seconds) and the close button.
   await page.locator('.lp-playbtn').click(); await dlg.waitFor({ state: 'visible' });
-  assert.match(await page.locator('#lp-vd video source').getAttribute('src'), /^\/video\/oomba-[a-z]+\.mp4$/);
+  assert.equal(await page.locator('#lp-vd video source').getAttribute('src'), '/video/oomba-hub-promo.mp4');
   await page.locator('#lp-vd [data-close]').click(); await dlg.waitFor({ state: 'hidden' });
   assert.deepEqual(errors, []);
   await ctx.close();

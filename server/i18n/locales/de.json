@@ -7821,6 +7821,10 @@
         "title": "Klassen-Dashboard",
         "p": "Timer, Klassendienste, Stimmungsabfragen und Mathe-Werkzeuge für den ganzen Schultag, auf einem Bildschirm."
       },
+      "hub-promo": {
+        "title": "Der Hub in 60 Sekunden",
+        "p": "Jeder Platz live auf einer Tafel: ein Spiel verteilen, eine Meldung beantworten, ein Live-Spiel starten und Oomba fragen."
+      },
       "hub": {
         "title": "Der Hub in 2 Minuten",
         "p": "Aufgaben verteilen, jeden Platz live sehen, Meldungen beantworten und den Tagesplan steuern, alles auf einer Tafel."
@@ -10848,7 +10852,7 @@
       "trustCancel": "Jederzeit kündbar",
       "trustStudents": "Unbegrenzt viele Schüler",
       "tour": "Tour starten",
-      "watch": "Die 2-Minuten-Übersicht ansehen",
+      "watch": "Das 1-Minuten-Video ansehen",
       "watchSub": "Der Hub: Ihre ganze Klasse auf einer Tafel",
       "collageAlt": "Echte Bildschirme aus Oomba Academy: ein Klassen-Dashboard, Bruchstreifen auf einem Mathe-Board, ein Arbeitsblatt mit maßstabsgetreuen Figuren, die Bilderbuch-Bibliothek und ein Live-Klassenspiel."
     },

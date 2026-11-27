@@ -7820,6 +7820,10 @@
         "title": "Panel de clase",
         "p": "Temporizadores, tareas, registros de ánimo y herramientas de matemáticas para todo el día de clase, en una sola pantalla."
       },
+      "hub-promo": {
+        "title": "El Hub en 60 segundos",
+        "p": "Cada pupitre en directo en un solo tablero: reparte un juego, atiende una mano levantada, empieza un juego en vivo y pregunta a Oomba."
+      },
       "hub": {
         "title": "El Hub en 2 minutos",
         "p": "Reparte tareas, mira cada pupitre en directo, atiende las manos levantadas y sigue el plan del día, todo desde un solo tablero."
@@ -10847,7 +10851,7 @@
       "trustCancel": "Cancela cuando quieras",
       "trustStudents": "Estudiantes ilimitados",
       "tour": "Haz el recorrido",
-      "watch": "Mira la presentación de 2 minutos",
+      "watch": "Mira el video de 1 minuto",
       "watchSub": "El Hub: toda tu clase en un solo tablero",
       "collageAlt": "Pantallas reales de Oomba Academy: un tablero de clase, regletas de fracciones en un tablero de matemáticas, una ficha con figuras a escala, la biblioteca de libros ilustrados y un juego de clase en vivo."
     },

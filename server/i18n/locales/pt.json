@@ -7822,6 +7822,10 @@
         "title": "Painel da turma",
         "p": "Timers, tarefas, check-ins e ferramentas de matemática para o dia todo da turma, em uma só tela."
       },
+      "hub-promo": {
+        "title": "O Hub em 60 segundos",
+        "p": "Cada carteira ao vivo num só quadro: distribua um jogo, responda a uma mão levantada, comece um jogo ao vivo e peça ao Oomba."
+      },
       "hub": {
         "title": "O Hub em 2 minutos",
         "p": "Distribua tarefas, veja cada carteira ao vivo, responda às mãos levantadas e conduza o plano do dia, tudo num só quadro."
@@ -10849,7 +10853,7 @@
       "trustCancel": "Cancele quando quiser",
       "trustStudents": "Alunos ilimitados",
       "tour": "Faça o tour",
-      "watch": "Veja a apresentação de 2 minutos",
+      "watch": "Veja o vídeo de 1 minuto",
       "watchSub": "O Hub: a turma toda num só quadro",
       "collageAlt": "Telas reais da Oomba Academy: um painel da turma, barras de frações em um quadro de matemática, uma ficha com figuras em escala, a biblioteca de livros ilustrados e um jogo ao vivo da turma."
     },
