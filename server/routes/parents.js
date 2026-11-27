@@ -14,6 +14,7 @@
 // are on /plans only. Games are official launch games anyone may open (launchGame), never a game a child made, and never
 // Ring Rumble, Happy Putt or Footy Tycoon. The text is under parents.* and learn.ages.* in the locale files; English
 // fallbacks are marked lang="en", and search engines are told a page is English only until its heading is translated.
+import { arcadeHidden } from '../services/game-focus.js';
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
@@ -115,7 +116,8 @@ const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 const hasVideo = fs.existsSync(new URL('oomba-parents.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-parents-poster.jpg', VIDEO_DIR));
 /** The video: muted until the viewer turns the sound on, captions burned in and also as a track, a written description. */
 function parentsVideo(req) {
-  if (!hasVideo) return '';
+  // Recorded with arcade games in it (Gulp City): shown only while they are on the site (services/game-focus.js).
+  if (!hasVideo || arcadeHidden()) return '';
   const t = req.t;
   return html`<section class="lp-sec lp-demo" id="video" aria-labelledby="video-h">
     ${el(t, 'h2', 'parents.demo.h', {}, ' id="video-h"')}

@@ -7686,7 +7686,7 @@
       "s4": {
         "h": "Gli studenti giocano, creano e rispondono",
         "p": "Ogni studente segue il piano di lezione al proprio ritmo, su qualsiasi dispositivo.",
-        "alt": "La vista di uno studente di un piano di lezione: il passo di gioco, Riscaldamento di calcolo, è segnato Fatto con un punteggio migliore di 47 e un pulsante Gioca a Sum Racer. Seguono un passo di creazione con il pulsante Inizia a creare e una domanda scritta, il biglietto d’uscita."
+        "alt": "Quello che vede uno studente di un piano di lezione: il passo di gioco «Number-puzzle warm-up» è segnato come fatto, con un punteggio migliore di 47 e un pulsante Gioca a Sudoku. Seguono un passo per creare un gioco con il pulsante Inizia a creare e una domanda scritta, il biglietto d’uscita."
       },
       "s5": {
         "h": "Veda i progressi e il registro",
@@ -7757,7 +7757,7 @@
       "q4": "Come proteggete la privacy degli studenti?",
       "a4": "Non chiediamo mai agli studenti indirizzo email, età o indirizzo di casa. Non ci sono pubblicità né cookie di tracciamento, e il nome vero di uno studente è visibile solo al personale della sua scuola. La nostra <a href=\"{href}\">informativa sulla privacy</a> elenca esattamente cosa conserviamo.",
       "q5": "Per quali età e classi è pensato?",
-      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, circa dai 5 ai 14 anni. Lezioni come Shark Plank e i primi percorsi di Sum Racer sono adatte ai più piccoli. Number Quest, il corso di matematica, va dall’infanzia alla terza media, e CS Quest e Cyber Defenders iniziano in terza elementare.",
+      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, circa dai 5 ai 14 anni. Giochi come Word Hunt, che legge una parola ad alta voce quando la tocchi, sono adatti ai più piccoli. Number Quest, il corso di matematica, va dall’infanzia alla terza media, e CS Quest e Cyber Defenders iniziano in terza elementare.",
       "q6": "Come aggiungo la mia classe?",
       "a6": "Prima ci scriva per attivare la sua scuola. Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso.",
       "a6google": "Prima ci scriva per attivare la sua scuola. Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso. Le scuole che usano Google possono far accedere gli studenti con Google.",
@@ -7827,7 +7827,7 @@
     "live": {
       "h": "Lezioni dal vivo per la classe",
       "p1": "Conduci una gara di quiz dal vivo o qualsiasi lezione pronta per il dal vivo al proiettore. Gli studenti entrano dai loro dispositivi con un codice di 7 cifre.",
-      "li1": "Tra le modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande), Tabellone Cervello (un tabellone di categorie, dal facile al difficile), Would You Rather, Atlas Quest e Doodle Hoot.",
+      "li1": "Tra le modalità incluse: Tabellone Cervello (un tabellone di categorie, dal facile al difficile), Would You Rather, Atlas Quest e Doodle Hoot.",
       "li2": "Usa un set di partenza, scrivine uno veloce o trasforma le domande di un piano di lezione in un quiz dal vivo.",
       "li3": "Le stanze di classe sono solo per i vostri studenti con accesso effettuato, e i loro punti vanno nel vostro registro. Niente chat, niente scrittura, niente nomi scritti liberamente.",
       "more": "Veda come funziona Oomba Live"
@@ -8005,19 +8005,19 @@
         "title": "Giochi di parole in inglese gratis per bambini",
         "description": "Crucipuzzle, impiccato e parola del giorno per imparare l'inglese dai 5 ai 14 anni, con parole lette ad alta voce. Gratis, senza pubblicità, nel browser.",
         "h1": "Giochi di parole per leggere e scrivere in inglese",
-        "lead": "Tre giochi di parole inglesi che allenano ortografia e vocabolario. Shark Plank e Word Hunt leggono le parole ad alta voce, quindi vanno bene anche per chi inizia. Word Peek è una parola del giorno per chi scrive già con sicurezza.",
-        "tips": "Usi un tema di Word Hunt come riscaldamento per un argomento, risolva insieme alla classe la Parola del giorno sulla LIM commentando ogni tentativo, oppure proponga Shark Plank a chi finisce prima.",
+        "lead": "Giochi di parole per l’ortografia e il lessico. Word Hunt legge una parola ad alta voce quando la tocchi, quindi è adatto a chi inizia a leggere. Word Peek è un enigma di parole quotidiano per chi scrive già con sicurezza.",
+        "tips": "Usa un tema di Word Hunt come riscaldamento per un argomento, oppure risolvete insieme il Daily Peek alla lavagna commentando ogni tentativo.",
         "faq": {
           "q1": "I giochi leggono le parole ad alta voce?",
-          "a1": "Shark Plank legge ogni parola ad alta voce, e in Word Hunt gli studenti possono toccare qualsiasi parola per ascoltarla.",
+          "a1": "Sì. In Word Hunt gli studenti possono toccare qualsiasi parola per sentirla letta ad alta voce.",
           "q2": "C'è una sfida del giorno?",
           "a2": "Sì. Word Hunt e Word Peek hanno ognuno una nuova sfida ogni giorno, e in Word Peek uno studente può scegliere una parola segreta per un amico.",
           "q3": "Posso usare il mio elenco di parole?",
           "a3": "Non ancora in questi giochi. Può descrivere al Costruttore un gioco di ortografia con le sue parole, e lui ne creerà uno per la sua classe.",
           "q4": "Quale gioco di parole inglesi è adatto al livello di lettura di mio figlio?",
-          "a4": "Shark Plank e Word Hunt leggono le parole ad alta voce, quindi vanno bene per chi sta ancora imparando a leggere. Word Peek è per chi scrive già le parole con sicurezza."
+          "a4": "Word Hunt legge le parole ad alta voce, quindi è adatto a chi sta ancora imparando a leggere. Word Peek è per chi scrive già con sicurezza."
         },
-        "home": "Fate della Parola del giorno un'abitudine di famiglia a colazione e commentate insieme ogni tentativo, oppure lasciate giocare un lettore più piccolo a Shark Plank con l'audio acceso, così ogni parola viene letta ad alta voce."
+        "home": "Fate del Daily Peek un’abitudine di famiglia a colazione commentando ogni tentativo, oppure lasciate che un lettore più piccolo giochi a Word Hunt con l’audio e tocchi una parola per sentirla."
       },
       "strategy": {
         "name": "Scacchi e giochi di strategia",
@@ -8025,19 +8025,19 @@
         "title": "Scacchi e giochi di strategia gratis per bambini",
         "description": "Imparare gli scacchi con brevi lezioni ed enigmi, poi giocare contro un amico o un robot. Più forza quattro e rompicapi a blocchi, gratis per 5-14 anni.",
         "h1": "Scacchi e giochi di strategia per allenare il ragionamento",
-        "lead": "I giochi di strategia chiedono agli studenti di pensare in anticipo, riconoscere schemi e immaginare cosa farà l'avversario. Castle Clash insegna gli scacchi dalla prima mossa. Drop Four e Brick Drop sono partite veloci di pianificazione e schemi.",
-        "tips": "Organizzi un club di scacchi in classe con le lezioni e gli enigmi di Castle Clash, oppure metta due studenti sullo stesso dispositivo per una partita a Drop Four.",
+        "lead": "I giochi di strategia chiedono di pianificare, riconoscere schemi e pensare a cosa farà l’altro giocatore. Castle Clash insegna gli scacchi dalla prima mossa, con lezioni, problemi e un robot contro cui giocare.",
+        "tips": "Organizza un club di scacchi con le lezioni e i problemi di Castle Clash, oppure fai giocare due studenti uno contro l’altro su un solo dispositivo.",
         "faq": {
           "q1": "I bambini possono imparare gli scacchi da zero?",
           "a1": "Sì. Castle Clash ha una breve lezione per ogni pezzo e 24 enigmi di scacco matto, e poi un robot contro cui giocare su quattro livelli.",
           "q2": "Due studenti possono giocare sullo stesso dispositivo?",
-          "a2": "Sì. Castle Clash e Drop Four hanno entrambi una modalità a due giocatori sullo stesso schermo.",
+          "a2": "Sì. Castle Clash ha una modalità a due giocatori su un solo schermo.",
           "q3": "Quanto è forte il robot?",
-          "a3": "Il robot di Castle Clash ha quattro livelli, e quello di Drop Four ha Facile, Normale e Difficile.",
+          "a3": "Il robot di Castle Clash ha quattro livelli, da un inizio tranquillo a una vera sfida.",
           "q4": "Posso imparare gli scacchi insieme a mio figlio?",
           "a4": "Sì. Le lezioni di Castle Clash partono da come si muove ogni pezzo, quindi anche un adulto che non ha mai giocato può imparare, e poi sfidare il proprio figlio o figlia sullo stesso schermo."
         },
-        "home": "Imparate gli scacchi insieme: una lezione di Castle Clash al giorno, poi una partita uno contro l'altro sullo stesso schermo. Drop Four sta in qualsiasi pausa di cinque minuti."
+        "home": "Imparate gli scacchi insieme: una lezione di Castle Clash al giorno, poi una partita uno contro l’altro su un solo schermo."
       },
       "music": {
         "name": "Giochi musicali",
@@ -8069,7 +8069,7 @@
           "q1": "Quanto dovrebbe durare una pausa attiva?",
           "a1": "Molti insegnanti usano 3-5 minuti. Questi giochi hanno turni brevi, quindi è facile fermarsi in tempo.",
           "q2": "Tutta la classe può giocare su un solo schermo?",
-          "a2": "Sì. Proietti un gioco sulla LIM e faccia giocare a turno. Beat Lanes e Swish Flick funzionano bene con la classe che fa il tifo."
+          "a2": "Sì. Metti un gioco alla lavagna e fate a turno, con tutta la classe che fa il tifo."
         }
       },
       "makeAGame": {
@@ -8190,9 +8190,9 @@
         },
         "faq": {
           "q2": "I giochi sono troppo difficili per un bambino di 8 anni?",
-          "a2": "Ognuno inizia in modo facile. Sum Racer parte dalle addizioni fino a 10, il robot di Castle Clash ha un livello facile e Shark Plank legge ogni parola ad alta voce.",
+          "a2": "Ognuno inizia facile. Il robot di Castle Clash ha un livello facile, e Word Hunt legge una parola ad alta voce quando la tocchi.",
           "q3": "Due bambini possono giocare sullo stesso dispositivo?",
-          "a3": "Sì. Sum Racer, Castle Clash e Drop Four hanno una modalità a due giocatori sullo stesso schermo.",
+          "a3": "Sì. Castle Clash ha una modalità a due giocatori su un solo schermo, e Word Hunt ha una gara passandosi il telefono.",
           "q4": "Un bambino di 8 anni può usare il Costruttore IA?",
           "a4": "Sì. I bambini scrivono la loro idea, quindi aiuta se sanno scrivere una o due frasi, e all'inizio è utile un adulto vicino. Il Costruttore segue regole fisse di sicurezza per bambini."
         }
@@ -8221,9 +8221,9 @@
         },
         "faq": {
           "q2": "I giochi sono troppo facili per un ragazzo di 10 anni?",
-          "a2": "No. Sum Racer arriva a tutte le tabelline e alle divisioni, Castle Clash ha 24 enigmi di scacco matto e Word Peek è una vera sfida quotidiana.",
+          "a2": "No. Castle Clash ha 24 problemi di scacco matto, e Word Peek è una vera sfida quotidiana.",
           "q3": "Mio figlio può giocare con un fratello o un amico?",
-          "a3": "Sì. Sum Racer e Castle Clash hanno una modalità a due giocatori sullo stesso schermo, e Word Hunt ha una gara passandosi il telefono.",
+          "a3": "Sì. Castle Clash ha una modalità a due giocatori su un solo schermo, e Word Hunt ha una gara passandosi il telefono.",
           "q4": "Il Costruttore IA è sicuro per un ragazzo di 11 anni?",
           "a4": "Il Costruttore crea solo giochi e segue regole fisse di sicurezza per bambini: niente violenza esplicita, niente gioco d'azzardo, niente marchi reali e niente link verso l'esterno. <a href=\"{ai}\">Vedete tutte le regole che segue</a>. I giochi restano privati finché vostro figlio o figlia non li condivide."
         }
@@ -8275,7 +8275,7 @@
         },
         "faq": {
           "q2": "Mio figlio può giocare anche se non sa ancora leggere?",
-          "a2": "Con alcuni giochi, sì. Word Trail e Shark Plank leggono ogni parola ad alta voce, Word Hunt legge una parola quando la tocchi, e Sum Racer usa i numeri. Menu e istruzioni sono scritti, quindi all’inizio aiuta avere un adulto vicino.",
+          "a2": "Con alcuni giochi, sì. Word Hunt legge una parola ad alta voce quando la tocchi. Menu e istruzioni sono scritti, quindi all’inizio aiuta avere un adulto vicino.",
           "q3": "I percorsi sono adatti a questa età?",
           "a3": "Uno sì. Number Quest, il nostro percorso di matematica, inizia dall’ultimo anno della scuola dell’infanzia: la sua strada Launchpad va fino alla seconda elementare, e i suoi giochi leggono ogni istruzione ad alta voce. CS Quest e Cyber Defenders iniziano in terza elementare, verso gli 8 anni.",
           "q4": "Un bambino di 6 anni può usare il Costruttore IA?",
@@ -8375,7 +8375,7 @@
       "s2": {
         "h": "Giocare imparando",
         "p": "Giochi di matematica, lettura, logica e musica che funzionano direttamente nel browser su telefoni, tablet, Chromebook e computer. I ragazzi possono provarne uno senza registrarsi.",
-        "alt": "Sum Racer, un gioco di corse con la matematica, nel mezzo di una gara: macchinine a cartoni animati su una strada, una domanda di addizione e quattro grandi pulsanti di risposta."
+        "alt": "Sudoku, un rompicapo di numeri, a metà partita: una piccola griglia 4×4 con alcuni numeri inseriti e grandi pulsanti numerici con Annulla, Cancella, Note, Suggerimento e Controlla."
       },
       "s3": {
         "h": "Descrivilo, giocalo, cambialo",
@@ -8452,7 +8452,7 @@
       "a1": "Sì. Tutti i giochi sono gratuiti, e ogni giocatore con un account (bastano un nome inventato e una password) riceve ogni giorno messaggi gratuiti al Costruttore per creare i propri giochi. Non ci sono pubblicità né niente da comprare per i bambini.",
       "a1paid": "Sì. Tutti i giochi sono gratuiti, e ogni giocatore con un account (bastano un nome inventato e una password) riceve ogni giorno messaggi gratuiti al Costruttore. Le famiglie possono scegliere un piano facoltativo per avere messaggi extra al Costruttore, e ai bambini non viene mai chiesto di pagare. <a href=\"{plans}\">Vedi i piani</a>.",
       "q2": "Per quali età è pensato?",
-      "a2": "Per bambini e ragazzi dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli.",
+      "a2": "Bambini dalla scuola dell’infanzia alla terza media, circa dai 5 ai 14 anni. Giochi come Word Hunt, che legge una parola ad alta voce quando la tocchi, sono adatti ai più piccoli.",
       "q3": "Mio figlio ha bisogno di un account o di un indirizzo email?",
       "a3": "No. Chiunque può giocare subito, senza registrarsi. Per conservare i propri giochi e punteggi, i ragazzi possono creare un account con solo un nome inventato e una password. Non chiediamo mai un indirizzo email.",
       "q4": "Ci sono pubblicità o acquisti in-app?",
@@ -10130,13 +10130,13 @@
       "lead": "Schermate reali di una lezione dal vivo in una scuola dimostrativa con nomi inventati.",
       "s1": {
         "h": "Scegli una lezione e le tue domande",
-        "p": "Scegli Quest Race o Brain Board, poi le domande: la banca per materia ed età (da 6 a 14), un tuo set, uno condiviso da un collega o le domande di uno dei tuoi piani di lezione.",
-        "alt": "Il primo passo per condurre una lezione dal vivo, «A cosa vuoi giocare?»: Quest Race, Question Battle e Brain Board, ognuno con il numero di giocatori adatto."
+        "p": "Scegli Brain Board, poi le domande: la banca per materia ed età (da 6 a 14), un tuo set, uno condiviso da un collega o le domande di uno dei tuoi piani di lezione.",
+        "alt": "Il primo passo per condurre una lezione dal vivo, «A cosa vuoi giocare?»: Brain Board, Would You Rather (dal vivo) e Atlas Quest, ognuno con il numero di giocatori adatto."
       },
       "s2": {
         "h": "Mostri il codice alla lavagna",
         "p": "Gli studenti aprono la pagina per entrare sul proprio dispositivo e scrivono il codice di 7 cifre, oppure inquadrano il codice QR. I loro nomi compaiono man mano che entrano.",
-        "alt": "Lo schermo del proiettore prima che inizi la lezione: un personaggio dei cartoni contro cui gioca tutta la classe, un grande codice di 7 cifre, un codice QR e quanti giocatori sono entrati."
+        "alt": "Lo schermo del proiettore prima che inizi la lezione: la sala d’attesa di Brain Board con una scheda per ogni studente entrato, un grande codice di 7 cifre, un codice QR e quanti giocatori sono entrati."
       },
       "s3": {
         "h": "Gli studenti entrano in pochi secondi",
@@ -10146,7 +10146,7 @@
       "s4": {
         "h": "Tutti rispondono insieme",
         "p": "La domanda è alla lavagna e i pulsanti di risposta sono su ogni dispositivo. Più una risposta giusta arriva in fretta, più punti vale.",
-        "alt": "Il telefono di uno studente durante una domanda: in alto il personaggio dei cartoni contro cui gioca la classe, poi la domanda e quattro pulsanti di risposta."
+        "alt": "Lo schermo di uno studente durante una domanda: una domanda di scienze del Brain Board da 100 punti, un timer e quattro pulsanti di risposta."
       },
       "s5": {
         "h": "Veda chi sa cosa",
@@ -11654,13 +11654,13 @@
       "rubric": "Rubrica: punteggi di rubrica sullo standard, come parte del punteggio massimo. Compaiono quando le rubriche portano standard Common Core.",
       "meets": "Raggiunto: uno studente raggiunge uno standard con almeno l'80% di risposte giuste su 3 o più domande, o un punteggio di rubrica di almeno due terzi. La classe lo raggiunge quando lo raggiunge l'80% dei suoi studenti.",
       "needs": "Da guardare: studenti che hanno risposto a 2 o più domande sullo standard senza nessuna giusta. Lo vedono solo i docenti.",
-      "games": "Le lezioni con livelli per più classi (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contano come esercizio solo per il livello del piano di lezione, o per il livello a cui è bloccato il passo. In un piano di lezione senza livello compaiono solo in Coperto da.",
+      "games": "Le lezioni con livelli per più classi contano come esercizio solo per la classe del piano di lezione o per il livello su cui è bloccato il passaggio. In un piano di lezione senza classe compaiono solo in «Coperto da».",
       "live": "Le lezioni dal vivo come Tug of Math Live non registrano quale domanda riguardava quale standard, quindi le risposte di uno studente vengono ripartite tra gli standard della lezione. Questi numeri sono stime.",
       "courses": "Number Quest conta il lavoro fatto con un account scolastico, o da quando lo studente è entrato in questa classe. Una sola verifica (3 domande) non basta per raggiungere uno standard."
     },
     "empty": {
       "title": "Ancora nessuno standard Common Core",
-      "text": "Etichetta i tuoi piani di lezione con gli standard, o assegna piani di lezione con lezioni di Impara come Sum Racer, Fraction Factory o Word Trail, e compariranno qui."
+      "text": "Etichetta i tuoi piani di lezione con gli standard, oppure assegna piani di lezione con lezioni di Impara etichettate con essi, e compariranno qui."
     },
     "csvCols": {
       "code": "Codice",
