@@ -10,7 +10,7 @@
 // The trademark line (the other products "/" may name) is in the footer of "/" only: no other page names them
 // (tests/unit/compare.test.js).
 import { html, raw, esc, jsonData } from './html.js';
-import { appMark, wordmark, BRAND, ICONS_V } from './brand.js';
+import { appMark, wordmark, ICONS_V } from './brand.js';
 import { VERSION, signedOut, legalReader } from './layout.js';
 import { BAR_COLORS } from '../theme.js';
 import { localeInfo, availableLocales, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
@@ -95,7 +95,7 @@ export function lpHeader(req, { home = false, here = {}, videos = true } = {}) {
 }
 
 /**
- * The footer: "Here to play?", the links (Plans & pricing only while that page is there: family.js familiesOn), the languages (each to this page in that language: path, langs) and the theme.
+ * The footer: "Here to play?", the links, the site's footer line (layout.footer.tagline, as the app's footer) (Plans & pricing only while that page is there: family.js familiesOn), the languages (each to this page in that language: path, langs) and the theme.
  * trademarks: the line naming the other products, only on "/" (its markup, made there).
  */
 export function lpFooter(req, { path = '/', langs = null, trademarks = '' } = {}) {
@@ -145,7 +145,7 @@ export function lpFooter(req, { path = '/', langs = null, trademarks = '' } = {}
   <div class="lp-wrap lp-foot-base">
     <nav class="lp-langs" aria-labelledby="fl-t"><h2 id="fl-t" class="sr-only">${t('landing.footer.languages')}</h2>${ico('🌐', { size: 18 })}${others.map(l => html`<a href="${seo.localeUrl(path, l.code)}" hreflang="${l.code}" lang="${l.code}"${l.code === locale ? raw(' aria-current="page"') : ''}>${l.name}</a>`)}</nav>
     <p class="lp-theme"><span>${t('landing.footer.theme')}:</span> <a href="?theme=light" rel="nofollow"${theme === 'light' ? raw(' aria-current="true"') : ''}>${ico('☀️', { size: 18 })} ${t('landing.footer.light')}</a> <a href="?theme=dark" rel="nofollow"${theme === 'dark' ? raw(' aria-current="true"') : ''}>${ico('🌙', { size: 18 })} ${t('landing.footer.dark')}</a></p>
-    <p class="lp-copy">© ${new Date().getFullYear()} ${BRAND}</p>
+    <p class="lp-copy"${fb('layout.footer.tagline')}>${t('layout.footer.tagline')}</p>
   </div>
   ${trademarks ? html`<div class="lp-wrap">${trademarks}</div>` : ''}
 </footer>`;

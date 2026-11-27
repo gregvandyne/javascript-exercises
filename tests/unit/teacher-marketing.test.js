@@ -118,10 +118,15 @@ test('/teachers with paid plans off: no free line, no trial; the first button ma
 
 test('footer line: "Learn, play and build" on every page with the site footer, kids too, in every language; never a plan, price or "free"', async () => {
   const kid = auth.createUser({ username: 'FootKid', password: 'a-long-password-1', displayName: 'Foot Kid' });
-  for (const [path, u] of [['/teachers', null], ['/teachers/live', null], ['/compliance', null], ['/me', kid]]) {
+  for (const [path, u] of [['/compliance', null], ['/me', kid]]) {
     const s = (await get(path, u)).text, foot = s.slice(s.lastIndexOf('<footer class="foot">'));
     assert.match(foot, /<span>© Oomba Academy · Learn, play and build<\/span>/, path);
     assert.doesNotMatch(foot.slice(0, foot.indexOf('</span>')), /free|plan|price/i, path);
+  }
+  // The teacher site's own footer ("/", /teachers, /teachers/live: views/lp-shell.js) carries the same line.
+  for (const path of ['/', '/teachers', '/teachers/live']) {
+    const s = (await get(path)).text, foot = s.slice(s.lastIndexOf('<footer class="lp-foot">'));
+    assert.match(foot, /<p class="lp-copy">© Oomba Academy · Learn, play and build<\/p>/, path);
   }
   for (const [c, line] of [['es', 'Aprende, juega y crea'], ['de', 'Lernen, spielen und bauen'], ['ja', 'まなぶ、あそぶ、つくる'], ['he', 'לומדים, משחקים ובונים']]) assert.equal(makeT(c)('layout.footer.tagline'), `© Oomba Academy · ${line}`, c);
 });
@@ -131,7 +136,7 @@ test('/teachers/live: no "free" claims (title, description, lead, badges, button
   const at = s.indexOf('<section class="lp-hero'), hero = s.slice(at, s.indexOf('</section>', at));
   assert.ok(at > 0);
   assert.match(s, /<title>Oomba Live: live quiz lessons for your class · Oomba Academy<\/title>/);
-  assert.match(s, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a live lesson<\/a>/);
+  assert.match(s, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/teachers\/host" data-cta="host">Host a live lesson <span class="lp-arrow/);
   assert.doesNotMatch(hero, /\bfree\b/i, 'hero: no free claim');
   assert.doesNotMatch(s, /Free for teachers|Host a free live|free live quiz|One free account/i);
   for (const c of ['es', 'fr', 'de', 'ja', 'zh-Hant']) { const t = makeT(c); assert.equal(t('teachersLive.badges.free'), 'teachersLive.badges.free', `${c}: the free badge is gone`); }
