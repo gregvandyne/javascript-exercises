@@ -157,3 +157,19 @@ test('a dashboard setting counts as landed only when it reads back as asked (a c
   assert.equal(D.getLayout(lay.id).widgets.find(w => w.id === 'tm1').s.minutes, 180);
   assert.equal(r.verify.ok, false); assert.equal(r.verify.landed, 0); assert.deepEqual(r.verify.notLanded, [{ code: 'other' }]);
 });
+
+test('a book to some students: refused with the reason (a book goes to the whole class); search finds a hidden game only for those who may open it', async () => {
+  const x = world();
+  const calls = standIn((p, i) => (i === 0 ? toolUse('assign', { kind: 'book', id: LIB.books()[0].id, students: ['[student 1]'] }) : 'Whole class only.'));
+  await say(x, 'Give Maya this book', { type: 'dashboard', classId: x.A.id });
+  assert.match(resultOf(calls).error, /whole class/);
+  const F = await import('../../server/services/game-focus.js');
+  const was = config.arcade; config.arcade = false;
+  try {
+    assert.ok(F.slugHidden('sum-racer'));
+    const teacherSees = CO.searchGames({ topic: 'addition' }, x.teacher).map(g => g.id);
+    assert.ok(!teacherSees.includes('sum-racer'), 'hidden for a teacher whose class does not have it');
+    const admin = createUser({ username: uname('CAAdmin'), password: 'admin-pass-12345', role: 'admin' });
+    assert.ok(CO.searchGames({ topic: 'addition' }, getUser(admin.id)).map(g => g.id).includes('sum-racer'), 'the platform admin may open it, so finds it');
+  } finally { config.arcade = was; }
+});

@@ -4595,7 +4595,10 @@
         "tooLong": "Das war zu lang. Sprich höchstens eine Minute.",
         "tooFast": "Das sind viele Aufnahmen in einer Minute. Warte einen Moment.",
         "daily": "Für heute ist Sprechen aufgebraucht. Tippen geht weiterhin.",
-        "busy": "Sprechen ist gerade nicht verfügbar. Tippen geht weiterhin."
+        "busy": "Sprechen ist gerade nicht verfügbar. Tippen geht weiterhin.",
+        "lost": "Oomba konnte deine Aufnahme nicht in Wörter umwandeln. Sie bleibt hier, bis du sie schließt.",
+        "retry": "Noch einmal",
+        "dismiss": "Schließen"
       },
       "web": {
         "on": "Websuche an",

@@ -4595,7 +4595,10 @@
         "tooLong": "Dat was te lang. Praat maximaal een minuut.",
         "tooFast": "Dat zijn veel opnames in een minuut. Wacht even.",
         "daily": "Praten kan vandaag niet meer. Typen kan nog wel.",
-        "busy": "Praten is nu niet beschikbaar. Typen kan nog wel."
+        "busy": "Praten is nu niet beschikbaar. Typen kan nog wel.",
+        "lost": "Oomba kon je opname niet omzetten in woorden. Hij blijft hier tot je hem sluit.",
+        "retry": "Opnieuw",
+        "dismiss": "Sluiten"
       },
       "web": {
         "on": "Zoeken op internet aan",

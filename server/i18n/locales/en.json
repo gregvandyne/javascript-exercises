@@ -4998,7 +4998,10 @@
         "tooLong": "That was too long. Speak for up to a minute.",
         "tooFast": "That's a lot of recordings in a minute. Wait a moment.",
         "daily": "That's all the speaking for today. You can still type.",
-        "busy": "Speaking isn't available right now. You can still type."
+        "busy": "Speaking isn't available right now. You can still type.",
+        "lost": "Oomba couldn't turn your recording into words. It is kept here until you dismiss it.",
+        "retry": "Try again",
+        "dismiss": "Dismiss"
       },
       "web": {
         "on": "Web search on",

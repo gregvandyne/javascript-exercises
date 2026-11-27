@@ -60,7 +60,7 @@ export const HELP = Object.freeze({
     step('Under {b:school.class.teachers}, pick a teacher from your school and tap {b:school.class.addTeacher}.'),
     step('Not at your school yet? Open {link} and send them an invite first.', 'inviteTeacher', 'Invite a teacher'),
   ] },
-  'assign-game': { title: 'Assign a lesson', need: 'class', steps: [
+  'assign-game': { title: 'Assign a lesson', need: 'class', action: 'assign', steps: [
     step('Open {link}.', 'classLessons', 'your class\'s Lessons tab'),
     step('Tap {b:folders.findOomba} and pick a lesson.'),
     step('Tap {b:lessons.assign.button}. You can set {b:lessons.assign.due}.'),
