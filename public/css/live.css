@@ -628,7 +628,7 @@ header.lv-bar .lv-title { font-size: 1.15rem; }
 .lv-play .lv-phase:not(:empty) { align-self: center; padding: 6px 18px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-size: 1.1rem; }
 .lv-emotes { justify-content: center; }
 .lv-emotes .btn { min-block-size: 48px; }
-.lv-me { padding: 2px 12px 2px 2px; padding-inline: 2px 12px; border-radius: 999px; background: var(--card-2); }
+.lv-me { padding: 2px 12px 2px 2px; padding-inline: 2px 12px; border-radius: 999px; background: var(--card-2); color: var(--text); }
 .lv-end { gap: 14px; padding: 24px; }
 .lv-end .lv-place { font-size: clamp(1.4rem, 5vw, 2rem); }
 /* the Teacher view: a card bar and pill tabs (like Homeroom's tabs) */
