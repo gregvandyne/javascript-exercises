@@ -23,7 +23,7 @@ export function tIn(t, key, vars, name) {
   // (one piece: inside a flex button the parts would otherwise be spaced apart by its gap)
   return html`<span>${a}<span lang="en" dir="ltr">${vars[name]}</span>${b}</span>`;
 }
-export const ROLES = Object.freeze(['adjective', 'noun', 'verb', 'adverb', 'pronoun', 'subject', 'article', 'conjunction', 'preposition', 'capital', 'comma']);
+export const ROLES = Object.freeze(['adjective', 'noun', 'verb', 'adverb', 'pronoun', 'subject', 'article', 'conjunction', 'preposition', 'capital', 'lower', 'small', 'comma']);
 export const GLOSSARY = Object.freeze(['adjective', 'noun']);
 const base = '/courses/grammar-lab';
 export const unitHref = p => `${base}/${p.band}/${p.id}`;
@@ -48,12 +48,19 @@ function marked(text, marks, t) {
     return html`${i ? ' ' : ''}<span class="gl-tok">${w.pre}${word}${w.post}</span>`;
   });
 }
-/** One example as written: its lead-in, the example sentence, its note and (a fix's) the sentence after. Titles are
- *  shown in italics, never in quotes. */
+/** One example as written: its lead-in, the example sentence, its note and (a pair's) the second sentence. Titles are
+ *  shown in italics, never in quotes. A fix (u.fix: a sentence as written, then fixed; scripts/grammar-lab-build.js
+ *  beforeAfter) shows the two apart: the before plain and quiet after a small cross, the after on its own line after a
+ *  check, with all the marks; a screen reader hears "Before:" and "After:". */
 function exampleUnit(t, u, { italic = false, tag = 'p' } = {}) {
   const sent = (x, m) => (italic ? html`<i class="gl-title">${marked(x, m, t)}</i>` : marked(x, m, t));
-  const inner = html`${u.lead ? html`<span class="gl-ex-lead">${u.lead}</span> ` : ''}<span class="gl-ex-text">${sent(u.text, u.marks)}</span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}${u.then ? html` <span class="gl-ex-text gl-ex-then">${sent(u.then.text, u.then.marks)}</span>${u.then.note ? html` <span class="gl-ex-note">${u.then.note}</span>` : ''}` : ''}`;
-  return tag === 'li' ? html`<li class="gl-ex">${inner}</li>` : html`<p class="gl-ex">${inner}</p>`;
+  const lead = u.lead ? html`<span class="gl-ex-lead">${u.lead}</span> ` : '';
+  const thenNote = u.then && u.then.note ? html` <span class="gl-ex-note">${u.then.note}</span>` : '';
+  const inner = u.fix && u.then
+    ? html`${lead}<span class="gl-ba gl-ba-before"><span class="gl-ba-sign" aria-hidden="true">✗</span><span class="sr-only">${t('grammarLab.card.before')}</span> <span class="gl-ba-text">${u.text}</span></span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}<span class="gl-ba gl-ba-after"><span class="gl-ba-sign" aria-hidden="true">✓</span><span class="sr-only">${t('grammarLab.card.after')}</span> <span class="gl-ex-text">${sent(u.then.text, u.then.marks)}</span></span>${thenNote}`
+    : html`${lead}<span class="gl-ex-text">${sent(u.text, u.marks)}</span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}${u.then ? html` <span class="gl-ex-text gl-ex-then">${sent(u.then.text, u.then.marks)}</span>${thenNote}` : ''}`;
+  const cls = u.fix && u.then ? 'gl-ex gl-ex-fix' : 'gl-ex';
+  return tag === 'li' ? html`<li class="${cls}">${inner}</li>` : html`<p class="${cls}">${inner}</p>`;
 }
 /** A writing topic's card (grades 3-5 up): three sections, each with its guiding question, a worked passage with the
  *  sentence that does the job highlighted, and a note on how it works. small: the hint's short form (questions and notes). */

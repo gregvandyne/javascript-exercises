@@ -224,6 +224,18 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-mk-comma>.gl-mk-w{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press);padding:0 .12em}
 .gl-mk-comma>.gl-mk-tag{display:flex;justify-content:center;width:0;white-space:nowrap}
 .gl-mk-key>.gl-mk-w{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+/* a word a fix makes small ("small letter") is marked like a capital; a title's small word ("stays small") only gets a
+   quiet label: no highlight, a lighter weight */
+.gl-mk-lower>.gl-mk-w{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
+.gl-mk-small>.gl-mk-tag{font-weight:500}
+/* A fix (scripts/grammar-lab-build.js beforeAfter): the sentence as written is plain and quiet after a small cross, in
+   the line's own size; the fixed sentence has a line of its own after a check, with every mark, its lines evened out
+   so a marked word never wraps alone. */
+.gl-ba-sign{display:inline-block;min-width:1.35em;margin-inline-end:.3em;border-radius:999px;font-size:.78em;font-weight:800;font-style:normal;line-height:1.35;text-align:center;vertical-align:.1em}
+.gl-ba-before .gl-ba-sign{color:var(--bad-ink);background:var(--bad-bg)}
+.gl-ba-after .gl-ba-sign{color:var(--ok);background:var(--ok-bg)}
+.gl-ba-before .gl-ba-text{font-weight:400;font-style:normal;color:var(--text-2)}
+.gl-ba-after{display:block;margin:2px 0 0;text-wrap:balance}
 .gl-opt.gl-title,.gl-blank.gl-title,.gl-title .gl-mk{font-style:italic}
 
 /* Grades 3-5: the band's own size, the prompt above a choice, passage sentences, press-to-cycle and the fix box. */

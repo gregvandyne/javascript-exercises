@@ -16528,6 +16528,8 @@
       "example": "例",
       "how": "しくみ：",
       "tips": "ほかの例",
+      "before": "なおす前：",
+      "after": "なおした後：",
       "listen": "読んで",
       "stop": "とめる",
       "practice": "練習をはじめる",
@@ -16554,6 +16556,8 @@
       "conjunction": "接続詞",
       "preposition": "前置詞",
       "capital": "大文字",
+      "lower": "小文字",
+      "small": "小文字のまま",
       "comma": "コンマ"
     },
     "glossaryWord": {

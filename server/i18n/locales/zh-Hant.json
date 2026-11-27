@@ -16528,6 +16528,8 @@
       "example": "例子",
       "how": "怎麼看：",
       "tips": "更多例子",
+      "before": "改正前：",
+      "after": "改正後：",
       "listen": "唸給我聽",
       "stop": "停止",
       "practice": "開始練習",
@@ -16554,6 +16556,8 @@
       "conjunction": "連接詞",
       "preposition": "介系詞",
       "capital": "大寫字母",
+      "lower": "小寫字母",
+      "small": "保持小寫",
       "comma": "逗號"
     },
     "glossaryWord": {

@@ -64,7 +64,7 @@ Topic count check: 10 topics are written in full below, and 2 topics are shared 
 - Definition: Names of people and names of days and months start with a big letter. A big letter is called a capital letter.
 - Worked example: "My friend sam was born on july 3." The words that need big letters are Sam and July. The correct sentence is "My friend Sam was born on July 3."
 - How it works: Sam is a person's name, and July is a month, so both start with a big letter.
-- Tip box: "Today is monday." Monday starts with a big letter. "I play with leo." Leo starts with a big letter.
+- Tip box: "Today is monday." Monday is a day, so it starts with a big letter. The correct sentence is "Today is Monday." "I play with leo." Leo is a name, so it starts with a big letter. The correct sentence is "I play with Leo."
 
 **Quiz**
 1. "My friend ana likes to draw." Answer: Ana. Hint: A person's name starts with a big letter.
@@ -4195,7 +4195,7 @@ Quiz:
 
 **Teaching card**
 - Definition: The first word of every sentence starts with a capital letter. This rule holds for statements, questions, and commands.
-- Worked example: "the dog chased the ball." The word "the" is the first word, so it becomes "The dog chased the ball."
+- Worked example: "the dog chased the ball." The first word, the, needs a capital, so the sentence becomes "The dog chased the ball."
 - Explanation: A capital letter at the start marks where a new sentence begins.
 - Tip box: "we are going to the park after lunch." becomes "We are going to the park after lunch." "did you finish your homework?" becomes "Did you finish your homework?"
 
@@ -4217,7 +4217,7 @@ Quiz:
 
 **Teaching card**
 - Definition: The names of days and months are always capitalized. The names of seasons are not capitalized.
-- Worked example: "we meet on tuesday in march." The day "tuesday" becomes "Tuesday" and the month "march" becomes "March."
+- Worked example: "we meet on tuesday in march." The first word, the day tuesday, and the month march need capitals, so the sentence becomes "We meet on Tuesday in March."
 - Explanation: Days and months are proper nouns, so they take capital letters.
 - Tip box: "The race is on friday in june." becomes "The race is on Friday in June." "Her birthday is in november." becomes "Her birthday is in November."
 
@@ -4239,7 +4239,7 @@ Quiz:
 
 **Teaching card**
 - Definition: The names of holidays are capitalized. Every important word in a holiday name takes a capital letter.
-- Worked example: "we celebrate thanksgiving in november." The holiday "thanksgiving" becomes "Thanksgiving."
+- Worked example: "we celebrate thanksgiving in november." The first word, the holiday thanksgiving, and the month november need capitals, so the sentence becomes "We celebrate Thanksgiving in November."
 - Explanation: Holiday names are proper nouns, so they take capital letters.
 - Tip box: "The fireworks on independence day were bright." becomes "The fireworks on Independence Day were bright." "We bake cookies for valentine's day." becomes "We bake cookies for Valentine's Day."
 
@@ -4261,7 +4261,7 @@ Quiz:
 
 **Teaching card**
 - Definition: The names of seasons are not capitalized. Words like spring, summer, fall, and winter stay lowercase unless they begin a sentence or are part of a proper name.
-- Worked example: "we swim every Summer." The season "Summer" is wrong here. It becomes "We swim every summer."
+- Worked example: "we swim every Summer." The first word needs a capital, but the season summer does not, so the sentence becomes "We swim every summer."
 - Explanation: Seasons are common nouns, not proper nouns, so they do not take capital letters.
 - Tip box: "The leaves turn red in Fall." becomes "The leaves turn red in fall." "Winter is my favorite season." stays as it is, with a capital W only because it starts the sentence.
 
@@ -4283,7 +4283,7 @@ Quiz:
 
 **Teaching card**
 - Definition: The names of streets, cities, states, countries, rivers, mountains, and other specific places are capitalized. Every important word in a place name takes a capital letter.
-- Worked example: "we live on maple street in denver." The street "maple street" becomes "Maple Street" and the city "denver" becomes "Denver."
+- Worked example: "we live on maple street in denver." The first word, the street maple street, and the city denver need capitals, so the sentence becomes "We live on Maple Street in Denver."
 - Explanation: Specific place names are proper nouns, so they take capital letters.
 - Tip box: "The river flows through the grand canyon." becomes "The river flows through the Grand Canyon." "She visited paris last year." becomes "She visited Paris last year."
 
@@ -4305,7 +4305,7 @@ Quiz:
 
 **Teaching card**
 - Definition: A family word like mom, dad, grandma, or uncle is capitalized when it is used as a name, with no other word in front of it. It stays lowercase when it follows a possessive word like my, your, or his.
-- Worked example: "i asked mom for help." The word "mom" is used as a name, so it becomes "I asked Mom for help." Compare: "I asked my mom for help." Here "mom" follows "my," so it stays lowercase.
+- Worked example: "i asked mom for help." The word I is always a capital, and mom is used as a name, so the sentence becomes "I asked Mom for help." Compare: "I asked my mom for help." Here mom follows my, so it stays lowercase.
 - Explanation: A family word acts like a proper noun only when it stands in for a name.
 - Tip box: "Uncle Ray is coming to dinner." Uncle is capitalized because it is part of a name. "My uncle is coming to dinner." Uncle stays lowercase because it follows "my."
 
@@ -4333,7 +4333,7 @@ See the topic "Capitalizing Seasons" under Rules of Capitalization I above. It i
 
 **Teaching card**
 - Definition: The names of specific buildings and schools are capitalized. Every important word in the name takes a capital letter.
-- Worked example: "we met at the cedar public library on main street." The building name becomes "the Cedar Public Library on Main Street."
+- Worked example: "we met at the cedar public library on main street." The first word, the building name, and the street name need capitals, so the sentence becomes "We met at the Cedar Public Library on Main Street."
 - Explanation: Specific building and school names are proper nouns, so they take capital letters.
 - Tip box: "She goes to lincoln middle school." becomes "She goes to Lincoln Middle School." "The show was at the riverside theater." becomes "The show was at the Riverside Theater."
 
@@ -4355,7 +4355,7 @@ See the topic "Capitalizing Seasons" under Rules of Capitalization I above. It i
 
 **Teaching card**
 - Definition: People's names are always capitalized, and a social title like Mr., Mrs., Ms., or Dr. is capitalized when it comes before a name.
-- Worked example: "mr. lane gave us a quiz." The title "mr." becomes "Mr." because it comes before the name Lane.
+- Worked example: "mr. lane gave us a quiz." The title mr. comes before the name Lane, so the sentence becomes "Mr. Lane gave us a quiz."
 - Explanation: Names and the titles that go with them are proper nouns, so they take capital letters.
 - Tip box: "Please thank mrs. Diaz for the books." becomes "Please thank Mrs. Diaz for the books." "Dr. Patel will speak at the assembly." Dr. is capitalized because it comes before a name.
 
@@ -4377,7 +4377,7 @@ See the topic "Capitalizing Seasons" under Rules of Capitalization I above. It i
 
 **Teaching card**
 - Definition: A professional title is capitalized when it comes before a person's name or when it is used as part of a direct address. It stays lowercase when it simply describes the person's job after the name.
-- Worked example: "captain ruiz led the rescue team." The title "captain" becomes "Captain" because it comes before the name Ruiz.
+- Worked example: "captain ruiz led the rescue team." The title captain comes before the name Ruiz, so the sentence becomes "Captain Ruiz led the rescue team."
 - Explanation: A title used as part of a name is a proper noun, so it takes a capital letter.
 - Tip box: "Judge Alvarez will hear the case." Judge is capitalized before a name. "Rosa Alvarez, a judge in our town, will hear the case." Judge stays lowercase because it describes her job.
 
@@ -4403,7 +4403,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 
 **Teaching card**
 - Definition: The names of political parties and political groups are capitalized. Every important word in the group name takes a capital letter.
-- Worked example: "the democratic party held a meeting." The group name becomes "the Democratic Party."
+- Worked example: "the democratic party held a meeting." The first word and the group name need capitals, so the sentence becomes "The Democratic Party held a meeting."
 - Explanation: Names of political groups are proper nouns, so they take capital letters.
 - Tip box: "She joined the young voters club." becomes "She joined the Young Voters Club." "The green party supports clean air." becomes "The Green Party supports clean air."
 
@@ -4425,7 +4425,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 
 **Teaching card**
 - Definition: Brand names and product names are capitalized. Every important word in a brand or product name takes a capital letter.
-- Worked example: "we bought a new bicycle from pedal works." The brand name becomes "Pedal Works."
+- Worked example: "we bought a new bicycle from pedal works." The first word and the brand name need capitals, so the sentence becomes "We bought a new bicycle from Pedal Works."
 - Explanation: Brand and product names are proper nouns, so they take capital letters.
 - Tip box: "He reads the morning gazette every day." becomes "He reads the Morning Gazette every day." "We packed a lunchbox from lunch pals." becomes "We packed a lunchbox from Lunch Pals."
 
@@ -4447,7 +4447,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 
 **Teaching card**
 - Definition: The names of planets, stars, galaxies, and other specific things in space are capitalized. Earth is capitalized when it names our planet. The everyday words sun and moon stay lowercase.
-- Worked example: "earth orbits the sun." The planet "earth" becomes "Earth," and "sun" stays lowercase: "Earth orbits the sun."
+- Worked example: "earth orbits the sun." The planet earth needs a capital, but sun stays lowercase, so the sentence becomes "Earth orbits the sun."
 - Explanation: Specific things in space are proper nouns, so they take capital letters.
 - Tip box: "Mars is called the red planet." Mars is capitalized because it names a specific planet. "We sat in the sun all afternoon." Sun stays lowercase, like moon.
 
@@ -4469,7 +4469,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 
 **Teaching card**
 - Definition: The names of specific school subjects that come from a language, a place, or a person's name are capitalized, like Spanish, French, and English. General subjects like math, science, and history stay lowercase, unless they are part of a course title.
-- Worked example: "i take spanish and math this year." The language "spanish" becomes "Spanish," but "math" stays lowercase.
+- Worked example: "i take spanish and math this year." The word I and the language spanish need capitals, but math stays lowercase, so the sentence becomes "I take Spanish and math this year."
 - Explanation: Language names are proper nouns, so they take capital letters. General subject names are common nouns.
 - Tip box: "Her favorite class is history." History stays lowercase. "Her favorite class is American History." American History is capitalized because it is a course title.
 

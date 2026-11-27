@@ -16529,6 +16529,8 @@
       "example": "Beispiel",
       "how": "So funktioniert es:",
       "tips": "Mehr Beispiele",
+      "before": "Vorher:",
+      "after": "Nachher:",
       "listen": "Vorlesen",
       "stop": "Stopp",
       "practice": "Üben starten",
@@ -16555,6 +16557,8 @@
       "conjunction": "Konjunktion",
       "preposition": "Präposition",
       "capital": "Großbuchstabe",
+      "lower": "Kleinbuchstabe",
+      "small": "bleibt klein",
       "comma": "Komma"
     },
     "glossaryWord": {

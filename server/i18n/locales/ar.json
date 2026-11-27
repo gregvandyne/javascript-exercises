@@ -16529,6 +16529,8 @@
       "example": "مثال",
       "how": "كيف يعمل:",
       "tips": "أمثلة أخرى",
+      "before": "قبل:",
+      "after": "بعد:",
       "listen": "اقرأه لي",
       "stop": "توقف",
       "practice": "ابدأ التدريب",
@@ -16555,6 +16557,8 @@
       "conjunction": "حرف عطف",
       "preposition": "حرف جر",
       "capital": "حرف كبير",
+      "lower": "حرف صغير",
+      "small": "يبقى صغيرًا",
       "comma": "فاصلة"
     },
     "glossaryWord": {

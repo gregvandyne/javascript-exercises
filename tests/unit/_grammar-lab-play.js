@@ -297,6 +297,7 @@ export async function cardOverlaps(page, root = '.gl-card-body') {
         }
       }
       for (const e of scope.querySelectorAll('*')) {
+        if (e.closest('.sr-only')) continue;   // (words for a screen reader only: clipped on purpose)
         const cs = getComputedStyle(e);
         if (/hidden|clip|auto|scroll/.test(cs.overflowX + cs.overflowY) && (e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1)) out.push(`cut off: ${e.className} ("${say(e.textContent)}")`);
       }

@@ -125,6 +125,35 @@ test('the parser fails loudly: an answer not in its sentence, a hint naming its 
   assert.ok(B.buildTopics(md(items), { ...plan, topics: { x: { ...plan.topics.x, format: 'drag' } } }).problems.some(p => /format "drag" is not built yet/.test(p)));
 });
 
+test('the parser: a fix example is a before and an after; every mark on the after, a title\'s small words "stays small"', () => {
+  const card = (worked, tip, format = 'choice') => {
+    const problems = [];
+    const lines = [`Definition: A rule.`, `Worked example: ${worked}`, `How it works: The rule.`, `Tip box: ${tip}`].map((text, line) => ({ text, line }));
+    return { c: B.parseCard(lines, problems, 'x', format), problems };
+  };
+  const at = u => u.then.marks.map(m => `${tokenize(u.then.text)[m.i].t}:${m.role}`);
+  // the note says so: the title, the correct sentence, with commas, fix it, fixed, the fix is
+  let { c, problems } = card('We watched "the bear and the bees." The title is "The Bear and the Bees."', '"Sam walked and buys lunch." Walked is past. Fix it: "Sam walked and bought lunch."');
+  assert.deepEqual(problems, []);
+  assert.ok(c.example.fix); assert.deepEqual(c.example.marks, []);
+  assert.deepEqual(at(c.example), ['The:capital', 'Bear:capital', 'and:small', 'the:small', 'Bees:capital']);
+  assert.ok(c.tips[0].fix);
+  // a sentence that differs by capitals only: a fix, and a word that loses its capital is "small letter"
+  ({ c } = card('"we swim every Summer." It becomes "We swim every summer."', '"Winter is here." stays as it is.'));
+  assert.deepEqual(at(c.example), ['We:capital', 'summer:lower']);
+  // "becomes" alone is a fix only on a card whose worked example is one
+  ({ c } = card('Passive: "The cake was baked by Sam." Active: "Sam baked the cake."', '"The fence was painted by Ana." becomes "Ana painted the fence."'));
+  assert.ok(!c.example.fix && !c.tips[0].fix);
+  ({ c } = card('"The bell rang, we left." The fix is "The bell rang, so we left."', '"Ana gave Maya her book." becomes "Ana gave Maya Ana\'s book."'));
+  assert.ok(c.example.fix && c.tips[0].fix);
+  // two sentences side by side are not a fix: their marks stay where they are
+  ({ c } = card('Passive: "The cake was baked by Sam." Active: "Sam baked the cake."', '"After lunch we read." The phrase is "After lunch."'));
+  assert.ok(!c.example.fix && !c.tips[0].fix);
+  // a title the rules would write another way fails the build
+  ({ problems } = card('We read "the big dog." The title is "The big Dog."', '"a cat." The title is "A Cat."'));
+  assert.ok(problems.some(p => /is not capitalized by the title rules/.test(p)), problems.join('\n'));
+});
+
 // ------------------------------------------------------------------------------------------------- mastery math
 const play = (s, results) => results.map(r => M.answer(s, r));
 test('mastery: 3 levels of 4 is 12 questions when every answer is right; levels need two in a row', () => {

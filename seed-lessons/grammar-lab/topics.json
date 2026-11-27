@@ -2213,38 +2213,42 @@
        }
       ]
      },
-     "marks": [
-      {
-       "i": 2,
-       "role": "capital"
-      },
-      {
-       "i": 6,
-       "role": "capital"
-      }
-     ]
+     "marks": [],
+     "fix": true
     },
     "how": "Sam is a person's name, and July is a month, so both start with a big letter.",
     "tips": [
      {
       "text": "Today is monday.",
-      "note": "Monday starts with a big letter.",
-      "marks": [
-       {
-        "i": 2,
-        "role": "capital"
-       }
-      ]
+      "note": "Monday is a day, so it starts with a big letter. The correct sentence is",
+      "then": {
+       "text": "Today is Monday.",
+       "note": "",
+       "marks": [
+        {
+         "i": 2,
+         "role": "capital"
+        }
+       ]
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "I play with leo.",
-      "note": "Leo starts with a big letter.",
-      "marks": [
-       {
-        "i": 3,
-        "role": "capital"
-       }
-      ]
+      "note": "Leo is a name, so it starts with a big letter. The correct sentence is",
+      "then": {
+       "text": "I play with Leo.",
+       "note": "",
+       "marks": [
+        {
+         "i": 3,
+         "role": "capital"
+        }
+       ]
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -2442,24 +2446,8 @@
        }
       ]
      },
-     "marks": [
-      {
-       "i": 0,
-       "role": "capital"
-      },
-      {
-       "i": 1,
-       "role": "capital"
-      },
-      {
-       "i": 2,
-       "role": "capital"
-      },
-      {
-       "i": 3,
-       "role": "capital"
-      }
-     ]
+     "marks": [],
+     "fix": true
     },
     "how": "A title is a name, so its first word and its big words start with big letters.",
     "tips": [
@@ -2485,7 +2473,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "lead": "We watched",
@@ -2504,12 +2493,21 @@
          "role": "capital"
         },
         {
+         "i": 2,
+         "role": "small"
+        },
+        {
+         "i": 3,
+         "role": "small"
+        },
+        {
          "i": 4,
          "role": "capital"
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -2730,7 +2728,8 @@
        }
       ]
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "The commas go between the things in the list, so each thing stands on its own.",
     "tips": [
@@ -2926,7 +2925,8 @@
        }
       ]
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "The comma gives a small pause after the phrase that tells when.",
     "tips": [
@@ -2935,8 +2935,7 @@
       "note": "The phrase is",
       "then": {
        "text": "After lunch.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      },
@@ -2945,8 +2944,7 @@
       "note": "The phrase is",
       "then": {
        "text": "On Monday.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      }
@@ -5837,9 +5835,11 @@
      "note": "This is a run-on. Fix it like this:",
      "then": {
       "text": "The sun came out, and we went outside.",
-      "note": ""
+      "note": "",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "The comma and the word and join the two complete thoughts the right way.",
     "tips": [
@@ -5851,7 +5851,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "It rained all day the game was canceled.",
@@ -5861,7 +5862,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -6852,14 +6854,16 @@
      "note": "Walked is past, but buys is present. Fix it:",
      "then": {
       "text": "Sam walked to school and bought lunch.",
-      "note": ""
+      "note": "",
+      "marks": [
+       {
+        "i": 1,
+        "role": "verb"
+       }
+      ]
      },
-     "marks": [
-      {
-       "i": 1,
-       "role": "verb"
-      }
-     ]
+     "marks": [],
+     "fix": true
     },
     "how": "Both verbs should be past, because both actions happened in the past.",
     "tips": [
@@ -6871,7 +6875,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Leo will swim and played tag.",
@@ -6881,7 +6886,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -7539,8 +7545,7 @@
       "note": "becomes",
       "then": {
        "text": "Zoe wrote the letter.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      },
@@ -7549,8 +7554,7 @@
       "note": "becomes",
       "then": {
        "text": "Max scored the goal.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      }
@@ -7874,8 +7878,7 @@
       "note": "Passive for focus on the receiver:",
       "then": {
        "text": "The record was broken on Saturday.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      }
@@ -10866,8 +10869,7 @@
       "note": "and",
       "then": {
        "text": "an hour.",
-       "note": "Hour starts with a vowel sound even though it starts with the letter h.",
-       "marks": []
+       "note": "Hour starts with a vowel sound even though it starts with the letter h."
       },
       "marks": []
      },
@@ -10876,8 +10878,7 @@
       "note": "and",
       "then": {
        "text": "an umbrella.",
-       "note": "University starts with a consonant sound even though it starts with a vowel letter.",
-       "marks": []
+       "note": "University starts with a consonant sound even though it starts with a vowel letter."
       },
       "marks": []
      }
@@ -14405,7 +14406,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The dog barked the cat ran.",
@@ -14415,7 +14417,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -18954,11 +18957,14 @@
        "note": "The word so is wrong, because playing outside is not a result of rain. Fixed:",
        "then": {
         "text": "It rained, but we played outside.",
-        "note": ""
+        "note": "",
+        "marks": []
        },
-       "marks": []
+       "marks": [],
+       "fix": true
       }
-     ]
+     ],
+     "fix": true
     },
     "how": "First check the link. Does the conjunction match the link? Then check the punctuation. Two complete sentences need a comma before the conjunction.",
     "tips": [
@@ -31663,8 +31669,7 @@
       "note": "To the principal:",
       "then": {
        "text": "May I please speak with you after school?",
-       "note": "Both are right for their setting.",
-       "marks": []
+       "note": "Both are right for their setting."
       },
       "marks": []
      }
@@ -35553,9 +35558,11 @@
      "note": "Fixed:",
      "then": {
       "text": "The bell surprised the students running down the hall.",
-      "note": "Now the modifier sits next to the students, the ones who were running."
+      "note": "Now the modifier sits next to the students, the ones who were running.",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Find the modifier, find the word it should describe, then move the modifier next to that word or rewrite the sentence so the two are together.",
     "tips": [
@@ -35567,7 +35574,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Sam saw a deer driving home.",
@@ -35577,7 +35585,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -35858,9 +35867,11 @@
      "note": "Fixed:",
      "then": {
       "text": "After reading the book, Ana found the movie disappointing.",
-      "note": "Now Ana is the reader, so the modifier has something to describe."
+      "note": "Now Ana is the reader, so the modifier has something to describe.",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Find the opening phrase, ask who or what should do the action in it, then add that word as the subject of the main clause.",
     "tips": [
@@ -35872,7 +35883,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "To win the prize, hard work is needed.",
@@ -35882,7 +35894,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -36609,9 +36622,11 @@
      "note": "This is a fragment. Fixed:",
      "then": {
       "text": "Because it rained, the game moved inside.",
-      "note": "Now the dependent clause is joined to a main clause."
+      "note": "Now the dependent clause is joined to a main clause.",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Find the clause that starts with a subordinating word. Join it to the sentence it belongs with, or add a main clause to finish the thought.",
     "tips": [
@@ -36623,7 +36638,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "If you hurry.",
@@ -36633,7 +36649,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -39026,9 +39043,11 @@
      "note": "This is wrong if they share one garden. Fixed:",
      "then": {
       "text": "Ana and Leo's garden is behind the school.",
-      "note": "One garden, one apostrophe."
+      "note": "One garden, one apostrophe.",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Check whether the owners share one thing or each own one. Fix the apostrophes to match: one for shared, one on every name for unshared.",
     "tips": [
@@ -39040,7 +39059,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Mom and Dad's cars are in the garage.",
@@ -39050,7 +39070,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -41042,20 +41063,19 @@
     "definition": "The first word of every sentence starts with a capital letter. This rule holds for statements, questions, and commands.",
     "example": {
      "text": "the dog chased the ball.",
-     "note": "The word",
+     "note": "The first word, the, needs a capital, so the sentence becomes",
      "then": {
-      "text": "the",
-      "note": ""
+      "text": "The dog chased the ball.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "is the first word, so it becomes",
-       "text": "The dog chased the ball.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "A capital letter at the start marks where a new sentence begins.",
     "tips": [
@@ -41072,7 +41092,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "did you finish your homework?",
@@ -41087,7 +41108,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -41300,30 +41322,27 @@
     "definition": "The names of days and months are always capitalized. The names of seasons are not capitalized.",
     "example": {
      "text": "we meet on tuesday in march.",
-     "note": "The day",
+     "note": "The first word, the day tuesday, and the month march need capitals, so the sentence becomes",
      "then": {
-      "text": "tuesday",
-      "note": ""
+      "text": "We meet on Tuesday in March.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 3,
+        "role": "capital"
+       },
+       {
+        "i": 5,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Tuesday",
-       "note": "and the month",
-       "then": {
-        "text": "march",
-        "note": ""
-       },
-       "marks": []
-      },
-      {
-       "lead": "becomes",
-       "text": "March.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Days and months are proper nouns, so they take capital letters.",
     "tips": [
@@ -41344,7 +41363,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Her birthday is in november.",
@@ -41359,7 +41379,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -41580,20 +41601,27 @@
     "definition": "The names of holidays are capitalized. Every important word in a holiday name takes a capital letter.",
     "example": {
      "text": "we celebrate thanksgiving in november.",
-     "note": "The holiday",
+     "note": "The first word, the holiday thanksgiving, and the month november need capitals, so the sentence becomes",
      "then": {
-      "text": "thanksgiving",
-      "note": ""
+      "text": "We celebrate Thanksgiving in November.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 2,
+        "role": "capital"
+       },
+       {
+        "i": 4,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Thanksgiving.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Holiday names are proper nouns, so they take capital letters.",
     "tips": [
@@ -41614,7 +41642,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "We bake cookies for valentine's day.",
@@ -41633,7 +41662,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -41858,20 +41888,23 @@
     "definition": "The names of seasons are not capitalized. Words like spring, summer, fall, and winter stay lowercase unless they begin a sentence or are part of a proper name.",
     "example": {
      "text": "we swim every Summer.",
-     "note": "The season",
+     "note": "The first word needs a capital, but the season summer does not, so the sentence becomes",
      "then": {
-      "text": "Summer",
-      "note": ""
+      "text": "We swim every summer.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 3,
+        "role": "lower"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "is wrong here. It becomes",
-       "text": "We swim every summer.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Seasons are common nouns, not proper nouns, so they do not take capital letters.",
     "tips": [
@@ -41884,11 +41917,12 @@
        "marks": [
         {
          "i": 5,
-         "role": "capital"
+         "role": "lower"
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Winter is my favorite season.",
@@ -42088,30 +42122,31 @@
     "definition": "The names of streets, cities, states, countries, rivers, mountains, and other specific places are capitalized. Every important word in a place name takes a capital letter.",
     "example": {
      "text": "we live on maple street in denver.",
-     "note": "The street",
+     "note": "The first word, the street maple street, and the city denver need capitals, so the sentence becomes",
      "then": {
-      "text": "maple street",
-      "note": ""
+      "text": "We live on Maple Street in Denver.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 3,
+        "role": "capital"
+       },
+       {
+        "i": 4,
+        "role": "capital"
+       },
+       {
+        "i": 6,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Maple Street",
-       "note": "and the city",
-       "then": {
-        "text": "denver",
-        "note": ""
-       },
-       "marks": []
-      },
-      {
-       "lead": "becomes",
-       "text": "Denver.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Specific place names are proper nouns, so they take capital letters.",
     "tips": [
@@ -42132,7 +42167,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "She visited paris last year.",
@@ -42147,7 +42183,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -42380,34 +42417,31 @@
     "definition": "A family word like mom, dad, grandma, or uncle is capitalized when it is used as a name, with no other word in front of it. It stays lowercase when it follows a possessive word like my, your, or his.",
     "example": {
      "text": "i asked mom for help.",
-     "note": "The word",
+     "note": "The word I is always a capital, and mom is used as a name, so the sentence becomes",
      "then": {
-      "text": "mom",
-      "note": ""
+      "text": "I asked Mom for help.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 2,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
      "more": [
       {
-       "lead": "is used as a name, so it becomes",
-       "text": "I asked Mom for help.",
-       "note": "Compare:",
-       "then": {
-        "text": "I asked my mom for help.",
-        "note": ""
-       },
-       "marks": []
-      },
-      {
-       "lead": "Here",
-       "text": "mom",
-       "note": "follows",
-       "then": {
-        "text": "my,",
-        "note": "so it stays lowercase."
-       },
+       "lead": "Compare:",
+       "text": "I asked my mom for help.",
+       "note": "Here mom follows my, so it stays lowercase.",
        "marks": []
       }
-     ]
+     ],
+     "fix": true
     },
     "how": "A family word acts like a proper noun only when it stands in for a name.",
     "tips": [
@@ -42421,8 +42455,7 @@
       "note": "Uncle stays lowercase because it follows",
       "then": {
        "text": "my.",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      }
@@ -42610,12 +42643,39 @@
     "definition": "The names of specific buildings and schools are capitalized. Every important word in the name takes a capital letter.",
     "example": {
      "text": "we met at the cedar public library on main street.",
-     "note": "The building name becomes",
+     "note": "The first word, the building name, and the street name need capitals, so the sentence becomes",
      "then": {
-      "text": "the Cedar Public Library on Main Street.",
-      "note": ""
+      "text": "We met at the Cedar Public Library on Main Street.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 4,
+        "role": "capital"
+       },
+       {
+        "i": 5,
+        "role": "capital"
+       },
+       {
+        "i": 6,
+        "role": "capital"
+       },
+       {
+        "i": 8,
+        "role": "capital"
+       },
+       {
+        "i": 9,
+        "role": "capital"
+       }
+      ]
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Specific building and school names are proper nouns, so they take capital letters.",
     "tips": [
@@ -42640,7 +42700,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The show was at the riverside theater.",
@@ -42659,7 +42720,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -42912,20 +42974,23 @@
     "definition": "People's names are always capitalized, and a social title like Mr., Mrs., Ms., or Dr. is capitalized when it comes before a name.",
     "example": {
      "text": "mr. lane gave us a quiz.",
-     "note": "The title",
+     "note": "The title mr. comes before the name Lane, so the sentence becomes",
      "then": {
-      "text": "mr.",
-      "note": ""
+      "text": "Mr. Lane gave us a quiz.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 1,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Mr.",
-       "note": "because it comes before the name Lane.",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Names and the titles that go with them are proper nouns, so they take capital letters.",
     "tips": [
@@ -42942,7 +43007,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Dr. Patel will speak at the assembly.",
@@ -43188,20 +43254,23 @@
     "definition": "A professional title is capitalized when it comes before a person's name or when it is used as part of a direct address. It stays lowercase when it simply describes the person's job after the name.",
     "example": {
      "text": "captain ruiz led the rescue team.",
-     "note": "The title",
+     "note": "The title captain comes before the name Ruiz, so the sentence becomes",
      "then": {
-      "text": "captain",
-      "note": ""
+      "text": "Captain Ruiz led the rescue team.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 1,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Captain",
-       "note": "because it comes before the name Ruiz.",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "A title used as part of a name is a proper noun, so it takes a capital letter.",
     "tips": [
@@ -43433,12 +43502,27 @@
     "definition": "The names of political parties and political groups are capitalized. Every important word in the group name takes a capital letter.",
     "example": {
      "text": "the democratic party held a meeting.",
-     "note": "The group name becomes",
+     "note": "The first word and the group name need capitals, so the sentence becomes",
      "then": {
-      "text": "the Democratic Party.",
-      "note": ""
+      "text": "The Democratic Party held a meeting.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 1,
+        "role": "capital"
+       },
+       {
+        "i": 2,
+        "role": "capital"
+       }
+      ]
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Names of political groups are proper nouns, so they take capital letters.",
     "tips": [
@@ -43463,7 +43547,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The green party supports clean air.",
@@ -43482,7 +43567,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -43727,12 +43813,27 @@
     "definition": "Brand names and product names are capitalized. Every important word in a brand or product name takes a capital letter.",
     "example": {
      "text": "we bought a new bicycle from pedal works.",
-     "note": "The brand name becomes",
+     "note": "The first word and the brand name need capitals, so the sentence becomes",
      "then": {
-      "text": "Pedal Works.",
-      "note": ""
+      "text": "We bought a new bicycle from Pedal Works.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 6,
+        "role": "capital"
+       },
+       {
+        "i": 7,
+        "role": "capital"
+       }
+      ]
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Brand and product names are proper nouns, so they take capital letters.",
     "tips": [
@@ -43753,7 +43854,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "We packed a lunchbox from lunch pals.",
@@ -43772,7 +43874,8 @@
         }
        ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -44009,30 +44112,19 @@
     "definition": "The names of planets, stars, galaxies, and other specific things in space are capitalized. Earth is capitalized when it names our planet. The everyday words sun and moon stay lowercase.",
     "example": {
      "text": "earth orbits the sun.",
-     "note": "The planet",
+     "note": "The planet earth needs a capital, but sun stays lowercase, so the sentence becomes",
      "then": {
-      "text": "earth",
-      "note": ""
+      "text": "Earth orbits the sun.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Earth,",
-       "note": "and",
-       "then": {
-        "text": "sun",
-        "note": ""
-       },
-       "marks": []
-      },
-      {
-       "lead": "stays lowercase:",
-       "text": "Earth orbits the sun.",
-       "note": "",
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Specific things in space are proper nouns, so they take capital letters.",
     "tips": [
@@ -44242,24 +44334,23 @@
     "definition": "The names of specific school subjects that come from a language, a place, or a person's name are capitalized, like Spanish, French, and English. General subjects like math, science, and history stay lowercase, unless they are part of a course title.",
     "example": {
      "text": "i take spanish and math this year.",
-     "note": "The language",
+     "note": "The word I and the language spanish need capitals, but math stays lowercase, so the sentence becomes",
      "then": {
-      "text": "spanish",
-      "note": ""
+      "text": "I take Spanish and math this year.",
+      "note": "",
+      "marks": [
+       {
+        "i": 0,
+        "role": "capital"
+       },
+       {
+        "i": 2,
+        "role": "capital"
+       }
+      ]
      },
      "marks": [],
-     "more": [
-      {
-       "lead": "becomes",
-       "text": "Spanish,",
-       "note": "but",
-       "then": {
-        "text": "math",
-        "note": "stays lowercase."
-       },
-       "marks": []
-      }
-     ]
+     "fix": true
     },
     "how": "Language names are proper nouns, so they take capital letters. General subject names are common nouns.",
     "tips": [
@@ -45217,8 +45308,7 @@
       "note": "The subject",
       "then": {
        "text": "bus",
-       "note": "is singular.",
-       "marks": []
+       "note": "is singular."
       },
       "marks": []
      },
@@ -45227,8 +45317,7 @@
       "note": "The subject",
       "then": {
        "text": "keys",
-       "note": "is plural.",
-       "marks": []
+       "note": "is plural."
       },
       "marks": []
      }
@@ -45680,8 +45769,7 @@
       "note": "The nearer subject",
       "then": {
        "text": "coach",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      },
@@ -45696,8 +45784,7 @@
       "note": "The nearer subject",
       "then": {
        "text": "players",
-       "note": "",
-       "marks": []
+       "note": ""
       },
       "marks": []
      },
@@ -47723,9 +47810,11 @@
      "note": "The fix is",
      "then": {
       "text": "When Sam talked to Leo, Sam was upset.",
-      "note": "Repeating the name makes the meaning clear."
+      "note": "Repeating the name makes the meaning clear.",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Replace the vague pronoun with the noun it should stand for, or rewrite the sentence so the pronoun has only one possible antecedent.",
     "tips": [
@@ -47737,7 +47826,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The dog chased the cat, and it ran away.",
@@ -47747,7 +47837,8 @@
        "note": "",
        "marks": []
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -58514,16 +58605,7 @@
     "example": {
      "text": "Ana likes reading, writing, and to speak",
      "note": "becomes",
-     "marks": [
-      {
-       "i": 5,
-       "role": "key"
-      },
-      {
-       "i": 6,
-       "role": "key"
-      }
-     ],
+     "marks": [],
      "then": {
       "text": "Ana likes reading, writing, and speaking.",
       "note": "To speak: nonparallel infinitive. Speaking: revised gerund to match reading and writing.",
@@ -58533,7 +58615,8 @@
         "role": "key"
        }
       ]
-     }
+     },
+     "fix": true
     },
     "how": "Find the form used by most items in the list, then change the odd item to that form so the whole series reads smoothly.",
     "tips": [
@@ -58545,7 +58628,8 @@
        "text": "Leo enjoys swimming, biking, and running.",
        "note": "",
        "marks": []
-      }
+      },
+      "fix": true
      },
      {
       "text": "Sam is smart, kind, and honesty",
@@ -58555,7 +58639,8 @@
        "text": "Sam is smart, kind, and honest.",
        "note": "",
        "marks": []
-      }
+      },
+      "fix": true
      }
     ]
    },

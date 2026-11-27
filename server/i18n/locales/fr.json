@@ -16528,6 +16528,8 @@
       "example": "Exemple",
       "how": "Comment ça marche :",
       "tips": "Autres exemples",
+      "before": "Avant :",
+      "after": "Après :",
       "listen": "Lis-le-moi",
       "stop": "Arrêter",
       "practice": "Commencer l'entraînement",
@@ -16554,6 +16556,8 @@
       "conjunction": "conjonction",
       "preposition": "préposition",
       "capital": "majuscule",
+      "lower": "minuscule",
+      "small": "reste en minuscule",
       "comma": "virgule"
     },
     "glossaryWord": {
