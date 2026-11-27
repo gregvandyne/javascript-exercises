@@ -5779,7 +5779,10 @@
       "answered": "{count, plural, other {你回答了 # 題。}}",
       "next": "下一個：{topic}",
       "flagSent": "謝謝，我們會看看。",
-      "wentWrong": "出了點問題，再試一次。"
+      "wentWrong": "出了點問題，再試一次。",
+      "gap": "{word}後面的逗號",
+      "blank": "空格",
+      "nearGaps": "你加了太多逗號。拿掉多的，再送出一次。"
     }
   },
   "favorites": {
@@ -16244,7 +16247,9 @@
       "subject": "主詞",
       "article": "冠詞",
       "conjunction": "連接詞",
-      "preposition": "介系詞"
+      "preposition": "介系詞",
+      "capital": "大寫字母",
+      "comma": "逗號"
     },
     "glossaryWord": {
       "adjective": "形容詞",
@@ -16253,6 +16258,16 @@
     "glossary": {
       "adjective": "說明名詞的字：哪一種、有多少，或是哪一個",
       "noun": "表示人、地方、動物或東西的字"
+    },
+    "mark": {
+      "checkpoint": "檢查點",
+      "review": "複習"
+    },
+    "room": {
+      "open": "校對房間",
+      "passed": "校對房間完成",
+      "locked": "先打開這個主題",
+      "back": "回到{topic}"
     }
   }
 }

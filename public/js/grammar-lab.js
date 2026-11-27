@@ -5,14 +5,18 @@
 // the counter, the streak and the bar (services/grammar-lab-mastery.js); this page only shows what it sends back.
 // Pictures and animations: public/js/grammar-lab-art.js (they respect reduced motion and never block a control).
 import { api, pageData, $, $$, t, toast } from '/js/app.js';
+// A question's kind (services/grammar-lab.js questionFor): 'tap' (mark words), 'gaps' (tap the gap between two words
+// where a comma goes; it shows the comma) or 'choice' (pick one option, which fills the sentence's blank; whole: the
+// options are whole sentences). Nothing is ever chosen when a question opens, and Submit stays off until something is.
 import { mountWelcome, mountGreeting, mountMastery, mountTapTip } from '/js/grammar-lab-art.js';
 
 const d = pageData();
 const base = `/api/courses/grammar-lab/topic/${d.topic}`;
 const TIP_KEY = 'gl:tip-seen';
 const screens = ['gl-welcome', 'gl-quiz', 'gl-done'];
-let summary = null, question = null, busy = false;
+let summary = null, question = null, busy = false, picked = null;
 const marked = new Set();
+const ready = () => (question && question.kind === 'choice' ? picked !== null : marked.size > 0);
 const scenes = {};
 
 const show = id => { for (const s of screens) $(`#${s}`).hidden = s !== id; $('#gl-meter').hidden = id === 'gl-welcome'; };
@@ -59,19 +63,48 @@ function renderAsk(text) {
   });
 }
 function renderQuestion() {
-  marked.clear();
+  marked.clear(); picked = null;
   const q = question;
   renderAsk(q.ask);
-  const box = $('#gl-sentence');
-  box.textContent = '';
-  q.words.forEach((w, i) => {
-    if (i) box.append(' ');
-    if (w.pre) box.append(w.pre);
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'gl-w'; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
-    box.append(b);
-    if (w.post) box.append(w.post);
-  });
+  const box = $('#gl-sentence'), opts = $('#gl-options');
+  box.textContent = ''; opts.textContent = '';
+  opts.hidden = q.kind !== 'choice';
+  box.hidden = q.kind === 'choice' && q.whole;
+  box.classList.toggle('gl-gaps', q.kind === 'gaps');
+  if (q.kind === 'choice') {
+    if (!q.whole) {
+      box.append(q.before);
+      const blank = document.createElement('span');
+      blank.className = `gl-blank${q.italic ? ' gl-title' : ''}`; blank.id = 'gl-blank'; blank.setAttribute('aria-label', t('js.grammar-lab.blank'));
+      box.append(blank, q.after);
+    }
+    q.options.forEach((o, k) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = `gl-opt${q.whole ? ' gl-opt-whole' : ''}${q.italic ? ' gl-title' : ''}`; b.dataset.k = String(k);
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false'); b.textContent = o;
+      opts.append(b);
+    });
+  } else {
+    q.words.forEach((w, i) => {
+      if (i) box.append(' ');
+      if (w.pre) box.append(w.pre);
+      if (q.kind === 'gaps') {
+        const s = document.createElement('span'); s.className = 'gl-word'; s.textContent = w.t; box.append(s);
+        if (w.post) box.append(w.post);
+        if (i < q.words.length - 1) {
+          const g = document.createElement('button');
+          g.type = 'button'; g.className = 'gl-gap'; g.dataset.g = String(i); g.setAttribute('aria-pressed', 'false');
+          g.setAttribute('aria-label', t('js.grammar-lab.gap', { word: w.t }));
+          box.append(g);
+        }
+        return;
+      }
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'gl-w'; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
+      box.append(b);
+      if (w.post) box.append(w.post);
+    });
+  }
   notice(null);
   hint(null);
   $('#gl-submit').disabled = true;
@@ -95,39 +128,63 @@ $('#gl-hint-btn').addEventListener('click', () => {
   btn.textContent = box.hidden ? t('js.grammar-lab.hint') : t('js.grammar-lab.hideHint');
 });
 $('#gl-sentence').addEventListener('click', e => {
-  const b = e.target.closest('.gl-w');
+  const b = e.target.closest('.gl-w, .gl-gap');
   if (!b || busy) return;
-  const i = +b.dataset.i;
+  const i = +(b.dataset.i ?? b.dataset.g);
   if (marked.has(i)) marked.delete(i); else marked.add(i);
   b.setAttribute('aria-pressed', String(marked.has(i)));
-  $('#gl-submit').disabled = !marked.size;
+  $('#gl-submit').disabled = !ready();
 });
+$('#gl-options').addEventListener('click', e => {
+  const b = e.target.closest('.gl-opt');
+  if (!b || busy) return;
+  picked = +b.dataset.k;
+  for (const o of $$('#gl-options .gl-opt')) o.setAttribute('aria-checked', String(o === b));
+  const blank = $('#gl-blank');
+  if (blank) { blank.textContent = question.options[picked]; blank.classList.add('gl-filled'); }
+  $('#gl-submit').disabled = !ready();
+});
+// The choices are a radio group: the arrow keys move between them (and pick), as in any radio group.
+$('#gl-options').addEventListener('keydown', e => {
+  const list = $$('#gl-options .gl-opt'), at = list.indexOf(document.activeElement);
+  if (at < 0 || !['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(e.key)) return;
+  e.preventDefault();
+  const to = list[(at + (e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
+  to.focus(); to.click();
+});
+/** A capitalization fix made right: the tapped words take their capital before the green confirmation. */
+function showFixed() {
+  if (!question || !d.capfix) return;
+  for (const i of marked) { const b = $(`#gl-sentence .gl-w[data-i="${i}"]`); if (b) b.textContent = b.textContent.charAt(0).toUpperCase() + b.textContent.slice(1); }
+}
 
 // ---------------------------------------------------------------------------------------------- answering
 $('#gl-submit').addEventListener('click', async () => {
-  if (busy || !marked.size || !question) return;
+  if (busy || !ready() || !question) return;
   busy = true; $('#gl-submit').disabled = true;
   let r;
+  const sent = question.kind === 'choice' ? [picked] : [...marked].sort((a, b) => a - b);
   try {
-    r = await api(`${base}/answer`, { method: 'POST', body: { unit: d.unit, id: question.id, marked: [...marked].sort((a, b) => a - b) } });
+    r = await api(`${base}/answer`, { method: 'POST', body: { unit: d.unit, id: question.id, marked: sent } });
   } catch (e) {
     busy = false;
     // The question moved on elsewhere (another tab): pick up where the server is.
     if (e.status === 409 && e.data && e.data.question) { summary = e.data.summary; question = e.data.question; renderQuestion(); return; }
-    $('#gl-submit').disabled = !marked.size;
+    $('#gl-submit').disabled = !ready();
     return toast(t('js.grammar-lab.wentWrong'), { bad: true });
   }
   summary = r.summary;
-  if (r.kind === 'near') { busy = false; notice('near', t('js.grammar-lab.near')); $('#gl-submit').disabled = !marked.size; return; }
+  if (r.kind === 'near') { busy = false; notice('near', t(question.kind === 'gaps' ? 'js.grammar-lab.nearGaps' : 'js.grammar-lab.near')); $('#gl-submit').disabled = !ready(); return; }
   if (r.kind === 'wrong' || r.kind === 'again') {
     busy = false;
     notice('wrong', t(r.kind === 'wrong' ? 'js.grammar-lab.wrong' : 'js.grammar-lab.again'));
     hint(r.hint);
     renderHeader();
-    $('#gl-submit').disabled = !marked.size;
+    $('#gl-submit').disabled = !ready();
     return;
   }
   // Right (or a missed question fixed): the green confirmation, then what comes next.
+  showFixed();
   question = r.question;
   renderHeader();
   await flash();
@@ -158,7 +215,10 @@ function levelDone(level) {
   scene('levelGreet', $('#gl-level-greet'), mountGreeting);
   $('#gl-level-next').focus();
 }
-$('#gl-level-next').addEventListener('click', () => { $('#gl-level').hidden = true; renderQuestion(); $('#gl-sentence .gl-w') && $('#gl-sentence .gl-w').focus(); });
+$('#gl-level-next').addEventListener('click', () => {
+  $('#gl-level').hidden = true; renderQuestion();
+  const first = $('#gl-sentence .gl-w, #gl-sentence .gl-gap, #gl-options .gl-opt'); if (first) first.focus();
+});
 
 function done(closing) {
   show('gl-done');
@@ -169,6 +229,8 @@ function done(closing) {
   if (guest) guest.hidden = closing.win !== 'pending';
   const next = $('#gl-done-next');
   if (closing.next) { next.hidden = false; next.href = closing.next.href; next.textContent = t('js.grammar-lab.next', { topic: closing.next.title }); }
+  const room = $('#gl-done-room');
+  if (room && closing.room) { room.hidden = false; room.href = closing.room; }
   $('#gl-done-h').focus && $('#gl-done-h').setAttribute('tabindex', '-1');
   $('#gl-done-h').focus();
 }

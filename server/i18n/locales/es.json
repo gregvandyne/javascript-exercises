@@ -5779,7 +5779,10 @@
       "answered": "{count, plural, one {Respondiste # pregunta.} other {Respondiste # preguntas.}}",
       "next": "Siguiente: {topic}",
       "flagSent": "Gracias. Lo revisaremos.",
-      "wentWrong": "Algo salió mal. Inténtalo de nuevo."
+      "wentWrong": "Algo salió mal. Inténtalo de nuevo.",
+      "gap": "Coma después de {word}",
+      "blank": "espacio en blanco",
+      "nearGaps": "Pusiste demasiadas comas. Quita las que sobran y vuelve a enviar."
     }
   },
   "favorites": {
@@ -16244,7 +16247,9 @@
       "subject": "sujeto",
       "article": "artículo",
       "conjunction": "conjunción",
-      "preposition": "preposición"
+      "preposition": "preposición",
+      "capital": "mayúscula",
+      "comma": "coma"
     },
     "glossaryWord": {
       "adjective": "adjetivo",
@@ -16253,6 +16258,16 @@
     "glossary": {
       "adjective": "una palabra que dice algo de un sustantivo: de qué tipo, cuántos o cuál",
       "noun": "una palabra para una persona, un lugar, un animal o una cosa"
+    },
+    "mark": {
+      "checkpoint": "Punto de control",
+      "review": "Repaso"
+    },
+    "room": {
+      "open": "Sala de corrección",
+      "passed": "Sala de corrección hecha",
+      "locked": "Abre primero el tema",
+      "back": "Volver a {topic}"
     }
   }
 }

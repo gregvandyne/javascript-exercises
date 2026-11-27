@@ -6843,7 +6843,10 @@
       "answered": "{count, plural, one {You answered # question.} other {You answered # questions.}}",
       "next": "Next: {topic}",
       "flagSent": "Thanks. We will take a look.",
-      "wentWrong": "Something went wrong. Try again."
+      "wentWrong": "Something went wrong. Try again.",
+      "gap": "Comma after {word}",
+      "blank": "blank",
+      "nearGaps": "You put in too many commas. Take out the extras, then submit again."
     }
   },
   "favorites": {
@@ -17989,7 +17992,9 @@
       "subject": "subject",
       "article": "article",
       "conjunction": "conjunction",
-      "preposition": "preposition"
+      "preposition": "preposition",
+      "capital": "capital letter",
+      "comma": "comma"
     },
     "glossaryWord": {
       "adjective": "adjective",
@@ -17998,6 +18003,16 @@
     "glossary": {
       "adjective": "a word that tells about a noun: what kind, how many, or which one",
       "noun": "a word for a person, place, animal, or thing"
+    },
+    "mark": {
+      "checkpoint": "Checkpoint",
+      "review": "Review"
+    },
+    "room": {
+      "open": "Proofread room",
+      "passed": "Proofread room done",
+      "locked": "Open the topic first",
+      "back": "Back to {topic}"
     }
   }
 }

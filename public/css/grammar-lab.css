@@ -175,3 +175,43 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
   .gl-actions .btn{flex:1 1 auto}
 }
 .gl .btn{max-width:100%;white-space:normal;text-align:center}
+
+/* Phase 2 (K-2): unit parts and marks, and the gaps, choice and capital formats. */
+.gl-part{list-style:none;margin:10px 0 -2px}
+.gl-part-h{margin:0;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.gl-tile-marks{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.gl-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);color:var(--text-2)}
+.gl-badge-room{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line);color:var(--text)}
+.gl-badge-checkpoint,.gl-badge-review{background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark)}
+.gl-title{font-style:italic}
+/* Tap the gap where a comma goes: a slim target after each word; a pressed one shows its comma. */
+.gl-gaps{line-height:2.1}
+.gl-gap{font:inherit;display:inline-block;vertical-align:baseline;width:.7em;min-width:24px;min-height:44px;margin:0 -.1em;padding:0;border:0;border-radius:8px;
+  background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;position:relative}
+.gl-gap::before{content:"";position:absolute;left:50%;top:22%;bottom:22%;width:0;border-left:2px dashed var(--edge);transform:translateX(-50%)}
+.gl-gap:hover{background:var(--hover)}
+.gl-gap:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.gl-gap[aria-pressed="true"]{background:var(--spark-soft)}
+.gl-gap[aria-pressed="true"]::before{display:none}
+.gl-gap[aria-pressed="true"]::after{content:",";font-weight:800;color:var(--text)}
+/* A choice: the blank in the sentence, and the options as a radio group (nothing chosen until the student picks). */
+.gl-blank{display:inline-block;min-width:3.2em;min-height:1.2em;padding:0 .2em;border-radius:10px;vertical-align:baseline;
+  box-shadow:inset 0 -3px 0 var(--edge);background:var(--card-2);line-height:1.3}
+.gl-blank.gl-filled{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-options{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.gl-opt{font:inherit;font-size:22px;font-weight:700;min-height:52px;padding:8px 18px;border:0;border-radius:999px;cursor:pointer;color:var(--text);
+  background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);touch-action:manipulation;text-align:start}
+.gl-opt:hover{background:var(--hover)}
+.gl-opt:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gl-opt[aria-checked="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-opt-whole{flex:1 1 100%;border-radius:var(--r);font-weight:600}
+.gl-band-k-2 .gl-opt{font-size:clamp(22px,5.6vw,28px)}
+/* The card's examples: a lead-in, the sentence, its note, and a fix's "after" sentence. */
+.gl-ex{margin:0 0 6px;line-height:2.2}
+.gl-ex .gl-ex-text{display:inline;margin:0}
+.gl-ex-lead,.gl-ex .gl-ex-note{color:var(--text-2)}
+.gl-ex .gl-ex-note{display:inline}
+.gl-mk-capital{background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent-line)}
+.gl-mk-comma{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press);padding:0 .12em}
+.gl-mk-key{background:var(--spark-soft);box-shadow:inset 0 -3px 0 var(--spark-press)}
+.gl-opt.gl-title,.gl-blank.gl-title,.gl-title .gl-mk{font-style:italic}

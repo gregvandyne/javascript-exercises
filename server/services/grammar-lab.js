@@ -7,8 +7,14 @@
 //     written only when the server-graded quiz reaches mastery: opening a topic, its card or its quiz completes nothing.
 //   - Guests play freely, but their mastery is a pending win (course_pending_wins, kind 'win'), honored when they sign
 //     in (services/courses.js applyPendingWins, through onPendingWin below).
-//   - The quiz runs on the server (grammar_lab_quiz): the page gets a question's words and the line that asks it, never
-//     its answer, and sends back the places of the words it marked.
+//   - The quiz runs on the server (grammar_lab_quiz): the page gets a question's words (or its choices) and the line that
+//     asks it, never its answer, and sends back what the player marked: word places (tap, capfix), the gaps where they
+//     put a comma (gaps) or the choice they picked (choice). Formats: scripts/grammar-lab-build.js.
+//   - A topic with a Mistake Hunt room (topics.json rooms; planted at build time) opens it in the Mistake Hunt game with
+//     ?glroom=<topic>&unit=<unit> (routes/games.js). The game hands in through this server (roomSave), which checks the
+//     fixes with Mistake Hunt's own checker (services/proof-steps.js markAll); the room counts as passed when about 80% of
+//     its mistakes are found (the room's need), never on the game's own end screen. A passed room is its own mark on the
+//     topic (grammar_lab_quiz row 'room:<topic>'): it does not change mastery, the lock or the unit's ring.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -18,6 +24,7 @@ import { onAccountMerge } from './schools.js';
 import { stashPendingFact, isGuestUser, onPendingWin } from './courses.js';
 import { tokenize } from './grammar-lab-text.js';
 import * as M from './grammar-lab-mastery.js';
+import * as PS from './proof-steps.js';
 
 export const SLUG = 'grammar-lab';
 /** This course's grade store runs to grade 12 (owner, 2026-11-27); Number Quest's stays at 8 (its own deriveGrade). */
@@ -34,12 +41,14 @@ export const reload = () => { cache = null; };
 export const bands = () => data().bands;
 export const band = id => data().bands.find(b => b.id === id) || null;
 export const topic = id => (Object.hasOwn(data().topics, id) ? data().topics[id] : null);
-/** A unit: { id, title, band, parts, topics: [ids in order] }, or null. */
+/** A unit: { id, title, band, parts, topics: [ids in order], marks: { id: 'checkpoint' | 'review' } }, or null. */
 export function pathway(id, bandId = null) {
   const p = Object.hasOwn(data().pathways, id) ? data().pathways[id] : null;
   const b = p && data().bands.find(x => x.pathways.includes(id) && (!bandId || x.id === bandId));
-  return p && b ? { id, title: p.title, band: b.id, parts: p.parts, topics: p.parts.flatMap(x => x.topics) } : null;
+  return p && b ? { id, title: p.title, band: b.id, parts: p.parts, topics: p.parts.flatMap(x => x.topics), marks: p.marks || {} } : null;
 }
+/** Every unit that uses a topic (in every band): [unit]. */
+export const unitsWith = id => data().bands.flatMap(b => b.pathways.map(p => pathway(p, b.id)).filter(p => p && p.topics.includes(id)));
 export const pathwaysOf = bandId => (band(bandId) ? band(bandId).pathways.map(id => pathway(id, bandId)) : []);
 /** Is this topic's card read aloud (the K-2 band)? */
 export const readsAloud = t => !!(t && band(t.band) && band(t.band).readAloud);
@@ -56,17 +65,24 @@ export function pendingSet(user) {
   return new Set(q.all("SELECT step FROM course_pending_wins WHERE user_id=? AND course=? AND kind='win'", user.id, SLUG).map(r => r.step));
 }
 /** Each topic of a unit with its state, worked out now from the rows (never cached):
- *  [{ topic, mastered, pending, open, started }]. A topic opens when the one before it is mastered. */
+ *  [{ topic, mastered, pending, open, started, part, mark, room }]. A topic opens when the one before it in the unit is
+ *  mastered; a topic mastered anywhere (it is shared) is mastered, and open, in every unit that uses it.
+ *  part: the part title above it (on a part's first topic only); mark: 'checkpoint' | 'review' | null; room: null (no
+ *  room) or { passed }. */
 export function unitStates(user, p) {
-  const done = masteredSet(user), pend = pendingSet(user);
+  const done = masteredSet(user), pend = pendingSet(user), passed = roomPassedSet(user);
   const started = new Set(user ? q.all('SELECT topic FROM grammar_lab_quiz WHERE user_id=?', user.id).map(r => r.topic) : []);
   const admin = !!user && user.role === 'admin';
+  const partOf = new Map();
+  for (const part of p.parts || []) if (part.title && part.topics.length) partOf.set(part.topics[0], part.title);
   let prev = true;
   return p.topics.map(id => {
     const t = topic(id);
+    const mastered = done.has(id), pending = pend.has(id);
     // A guest's pending win opens the next topic for this sitting, as a guest's facts do in the other courses.
-    const s = { topic: t, mastered: done.has(id), pending: pend.has(id), open: admin || prev, started: started.has(id) };
-    prev = s.mastered || s.pending;
+    const s = { topic: t, mastered, pending, open: admin || prev || mastered || pending, started: started.has(id),
+      part: partOf.get(id) || null, mark: (p.marks || {})[id] || null, room: room(id) ? { passed: passed.has(id) } : null };
+    prev = mastered || pending;
     return s;
   });
 }
@@ -75,10 +91,17 @@ export function unitProgress(user, p) {
   const list = unitStates(user, p);
   return { done: list.filter(s => s.mastered).length, total: list.length };
 }
-/** The next topic to master in this unit after `afterId` (or the first unmastered one), live; never a mastered one. */
+/** The next topic to master, live, never a mastered one (nor a guest's pending one, nor `afterId`): the first open one in
+ *  this unit, else the first open one in the band's other units, in order. -> { ...state, unit } or null. */
 export function nextTopic(user, p, afterId = null) {
-  const list = unitStates(user, p).filter(s => !s.mastered && !s.pending && s.topic.id !== afterId);
-  return (list.find(s => s.open) || list[0] || null);
+  const pick = u => {
+    const s = unitStates(user, u).find(x => x.open && !x.mastered && !x.pending && x.topic.id !== afterId);
+    return s ? { ...s, unit: u } : null;
+  };
+  const here = pick(p);
+  if (here) return here;
+  for (const u of pathwaysOf(p.band)) if (u.id !== p.id) { const s = pick(u); if (s) return s; }
+  return null;
 }
 function markMastered(user, id) {
   const t = now(), b = (topic(id) || {}).band || '';
@@ -113,20 +136,49 @@ export function startRun(user, t, { again = false } = {}) {
   saveRun(user, t.id, s);
   return s;
 }
-/** A question as the page gets it: its words and the line that asks it, never its answer. */
+/** What the page marks a question with: 'tap' (word places: tap, capfix), 'gaps' (the gaps after word i) or 'choice'. */
+export const kindOf = t => (t.format === 'gaps' ? 'gaps' : t.format === 'choice' ? 'choice' : 'tap');
+/** A question as the page gets it, never its answer: the line that asks it, and its words (tap, capfix, gaps) or the
+ *  sentence around its blank and its choices in a fixed order (choice; whole: the choices are whole sentences). */
 export function questionFor(t, s) {
   if (!s || !s.cur) return null;
-  const it = t.items[s.cur.item];
-  return { id: it.id, n: s.presented, ask: t.ask, words: tokenize(it.text), need: it.answer.length };
+  const it = t.items[s.cur.item], kind = kindOf(t);
+  const base = { id: it.id, n: s.presented, ask: t.ask, kind };
+  if (kind === 'choice') {
+    const [before, after] = it.whole ? ['', ''] : it.text.split('___');
+    return { ...base, before, after, options: it.options, whole: !!it.whole, italic: !!it.italic };
+  }
+  return { ...base, words: tokenize(it.text), need: it.answer.length };
 }
-/** Grade a set of marked word places against an item, on the server: 'right' | 'wrong' | 'near' (more words than the
- *  answer has: a near miss, never counted) | null (nothing usable was sent). */
-export function grade(item, marked) {
-  const n = tokenize(item.text).length;
+/** A list of distinct whole numbers below n, or null. */
+const places = (marked, n) => {
   if (!Array.isArray(marked) || !marked.length || marked.length > n) return null;
   if (!marked.every(i => Number.isInteger(i) && i >= 0 && i < n)) return null;
   const set = new Set(marked);
-  if (set.size !== marked.length) return null;
+  return set.size === marked.length ? set : null;
+};
+/** Grade what the player marked against an item, on the server: 'right' | 'wrong' | 'near' (more than the answer can
+ *  take: a near miss, never counted) | null (nothing usable was sent).
+ *    tap, capfix: word places; right when they are the answer's.
+ *    gaps: the gaps a comma went in; right when every needed one is there and the rest are optional ones (a list's last
+ *          comma: with or without it is a valid fix).
+ *    choice: [the option picked]; right when it is a right one. */
+export function grade(item, marked, kind = 'tap') {
+  const n = tokenize(item.text).length;
+  if (kind === 'choice') {
+    const set = places(marked, item.options.length);
+    if (!set || set.size !== 1) return null;
+    return item.answer.includes(marked[0]) ? 'right' : 'wrong';
+  }
+  if (kind === 'gaps') {
+    const set = places(marked, n - 1);
+    if (!set) return null;
+    const optional = item.optional || [];
+    if (set.size > item.answer.length + optional.length) return 'near';
+    return item.answer.every(i => set.has(i)) && [...set].every(i => item.answer.includes(i) || optional.includes(i)) ? 'right' : 'wrong';
+  }
+  const set = places(marked, n);
+  if (!set) return null;
   if (set.size > item.answer.length) return 'near';
   return set.size === item.answer.length && item.answer.every(i => set.has(i)) ? 'right' : 'wrong';
 }
@@ -136,7 +188,7 @@ export function answerRun(user, t, marked) {
   const s = readRun(user, t.id);
   if (!s || s.mastered || !s.cur) return null;
   const item = t.items[s.cur.item];
-  const result = grade(item, marked);
+  const result = grade(item, marked, kindOf(t));
   if (!result) return null;
   const out = M.answer(s, result);
   saveRun(user, t.id, s);
@@ -148,19 +200,91 @@ export function answerRun(user, t, marked) {
   return { result, kind: out.kind, levelDone: out.levelDone, mastered: out.mastered, summary: M.summary(s), question: questionFor(t, s),
     hint: out.kind === 'wrong' || out.kind === 'again' ? item.hint : null, win };
 }
-/** The questions of this player's last run, after mastery, for "look back": [{ text, words, answer, ok }]. */
+/** One item as "look back" shows it: the right sentence and the words to mark in it ({ i, role }). */
+export function rightOf(t, it) {
+  if (t.format === 'tap') {
+    const role = t.card.example && t.card.example.marks[0] ? t.card.example.marks[0].role : 'key';
+    return { text: it.text, marks: it.answer.map(i => ({ i, role })) };
+  }
+  if (t.format === 'capfix') return { text: it.right, marks: it.answer.map(i => ({ i, role: 'capital' })) };
+  if (t.format === 'gaps') return { text: it.right, marks: [...it.answer, ...(it.optional || [])].sort((a, b) => a - b).map(i => ({ i, role: 'comma' })) };
+  return { text: it.right, marks: [], ...(it.italic ? { italic: it.options[it.answer[0]] } : {}) };
+}
+/** The questions of this player's last run, after mastery, for "look back": [{ text, marks, italic?, ok }]. */
 export function reviewOf(user, t) {
   const s = readRun(user, t.id);
   const list = s && (s.mastered ? s.history : s.lastMastered);
   if (!list) return [];
-  return list.map(h => { const it = t.items[h.item]; return { text: it.text, words: tokenize(it.text), answer: it.answer, ok: h.ok }; });
+  return list.map(h => ({ ...rightOf(t, t.items[h.item]), ok: h.ok }));
 }
+
+// ------------------------------------------------------------------------------------------------- Mistake Hunt rooms
+/** A topic's room as built (topics.json rooms: { title, passages, need, kinds }), or null. */
+export const room = id => (data().rooms && Object.hasOwn(data().rooms, id) ? data().rooms[id] : null);
+const ROOM_KEY = id => `room:${id}`;
+/** The topics whose room this player has passed: Set of ids. */
+export function roomPassedSet(user) {
+  if (!user) return new Set();
+  return new Set(q.all("SELECT topic, state FROM grammar_lab_quiz WHERE user_id=? AND topic LIKE 'room:%'", user.id)
+    .filter(r => { try { return JSON.parse(r.state).passed === true; } catch { return false; } }).map(r => r.topic.slice(5)));
+}
+/** The room as a proofread step (services/proof-steps.js reads it the same way as a class's): hints allowed. */
+const roomStep = r => ({ title: r.title, items: JSON.stringify({ tell: 'total', hints: true, passages: r.passages }), show_answers: 0 });
+function readRoom(user, id) {
+  const st = readRun(user, ROOM_KEY(id)) || {};
+  return { edits: Array.isArray(st.edits) ? st.edits : [], handedIn: !!st.handedIn, marks: st.marks || '', score: st.score ?? null, hints: st.hints || 0,
+    passed: st.passed === true, passedAt: st.passedAt || null, found: st.found || 0, tries: st.tries || 0 };
+}
+const rowOf = st => ({ status: st.handedIn ? 'done' : 'started', marks: st.marks, answer: JSON.stringify(st.edits), score: st.score, hints: st.hints });
+/** The room as the game gets it (BRB.proofStep: the words students see, never the key until they hand in), plus the
+ *  room's pass line and whether it is passed. */
+function roomViewOf(id, st) {
+  const r = room(id), step = roomStep(r);
+  const view = PS.viewFor(step, null, rowOf(st), { teacher: st.handedIn });
+  return { ...view, glRoom: { need: r.need, passed: st.passed } };
+}
+/** Opening the room: a try already handed in starts over (a room can be tried again); fixes not handed in are kept. */
+export function roomOpen(user, id) {
+  if (!user || !room(id)) return null;
+  const st = readRoom(user, id);
+  if (st.handedIn) { Object.assign(st, { edits: [], handedIn: false, marks: '', score: null, hints: 0, found: 0 }); saveRun(user, ROOM_KEY(id), st); }
+  return roomViewOf(id, st);
+}
+/** The room's fixes from the game: saved, a hint answered (the key stays here), or handed in and checked with Mistake
+ *  Hunt's checker. Handing in passes the room when at least its need of mistakes are found.
+ *  -> { ok, view, hint?, passed? } | { ok: false, code } */
+export function roomSave(user, id, edits, { handIn = false, hint = null } = {}) {
+  const r = room(id);
+  if (!user || !r) return { ok: false, code: 'notFound' };
+  const step = roomStep(r), st = readRoom(user, id);
+  if (st.handedIn) return { ok: false, code: 'handedIn' };
+  const ce = PS.cleanEdits(step, edits);
+  if (!ce.ok) return ce;
+  st.edits = ce.edits;
+  let h;
+  if (Number.isInteger(hint)) {
+    h = PS.hintFor(step, ce.edits, hint);
+    if (h === undefined) return { ok: false, code: 'badRequest' };
+    if (h) st.hints = Math.min(PS.HINTS_MAX, st.hints + 1);
+  } else if (handIn) {
+    const m = PS.markAll(step, ce.edits);
+    Object.assign(st, { handedIn: true, marks: m.marks, score: m.score, found: m.found, tries: st.tries + 1 });
+    if (m.found >= r.need && !st.passed) { st.passed = true; st.passedAt = now(); }
+  }
+  saveRun(user, ROOM_KEY(id), st);
+  return { ok: true, view: roomViewOf(id, st), ...(h !== undefined ? { hint: h } : {}), ...(handIn ? { passed: st.passed } : {}) };
+}
+/** The link that opens a topic's room in the Mistake Hunt game. */
+export const roomHref = (unitId, id) => `/play/mistake-hunt?glroom=${encodeURIComponent(id)}&unit=${encodeURIComponent(unitId)}`;
 
 // ------------------------------------------------------------------------------------------------- read aloud
 /** The teaching card as one spoken text (services/tts.js reads it; the page never sends text). */
 export function cardSpoken(t) {
-  const c = t.card, end = x => (/[.!?]$/.test(x) ? x : `${x}.`);
-  return [c.definition, c.example && c.example.text, c.example && c.example.note, c.how, ...c.tips.flatMap(x => [x.text, x.note])]
+  const c = t.card;
+  // a lead or a note that runs into its quote ("The title is") is read with it, as one sentence
+  const unit = u => (u ? [[u.lead, u.text].filter(Boolean).join(' '), u.then ? [u.note, u.then.text].filter(Boolean).join(' ') : u.note, u.then && u.then.note] : []);
+  const end = x => (/[.!?]$/.test(x) ? x : `${x}.`);
+  return [c.definition, ...unit(c.example), ...((c.example && c.example.more) || []).flatMap(unit), c.how, ...c.tips.flatMap(unit)]
     .filter(Boolean).map(x => end(String(x).trim())).join(' ');
 }
 

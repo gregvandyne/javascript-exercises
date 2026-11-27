@@ -5779,7 +5779,10 @@
       "answered": "{count, plural, other {# 問に答えました。}}",
       "next": "次：{topic}",
       "flagSent": "ありがとう。確認します。",
-      "wentWrong": "うまくいきませんでした。もう一度ためしてね。"
+      "wentWrong": "うまくいきませんでした。もう一度ためしてね。",
+      "gap": "{word}のあとにコンマ",
+      "blank": "あなうめ",
+      "nearGaps": "コンマが多すぎます。よけいなものをとって、もう一度おくりましょう。"
     }
   },
   "favorites": {
@@ -16244,7 +16247,9 @@
       "subject": "主語",
       "article": "冠詞",
       "conjunction": "接続詞",
-      "preposition": "前置詞"
+      "preposition": "前置詞",
+      "capital": "大文字",
+      "comma": "コンマ"
     },
     "glossaryWord": {
       "adjective": "形容詞",
@@ -16253,6 +16258,16 @@
     "glossary": {
       "adjective": "名詞について、どんな、いくつ、どれかを教える言葉",
       "noun": "人、場所、動物、ものをあらわす言葉"
+    },
+    "mark": {
+      "checkpoint": "チェックポイント",
+      "review": "ふくしゅう"
+    },
+    "room": {
+      "open": "まちがいさがしの部屋",
+      "passed": "まちがいさがしの部屋クリア",
+      "locked": "まずトピックをひらこう",
+      "back": "{topic}にもどる"
     }
   }
 }

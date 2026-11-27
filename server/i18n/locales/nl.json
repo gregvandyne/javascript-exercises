@@ -5780,7 +5780,10 @@
       "answered": "{count, plural, one {Je hebt # vraag beantwoord.} other {Je hebt # vragen beantwoord.}}",
       "next": "Volgende: {topic}",
       "flagSent": "Bedankt. We kijken ernaar.",
-      "wentWrong": "Er ging iets mis. Probeer het opnieuw."
+      "wentWrong": "Er ging iets mis. Probeer het opnieuw.",
+      "gap": "Komma na {word}",
+      "blank": "open plek",
+      "nearGaps": "Je hebt te veel komma’s gezet. Haal de extra’s weg en stuur opnieuw."
     }
   },
   "favorites": {
@@ -16245,7 +16248,9 @@
       "subject": "onderwerp",
       "article": "lidwoord",
       "conjunction": "voegwoord",
-      "preposition": "voorzetsel"
+      "preposition": "voorzetsel",
+      "capital": "hoofdletter",
+      "comma": "komma"
     },
     "glossaryWord": {
       "adjective": "bijvoeglijk naamwoord",
@@ -16254,6 +16259,16 @@
     "glossary": {
       "adjective": "een woord dat iets zegt over een zelfstandig naamwoord: wat voor, hoeveel of welke",
       "noun": "een woord voor een persoon, plaats, dier of ding"
+    },
+    "mark": {
+      "checkpoint": "Controlepunt",
+      "review": "Herhaling"
+    },
+    "room": {
+      "open": "Verbeterkamer",
+      "passed": "Verbeterkamer gehaald",
+      "locked": "Open eerst het onderwerp",
+      "back": "Terug naar {topic}"
     }
   }
 }

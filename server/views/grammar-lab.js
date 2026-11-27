@@ -12,31 +12,44 @@ import * as GL from '../services/grammar-lab.js';
 
 export const HEAD = raw(`<link rel="stylesheet" href="/css/grammar-lab-art.css?v=${VERSION}"><link rel="stylesheet" href="/css/grammar-lab.css?v=${VERSION}">`);
 const en = raw(' lang="en" dir="ltr"');
-export const ROLES = Object.freeze(['adjective', 'noun', 'verb', 'adverb', 'pronoun', 'subject', 'article', 'conjunction', 'preposition']);
+export const ROLES = Object.freeze(['adjective', 'noun', 'verb', 'adverb', 'pronoun', 'subject', 'article', 'conjunction', 'preposition', 'capital', 'comma']);
 export const GLOSSARY = Object.freeze(['adjective', 'noun']);
 const base = '/courses/grammar-lab';
 export const unitHref = p => `${base}/${p.band}/${p.id}`;
 export const topicHref = (p, id, what = '') => `${unitHref(p)}/${id}${what ? `/${what}` : ''}`;
 const bandClass = b => `gl-band-${b}`;
 
-/** A sentence with some of its words color-coded by job (the worked example and tips). */
+/** A sentence with some of its words color-coded by job (the worked example and tips). A 'comma' mark highlights the
+ *  comma after its word; a 'key' mark highlights the word with no label. */
 function marked(text, marks, t) {
-  const by = new Map(marks.map(m => [m.i, m.role]));
+  const by = new Map((marks || []).map(m => [m.i, m.role]));
   return tokenize(text).map((w, i) => {
     const role = by.get(i);
-    const word = role ? html`<span class="gl-mk gl-mk-${role}">${w.t}<span class="gl-mk-tag">${t(`grammarLab.roles.${role}`)}</span></span>` : w.t;
+    if (role === 'comma') {
+      const [c, ...rest] = w.post;
+      return html`${i ? ' ' : ''}${w.pre}${w.t}<span class="gl-mk gl-mk-comma">${c}<span class="gl-mk-tag">${t('grammarLab.roles.comma')}</span></span>${rest.join('')}`;
+    }
+    const word = role === 'key' ? html`<span class="gl-mk gl-mk-key">${w.t}</span>`
+      : role ? html`<span class="gl-mk gl-mk-${role}">${w.t}<span class="gl-mk-tag">${t(`grammarLab.roles.${role}`)}</span></span>` : w.t;
     return html`${i ? ' ' : ''}${w.pre}${word}${w.post}`;
   });
 }
+/** One example as written: its lead-in, the example sentence, its note and (a fix's) the sentence after. Titles are
+ *  shown in italics, never in quotes. */
+function exampleUnit(t, u, { italic = false, tag = 'p' } = {}) {
+  const sent = (x, m) => (italic ? html`<i class="gl-title">${marked(x, m, t)}</i>` : marked(x, m, t));
+  const inner = html`${u.lead ? html`<span class="gl-ex-lead">${u.lead}</span> ` : ''}<span class="gl-ex-text">${sent(u.text, u.marks)}</span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}${u.then ? html` <span class="gl-ex-text gl-ex-then">${sent(u.then.text, u.then.marks)}</span>${u.then.note ? html` <span class="gl-ex-note">${u.then.note}</span>` : ''}` : ''}`;
+  return tag === 'li' ? html`<li class="gl-ex">${inner}</li>` : html`<p class="gl-ex">${inner}</p>`;
+}
 /** The teaching card's body (the card page and the hint's small card share it). small: the hint's short form. */
 export function cardBody(t, tp, { small = false } = {}) {
-  const c = tp.card;
+  const c = tp.card, italic = !!tp.italic;
   return html`<div class="gl-card-body${small ? ' gl-card-small' : ''}"${en}>
     <p class="gl-def">${c.definition}</p>
     ${c.example ? html`<div class="gl-example"><p class="gl-label">${t('grammarLab.card.example')}</p>
-      <p class="gl-ex-text">${marked(c.example.text, c.example.marks, t)}</p><p class="gl-ex-note">${c.example.note}</p></div>` : ''}
+      ${[c.example, ...(c.example.more || [])].map(u => exampleUnit(t, u, { italic }))}</div>` : ''}
     <p class="gl-how"><b>${t('grammarLab.card.how')}</b> ${c.how}</p>
-    ${small ? '' : html`<div class="gl-tips"><p class="gl-label">${t('grammarLab.card.tips')}</p><ul>${c.tips.map(x => html`<li><span class="gl-ex-text">${marked(x.text, x.marks, t)}</span> <span class="gl-ex-note">${x.note}</span></li>`)}</ul></div>`}
+    ${small ? '' : html`<div class="gl-tips"><p class="gl-label">${t('grammarLab.card.tips')}</p><ul>${c.tips.map(x => exampleUnit(t, x, { italic, tag: 'li' }))}</ul></div>`}
   </div>`;
 }
 
@@ -70,7 +83,7 @@ function ring(t, { done, total }) {
   return html`<span class="gl-ring" role="img" aria-label="${t('grammarLab.ringLabel', { done, total })}" style="--p:${pct}"><span>${done}/${total}</span></span>`;
 }
 
-/** A unit: its topic tiles in order, each with its state and its options menu. */
+/** A unit: its topic tiles in order (under their part titles), each with its state, its marks and its options menu. */
 export function unitPage({ t, p, states, guest }) {
   const prog = { done: states.filter(s => s.mastered).length, total: states.length };
   const pending = states.some(s => s.pending);
@@ -78,25 +91,27 @@ export function unitPage({ t, p, states, guest }) {
     <p class="gl-crumb"><a href="${base}">${t('grammarLab.allUnits')}</a></p>
     <header class="gl-unithead">${ring(t, prog)}<div><h1${en}>${p.title}</h1><p class="muted">${t('grammarLab.band', { grades: (GL.band(p.band) || {}).grades || '' })} · ${t('grammarLab.topicsN', { count: states.length })}</p></div></header>
     ${guest && pending ? guestBox(t, unitHref(p), { won: true }) : ''}
-    <ol class="gl-topics">${states.map((s, i) => tile(t, p, s, i))}</ol>
+    <ol class="gl-topics">${states.map((s, i) => html`${s.part ? html`<li class="gl-part"><h2 class="gl-part-h"${en}>${s.part}</h2></li>` : ''}${tile(t, p, s, i)}`)}</ol>
   </div>`;
 }
 function tile(t, p, s, i) {
   const tp = s.topic, id = tp.id;
   const state = s.mastered ? 'mastered' : s.pending ? 'pending' : !s.open ? 'locked' : s.started ? 'started' : 'new';
   const after = !s.mastered;
-  const item = (href, label, off) => (off ? html`<span class="gl-mi" role="menuitem" aria-disabled="true">${label}<small>${t('grammarLab.topic.afterMastery')}</small></span>` : html`<a class="gl-mi" role="menuitem" href="${href}">${label}</a>`);
+  const item = (href, label, off, note = 'grammarLab.topic.afterMastery') => (off ? html`<span class="gl-mi" role="menuitem" aria-disabled="true">${label}<small>${t(note)}</small></span>` : html`<a class="gl-mi" role="menuitem" href="${href}">${label}</a>`);
   return html`<li class="gl-tile gl-${state}" id="gl-topic-${id}">
     ${s.open ? html`<a class="gl-tile-main" href="${topicHref(p, id)}">` : html`<span class="gl-tile-main" aria-disabled="true">`}
       <span class="gl-tile-n" aria-hidden="true">${s.mastered ? '✓' : i + 1}</span>
       <span class="gl-tile-t"><span class="gl-tile-name"${en}>${tp.title}</span>
-        <span class="gl-tile-state">${t(`grammarLab.topic.${state}`)}</span></span>
+        <span class="gl-tile-state">${t(`grammarLab.topic.${state}`)}</span>
+        ${s.mark || (s.room && s.room.passed) ? html`<span class="gl-tile-marks">${s.mark ? html`<span class="gl-badge gl-badge-${s.mark}">${t(`grammarLab.mark.${s.mark}`)}</span>` : ''}${s.room && s.room.passed ? html`<span class="gl-badge gl-badge-room">${t('grammarLab.room.passed')}</span>` : ''}</span>` : ''}</span>
     ${s.open ? raw('</a>') : raw('</span>')}
     <details class="gl-menu"><summary aria-label="${t('grammarLab.topic.options', { topic: tp.title })}"><span aria-hidden="true">⋯</span></summary>
       <div class="gl-menu-list" role="menu">
         ${item(topicHref(p, id, 'card'), t('grammarLab.topic.card'), false)}
         ${item(`${topicHref(p, id)}?again=1`, t('grammarLab.topic.again'), after)}
         ${item(topicHref(p, id, 'review'), t('grammarLab.topic.review'), after)}
+        ${s.room ? item(GL.roomHref(p.id, id), t('grammarLab.room.open'), !s.open, 'grammarLab.room.locked') : ''}
       </div></details>
   </li>`;
 }
@@ -128,6 +143,7 @@ export function practicePage({ t, p, tp, data, guest }) {
       <div class="gl-qtop"><p class="gl-ask" id="gl-ask"${en}></p>
         <p class="gl-streak" id="gl-streak"><span class="gl-pips" aria-hidden="true"><i></i><i></i></span><span class="gl-streak-t" id="gl-streak-t"></span></p></div>
       <p class="gl-sentence" id="gl-sentence"${en}></p>
+      <div class="gl-options" id="gl-options" role="radiogroup" aria-labelledby="gl-ask" hidden${en}></div>
       <div class="gl-notice" id="gl-notice" role="status" aria-live="polite" hidden></div>
       <div class="gl-actions">
         <button type="button" class="btn gl-hint-btn" id="gl-hint-btn" aria-expanded="false" aria-controls="gl-hint" hidden>${t('grammarLab.practice.hint')}</button>
@@ -160,7 +176,8 @@ export function practicePage({ t, p, tp, data, guest }) {
       <p class="gl-lead" id="gl-done-n"></p>
       ${guest ? guestBox(t, topicHref(p, tp.id), { id: 'gl-done-guest', hidden: true, won: true }) : ''}
       <p class="gl-done-go"><a class="btn btn-primary btn-big" id="gl-done-back" href="${unitHref(p)}">${t('grammarLab.done.back', { unit: p.title })}</a>
-        <a class="btn" id="gl-done-next" href="#" hidden></a></p>
+        <a class="btn" id="gl-done-next" href="#" hidden></a>
+        <a class="btn" id="gl-done-room" href="#" hidden>${t('grammarLab.room.open')}</a></p>
     </section>
 
     <dialog class="gl-dialog" id="gl-tip" aria-labelledby="gl-tip-h">
@@ -202,13 +219,18 @@ export function cardPage({ t, p, tp, listen }) {
   </div>`;
 }
 
+/** A sentence with its title in italics. */
+function italicIn(text, title) {
+  const at = text.indexOf(title);
+  return at < 0 ? text : html`${text.slice(0, at)}<i class="gl-title">${title}</i>${text.slice(at + title.length)}`;
+}
 /** Look back at the questions of the last mastered run. */
 export function reviewPage({ t, p, tp, list }) {
   return html`<div class="gl gl-reviewpage ${bandClass(p.band)}">
     <p class="gl-crumb"><a href="${unitHref(p)}"${en}>${p.title}</a></p>
     <h1>${t('grammarLab.review.heading')}</h1><p class="muted"${en}>${tp.title}</p>
     ${list.length ? html`<ol class="gl-review">${list.map(r => html`<li class="${r.ok ? 'gl-ok' : 'gl-fixed'}">
-      <p class="gl-ex-text"${en}>${marked(r.text, r.answer.map(i => ({ i, role: tp.card.example && tp.card.example.marks[0] ? tp.card.example.marks[0].role : 'adjective' })), t)}</p>
+      <p class="gl-ex-text"${en}>${r.italic ? italicIn(r.text, r.italic) : marked(r.text, r.marks, t)}</p>
       <p class="gl-review-s">${t(r.ok ? 'grammarLab.review.firstTry' : 'grammarLab.review.fixed')}</p></li>`)}</ol>`
       : html`<p>${t('grammarLab.review.none')}</p>`}
   </div>`;

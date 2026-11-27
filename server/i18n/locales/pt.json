@@ -5780,7 +5780,10 @@
       "answered": "{count, plural, one {Você respondeu # pergunta.} other {Você respondeu # perguntas.}}",
       "next": "Próximo: {topic}",
       "flagSent": "Obrigado. Vamos dar uma olhada.",
-      "wentWrong": "Algo deu errado. Tente de novo."
+      "wentWrong": "Algo deu errado. Tente de novo.",
+      "gap": "Vírgula depois de {word}",
+      "blank": "lacuna",
+      "nearGaps": "Você colocou vírgulas demais. Tire as que sobram e envie de novo."
     }
   },
   "favorites": {
@@ -16246,7 +16249,9 @@
       "subject": "sujeito",
       "article": "artigo",
       "conjunction": "conjunção",
-      "preposition": "preposição"
+      "preposition": "preposição",
+      "capital": "letra maiúscula",
+      "comma": "vírgula"
     },
     "glossaryWord": {
       "adjective": "adjetivo",
@@ -16255,6 +16260,16 @@
     "glossary": {
       "adjective": "uma palavra que fala de um substantivo: de que tipo, quantos ou qual",
       "noun": "uma palavra para uma pessoa, um lugar, um animal ou uma coisa"
+    },
+    "mark": {
+      "checkpoint": "Ponto de controle",
+      "review": "Revisão"
+    },
+    "room": {
+      "open": "Sala de revisão",
+      "passed": "Sala de revisão concluída",
+      "locked": "Abra o tema primeiro",
+      "back": "Voltar para {topic}"
     }
   }
 }
