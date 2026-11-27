@@ -340,8 +340,8 @@ export function renderLanding(req, res) {
     { shot: 'tour-seats', cam: [47, 36, 40], ring: [34.4, 16.9, 26.3, 5.2] },
     { shot: 'tour-handout', cam: [20, 70, 42], ring: [10.2, 77.4, 9.1, 14.2] },
     { shot: 'tour-watch', cam: [45, 66, 42], ring: [30.8, 53.6, 26.8, 23.2] },
-    { shot: 'tour-hands', cam: [82, 32, 36], ring: [76, 24.8, 23, 13.8] },
-    { shot: 'tour-oomba', cam: [84, 70, 34], ring: [75.6, 81.6, 9.8, 3.8] },
+    { shot: 'tour-hands', cam: [86, 32, 30], ring: [76, 24.8, 22.5, 13.8] },
+    { shot: 'tour-oomba', cam: [84, 52, 34], ring: [75.6, 57.2, 10, 5.4] },
     { shot: 'tour-finish', cam: [50, 50, 34], ring: [54.4, 54.6, 9.4, 5.6] },
   ].filter(s => SHOTS[s.shot]);
   const n = STEPS.length;

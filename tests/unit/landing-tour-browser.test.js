@@ -48,6 +48,8 @@ const view = page => page.evaluate(() => {
   return { stage: r(st.querySelector('.lp-tstage')), ring: r(st.querySelector('.lp-ring')), tip: r(st.querySelector('.lp-tip')), scale: m.a, tx: m.e, ty: m.f };
 });
 const inside = (a, b) => a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
+/** The ring's smallest distance to the window's edge (left, top, right, bottom). */
+const margin = (a, b) => Math.min(a.x - b.x, a.y - b.y, b.x + b.w - (a.x + a.w), b.y + b.h - (a.y + a.h));
 
 test('the tour: Next and Back, the stepper, the keys, focus, progress and the live region (laptop)', { skip }, async () => {
   const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
@@ -138,6 +140,22 @@ for (const colorScheme of ['dark', 'light']) {
     }, dir);
     await swipe('left'); assert.deepEqual((await state(page)).shown, [3]);
     await swipe('right'); assert.deepEqual((await state(page)).shown, [2]);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });
+}
+
+for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+  test(`every step's ring is whole in its window, at least 8px from each edge (${viewport.width}x${viewport.height})`, { skip }, async () => {
+    const { ctx, page, errors } = await open({ viewport, reducedMotion: 'reduce', ...(viewport.width < 500 ? { isMobile: true, hasTouch: true } : {}) });
+    await page.locator('#tour').scrollIntoViewIfNeeded();
+    for (let i = 0; i < 6; i++) {
+      const v = await view(page);
+      const m = margin(v.ring, v.stage);
+      assert.ok(m >= 8, `step ${i + 1}: the ring is ${m.toFixed(1)}px from the window's edge (${JSON.stringify({ ring: v.ring, stage: v.stage })})`);
+      assert.ok(v.ring.w > 20 && v.ring.h > 20, `step ${i + 1}: the ring is big enough to see`);
+      await page.locator('.lp-tstep.on [data-next]').click();
+    }
     assert.deepEqual(errors, []);
     await ctx.close();
   });
