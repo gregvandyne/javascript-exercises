@@ -50,6 +50,10 @@
 //           or a comma and a joining word that fits the hint's relation); 'dialogue' and 'quote' accept the fix as
 //           written (quotes straight or curly). The versions' wrong ones break a rule: a splice, the run-on itself, a
 //           missing capital; a missing comma, an end mark outside the marks, a small letter to start the quote.
+//   items   grades 6-8 (and up): a topic whose quiz mixes question shapes; each line is read by the first reader that
+//           knows its shape and keeps its own format (tap with phrases, capfix both ways, marks: punctuation chips,
+//           choice, passage, fix). The code and its rules are under "grades 6-8" below; pathways.json read.* holds a
+//           topic's notes for them (its independent check, pills, chips, fix kind, optional commas, "right as it is").
 // No option is ever pre-selected: the page opens every question with nothing chosen and Submit off.
 //
 // Mistake Hunt rooms (phase0.md): a topic whose pathways.json entry has room.kinds gets a passage built from its own
@@ -64,7 +68,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { tokenize, findWords, hasWord, norm } from '../server/services/grammar-lab-text.js';
+import { tokenize, findWords, hasWord, norm, normTyped } from '../server/services/grammar-lab-text.js';
 import { proofCore } from '../server/services/proof-core.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -209,7 +213,7 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
     const l = cardLines.find(x => x.text.toLowerCase().startsWith(name.toLowerCase() + ':'));
     return l ? l.text.slice(name.length + 1).trim() : '';
   };
-  const definition = field('Definition'), worked = field('Worked example'), how = field('How it works') || field('Explanation'), tip = field('Tip box');
+  const definition = field('Definition'), worked = field('Worked example') || field('Example'), how = field('How it works') || field('Explanation'), tip = field('Tip box');
   for (const [k, v] of [['Definition', definition], ['Worked example', worked], ['How it works', how], ['Tip box', tip]]) if (!v) problems.push(`${where}: the teaching card has no ${k}`);
   const units = unitsOf(worked);
   let example = null;
@@ -262,7 +266,8 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
     }
     return out;
   });
-  if (tip && !tips.length) problems.push(`${where}: the tip box has no quoted example`);
+  if (tip && !tips.length && format === 'choice' && /^[A-Z][^"]+\.$/.test(tip)) tips.push({ text: tip, note: '', marks: [] });
+  else if (tip && !tips.length) problems.push(`${where}: the tip box has no quoted example`);
   return { definition, example, how, tips };
 }
 
@@ -330,7 +335,7 @@ const QUOTED_ITEM = /^(\d+)\.\s+"(.+?)"\s+Answer:\s+(.+?)\.\s+Hint:\s+(.+)$/;
  *  names every other choice too. */
 function hintLeaks(hint, answer, others = []) {
   // "Look for the small word ..." uses "for" as a plain word, not the answer "for"
-  hint = String(hint).replace(/\blook for\b/gi, 'look');
+  hint = String(hint).replace(/\b(look|reason) for\b/gi, '$1');
   if (!hasWord(hint, answer)) return false;
   return !others.length || !others.every(o => hasWord(hint, o));
 }
@@ -474,7 +479,7 @@ const lowWords = text => words(text).map(w => w.toLowerCase());
 const sameWords = (a, b) => lowWords(a).join(' ') === lowWords(b).join(' ');
 const sameBag = (a, b) => lowWords(a).sort().join(' ') === lowWords(b).sort().join(' ');
 /** Split a passage into its sentences ("50,000 bees." stays one). */
-export const sentencesOf = text => String(text).trim().split(/(?<=[.!?])\s+(?=[A-Z"])/).filter(Boolean);
+export const sentencesOf = text => String(text).trim().split(/(?<!\b(?:Dr|Mr|Mrs|Ms|St)\.)(?<=[.!?])\s+(?=[A-Z"])/).filter(Boolean);
 /** Is the word a verb form in the past (a listed irregular past, or a regular -ed)? */
 const isPast = w => PAST_FORMS().has(w) || (/ed$/.test(w) && !/eed$/.test(w) && w.length > 3);   // not feed, need
 
@@ -681,23 +686,27 @@ const PROGRESSIVE = /^(?:is|are|was|were|am|will be) [a-z]+ing$/;
 export function parseSections(cardLines, problems, where, notes = {}) {
   const hl = ((notes.card || {}).sections || []);
   const sections = cardLines.map((l, i) => {
-    const m = /^Section (\d+), (.+?)\. Guiding question: (.+?\?) Worked passage: (.+)$/.exec(l.text);
+    const m = /^Section (\d+), (.+?)\. Guiding question: (.+?\?) (?:(.+?) )?Worked passage: (.+)$/.exec(l.text);
     if (!m) { problems.push(`${where}: card line ${l.line} is not "Section N, Title. Guiding question: ...? Worked passage: ..."`); return null; }
-    const [, , title, question, rest] = m;
+    const [, , title, question, body, rest] = m;
     const bits = rest.split(/"([^"]+)"/);
     const passage = [];
     let label = bits[0].trim().replace(/:$/, '');
-    for (let k = 1; k < bits.length; k += 2) {
+    let k = 1;
+    for (; k < bits.length; k += 2) {
       for (const text of sentencesOf(bits[k])) { passage.push({ ...(label ? { label } : {}), text, hl: false }); label = ''; }
       const after = (bits[k + 1] || '').trim();
-      if (k + 2 < bits.length) label = after.replace(/:$/, '');
+      // a short label ("Good paraphrase:") leads the next quote; prose between quotes starts the note, which keeps its
+      // own quoted examples in quotation marks
+      if (k + 2 < bits.length && (!after || /^[^.!?]{1,40}:$/.test(after))) label = after.replace(/:$/, '');
+      else break;
     }
-    const note = (bits[bits.length - 1] || '').trim();
+    const note = bits.slice(k + 1).map((b, j) => (j % 2 ? `\u201C${b}\u201D` : b)).join('').trim();
     const want = (hl[i] || {}).highlight;
     if (!Array.isArray(want) || !want.length || want.some(x => !passage[x])) problems.push(`${where}: section ${i + 1} needs overrides card.sections[${i}].highlight (sentences 0 to ${passage.length - 1})`);
     else for (const x of want) passage[x].hl = true;
     if (!passage.length) problems.push(`${where}: section ${i + 1} has no worked passage`);
-    return { title, question, passage, note };
+    return { title, question, ...(body ? { body } : {}), passage, note };
   }).filter(Boolean);
   if (sections.length !== 3) problems.push(`${where}: a writing card has 3 sections, not ${sections.length}`);
   return { sections };
@@ -782,6 +791,640 @@ export function checkOptions(topic) {
   return problems;
 }
 
+// ------------------------------------------------------------------------------------------------- grades 6-8
+// A 6-8 topic mixes question shapes, so its format is 'items': each quiz line is read by the first reader below that
+// knows its shape, and the item keeps its own format:
+//   tap      highlight the word or phrase (answer: word places; optional: places that may be marked or not, such as
+//            "the" before a noun; alts: other right answers, such as a second mention of the speaker; focus: the word
+//            the question names, shown in bold)
+//   capfix   click-to-fix capitalization, both ways (a word that needs a capital, or one that must lose it)
+//   marks    punctuation chips: the gaps between words hold a mark from the topic's chip bank (read.chips) or none; the
+//            sentence opens with the marks as written. want: the marks the right sentence has; optional: gaps where a
+//            mark may go or not (a comma after a short opening phrase, the comma before "and" in a list)
+//   choice   pick one (a blank, whole sentences, or pills for a label such as active / passive)
+//   passage  judge the sentence in a short passage
+//   fix      an error-fixing box that turns into press-to-cycle after a wrong answer
+// read.asIs offers "It's right as it is" on every marks and fix question of the topic, so a sentence with nothing to
+// fix can be asked without giving its answer away. Every generated wrong option has a rule name (it.rule) and is
+// checked by checkItems, a second and independent rule.
+const ITEM_LINE = /^(\d+)\.\s+(.+?)\s+Answer:\s+(.+?)\s+Hint:\s+(.+)$/;
+const unq = s => String(s).trim().replace(/^"(.*)"\.?$/, '$1').replace(/^"(.*)"$/, '$1');
+const bare = s => normTyped(s).replace(/[.]$/, '').toLowerCase();
+const lc = s => (/^(The|A|An|My|Our|Their|His|Her) /.test(s) ? lowFirst(s) : s);
+
+/** Quoted words inside a quoted item are written with single marks ('Stop!'); shown, they are real double quotes. An
+ *  apostrophe (it's, the twins') is never one. A text whose single marks do not pair up is left as it is. */
+export function doubleQuotes(text) {
+  const s = String(text);
+  let out = '', open = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c !== "'") { out += c; continue; }
+    const prev = i ? s[i - 1] : ' ', next = i + 1 < s.length ? s[i + 1] : ' ';
+    if (!open && /[\s(]/.test(prev) && /[\p{L}\p{N}]/u.test(next)) { out += '“'; open = true; }
+    else if (open && !/\s/.test(prev) && !/[\p{L}\p{N}]/u.test(next)) { out += '”'; open = false; }
+    else out += c;
+  }
+  return open ? s : out;
+}
+
+/** The word places of an answer in a text: the phrase once, or a list ("dog and moon", "The and the"). */
+function placesOf(text, answer) {
+  const toks = tokenize(text);
+  const whole = findWords(toks, answer);
+  if (whole.length === 1) return whole[0];
+  const parts = String(answer).split(/,\s*(?:and\s+)?|\s+and\s+/).map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const count = new Map();
+  for (const p of parts) count.set(norm(p), (count.get(norm(p)) || 0) + 1);
+  const out = [];
+  for (const [w, c] of count) { const at = findWords(toks, w); if (at.length !== c) return null; out.push(...at.flat()); }
+  return out.sort((a, b) => a - b);
+}
+const ARTICLES = new Set(['the', 'a', 'an', 'one']);
+/** A noun phrase to tap ("the young sailor"): its words without the article, the article optional; every other
+ *  mention of its last word is right too ("the sailor says"). */
+function nounPhrase(text, answer) {
+  const toks = tokenize(text);
+  const at = findWords(toks, answer);
+  if (at.length !== 1) return null;
+  const core = at[0].filter(i => !ARTICLES.has(norm(toks[i].t)));
+  const optional = at[0].filter(i => ARTICLES.has(norm(toks[i].t)));
+  const head = core[core.length - 1];
+  const alts = toks.flatMap((w, i) => (i !== head && norm(w.t) === norm(toks[head].t) ? [i] : [])).map(i => {
+    const opt = [];
+    for (let k = i - 1; k >= 0 && ARTICLES.has(norm(toks[k].t)) && !toks[k].post; k--) opt.push(k);
+    return { answer: [i], optional: opt };
+  });
+  return { answer: core, optional, ...(alts.length ? { alts } : {}) };
+}
+
+// The rules behind generated wrong options (each with its independent check in checkItems).
+/** Syllables, roughly (a final silent e does not count): enough to tell short words from long ones. */
+export const syllables = w => (String(w).toLowerCase().replace(/e$/, '').match(/[aeiouy]+/g) || ['x']).length;
+const withEnding = (w, suf) => (/e$/.test(w) ? w + suf.slice(1) : /[^aeiou]y$/.test(w) ? `${w.slice(0, -1)}i${suf}`
+  : /^[^aeiou]*[aeiou][^aeiouwxy]$/.test(w) ? w + w.slice(-1) + suf : w + suf);
+const takesEnding = w => !(/ly$/.test(w) && w !== 'early') && (syllables(w) === 1 || (syllables(w) === 2 && /y$/.test(w)));
+/** The comparative or superlative of an adjective or adverb, by the card's rules: a short word takes er or est (with its
+ *  spelling change), a longer one (and most ly adverbs) takes more or most. */
+export function degreeOf(w, deg) {
+  const comp = deg === 'comparative';
+  return takesEnding(w) ? withEnding(w, comp ? 'er' : 'est') : `${comp ? 'more' : 'most'} ${w}`;
+}
+/** Adjective order (opinion, size, age, shape, color, origin, material, purpose): each listed word's place. */
+export const ADJ_ORDER = Object.freeze({ lovely: 0, delicious: 0, beautiful: 0, kind: 0, soft: 0, big: 1, small: 1, huge: 1, tiny: 1,
+  old: 2, ancient: 2, round: 3, square: 3, red: 4, blue: 4, gray: 4, white: 4, french: 5, wooden: 6, stone: 6, silk: 6, metal: 6, cotton: 6, toy: 7 });
+const adjRanks = phrase => lowWords(phrase).filter(w => !ARTICLES.has(w) && Object.hasOwn(ADJ_ORDER, w)).map(w => ADJ_ORDER[w]);
+const inOrder = phrase => { const r = adjRanks(phrase); return r.length > 1 && r.every((x, i) => !i || r[i - 1] <= x); };
+/** Correlative conjunctions: the first half -> its partner. */
+export const CORRELATIVE = Object.freeze({ both: 'and', either: 'or', neither: 'nor', 'not only': 'but also', whether: 'or' });
+const PARTNERS = ['and', 'or', 'nor', 'but also'];
+/** What each coordinating conjunction does (8.2's card); but and yet both contrast, or and nor both choose, so neither of
+ *  a pair is ever the other's wrong option. */
+export const FUNCTION_OF = Object.freeze({ for: 'It gives a reason.', and: 'It adds.', nor: 'It gives a negative choice.', but: 'It shows a contrast.',
+  or: 'It gives a choice.', yet: 'It shows a surprising contrast.', so: 'It shows a result.' });
+const FUNCTION_KIN = { but: ['yet'], yet: ['but'], or: ['nor'], nor: ['or'] };
+/** Tense names by form: will + verb (simple future), be + ing (progressive), have + participle (perfect). */
+export function tenseOf(vp) {
+  const w = lowWords(vp);
+  if (w[0] === 'will' && w.length === 2) return 'simple future';
+  if (w.length === 2 && /ing$/.test(w[1])) return ['is', 'are', 'am'].includes(w[0]) ? 'present progressive' : ['was', 'were'].includes(w[0]) ? 'past progressive' : null;
+  if (w.length === 2 && ['has', 'have'].includes(w[0])) return 'present perfect';
+  if (w.length === 2 && w[0] === 'had') return 'past perfect';
+  if (w.length === 1) return isPast(w[0]) ? 'simple past' : /s$/.test(w[0]) ? 'simple present' : null;
+  return null;
+}
+const TENSE_TIMES = ['past', 'present', 'future'], TENSE_ASPECTS = ['simple', 'progressive', 'perfect'];
+const tenseName = (time, aspect) => (aspect === 'simple' ? `simple ${time}` : `${time} ${aspect}`);
+const tenseParts = name => { const [a, b] = name.split(' '); return a === 'simple' ? [b, 'simple'] : [a, b]; };
+/** Transition words by what they show (7.1's card). */
+export const TRANSITION_KIND = Object.freeze({ also: 'Adding an idea', 'in addition': 'Adding an idea', furthermore: 'Adding an idea',
+  however: 'Contrast', 'on the other hand': 'Contrast', nevertheless: 'Contrast', although: 'Contrast',
+  therefore: 'Cause and effect', 'as a result': 'Cause and effect', consequently: 'Cause and effect',
+  first: 'Order of steps', next: 'Order of steps', finally: 'Order of steps', then: 'Order of steps' });
+const PARTICIPLES = new Set(['built', 'held', 'sent', 'won', 'caught', 'made', 'told', 'sung', 'drawn', 'done', 'eaten', 'given', 'written', 'taken', 'seen', 'known', 'shown', 'broken', 'lost', 'found']);
+/** Passive voice by form: a form of be, then a past participle. */
+export const isPassive = s => { const w = lowWords(s); return w.some((x, i) => ['is', 'are', 'was', 'were', 'be', 'been', 'being'].includes(x) && w[i + 1] && (PARTICIPLES.has(w[i + 1]) || /ed$/.test(w[i + 1]))); };
+function baseFromPast(p) {
+  for (const [b, past] of Object.entries(IRREGULAR_PAST)) if (past === p) return b;
+  return [p.slice(0, -2), p.slice(0, -1), `${p.slice(0, -3)}y`, p.slice(0, -3)].find(c => c && pastOf(c) === p) || null;
+}
+/** The longest run of the same words, in order, two texts share. */
+export function sharedRun(a, b) {
+  const A = lowWords(a), Bw = lowWords(b);
+  let best = 0;
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < Bw.length; j++) { let k = 0; while (A[i + k] && A[i + k] === Bw[j + k]) k++; best = Math.max(best, k); }
+  return best;
+}
+/** Adverbs of time, place and manner (3.4's card; a word in ly tells how). */
+const ADVERB_KIND = { tomorrow: 'time', yesterday: 'time', soon: 'time', recently: 'time', today: 'time', underneath: 'place', away: 'place', here: 'place', high: 'place', there: 'place' };
+const adverbKind = w => ADVERB_KIND[norm(w)] || (/ly$/.test(norm(w)) ? 'manner' : null);
+/** Long-form and short-form works (9.1's card). */
+const LONG_WORKS = ['book', 'movie', 'play', 'album', 'magazine', 'newspaper'], SHORT_WORKS = ['chapter', 'poem', 'song', 'article', 'short story'];
+const workKind = s => { const t = String(s).toLowerCase(); return SHORT_WORKS.some(k => new RegExp(`is an? ${k}\\b`).test(t)) ? 'short' : LONG_WORKS.some(k => new RegExp(`is an? ${k}\\b`).test(t)) ? 'long' : null; };
+/** a or an by the sound the next word starts with: a vowel letter, except the words that start with a "you" sound;
+ *  an before a silent h. */
+const A_AN_SOUNDS = { vowel: ['honor', 'honest', 'hour', 'heir'], consonant: ['unicorn', 'university', 'uniform', 'one', 'used', 'useful'] };
+const anBefore = w => { const x = norm(w); return A_AN_SOUNDS.vowel.includes(x) || (/^[aeiou]/.test(x) && !A_AN_SOUNDS.consonant.includes(x)); };
+const CONTRACTION = /(n't|'re|'ll|'ve|'m|'d)$|^(it|he|she|that|what|there)'s$/i;
+const POSSESSIVE_PRONOUNS = ['yours', 'hers', 'ours', 'theirs', 'his', 'its'];
+const CONJ_FAMILY = { but: ['but', 'yet'], yet: ['yet', 'but'], so: ['so'], and: ['and'], or: ['or'], nor: ['nor'], for: ['for'] };
+const CONJ_WRONG = { but: 'so', yet: 'so', so: 'but', and: 'or', or: 'and', nor: 'or', for: 'so' };
+const SPLICE_JOINERS = { so: ['so', 'and'], and: ['and', 'so'], but: ['but', 'yet'], yet: ['yet', 'but'], or: ['or'] };
+/** A sentence's two thoughts and how they are joined: 'joined' (a comma and a coordinating conjunction, a semicolon, or
+ *  a period), 'splice' (a comma alone) or 'fused' (nothing). first: the first thought as the sentence writes it. */
+export function joinOf(s, first) {
+  const rest = s.slice(first.length);
+  if (new RegExp(`^, (${FANBOYS.join('|')}) `).test(rest) || /^; /.test(rest) || /^\. [A-Z]/.test(rest)) return 'joined';
+  if (/^, /.test(rest)) return 'splice';
+  return /^ [a-z]/i.test(rest) ? 'fused' : null;
+}
+/** A citation as the card writes it: (Last 12) right before the sentence's period. */
+const CITE_RIGHT = /[^.\s] \([A-Z][a-z]+ \d+\)\.$/;
+
+/** One quiz line of a 6-8 topic, read into its parts: { n, q, a, hint, text?, question? } (text and question: the
+ *  sentence or passage the line quotes first, and what it asks about it; "Same passage." reuses the last one). */
+function rawOf(line, ctx) {
+  const m = ITEM_LINE.exec(line.text);
+  if (!m) return null;
+  const [, n, q, a, hint] = m;
+  const r = { n: +n, q, a: a.trim(), hint: hint.trim() };
+  let x;
+  if ((x = /^(?:Passage|Original): "(.+)" (\S.+)$/.exec(q))) { r.text = x[1]; r.question = x[2]; r.passage = true; ctx.last = x[1]; }
+  else if ((x = /^Same (?:passage|original)\. (.+)$/.exec(q))) { r.text = ctx.last; r.question = x[1]; r.passage = true; }
+  else if ((x = /^"([^"]+)" (\S[^"]*)$/.exec(q))) { r.text = x[1]; r.question = x[2]; }
+  return r;
+}
+
+/** The readers, in order: (raw, topic def, problems, at) -> an item, false (the shape is known but the item is wrong; a
+ *  problem was added) or null (not this shape). */
+const READERS = [
+  // judge the sentence in a passage: "Passage: "..." Which sentence is the claim? Answer: the first sentence."
+  function judge(r, def, problems, at) {
+    const o = /^the (first|second|third|fourth|fifth) sentence\.?$/.exec(r.a);
+    if (!r.passage || !o) return null;
+    const options = sentencesOf(r.text), k = ORDINALS.indexOf(o[1]);
+    if (k >= options.length) { problems.push(`${at}: the passage has no ${o[1]} sentence`); return false; }
+    if (new RegExp(`\\b(${ORDINALS.join('|')})\\b`, 'i').test(r.hint)) problems.push(`${at}: the hint points at a sentence`);
+    return { format: 'passage', text: r.text, ask: r.question, options, answer: [k], right: options[k], rule: 'judge' };
+  },
+  // "Fill in the blank: "She is a ___ singer." Choose good or well." and "Which transition fits: "..." Choose A or B."
+  function fillIn(r, def, problems, at) {
+    const m = /^(?:Fill in the blank: |(.+?): )?"([^"]*___[^"]*)" Choose (.+?)\.$/.exec(r.q);
+    if (!m) return null;
+    const [, lead, text, list] = m;
+    const given = list.split(/,? or |, /).map(s => s.trim());
+    const start = !text.split('___')[0].trim();
+    const options = given.map(w => (start ? capFirst(w) : w));
+    const k = options.findIndex(o => o === unq(r.a).replace(/\.$/, ''));
+    if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${options.join(' / ')} as the sentence needs it`); return false; }
+    if (hintLeaks(r.hint, options[k], options.filter((_, i) => i !== k))) problems.push(`${at}: the hint names the answer "${options[k]}" and not the other choices`);
+    const [before, after] = text.split('___');
+    return { format: 'choice', text, ...(lead ? { ask: `${capFirst(lead)}?` } : {}), options, answer: [k], right: `${before}${options[k]}${after}`, rule: 'given',
+      ...(def.read && def.read.cycle ? { cycle: true } : {}) };
+  },
+  // two or three quoted versions: "Which sentence is punctuated correctly: "A" or "B"?"
+  function whichOf(r, def, problems, at) {
+    const m = /^(.*?)\b((?:Which|Where)\b[^"]*?):? ("[^"]+"(?:,? (?:or )?"[^"]+")+)\?$/.exec(r.q);
+    if (!m) return null;
+    const [, lead, ask, list] = m;
+    const options = [...list.matchAll(/"([^"]+)"/g)].map(x => doubleQuotes(x[1]));
+    if (options.length < 2) return null;
+    const k = options.findIndex(o => bare(o) === bare(doubleQuotes(unq(r.a))));
+    if (k < 0) { problems.push(`${at}: the answer is not one of the versions`); return false; }
+    const prompt = doubleQuotes(lead.trim());
+    return { format: 'choice', text: options[k], ask: `${ask}?`, ...(prompt ? { prompt } : {}), options, answer: [k], right: options[k], whole: true, rule: 'given' };
+  },
+  // unquoted choices: "Which is NOT a job of a conclusion: restating the claim, leaving a final thought, or ...?"
+  function listOf(r) {
+    const m = /^(Which (?:is|should)[^:"]+): ([^"?]+?),? or ([^"?]+)\?$/.exec(r.q);
+    if (!m) return null;
+    const options = [...m[2].split(/, /), m[3]].map(capFirst);
+    const k = options.findIndex(o => bare(o) === bare(r.a));
+    if (k < 0) return null;
+    return { format: 'choice', text: options[k], ask: `${m[1]}?`, options, answer: [k], right: options[k], whole: true, rule: 'given' };
+  },
+  // "Fix the punctuation: "..." Answer: "..."": the punctuation chips; "Is a comma needed? No comma is needed." asks
+  // the same sentence, right as it is.
+  function marks(r, def, problems, at) {
+    const m = /^Fix the punctuation: "(.+)"( Is a comma needed\?)?$/.exec(r.q);
+    if (!m || (def.read && def.read.fix)) return null;
+    const text = doubleQuotes(m[1]);
+    const right = m[2] ? (/^No comma is needed\.?$/.test(r.a) ? text : null) : doubleQuotes(unq(r.a));
+    if (!right) { problems.push(`${at}: "Is a comma needed?" answers other than "No comma is needed."`); return false; }
+    return marksItem(text, right, def, problems, at);
+  },
+  // "Fix the capitalization: "..."": tap each word whose capital is wrong (it gets one, or loses it)
+  function capfix(r, def, problems, at) {
+    const m = /^Fix the capitalization: "(.+)"$/.exec(r.q);
+    if (!m) return null;
+    const text = doubleQuotes(m[1]), right = doubleQuotes(unq(r.a));
+    const diff = capitalDiff(text, right);
+    if (!diff || !diff.length) { problems.push(`${at}: the fix is not the sentence with capitals changed`); return false; }
+    const toks = tokenize(right);
+    return { format: 'capfix', text, answer: diff, fixed: diff.map(i => toks[i].t), right, rule: 'capital' };
+  },
+  // an error-fixing box: "Fix the error: ...", "Fix the spelling: ...", "Fix this comma splice with a semicolon: ..."
+  function fix(r, def, problems, at) {
+    const m = /^Fix (?:the error|the spelling|the punctuation|this (?:comma splice|fused sentence) with (a period|a semicolon|a comma and a FANBOYS word)): "(.+)"( Is this correct\?)?$/.exec(r.q);
+    if (!m) return null;
+    const [, how, given] = m;
+    let right;
+    if (/^Yes, it is correct\.?$/.test(r.a)) right = given;
+    else { const y = /^(?:No\. The correct sentence is )?"(.+)"\.?$/.exec(r.a); right = y ? y[1] : null; }
+    if (!right) { problems.push(`${at}: the fix is not a quoted sentence`); return false; }
+    return fixItem(doubleQuotes(given), doubleQuotes(right), how || null, def, problems, at);
+  },
+  // "Is this correct: "..."? Yes, it is correct.": in a fix topic the box itself (right as it is), else two pills
+  function correct(r, def, problems, at) {
+    const m = /^Is this (?:sentence )?correct: "(.+)"\?$/.exec(r.q);
+    if (!m) return null;
+    const yes = /^Yes\b/.test(r.a);
+    const text = doubleQuotes(m[1]);
+    if (def.read && def.read.fix && !def.read.labels) {
+      if (!yes) { problems.push(`${at}: a "no" here needs its fix written out`); return false; }
+      return fixItem(text, text, null, def, problems, at);
+    }
+    const labels = (def.read && def.read.labels) || ['Correct', 'Needs a fix'];
+    const k = yes ? labels.findIndex(l => /^correct$/i.test(l)) : -1;
+    if (k < 0) { problems.push(`${at}: no "Correct" pill for this item`); return false; }
+    return labelItem(text, labels, labels[k], r, problems, at, { rule: def.read.check || 'given', ask: 'Is this sentence correct?' });
+  },
+  // two or three pills the question names: "Is this sentence active or passive?", "Is "don't" a contraction or a
+  // possessive?", "Is this a comma splice, a fused sentence, or correct: "..."?"
+  function pills(r, def, problems, at) {
+    let text = r.text, labels, ask = r.question || r.q, focus = null, x;
+    const q = r.question || '';
+    if ((x = /^Is (this sentence|this thought|[^"]+?) (?:an? )?([\w-]+) or (?:an? )?([\w-]+)(?: noun)?\?$/.exec(q)) && text) { labels = [x[2], x[3]]; if (!/^this /.test(x[1])) focus = x[1]; }
+    else if ((x = /^Is (this|it) ([\w-]+) or ([\w-]+)\?$/.exec(q.replace(/^.*?\. /, ''))) && text) { labels = [x[2], x[3]]; text = r.q.replace(/ Is it .*$/, ''); }
+    else if ((x = /^(.+?\.) In print, should it be (.+?) or (.+?)\?$/.exec(r.q.replace(/^"([^"]+)"/, '$1'))) ) { text = x[1]; labels = [x[2], x[3]]; ask = 'In print, should it be italicized or in quotation marks?'; }
+    else if ((x = /^(.+?\.) Is it (.+?) or (.+?)\?$/.exec(r.q.replace(/^"([^"]+)"/, '$1')))) { text = x[1]; labels = [x[2], x[3]]; ask = `Is it ${x[2]} or ${x[3]}?`; }
+    else if ((x = /^Is "([^"]+)" an? (\w+) or an? (\w+)\?$/.exec(r.q))) { text = x[1]; labels = [x[2], x[3]]; ask = `Is it a ${x[2]} or a ${x[3]}?`; }
+    else if ((x = /^Is this thought (\w+) or (\w+): "(.+)"\?$/.exec(r.q))) { text = x[3]; labels = [x[1], x[2]]; ask = 'Is this thought complete or incomplete?'; }
+    else if ((x = /^Is this a ([\w ]+?), a ([\w ]+?), or (\w+): "(.+)"\?$/.exec(r.q))) { text = x[4]; labels = [x[1], x[2], x[3]]; ask = 'Is it a comma splice, a fused sentence, or correct?'; }
+    else if ((x = /^Which voice is used(?:, and what does it emphasize)?\?$/.exec(q)) && text) { labels = ['active voice', 'passive voice']; ask = 'Which voice is used?'; }
+    else if ((x = /^What kind of adverb is (\S+)\?$/.exec(q)) && text) { labels = ['adverb of time', 'adverb of place', 'adverb of manner']; focus = x[1]; }
+    else return null;
+    const ans = r.a.split(',')[0].replace(/\.$/, '');
+    const shown = labels.map(capFirst);
+    const k = shown.findIndex(l => norm(l) === norm(ans));
+    if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${shown.join(' / ')}`); return false; }
+    const f = focus && text ? placesOf(text, focus) : null;
+    return labelItem(doubleQuotes(text), shown, shown[k], r, problems, at, { ask: capFirst(ask), rule: (def.read && def.read.check) || 'given', ...(f ? { focus: f } : {}) });
+  },
+  // "What is the function of so?": the function, and two that no other coordinating conjunction of its kind shares
+  function functionOf(r, def, problems, at) {
+    const x = r.text && /^What is the function of (\w+)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const w = x[1].toLowerCase(), right = FUNCTION_OF[w];
+    if (!right || norm(right) !== norm(r.a)) { problems.push(`${at}: the answer is not the card's function of "${w}"`); return false; }
+    const others = Object.keys(FUNCTION_OF).filter(c => c !== w && !(FUNCTION_KIN[w] || []).includes(c));
+    const wrong = seededShuffle(others, `${at}|fn`).slice(0, 2).map(c => FUNCTION_OF[c]);
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: r.text, ask: capFirst(r.question), options, answer: [options.indexOf(right)], right: r.text, label: right, plain: true, rule: 'function', word: w, focus: placesOf(r.text, w) || [] };
+  },
+  // "Which tense is has walked?": the tense by its form, one with the same time and one with the same kind of form
+  function tense(r, def, problems, at) {
+    const x = r.text && /^Which tense is (.+?)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const right = tenseOf(x[1]);
+    if (right !== r.a.replace(/\.$/, '')) { problems.push(`${at}: the form rule makes "${right}", not "${r.a}"`); return false; }
+    const [time, aspect] = tenseParts(right);
+    const nextAspect = TENSE_ASPECTS[(TENSE_ASPECTS.indexOf(aspect) + 1) % 3];
+    const otherTime = time === 'past' ? 'present' : 'past';
+    const wrong = [tenseName(time, nextAspect), tenseName(otherTime, aspect)];
+    const options = seededShuffle([right, ...wrong].map(capFirst), at);
+    return { format: 'choice', text: r.text, ask: `Which tense is ${x[1]}?`, options, answer: [options.indexOf(capFirst(right))], right: r.text, label: capFirst(right), plain: true,
+      rule: 'tense', verb: x[1], focus: placesOf(r.text, x[1]) || [] };
+  },
+  // "What does as a result show?": what the transition does
+  function transition(r, def, problems, at) {
+    const x = r.text && /^What do(?:es)? (.+?) show\?$/.exec(r.question || '');
+    if (!x) return null;
+    const labels = ['Adding an idea', 'Contrast', 'Cause and effect', 'Order of steps'];
+    const k = labels.findIndex(l => norm(l) === norm(r.a.replace(/^the /, '').replace(/\.$/, '')));
+    if (k < 0) { problems.push(`${at}: "${r.a}" is not one of the transition kinds`); return false; }
+    return labelItem(r.text, labels, labels[k], r, problems, at, { ask: capFirst(r.question), rule: 'transition', words: x[1] });
+  },
+  // "Who is the speaker?": tap the person in the passage
+  function who(r, def, problems, at) {
+    const x = r.text && /^Who is the (speaker|listener)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const text = doubleQuotes(r.text), np = nounPhrase(text, r.a.replace(/\.$/, ''));
+    if (!np) { problems.push(`${at}: "${r.a}" is not in the passage once`); return false; }
+    return { format: 'tap', text, ask: `${r.question} Tap the person.`, ...np, rule: 'tap' };
+  },
+  // tap the word or phrase the question asks for
+  function tap(r, def, problems, at) {
+    const q = r.question || '';
+    const x = r.text && (/^(?:Which words? (?:is|are) .+|What is the (?:pronoun )?(?:subject|verb|direct object)(?: in the second sentence)?|Which is the dependent clause|Where (?:is|are) the adjectives?(?:, and what do(?:es)? (?:it|they) describe)?|What does (\S+) describe)\?$/.exec(q));
+    if (!x) return null;
+    const text = doubleQuotes(r.text);
+    let ans = unq(r.a).replace(/\.$/, '');
+    if (def.read && def.read.answerHead) ans = ans.split(/,? (?:before|after)\b/)[0];
+    const places = placesOf(text, ans);
+    if (!places) { problems.push(`${at}: the answer "${ans}" is not in the sentence once`); return false; }
+    const rule = new Set(((def.read && def.read.ruleWords) || []).map(norm));
+    if (!places.every(i => rule.has(norm(tokenize(text)[i].t))) && hintLeaks(r.hint, ans)) problems.push(`${at}: the hint names the answer "${ans}"`);
+    const focus = x[1] ? placesOf(text, x[1]) : null;
+    return { format: 'tap', text, ...(def.read && def.read.answerHead ? {} : { ask: q }), answer: places, rule: 'tap', ...(focus ? { focus } : {}) };
+  },
+  // "Form the comparative of tall: "The oak is ___ than the maple." Answer: taller."
+  function degree(r, def, problems, at) {
+    const x = /^Form the (comparative|superlative)(?: adverb)? of (\S+): "(.+___.+)"$/.exec(r.q);
+    if (!x) return null;
+    const [, deg, w, text] = x, right = degreeOf(w, deg);
+    if (right !== r.a.replace(/\.$/, '')) { problems.push(`${at}: the rules make "${right}", not "${r.a}"`); return false; }
+    const other = degreeOf(w, deg === 'comparative' ? 'superlative' : 'comparative');
+    // the wrong way to compare: more or most with a one-beat word (never with a two-beat y word, where some writers use
+    // it), or an ending on a long word
+    const method = takesEnding(w) ? (syllables(w) === 1 ? `${deg === 'comparative' ? 'more' : 'most'} ${w}` : null) : withEnding(w, deg === 'comparative' ? 'er' : 'est');
+    const naive = `${w}${deg === 'comparative' ? 'er' : 'est'}`;
+    const wrong = [...new Set([other, ...(method ? [method] : []), ...(takesEnding(w) && naive !== right && !/e$/.test(w) ? [naive] : [])])].filter(o => o !== right);
+    const options = seededShuffle([right, ...wrong], at);
+    const [before, after] = text.split('___');
+    return { format: 'choice', text, ask: `Choose the ${deg} of ${w}.`, options, answer: [options.indexOf(right)], right: `${before}${right}${after}`, rule: 'degree', word: w, degree: deg };
+  },
+  // "Rewrite in active voice: "The window was washed by Ana." Answer: "Ana washed the window.""
+  function rewrite(r, def, problems, at) {
+    const x = /^Rewrite in active voice: "(.+)"$/.exec(r.q);
+    if (!x) return null;
+    const p = /^(.+?) (was|were) (\w+) by (.+?)\.$/.exec(x[1]), right = unq(r.a);
+    const y = p && new RegExp(`^${capFirst(p[4]).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} (\\w+) ${lc(p[1])}\\.$`).exec(right);
+    if (!y) { problems.push(`${at}: the rewrite is not the doer, the verb and the receiver`); return false; }
+    const [, recv, be, part, doer] = p, verb = y[1], base = baseFromPast(verb);
+    if (!base) { problems.push(`${at}: "${verb}" is not a past form the rules know`); return false; }
+    const plural = /[^s]s$/.test(doer);
+    const wrong = [`${capFirst(recv)} ${verb} ${lc(doer)}.`, `${capFirst(recv)} ${be} ${part}.`, `${capFirst(doer)} ${plural ? base : presentOf(base)} ${lc(recv)}.`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: x[1], prompt: x[1], ask: 'Choose the sentence in active voice that keeps its meaning and time.', options, answer: [options.indexOf(right)], right, whole: true,
+      rule: 'rewrite', doer: capFirst(doer), recv: capFirst(recv), verb };
+  },
+  // "Put the adjectives in order: "red / big / ball""
+  function order(r, def, problems, at) {
+    const x = /^Put the adjectives in order: "(.+)"$/.exec(r.q);
+    if (!x) return null;
+    const bits = x[1].split(/\s*\/\s*/), noun = bits[bits.length - 1], right = r.a.replace(/\.$/, '');
+    if (!sameBag(bits.join(' '), right) || !right.endsWith(noun)) { problems.push(`${at}: the answer is not the same words`); return false; }
+    const adj = words(right).slice(0, -1);
+    const perms = adj.length === 2 ? [[adj[1], adj[0]].join(' '), `${adj[0]}, ${adj[1]}`]
+      : [[...adj].reverse().join(' '), [adj[1], adj[0], ...adj.slice(2)].join(' '), [...adj.slice(0, -2), adj[adj.length - 1], adj[adj.length - 2]].join(' ')];
+    const wrong = [...new Set(perms.map(p => `${p} ${noun}`))].filter(o => o !== right);
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: right, prompt: bits.join(' / '), ask: 'Choose the adjectives in the right order.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'order' };
+  },
+  // "Match the pair: "Both Ana ___ Leo finished the race." Answer: and."
+  function correlative(r, def, problems, at) {
+    const x = /^Match the pair: "(.+___.+)"$/.exec(r.q);
+    if (!x) return null;
+    const before = x[1].split('___')[0].toLowerCase();
+    const first = /\bnot only\b/.test(before) ? 'not only' : ['both', 'either', 'neither', 'whether'].filter(w => hasWord(before, w)).pop();
+    const right = CORRELATIVE[first];
+    if (!right || right !== r.a.replace(/\.$/, '')) { problems.push(`${at}: the pair's partner is not the answer`); return false; }
+    const wrong = seededShuffle(PARTNERS.filter(p => p !== right), `${at}|pair`).slice(0, 2);
+    const options = seededShuffle([right, ...wrong], at);
+    const [b, a] = x[1].split('___');
+    return { format: 'choice', text: x[1], ask: 'Choose the word that completes the pair.', options, answer: [options.indexOf(right)], right: `${b}${right}${a}`, rule: 'correlative', first,
+      ...(def.read && def.read.cycle ? { cycle: true } : {}) };
+  },
+  // "Capitalize this title: "the road not taken""
+  function title(r, def, problems, at) {
+    const x = /^Capitalize this title: "(.+)"$/.exec(r.q);
+    if (!x) return null;
+    const right = unq(r.a);
+    if (titleCase(x[1]) !== right) { problems.push(`${at}: the title rules make "${titleCase(x[1])}", not "${right}"`); return false; }
+    const options = seededShuffle([right, ...wrongTitles(right).slice(0, 2)], at);
+    return { format: 'choice', text: right, prompt: x[1], ask: 'Choose the title with the right capital letters.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'title' };
+  },
+  // "Add the citation to this sentence: "..." The source is Ana Lopez, page 7."
+  function cite(r, def, problems, at) {
+    const x = /^(?:Where does the citation go in this sentence|Add the citation to this sentence): "(.+?)"\??\s*The source is (.+?), page (\d+)\.$/.exec(r.q);
+    if (!x) return null;
+    const base = x[1].replace(/\.$/, ''), last = words(x[2]).pop(), page = x[3], right = unq(r.a);
+    if (right !== `${base} (${last} ${page}).`) { problems.push(`${at}: the citation rules make "${base} (${last} ${page})."`); return false; }
+    const wrong = [`${base}. (${last} ${page})`, `${base} (${last}, ${page}).`, `${base} (${last} p. ${page}).`];
+    const options = seededShuffle([right, ...wrong], at);
+    return { format: 'choice', text: right, prompt: `${x[1]} The source is ${x[2]}, page ${page}.`, ask: 'Choose the sentence with the citation written the right way.', options, answer: [options.indexOf(right)], right, whole: true, rule: 'cite' };
+  },
+  // a paraphrase: "Which is a good paraphrase?" / "Which is too close to the original?" (the two answers of one
+  // original are each other's wrong option; the original itself, copied word for word, is never a good paraphrase)
+  function paraphrase(r, def, problems, at, ctx) {
+    const x = r.passage && /^Which is (a good paraphrase|too close to the original)\?$/.exec(r.question || '');
+    if (!x) return null;
+    const pair = ctx.raws.filter(o => o.text === r.text && /^Which is (a good paraphrase|too close to the original)\?$/.test(o.question || ''));
+    const good = pair.find(o => /good/.test(o.question)), close = pair.find(o => /close/.test(o.question));
+    if (!good || !close) { problems.push(`${at}: the original has no good paraphrase and too-close version both`); return false; }
+    const g = unq(good.a), c = unq(close.a), right = /good/.test(x[1]) ? g : c;
+    const opts = /good/.test(x[1]) ? [g, c, r.text] : [c, g];
+    const options = seededShuffle(opts, at);
+    return { format: 'choice', text: right, prompt: `Original: ${r.text}`, ask: capFirst(r.question), options, answer: [options.indexOf(right)], right, whole: true, rule: 'paraphrase', original: r.text, good: /good/.test(x[1]) };
+  },
+  // a question about a passage whose answer is not in it ("What is the plot clue?"): the answer, and the answers the same
+  // question has for the topic's other passages
+  function pool(r, def, problems, at, ctx) {
+    if (!r.passage) return null;
+    const key = s => { const w = lowWords(s); return `${w[0]} ${w[1]} ${w[w.length - 1]}`; };
+    const right = capFirst(unq(r.a).replace(/\.$/, ''));
+    const sibs = ctx.raws.filter(o => o !== r && o.passage && o.question && key(o.question) === key(r.question) && o.text !== r.text);
+    const extra = ((def.read && def.read.pool) || {})[key(r.question)] || [];
+    const wrong = [...new Set([...sibs.map(o => capFirst(unq(o.a).replace(/\.$/, ''))), ...extra])].filter(o => norm(o) !== norm(right));
+    if (!wrong.length) return null;
+    const options = seededShuffle([right, ...seededShuffle(wrong, `${at}|pool`).slice(0, 2)], at);
+    return { format: 'choice', text: doubleQuotes(r.text), ask: capFirst(r.question), options, answer: [options.indexOf(right)], right: doubleQuotes(r.text), label: right, plain: true, rule: 'pool' };
+  },
+];
+
+/** Pills for a label: the sentence shown as it is, the labels in a fixed order. */
+function labelItem(text, labels, right, r, problems, at, extra = {}) {
+  const k = labels.indexOf(right);
+  if (hintLeaks(r.hint, right, labels.filter(l => l !== right))) problems.push(`${at}: the hint names the answer "${right}"`);
+  return { format: 'choice', text, options: labels, answer: [k], right: text, label: right, plain: true, ...extra };
+}
+/** The gap marks of a sentence: its words with the chip marks taken off ({ w, m }); a mark stuck to other marks (a
+ *  comma inside closing quotes) stays part of the word. */
+function gapsOf(text) {
+  const toks = tokenize(text);
+  return toks.map((w, i) => { const m = i < toks.length - 1 && /^[,;:]$/.test(w.post) ? w.post : ''; return { w: m ? { ...w, post: '' } : w, m }; });
+}
+const SHORT_OPENING = 4;
+/** A punctuation-chips item: the words, the marks as written (start) and as they must be (want), and the optional gaps:
+ *  read.optional 'intro' (a comma after a short opening phrase with no verb), 'series' (the comma before the "and" or
+ *  "or" that ends a list of three or more). */
+function marksItem(text, right, def, problems, at) {
+  const A = gapsOf(text), Bg = gapsOf(right);
+  if (A.length !== Bg.length || A.some((x, i) => x.w.t !== Bg[i].w.t || x.w.pre !== Bg[i].w.pre || x.w.post !== Bg[i].w.post)) { problems.push(`${at}: the fix changes more than the marks between words`); return false; }
+  const want = Bg.flatMap((x, i) => (x.m ? [[i, x.m]] : [])), start = A.flatMap((x, i) => (x.m ? [[i, x.m]] : []));
+  const chips = (def.read && def.read.chips) || [','];
+  for (const [, mk] of [...want, ...start]) if (!chips.includes(mk)) problems.push(`${at}: the mark "${mk}" is not in the topic's chips`);
+  const opt = (def.read && def.read.optional) || [];
+  const optional = want.filter(([g, mk]) => {
+    if (mk !== ',') return false;
+    if (opt.includes('intro') && g + 1 <= SHORT_OPENING && want.filter(x => x[0] < g).length === 0) {
+      const lead = Bg.slice(0, g + 1).map(x => x.w.t.toLowerCase());
+      if (PREPOSITIONS.has(lead[0]) && !lead.slice(1).some(w => isPast(w) || HELPERS.has(w))) return true;
+    }
+    if (opt.includes('series') && /^(and|or)$/i.test(Bg[g + 1].w.t) && want.filter(x => x[1] === ',' && x[0] < g).length >= 1) return true;
+    return false;
+  });
+  const need = want.filter(x => !optional.includes(x));
+  return { format: 'marks', text, words: A.map(x => x.w), start, want: need, optional, chips, right, rule: 'marks' };
+}
+/** An error-fixing box by the topic's read.fix: the fixes accepted, and the cycle's wrong versions. */
+function fixItem(text, right, how, def, problems, at) {
+  const kind = def.read.fix;
+  let accept = [right], wrong = [];
+  const swap = (s, a, b) => s.replace(new RegExp(`\\b${a}\\b`), b);
+  if (kind === 'splice') {
+    const j = /^(.+?), (and|but|or|so|yet) (.+)$/.exec(right) || /^(.+?); (.+)$/.exec(right) || /^(.+?[^.!?])\. (\S.+)$/.exec(right);
+    if (!j) { problems.push(`${at}: the fix is not two thoughts joined or split`); return false; }
+    const A = j[1], conj = j.length === 4 ? j[2] : null;
+    const T = tokenize(text), nA = tokenize(A).length;
+    const second = joinTokens(T.slice(nA));
+    if (joinTokens(T.slice(0, nA)).replace(/,$/, '') !== A) { problems.push(`${at}: the fix is not the sentence's two thoughts`); return false; }
+    const low = lowFirst(second), up = capFirst(second);
+    if (/period/.test(how || '')) accept = [`${A}. ${up}`];
+    else if (/semicolon/.test(how || '')) accept = [`${A}; ${low}`];
+    else accept = (SPLICE_JOINERS[conj] || [conj]).map(c => `${A}, ${c} ${low}`);
+    if (!accept.includes(right)) problems.push(`${at}: the fix does not use the way the item asks for`);
+    wrong = [`${A}, ${low}`, `${A} ${low}`, /period/.test(how || '') ? `${A}. ${low}` : `${A}, or ${low}`];
+  } else if (kind === 'conj') {
+    const c = (/ (and|but|or|so|yet|nor|for) /.exec(right) || [])[1];
+    if (!c) { problems.push(`${at}: the fix has no coordinating conjunction`); return false; }
+    accept = (CONJ_FAMILY[c] || [c]).map(x => swap(right, c, x));
+    const toggled = right.includes(`, ${c} `) ? right.replace(`, ${c} `, ` ${c} `) : right.replace(` ${c} `, `, ${c} `);
+    wrong = [text, toggled, swap(right, c, CONJ_WRONG[c])];
+  } else if (kind === 'spelling') {
+    if (!/\ba lot\b/.test(right)) { problems.push(`${at}: the fix has no "a lot"`); return false; }
+    wrong = [text, right.replace(/\ba lot\b/, 'allot'), right.replace(/\ba lot\b/, 'a-lot')];
+  } else if (kind === 'apostrophe') {
+    const p = POSSESSIVE_PRONOUNS.find(w => hasWord(right, w));
+    if (!p) { problems.push(`${at}: the fix has no possessive pronoun`); return false; }
+    wrong = [right.replace(new RegExp(`\\b${p}\\b`), `${p.slice(0, -1)}'s`), right.replace(new RegExp(`\\b${p}\\b`), `${p}'`), text];
+  } else if (kind === 'endmark') {
+    const close = right.lastIndexOf('”'), mk = right.charAt(close - 1);
+    if (close < 1 || !/[.,?!]/.test(mk)) { problems.push(`${at}: the fix has no mark before its closing quotation mark`); return false; }
+    const outside = right.slice(0, close - 1) + right.slice(close, close + 1) + (/[.]$/.test(right) && close === right.length - 1 ? '' : mk) + right.slice(close + 1);
+    const alt = { ',': '.', '.': ',', '?': '.', '!': ',' }[mk];
+    wrong = [text, outside.replace(/\.\.$/, '.'), right.slice(0, close - 1) + alt + right.slice(close)];
+  } else { problems.push(`${at}: read.fix "${kind}" is not built`); return false; }
+  wrong = [...new Set(wrong)].filter(w => !accept.includes(w) && w !== right);
+  if (wrong.length < 2) problems.push(`${at}: fewer than 2 wrong versions`);
+  const options = seededShuffle([right, ...wrong], at);
+  return { format: 'fix', text, right, accept: [...new Set(accept)], options, answer: [options.indexOf(right)], rule: `fix-${kind}`, ...(how ? { how } : {}) };
+}
+
+/** A 6-8 topic's quiz lines -> its items (each with its own format). */
+function readItems(lines, problems, where, def, notes) {
+  const ctx = { last: null, raws: [] };
+  const raws = lines.map(l => {
+    const line = { ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text };
+    const r = rawOf(line, ctx);
+    if (!r) problems.push(`${where} line ${l.line}: not "N. ... Answer: ... Hint: ..."`);
+    return r;
+  });
+  ctx.raws = raws.filter(Boolean);
+  return ctx.raws.map(r => {
+    const at = `${where} item ${r.n}`;
+    for (const read of READERS) {
+      const it = read(r, def, problems, at, ctx);
+      if (it === false) return null;
+      if (it) {
+        if (it.format !== 'passage' && it.format !== 'tap' && r.hint.includes(it.right)) problems.push(`${at}: the hint gives the answer`);
+        // a book or movie title in the sentence is shown in italics (overrides { title })
+        const title = (notes[String(r.n)] || {}).title, titleAt = title ? placesOf(it.text, title) : null;
+        if (title && !titleAt) problems.push(`${at}: the title "${title}" is not in the sentence`);
+        return { n: r.n, ...it, hint: r.hint, ...(titleAt ? { titleAt } : {}), ...(def.read && def.read.asIs && (it.format === 'marks' || it.format === 'fix') ? { asIs: true } : {}) };
+      }
+    }
+    problems.push(`${at}: no reader knows this item's shape: ${r.q.slice(0, 80)}`);
+    return null;
+  }).filter(Boolean);
+}
+
+/** The second, independent check of a 6-8 topic's items: no wrong option is also right, by the rule each was made
+ *  with. -> problems. */
+export function checkItems(topic) {
+  const problems = [];
+  const chk = (ok, msg) => { if (!ok) problems.push(msg); };
+  for (const it of topic.items) {
+    const at = it.id;
+    if (it.options && it.format !== 'fix') {
+      chk(it.answer.length === 1 && new Set(it.options).size === it.options.length, `${at}: options repeat or more than one is right`);
+      const right = it.options[it.answer[0]], wrong = it.options.filter((_, i) => i !== it.answer[0]);
+      for (const o of wrong) {
+        switch (it.rule) {
+          case 'degree': chk(degreeOf(it.word, it.degree) === right && o !== right, `${at}: "${o}" is the ${it.degree} the rules make`); break;
+          case 'rewrite': chk(right.startsWith(it.doer) && !isPassive(right) && (!o.startsWith(it.doer) || isPassive(o) || !o.includes(` ${it.verb} `)) && !(o.startsWith(it.doer) && o.includes(` ${it.verb} `)), `${at}: "${o}" is active, keeps the doer first and the time`); break;
+          case 'order': chk(inOrder(right) && !right.includes(',') && (o.includes(',') || !inOrder(o)), `${at}: "${o}" keeps the adjective order with no comma`); break;
+          case 'correlative': chk(CORRELATIVE[it.first] === right && o !== right, `${at}: "${o}" is the partner of "${it.first}"`); break;
+          case 'title': chk(titleCase(right) === right && titleCase(o) !== o, `${at}: "${o}" follows the title rules`); break;
+          case 'cite': chk(CITE_RIGHT.test(right) && !CITE_RIGHT.test(o), `${at}: "${o}" is a citation the card writes`); break;
+          case 'function': chk(FUNCTION_OF[it.word] === right && o !== FUNCTION_OF[it.word] && !(FUNCTION_KIN[it.word] || []).some(c => FUNCTION_OF[c] === o), `${at}: "${o}" is a function "${it.word}" can have`); break;
+          case 'tense': chk(capFirst(tenseOf(it.verb)) === right && o !== right, `${at}: "${it.verb}" is ${o}`); break;
+          case 'paraphrase': {
+            const runs = x => sharedRun(x, it.original);
+            if (it.good) chk(runs(right) < 4 && runs(o) >= 4, `${at}: "${o}" is not too close to the original`);
+            else chk(runs(right) >= 4 && runs(o) < 4, `${at}: "${o}" is too close to the original as well`);
+            break;
+          }
+          default: break;
+        }
+      }
+      // pills: the label the topic's rule gives the sentence
+      if (it.plain && it.rule !== 'function' && it.rule !== 'tense' && it.rule !== 'pool' && it.rule !== 'given') {
+        const w = it.focus && it.focus.length ? it.focus.map(i => tokenize(it.text)[i].t).join(' ') : '';
+        const label = it.label.toLowerCase();
+        let want = null;
+        if (it.rule === 'voice') want = isPassive(it.text) ? /passive/ : /active/;
+        if (it.rule === 'adjadv') want = /ly$/.test(w) ? /adverb/ : /adjective/;
+        if (it.rule === 'advkind') want = new RegExp(adverbKind(w) || 'none');
+        if (it.rule === 'commonproper') want = /^\p{Lu}/u.test(w) ? /proper/ : /common/;
+        if (it.rule === 'longshort') want = workKind(it.text) === 'long' ? /long/ : /short/;
+        if (it.rule === 'italics') want = workKind(it.text) === 'long' ? /italic/ : /quotation/;
+        if (it.rule === 'thought') want = SUBORDINATORS.includes(lowWords(it.text)[0]) ? /incomplete/ : /^complete/;
+        if (it.rule === 'contraction') want = CONTRACTION.test(it.text) ? /contraction/ : /possessive/;
+        if (it.rule === 'splice') want = new RegExp(`, (${FANBOYS.join('|')}) `).test(it.text) ? /correct/ : /, /.test(it.text) ? /splice/ : /fused/;
+        if (it.rule === 'transition') want = new RegExp(`^${(TRANSITION_KIND[lowWords(it.words).filter(x => x !== 'and').slice(0, 1).join(' ')] || TRANSITION_KIND[it.words.toLowerCase()] || 'none').toLowerCase()}`);
+        if (want) chk(want.test(label), `${at}: the ${it.rule} rule does not give "${it.label}" for "${it.text}"`);
+      }
+      if (it.rule === 'given' && it.options.length === 2 && topic.read && topic.read.check === 'a-an') {
+        const next = tokenize(it.text.split('___')[1] || '')[0];
+        chk(next && (anBefore(next.t) ? /^an$/i : /^a$/i).test(right), `${at}: "${right}" is not the article the next word's sound takes`);
+      }
+      if (it.rule === 'given' && topic.read && topic.read.check === 'adjadv' && it.text.includes('___')) {
+        const before = lowWords(it.text.split('___')[0]);
+        const adjSpot = ['the', 'a', 'an'].includes(before[before.length - 1]);
+        chk(adjSpot ? !/ly$|^well$/.test(right) : /ly$|^well$/.test(right), `${at}: "${right}" is not the form the blank's spot takes`);
+      }
+      if (it.rule === 'given' && topic.read && topic.read.check === 'order' && it.whole) chk(inOrder(right) && wrong.every(o => !inOrder(o)), `${at}: the adjective order rule disagrees`);
+    }
+    if (it.format === 'fix') {
+      const right = it.options[it.answer[0]];
+      chk(it.accept.includes(right), `${at}: the cycle's right version is not an accepted fix`);
+      for (const o of it.options) if (o !== right) chk(!it.accept.includes(o), `${at}: wrong version "${o}" is an accepted fix`);
+      if (it.rule === 'fix-splice') {
+        const first = (/^(.+?)(?:, (?:and|but|or|so|yet) |\. |; )/.exec(right) || [])[1] || '';
+        for (const a of it.accept) chk(joinOf(a, first) === 'joined', `${at}: accepted fix "${a}" does not join the thoughts right`);
+        for (const o of it.options) if (o !== right) chk(joinOf(o, first) !== 'joined' || /, or /.test(o), `${at}: wrong version "${o}" joins the thoughts right`);
+      }
+      if (it.rule === 'fix-spelling') for (const o of it.options) if (o !== right) chk(!/\ba lot\b/.test(o), `${at}: "${o}" writes a lot as two words`);
+      if (it.rule === 'fix-apostrophe') for (const o of it.options) if (o !== right) chk(/\b(your|her|our|their)'s\b|\b(yours|hers|ours|theirs)'/.test(o), `${at}: "${o}" has no apostrophe in its possessive pronoun`);
+      if (it.rule === 'fix-endmark') {
+        const inside = s => /[.,?!]”/.test(s) && !/”[.,?!]/.test(s);
+        chk(inside(right), `${at}: the fix's mark is not inside the closing quotation mark`);
+        for (const o of it.options) if (o !== right) chk(!inside(o) || o.charAt(o.lastIndexOf('”') - 1) !== right.charAt(right.lastIndexOf('”') - 1), `${at}: "${o}" has the right mark inside the quotation marks`);
+      }
+      if (it.rule === 'fix-conj') for (const o of it.options) if (o !== right) chk(o !== right && !it.accept.includes(o), `${at}: "${o}" is accepted`);
+    }
+    if (it.format === 'marks') {
+      chk(it.want.every(([g]) => g >= 0 && g < it.words.length - 1), `${at}: a mark outside the sentence`);
+      chk(!it.optional.some(([g]) => it.want.some(([h]) => h === g)), `${at}: a gap both needed and optional`);
+    }
+    if (it.format === 'capfix') chk(it.answer.every((i, k) => tokenize(it.text)[i].t !== it.fixed[k] && norm(tokenize(it.text)[i].t) === norm(it.fixed[k])), `${at}: a tapped word does not change case`);
+  }
+  return problems;
+}
+
 /** Check one text field for the content rules. */
 function lint(text, problems, where) {
   if (DASHES.test(text)) problems.push(`${where}: an em or en dash`);
@@ -793,7 +1436,8 @@ const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && 
 const ROOM_SIZE = 8, ROOM_MISTAKES = 5, ROOM_MIN = 3, ROOM_PASS = 0.8;
 /** A topic's room: its own right sentences (8 of them, in a fixed order), planted by Mistake Hunt's planter with only
  *  the topic's kinds and a fixed seed. titlesOnly: a capital is planted only inside a title (the kind would also take
- *  a person's name). -> { title, passages: [{ t, x, g, m }], need } or a problem. */
+ *  a person's name); words: a mistake is planted only on these words. -> { title, passages: [{ t, x, g, m }], need } or
+ *  a problem. */
 export function buildRoom(topic, def, problems) {
   const P = proofCore();
   const kinds = def.room.kinds;
@@ -814,6 +1458,11 @@ export function buildRoom(topic, def, problems) {
     }
     avoid = P.allCandidates(x, kinds).filter(c => !inTitle.has(c.a));
     if (toks.length !== at) problems.push(`${topic.id} room: the passage's words do not line up with its sentences`);
+  }
+  if (def.room.words) {
+    // a sound-alike room plants only the topic's own words (never another pair the passage happens to hold)
+    const toks = P.tokenize(x), ok = new Set(def.room.words.map(norm));
+    avoid = avoid.concat(P.allCandidates(x, kinds).filter(c => !ok.has(norm(toks.slice(c.a, c.b).map(w => w.s).join(' ')))));
   }
   const m = P.plant(x, { types: kinds, n: ROOM_MISTAKES, seed: hashInt(`room|${topic.id}`), avoid });
   if (m.length < ROOM_MIN) { problems.push(`${topic.id} room: only ${m.length} mistakes planted, at least ${ROOM_MIN} needed`); return null; }
@@ -836,29 +1485,30 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     const where = `${id} (${def.source.band} "${def.source.title}")`;
     const src = findTopic(sections, def.source.band, def.source.title);
     if (!src) { problems.push(`${where}: no full topic with that title in that band of the source`); continue; }
-    const fmt = FORMATS[def.format];
+    const fmt = def.format === 'items' ? readItems : FORMATS[def.format];
     if (!fmt) { problems.push(`${where}: format "${def.format}" is not built yet`); continue; }
     const notes = (overrides.topics || {})[id] || {};
     const sectioned = src.cardLines.length && /^Section \d+,/.test(src.cardLines[0].text);
-    const card = sectioned ? parseSections(src.cardLines, problems, where, notes) : parseCard(src.cardLines, problems, where, def.format, def.choices && def.choices.pair);
-    const items = src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, { ...def, notes })).filter(Boolean)
+    const card = sectioned ? parseSections(src.cardLines, problems, where, notes) : parseCard(src.cardLines, problems, where, def.format === 'items' ? 'choice' : def.format, def.choices && def.choices.pair);
+    const items = (def.format === 'items' ? readItems(src.quizLines, problems, where, def, notes)
+      : src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, { ...def, notes })).filter(Boolean))
       .map(it => { const { n, ...rest } = it; return { id: `${id}-${n}`, ...rest }; });
     const levels = Array.isArray(def.levels) && def.levels.length ? def.levels : [4, 4, 4];
     if (items.length < 12) problems.push(`${where}: ${items.length} quiz items, at least 12 needed`);
     for (const it of items) {
       lint(it.text, problems, `${it.id} sentence`); lint(it.hint, problems, `${it.id} hint`);
       for (const o of it.options || []) lint(o, problems, `${it.id} option`);
-      for (const k of ['ask', 'prompt', 'right']) if (it[k]) lint(it[k], problems, `${it.id} ${k}`);
+      for (const k of ['ask', 'prompt', 'right', 'label']) if (it[k]) lint(it[k], problems, `${it.id} ${k}`);
       for (const a of it.accept || []) lint(a, problems, `${it.id} accepted fix`);
     }
     for (const [k, v] of Object.entries({ definition: card.definition, how: card.how, ask: def.ask, title: def.title || src.title })) lint(v || '', problems, `${id} ${k}`);
-    for (const sec of card.sections || []) lint([sec.title, sec.question, sec.note, ...sec.passage.map(x => `${x.label || ''} ${x.text}`)].join(' '), problems, `${id} card section`);
+    for (const sec of card.sections || []) lint([sec.title, sec.question, sec.body || '', sec.note, ...sec.passage.map(x => `${x.label || ''} ${x.text}`)].join(' '), problems, `${id} card section`);
     if (card.example) for (const u of [card.example, ...(card.example.more || [])]) lint(unitText(u), problems, `${id} worked example`);
     for (const t of card.tips || []) lint(unitText(t), problems, `${id} tip`);
     const topic = { id, title: def.title || src.title, band: bandOf[id] || def.source.band, format: def.format, ask: def.ask, levels, source: { line: src.line },
       ...(def.choices ? { choices: def.choices } : {}), ...(def.choices && def.choices.kind === 'title' ? { italic: true } : {}),
-      ...(def.choices && def.choices.cycle ? { cycle: true } : {}), ...(def.fix ? { fix: def.fix } : {}), card, items };
-    problems.push(...checkOptions(topic));
+      ...(def.choices && def.choices.cycle ? { cycle: true } : {}), ...(def.fix ? { fix: def.fix } : {}), ...(def.read ? { read: def.read } : {}), card, items };
+    problems.push(...(def.format === 'items' ? checkItems(topic) : checkOptions(topic)));
     topics[id] = topic;
     if (def.room) { const r = buildRoom(topic, def, problems); if (r) { rooms[id] = r; topic.room = true; } }
   }

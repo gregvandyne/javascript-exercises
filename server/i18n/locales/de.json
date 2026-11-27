@@ -5786,7 +5786,16 @@
       "nearGaps": "Du hast zu viele Kommas gesetzt. Nimm die überzähligen weg und schick es noch einmal.",
       "cyclePress": "Zum Auswählen drücken",
       "cycleOf": "{option}, Auswahl {n} von {total}. Drück für die nächste.",
-      "wrongFix": "Nicht ganz. Drück jetzt auf den Satz, um ein paar Verbesserungen zu sehen, bleib bei der richtigen stehen und schick sie ab. Zwei richtige Antworten hintereinander beenden diese Stufe."
+      "wrongFix": "Nicht ganz. Drück jetzt auf den Satz, um ein paar Verbesserungen zu sehen, bleib bei der richtigen stehen und schick sie ab. Zwei richtige Antworten hintereinander beenden diese Stufe.",
+      "chip": "Zeichen zum Setzen: {mark}",
+      "mark": {
+        "comma": "Komma",
+        "semicolon": "Semikolon",
+        "colon": "Doppelpunkt"
+      },
+      "gapHolds": "{mark} nach {word}",
+      "mgap": "Lücke nach {word}",
+      "wrongMarks": "Noch nicht ganz. Schau dir die Zeichen zwischen den Wörtern noch einmal an. Zwei richtige Antworten hintereinander beenden diese Stufe."
     }
   },
   "favorites": {
@@ -16207,7 +16216,9 @@
       "flag": "Ein Problem mit dieser Frage melden",
       "correct": "Richtig!",
       "levelNext": "Nächstes Level",
-      "fixLabel": "Verbessere den Satz hier"
+      "fixLabel": "Verbessere den Satz hier",
+      "chips": "Zeichen zum Setzen",
+      "asIs": "Es ist richtig, so wie es ist"
     },
     "levels": {
       "heading": "Level und Meistern",

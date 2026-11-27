@@ -5785,7 +5785,16 @@
       "nearGaps": "Tu as mis trop de virgules. Enlève celles en trop, puis valide encore.",
       "cyclePress": "Appuie pour choisir",
       "cycleOf": "{option}, choix {n} sur {total}. Appuie pour voir le suivant.",
-      "wrongFix": "Pas tout à fait. Appuie maintenant sur la phrase pour voir des corrections, arrête-toi sur la bonne et valide. Réussis deux fois de suite pour finir ce niveau."
+      "wrongFix": "Pas tout à fait. Appuie maintenant sur la phrase pour voir des corrections, arrête-toi sur la bonne et valide. Réussis deux fois de suite pour finir ce niveau.",
+      "chip": "Signe à placer : {mark}",
+      "mark": {
+        "comma": "virgule",
+        "semicolon": "point-virgule",
+        "colon": "deux-points"
+      },
+      "gapHolds": "{mark} après {word}",
+      "mgap": "Espace après {word}",
+      "wrongMarks": "Pas tout à fait. Regarde encore les signes entre les mots. Réussis deux fois de suite pour finir ce niveau."
     }
   },
   "favorites": {
@@ -16206,7 +16215,9 @@
       "flag": "Signaler un problème avec cette question",
       "correct": "Bravo !",
       "levelNext": "Niveau suivant",
-      "fixLabel": "Corrige la phrase ici"
+      "fixLabel": "Corrige la phrase ici",
+      "chips": "Signes à placer",
+      "asIs": "C’est juste tel quel"
     },
     "levels": {
       "heading": "Niveaux et maîtrise",

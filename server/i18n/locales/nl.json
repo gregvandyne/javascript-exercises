@@ -5786,7 +5786,16 @@
       "nearGaps": "Je hebt te veel komma’s gezet. Haal de extra’s weg en stuur opnieuw.",
       "cyclePress": "Druk om te kiezen",
       "cycleOf": "{option}, keuze {n} van {total}. Druk voor de volgende.",
-      "wrongFix": "Bijna. Druk nu op de zin om een paar verbeteringen te zien, stop bij de goede en verstuur. Twee keer achter elkaar goed maakt dit niveau af."
+      "wrongFix": "Bijna. Druk nu op de zin om een paar verbeteringen te zien, stop bij de goede en verstuur. Twee keer achter elkaar goed maakt dit niveau af.",
+      "chip": "Teken om te plaatsen: {mark}",
+      "mark": {
+        "comma": "komma",
+        "semicolon": "puntkomma",
+        "colon": "dubbele punt"
+      },
+      "gapHolds": "{mark} na {word}",
+      "mgap": "Ruimte na {word}",
+      "wrongMarks": "Nog niet helemaal. Kijk nog eens naar de tekens tussen de woorden. Twee keer achter elkaar goed maakt dit level af."
     }
   },
   "favorites": {
@@ -16207,7 +16216,9 @@
       "flag": "Een probleem met deze vraag melden",
       "correct": "Goed zo!",
       "levelNext": "Volgend level",
-      "fixLabel": "Verbeter de zin hier"
+      "fixLabel": "Verbeter de zin hier",
+      "chips": "Tekens om te plaatsen",
+      "asIs": "Het klopt zoals het is"
     },
     "levels": {
       "heading": "Levels en beheersen",
