@@ -39,7 +39,11 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar) + 12px);-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body.lp{margin:0;background:var(--bg);color:var(--text);font:400 17px/1.55 var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto;display:block}
+img{display:block}
+/* Pictures scale with their box. Not the icons (.fx: public/js/icons.js iconHtml, a square drawn at its width and height
+   attributes): with height:auto an icon in a flex row (the Hub's features, the safety cards) was stretched to the row's
+   height by align-items:stretch while its width stayed put, so it looked squeezed. Its own height keeps it square. */
+img:not(.fx){max-width:100%;height:auto}
 a{color:var(--link)}
 h1,h2,h3{margin:0;line-height:1.08;letter-spacing:-.025em;font-weight:800}
 p{margin:0}
@@ -54,7 +58,7 @@ button{font:inherit;color:inherit}
 .lp-alt{background-color:var(--bg-2)}
 .lp-center{text-align:center}
 .lp-small{font-size:14px;color:var(--muted)}
-.fx{flex:none}
+.fx{flex:none;object-fit:contain}
 
 /* ---------------------------------------------------------------- top bar */
 .lp-skip{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 16px;border-radius:12px;background:var(--spark);color:#141414;font-weight:700;text-decoration:none}
@@ -281,6 +285,11 @@ button{font:inherit;color:inherit}
 @media (max-width:900px){.lp-vs{grid-template-columns:1fr}}
 
 /* ---------------------------------------------------------------- 8. the tour */
+/* Each step's picture is a window (.lp-tstage) onto its screenshot, zoomed by a camera (.lp-tcam) to the part of the
+   screen the step is about: --cx and --cy are the centre (in % of the picture) and --w the share of the picture's width
+   in view on a phone (1.6 times as much from 901px). The camera never shows past the picture's edges (clamp). A soft
+   ring (.lp-ring, a highlight and never a button) dims the rest of the screen around the one control. landing.js moves
+   the camera from the last step's region to the next one's, a pan and zoom of .7s (none under prefers-reduced-motion). */
 .lp-tour{padding:clamp(14px,2.4vw,28px);border-radius:var(--r-lg)}
 .lp-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .lp-step{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border:0;border-radius:999px;font-weight:700;font-size:14px;background:var(--bg-2);box-shadow:inset 0 0 0 1px var(--line);color:var(--text-2);cursor:pointer}
@@ -291,33 +300,49 @@ button{font:inherit;color:inherit}
 :root[data-theme="dark"] .lp-step[aria-current="step"]{box-shadow:inset 0 0 0 2px #4A4840}
 .lp-tsteps{display:grid;gap:40px}
 .lp-tstep{position:relative}
-.lp-tstage{position:relative}
-.lp-hot{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:var(--spark);color:#141414;display:grid;place-items:center;font-weight:900;font-size:14px;
-  box-shadow:0 0 0 8px rgba(255,210,63,.38),0 0 0 18px rgba(255,210,63,.16);pointer-events:none}
+.lp-tstage{--vh:75;--ih:62.55;position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:16px;border:1px solid var(--line-2);background:var(--bg-2);box-shadow:var(--shadow-lg);container-type:inline-size;touch-action:pan-y}
+.lp-tcam{--s:calc(100 / var(--w));position:absolute;left:0;top:0;width:100%;transform-origin:0 0;will-change:transform;
+  transform:translate(clamp(calc((1 - var(--s)) * 100cqw),calc(50cqw - var(--cx) * var(--s) * 1cqw),0px),
+                      clamp(calc(var(--vh) * 1cqw - var(--s) * var(--ih) * 1cqw),calc(var(--vh) * .5cqw - var(--cy) * var(--s) * var(--ih) * .01cqw),0px))
+            scale(var(--s));
+  transition:transform .7s cubic-bezier(.65,0,.35,1)}
+.lp-tcam .lp-shot{border:0;border-radius:0;box-shadow:none;background:none}
+.lp-ring{position:absolute;pointer-events:none;border-radius:calc(10px / var(--s));
+  box-shadow:0 0 0 calc(3px / var(--s)) var(--spark),0 0 0 9999px rgba(20,20,20,.34);animation:lp-ring-in .45s .55s both}
+.lp-ring::after{content:"";position:absolute;inset:0;border-radius:inherit;animation:lp-pulse 1.8s 1.1s ease-out 3}
+@keyframes lp-ring-in{from{opacity:0}}
+@keyframes lp-pulse{from{box-shadow:0 0 0 calc(3px / var(--s)) rgba(255,210,63,.75)}to{box-shadow:0 0 0 calc(16px / var(--s)) rgba(255,210,63,0)}}
 .lp-tip{margin-top:14px;padding:16px 18px;border-radius:18px;background:#141414;color:#FFFDF2;box-shadow:0 20px 50px -12px rgba(0,0,0,.5)}
-.lp-tip h3{font-size:19px}
+.lp-tip h3{font-size:20px}
 .lp-tip h3:focus{outline:none}
 .lp-tip h3:focus-visible{outline:3px solid var(--spark)}
-.lp-tip p{font-size:15px;color:#E3DED0;margin-top:6px;line-height:1.45}
+.lp-tip p{font-size:16px;color:#E3DED0;margin-top:6px;line-height:1.45}
 .lp-tipnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;font-size:13px;color:#B8B3A1;font-weight:650;flex-wrap:wrap}
 .lp-tipbtns{display:flex;gap:8px}
 .lp-tip .lp-btn-ghost{background:transparent;color:#FFFDF2;box-shadow:inset 0 0 0 2px #4A4840}
+.lp-tip .lp-btn-ghost:disabled{opacity:.45;cursor:default}
 .lp-tip .lp-btn:focus-visible{outline-color:var(--spark)}
 .lp-tour-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
 .lp-progress{flex:1;height:8px;border-radius:99px;background:var(--bg-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;min-width:140px}
 .lp-progress i{display:block;height:100%;background:var(--mint);transition:width .3s ease}
-/* With script (landing.js adds .is-on): one step at a time; on wide screens its callout sits over the picture. */
+/* With script (landing.js adds .is-on): one step at a time. */
 .lp-tour.is-on .lp-tstep{display:none}
-.lp-tour.is-on .lp-tstep.on{display:block;animation:lp-in .25s ease}
-@keyframes lp-in{from{opacity:.3}}
+.lp-tour.is-on .lp-tstep.on{display:block}
+.lp-tour.is-on .lp-tstep.on .lp-tip{animation:lp-in .3s ease}
+.lp-tour.is-on .lp-tstep.on .lp-shot{animation:lp-in .35s ease}
+@keyframes lp-in{from{opacity:.35}}
 .lp-tour:not(.is-on) .lp-progress{display:none}
 @media (min-width:901px){
-  .lp-tour.is-on .lp-tip{position:absolute;width:310px;margin:0;z-index:2}
-  .lp-tour.is-on [data-at="br"] .lp-tip{right:18px;bottom:18px}
-  .lp-tour.is-on [data-at="bl"] .lp-tip{left:18px;bottom:18px}
-  .lp-tour.is-on [data-at="tr"] .lp-tip{right:18px;top:18px}
+  .lp-tstage{--vh:62.5;aspect-ratio:16/10}
+  .lp-tcam{--s:calc(100 / min(100, var(--w) * 1.6))}
 }
-@media (max-width:900px){.lp-hot{width:24px;height:24px;margin:-12px 0 0 -12px;font-size:11px;box-shadow:0 0 0 5px rgba(255,210,63,.38)}.lp-tour.is-on .lp-steps li:not(:has([aria-current])){display:none}}
+/* Wide screens: the callout beside the picture. Phones: under it, and the stepper gives way to "Step 3 of 6". */
+@media (min-width:1000px){
+  .lp-tstep{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:center}
+  .lp-tour.is-on .lp-tstep.on{display:grid}
+  .lp-tip{margin:0}
+}
+@media (max-width:900px){.lp-tour.is-on .lp-steps{display:none}}
 
 /* ---------------------------------------------------------------- 9. videos */
 .lp-vids{display:grid;grid-template-columns:1.75fr 1fr;gap:16px}
@@ -414,8 +439,9 @@ button{font:inherit;color:inherit}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .lp-door:hover,.lp-vid:hover img{transform:none}
+  .lp-tcam{transition:none}
 }
-@media (forced-colors:active){.lp-hot{forced-color-adjust:none}}
+@media (forced-colors:active){.lp-ring{forced-color-adjust:none}}
 /* The AI chip is ink on cream in the dark theme (as the app's). */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lp-chip-ai{background:#FFFDF2;color:#141414}}
 :root[data-theme="dark"] .lp-chip-ai{background:#FFFDF2;color:#141414}

@@ -293,13 +293,21 @@ test('the Teacher plan: the Hub, Ask Oomba, the tour, the Manipulatives and Figu
   } finally { paid(false); }
 });
 
-test('the tour and the videos as sent: six steps on real screens, hotspots, progress; the tool videos and the 18 How it works', async () => {
+test('the tour and the videos as sent: six steps on real screens, each zoomed to its control with a ring, no hotspots, progress; the tool videos and the 18 How it works', async () => {
   const s = (await call(null, '/')).text;
   const tour = s.slice(s.indexOf('id="tour"'), s.indexOf('</section>', s.indexOf('id="tour"')));
   assert.deepEqual([...tour.matchAll(/<button type="button" class="lp-step" data-go="\d"[^>]*><i aria-hidden="true">\d<\/i><span>([^<]+)<\/span>/g)].map(m => m[1]),
     ['Arrange seats', 'Hand out a lesson', 'Watch every desk', 'Answer hands', 'Ask Oomba', 'Finish class']);
   for (const n of ['tour-seats', 'tour-handout', 'tour-watch', 'tour-hands', 'tour-oomba', 'tour-finish']) assert.ok(tour.includes(`/img/landing/${n}-1100.webp`), n);
-  assert.ok([...tour.matchAll(/<span class="lp-hot" style="left:[\d.]+%;top:[\d.]+%" aria-hidden="true">\d<\/span>/g)].length >= 6);
+  // Each step's camera (centre and width in % of the picture) and its one ring; no numbered dots on the picture.
+  assert.equal([...tour.matchAll(/<div class="lp-tcam" data-cam="[\d.]+,[\d.]+,[\d.]+" style="--cx:[\d.]+;--cy:[\d.]+;--w:[\d.]+">/g)].length, 6);
+  assert.equal([...tour.matchAll(/<span class="lp-ring" style="left:[\d.]+%;top:[\d.]+%;width:[\d.]+%;height:[\d.]+%" aria-hidden="true"><\/span>/g)].length, 6);
+  assert.doesNotMatch(tour, /lp-hot|yellow dots/);
+  // The tools heading (it was "Wow, it does all of this.").
+  assert.match(s, /<h2 id="tools-h">Every tool your class needs\. In one place\.<\/h2>/);
+  assert.doesNotMatch(s, /Wow, it does all of this/);
+  assert.match(tour, /<p class="lp-sub">Six steps through a class in the Hub\. Press Next\.<\/p>/);
+  assert.match(tour, /<h3 tabindex="-1">Ask Oomba<\/h3><p>Ask for today(?:'|&#39;|&#x27;)s plan\. Nothing goes on desks until you tap Use this plan\.<\/p>/);
   assert.match(tour, /role="progressbar" aria-label="The Hub tour" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"/);
   assert.match(tour, /<p class="sr-only" aria-live="polite" data-tour-live><\/p>/);
   const vids = s.slice(s.indexOf('id="videos"'), s.indexOf('</section>', s.indexOf('id="videos"')));

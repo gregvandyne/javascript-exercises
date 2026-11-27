@@ -10968,7 +10968,7 @@
       "trademarks": "{names} zijn merken van hun eigenaren. Oomba Academy is niet aan hen verbonden."
     },
     "tools": {
-      "h": "Wauw, het kan dit allemaal.",
+      "h": "Elk hulpmiddel dat je klas nodig heeft. Op één plek.",
       "lead": "Elk hulpmiddel deel je uit aan tafels in de Hub, en Oomba kan de meeste aansturen.",
       "manip": {
         "h": "{count} soorten rekenmateriaal",
@@ -11190,7 +11190,7 @@
     "tour": {
       "kicker": "Klik-rondleiding",
       "h": "Probeer de Hub voordat je je aanmeldt.",
-      "lead": "Een korte rondleiding op echte schermen. Tik op de gele stippen of druk op Volgende.",
+      "lead": "Zes stappen door een les in de Hub. Druk op Volgende.",
       "label": "De rondleiding door de Hub",
       "stepOf": "Stap {n} van {total}",
       "back": "Terug",
@@ -11199,38 +11199,32 @@
       "note": "Echte schermen van de app met verzonnen leerlingen.",
       "s1": {
         "t": "Plaatsen indelen",
-        "h": "Net als je echte lokaal",
-        "p": "Kies rijen, groepjes van vier, een U of een kring, of sleep een tafel naar waar hij echt staat. Groepen houden hun kleur.",
+        "p": "Kies rijen, groepjes van vier, een U of een kring, of sleep een tafel naar zijn echte plek.",
         "alt": "Plaatsen indelen in de Hub: rijen, groepjes van vier, U-vorm en kring, met de tafels in groepjes van vier."
       },
       "s2": {
         "t": "Een les uitdelen",
-        "h": "Tik, dan een tafel",
-        "p": "Tik op een les, een spel of een rekenhulpmiddel, dan op een tafel, een groep of de hele klas. Of sleep het erheen.",
+        "p": "Tik op een les, hier Mistake Hunt, en dan op een tafel, een groep of de hele klas.",
         "alt": "Mistake Hunt gekozen in de Hub: tik nu op een tafel, een groep, Hele klas of Mijn tafel."
       },
       "s3": {
         "t": "Elke tafel zien",
-        "h": "Elke tafel, live",
-        "p": "Elke tafel laat zien wat die leerling open heeft, hier Arithmetic Lab. Gestippelde tafels zijn er nog niet. Tik op een tafel om beter te kijken.",
+        "p": "Elke tafel laat zien wat die leerling nu open heeft. Tik op een tafel om beter te kijken.",
         "alt": "De Hub met elke tafel live: de meeste leerlingen spelen Arithmetic Lab, twee zijn er nog niet."
       },
       "s4": {
         "t": "Handen beantwoorden",
-        "h": "Handen omhoog, op volgorde",
-        "p": "Een vraag en een hulpvraag, in de volgorde waarin ze kwamen. Beantwoord haalt ze weg. Het wc-pasje staat hier ook, nooit op het digibord.",
+        "p": "Opgestoken handen staan op volgorde. Tik op Beantwoord als je hebt geholpen.",
         "alt": "Het paneel Handen omhoog: Cleo heeft een vraag, Gus heeft hulp nodig, en het wc-pasje."
       },
       "s5": {
         "t": "Vraag het Oomba",
-        "h": "Plan het met Oomba",
-        "p": "Vraag om het plan voor vandaag. Oomba maakt er een kaart van, en er gaat niets naar de tafels tot je op Dit plan gebruiken tikt.",
+        "p": "Vraag om het plan voor vandaag. Er gaat niets naar de tafels tot je op Dit plan gebruiken tikt.",
         "alt": "De Oomba-chat naast de Hub met een dagplankaart Breukendag en Dit plan gebruiken."
       },
       "s6": {
         "t": "Les afronden",
-        "h": "Les afronden",
-        "p": "Les afronden toont een korte samenvatting en beëindigt de les. Wat niet af is, blijft als huiswerk op de tafels.",
+        "p": "Tik op Les afronden. Wat niet af is, blijft als huiswerk op de tafels.",
         "alt": "Les afronden in de Hub: een korte samenvatting, daarna is de les voorbij."
       }
     },

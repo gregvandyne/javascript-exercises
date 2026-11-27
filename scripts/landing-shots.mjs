@@ -199,9 +199,16 @@ async function main() {
     await page.waitForTimeout(5000);
     await page.evaluate(() => { const m = [...document.querySelectorAll('.oc-turn.me')].pop(); if (m) m.scrollIntoView({ block: 'start' }); });
     await page.waitForTimeout(400);
-    await snap(page, 'tour-oomba');
     const panel = page.locator('#oc');
     await snap(panel, 'chat-plan');
+    // The tour's step 5 rings Use this plan: the chat scrolled to the plan card's end, so both of its buttons show whole,
+    // with room under them and nothing over them.
+    await page.locator('#oc button', { hasText: 'Use and start' }).first().evaluate(b => {
+      let el = b.parentElement; while (el && !(el.scrollHeight > el.clientHeight + 4 && /(auto|scroll)/.test(getComputedStyle(el).overflowY))) el = el.parentElement;
+      if (el) el.scrollTop = el.scrollHeight;
+    });
+    await page.waitForTimeout(400);
+    await snap(page, 'tour-oomba');
     await page.fill('#oc-in', 'Give the whole class a point for teamwork');
     await page.click('#oc-send');
     await page.waitForTimeout(5000);

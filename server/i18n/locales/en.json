@@ -12542,7 +12542,7 @@
       "trademarks": "{names} are trademarks of their owners. Oomba Academy is not affiliated with them."
     },
     "tools": {
-      "h": "Wow, it does all of this.",
+      "h": "Every tool your class needs. In one place.",
       "lead": "Every tool hands out to desks in the Hub, and Oomba can drive most of them.",
       "manip": {
         "h": "{count} Manipulatives",
@@ -12764,7 +12764,7 @@
     "tour": {
       "kicker": "Click-through tour",
       "h": "Try the Hub before you sign up.",
-      "lead": "A short walkthrough on real screens. Tap the yellow dots, or press Next.",
+      "lead": "Six steps through a class in the Hub. Press Next.",
       "label": "The Hub tour",
       "stepOf": "Step {n} of {total}",
       "back": "Back",
@@ -12773,38 +12773,32 @@
       "note": "Real app screens with made-up students.",
       "s1": {
         "t": "Arrange seats",
-        "h": "Match your real room",
-        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to where it really sits. Groups keep their colors.",
+        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to its real spot.",
         "alt": "Arrange seats in the Hub: rows, tables of four, U-shape and circle, with the desks in tables of four."
       },
       "s2": {
         "t": "Hand out a lesson",
-        "h": "Tap, then a desk",
-        "p": "Tap a lesson, a game or a math tool, then a desk, a group or the whole class. Or drag it there.",
+        "p": "Tap a lesson, here Mistake Hunt, then a desk, a group or the whole class.",
         "alt": "Mistake Hunt picked in the Hub: now tap a desk, a group, Whole class or My desk."
       },
       "s3": {
         "t": "Watch every desk",
-        "h": "Every desk, live",
-        "p": "Each desk shows what that student has open, here Arithmetic Lab. Dashed desks are not here yet. Tap a desk to look closer.",
+        "p": "Each desk shows what that student has open right now. Tap one to look closer.",
         "alt": "The Hub with every desk live: most students playing Arithmetic Lab, two not here yet."
       },
       "s4": {
         "t": "Answer hands",
-        "h": "Hands up, in order",
-        "p": "A question and a help request, in the order they came. Answered clears them. The hall pass is here too, and never on the projector.",
+        "p": "Raised hands line up in order. Tap Answered when you've helped.",
         "alt": "The Hands up panel: Cleo has a question, Gus needs help, and the hall pass."
       },
       "s5": {
         "t": "Ask Oomba",
-        "h": "Plan it with Oomba",
-        "p": "Ask for today's plan. Oomba drafts it as a card, and nothing goes on desks until you tap Use this plan.",
+        "p": "Ask for today's plan. Nothing goes on desks until you tap Use this plan.",
         "alt": "The Oomba chat beside the Hub with a Fractions day plan card and Use this plan."
       },
       "s6": {
         "t": "Finish class",
-        "h": "Finish class",
-        "p": "Finish class shows a short summary and ends class. Unfinished handouts stay on desks as homework.",
+        "p": "Tap Finish class. Unfinished handouts stay on desks as homework.",
         "alt": "End class in the Hub: Finish class shows a short summary and ends class."
       }
     },

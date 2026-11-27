@@ -10967,7 +10967,7 @@
       "trademarks": "{names} son marcas de sus respectivos dueños. Oomba Academy no está afiliada a ellos."
     },
     "tools": {
-      "h": "Vaya, hace todo esto.",
+      "h": "Todas las herramientas que necesita tu clase. En un solo lugar.",
       "lead": "Cada herramienta se reparte a los pupitres en el Hub, y Oomba puede manejar la mayoría.",
       "manip": {
         "h": "{count} manipulativos",
@@ -11189,7 +11189,7 @@
     "tour": {
       "kicker": "Recorrido interactivo",
       "h": "Prueba el Hub antes de registrarte.",
-      "lead": "Un recorrido corto por pantallas reales. Toca los puntos amarillos o pulsa Siguiente.",
+      "lead": "Seis pasos por una clase en el Hub. Pulsa Siguiente.",
       "label": "El recorrido por el Hub",
       "stepOf": "Paso {n} de {total}",
       "back": "Atrás",
@@ -11198,38 +11198,32 @@
       "note": "Pantallas reales de la aplicación con estudiantes inventados.",
       "s1": {
         "t": "Organizar los asientos",
-        "h": "Igual que tu aula real",
-        "p": "Elige filas, mesas de cuatro, una U o un círculo, o arrastra un pupitre a donde se sienta de verdad. Los grupos mantienen sus colores.",
+        "p": "Elige filas, mesas de cuatro, una U o un círculo, o arrastra un pupitre a su sitio real.",
         "alt": "Organizar los asientos en el Hub: filas, mesas de cuatro, en U y en círculo, con los pupitres en mesas de cuatro."
       },
       "s2": {
         "t": "Repartir una lección",
-        "h": "Toca, y luego un pupitre",
-        "p": "Toca una lección, un juego o una herramienta de matemáticas, y luego un pupitre, un grupo o toda la clase. O arrástralo.",
+        "p": "Toca una lección, aquí Mistake Hunt, y luego un pupitre, un grupo o toda la clase.",
         "alt": "Mistake Hunt elegido en el Hub: ahora toca un pupitre, un grupo, Toda la clase o Mi pupitre."
       },
       "s3": {
         "t": "Mirar cada pupitre",
-        "h": "Cada pupitre, en vivo",
-        "p": "Cada pupitre muestra lo que ese estudiante tiene abierto, aquí Arithmetic Lab. Los pupitres punteados aún no han llegado. Toca un pupitre para verlo de cerca.",
+        "p": "Cada pupitre muestra lo que ese estudiante tiene abierto ahora. Toca uno para verlo de cerca.",
         "alt": "El Hub con cada pupitre en vivo: la mayoría juega Arithmetic Lab y dos aún no han llegado."
       },
       "s4": {
         "t": "Responder manos",
-        "h": "Manos levantadas, en orden",
-        "p": "Una pregunta y una petición de ayuda, en el orden en que llegaron. Respondida las quita. El pase de pasillo también está aquí, y nunca en el proyector.",
+        "p": "Las manos levantadas se ordenan por turno. Toca Respondida cuando hayas ayudado.",
         "alt": "El panel Manos levantadas: Cleo tiene una pregunta, Gus necesita ayuda, y el pase de pasillo."
       },
       "s5": {
         "t": "Pregúntale a Oomba",
-        "h": "Planifícalo con Oomba",
-        "p": "Pide el plan de hoy. Oomba lo prepara como tarjeta, y nada va a los pupitres hasta que tocas Usar este plan.",
+        "p": "Pide el plan de hoy. Nada va a los pupitres hasta que tocas Usar este plan.",
         "alt": "El chat de Oomba junto al Hub con una tarjeta de plan Día de fracciones y Usar este plan."
       },
       "s6": {
         "t": "Terminar la clase",
-        "h": "Terminar la clase",
-        "p": "Terminar la clase muestra un breve resumen y cierra la clase. Lo que quedó sin terminar sigue en los pupitres como tarea.",
+        "p": "Toca Terminar la clase. Lo que quedó sin terminar sigue en los pupitres como tarea.",
         "alt": "Terminar la clase en el Hub: muestra un breve resumen y cierra la clase."
       }
     },
