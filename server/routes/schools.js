@@ -46,6 +46,7 @@ import { openCount as openEmailInvites } from '../services/staff-email-invites.j
 import { classBanner as manipBanner } from './manipulatives.js';
 import { deskLink, aidePanel } from './homeroom.js';
 import { markView, cardViews } from './homeroom-views.js';
+import { canUseClass as hubOpenFor } from '../services/homeroom.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -794,8 +795,8 @@ router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (re
   const r = S.createClass(req.user, s.id, { name, subject, grade, ...(fromSchoolPage ? { teacherId: String(teacherId) } : {}) });
   if (!r.ok) return r.code === 'badTeacher' ? fieldErr(res, 'teacherId', t('school.errors.badTeacher')) : err(req, res, r.code);
   if (fromSchoolPage) return res.json({ ok: true, toast: t('school.class.created', { name: r.class.name }), redirect: `/school/${s.slug}` });
-  // A new class has no students yet: open it on the Students tab.
-  res.json({ ok: true, redirect: `/class/${r.class.id}?tab=students` });
+  // A new class has no students yet: open it on the Students tab, with its welcome line (?made=1, teacherClass).
+  res.json({ ok: true, redirect: `/class/${r.class.id}?tab=students&made=1` });
 });
 
 // "Make a class to keep scores" (after a live game played by guests: routes/quick-live.js, the results page): one page
@@ -1088,7 +1089,11 @@ function teacherClass(req, res, c) {
   const teams = tab === 'students' ? classTeamsSection(req, c) : { html: '', scripts: [] };
   const gamesCtx = tab === 'lessons' ? gamesShelfCtx(req, c, people) : null;
   if (gamesCtx && shelfReply(req, res, gamesCtx)) return;
-  const body = html`${classHeader(req, c, tab)}${loopCard}
+  // Just made on My classes (?made=1, POST /api/classes): a welcome line saying what to do next, the Hub when it is open
+  // for this class. Only while the class still has no students.
+  const made = req.query.made === '1' && !people.some(p => p.role === 'student')
+    ? html`<p class="notice good" role="status" id="class-made">${ico('🎉', { size: 18 })} ${t(hubOpenFor(req.user, c) ? 'school.class.madeHub' : 'school.class.made', { name: c.name })}</p>` : '';
+  const body = html`${classHeader(req, c, tab)}${made}${loopCard}
   ${tab === 'students' ? html`${studentsTab}${teams.html}` : tab === 'settings' ? settingsTab : shelf(req, gamesCtx, { id: 'lessons' })}`;
   page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js', ...teams.scripts, ...(gamesCtx ? ['/js/shelf.js'] : [])], ...classBack(req, c) });
 }
@@ -1096,9 +1101,16 @@ function studentClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id);
   const people = S.roster(c.id);
   const teachers = people.filter(p => p.role === 'teacher'), classmates = people.filter(p => p.role === 'student' && p.id !== req.user.id);
+  // A student's first day in the class (joined in the last day, by its code or once their teacher said yes): a welcome
+  // line, pointing at My desk when the class has the Hub for them. No names but the class's, no prices.
+  const me = S.classMember(c.id, req.user.id);
+  const desk = deskLink(req, c);
+  const welcome = me && me.role === 'student' && me.joined_at > Date.now() - 864e5
+    ? html`<p class="notice good" role="status" id="class-welcome">${ico('🎒', { size: 18 })} ${t(desk ? 'classes.welcomeDesk' : 'classes.welcome', { name: c.name })}</p>` : '';
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${deskLink(req, c)}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
+    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${desk}${studentNotYou(req, me?.role === 'student')}</div>
+  ${welcome}
   ${classLiveBanner(req, c)}
   ${manipBanner(req, c)}
   ${myPointsPanel(req, c)}
