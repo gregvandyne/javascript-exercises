@@ -11186,7 +11186,7 @@
     "tour": {
       "kicker": "Visite guidée",
       "h": "Essayez le Hub avant de vous inscrire.",
-      "lead": "Une courte visite sur de vrais écrans. Touchez les points jaunes, ou appuyez sur Suivant.",
+      "lead": "Six étapes d’une séance dans le Hub. Appuyez sur Suivant.",
       "label": "La visite du Hub",
       "stepOf": "Étape {n} sur {total}",
       "back": "Retour",
@@ -11195,38 +11195,32 @@
       "note": "De vrais écrans de l’application avec des élèves inventés.",
       "s1": {
         "t": "Placer les élèves",
-        "h": "Comme dans votre vraie salle",
-        "p": "Choisissez des rangées, des tables de quatre, un U ou un cercle, ou faites glisser un pupitre à sa vraie place. Les groupes gardent leurs couleurs.",
+        "p": "Choisissez des rangées, des tables de quatre, un U ou un cercle, ou glissez un pupitre à sa vraie place.",
         "alt": "Placer les élèves dans le Hub : rangées, tables de quatre, en U et en cercle, avec les pupitres par tables de quatre."
       },
       "s2": {
         "t": "Distribuer une leçon",
-        "h": "Touchez, puis un pupitre",
-        "p": "Touchez une leçon, un jeu ou un outil de maths, puis un pupitre, un groupe ou toute la classe. Ou faites-le glisser.",
+        "p": "Touchez une leçon, ici Mistake Hunt, puis un pupitre, un groupe ou toute la classe.",
         "alt": "Mistake Hunt choisi dans le Hub : touchez maintenant un pupitre, un groupe, Toute la classe ou Mon pupitre."
       },
       "s3": {
         "t": "Voir chaque pupitre",
-        "h": "Chaque pupitre, en direct",
-        "p": "Chaque pupitre montre ce que l’élève a ouvert, ici Arithmetic Lab. Les pupitres en pointillés ne sont pas encore là. Touchez un pupitre pour regarder de plus près.",
+        "p": "Chaque pupitre montre ce que l’élève a ouvert en ce moment. Touchez-en un pour regarder de plus près.",
         "alt": "Le Hub avec chaque pupitre en direct : la plupart des élèves jouent à Arithmetic Lab, deux ne sont pas encore là."
       },
       "s4": {
         "t": "Répondre aux mains levées",
-        "h": "Les mains levées, dans l’ordre",
-        "p": "Une question et une demande d’aide, dans l’ordre d’arrivée. Répondu les efface. Le laissez-passer est là aussi, jamais au projecteur.",
+        "p": "Les mains levées se rangent dans l’ordre. Touchez Répondu une fois que vous avez aidé.",
         "alt": "Le panneau Mains levées : Cleo a une question, Gus a besoin d’aide, et le laissez-passer."
       },
       "s5": {
         "t": "Demander à Oomba",
-        "h": "Préparez-le avec Oomba",
-        "p": "Demandez le plan du jour. Oomba le propose sous forme de carte, et rien ne va sur les pupitres avant que vous touchiez Utiliser ce plan.",
+        "p": "Demandez le plan du jour. Rien ne va sur les pupitres avant que vous touchiez Utiliser ce plan.",
         "alt": "Le chat Oomba à côté du Hub avec une carte de plan Journée fractions et Utiliser ce plan."
       },
       "s6": {
         "t": "Terminer la classe",
-        "h": "Terminer la classe",
-        "p": "Terminer la classe affiche un court résumé et clôt la séance. Les travaux non terminés restent sur les pupitres comme devoirs.",
+        "p": "Touchez Terminer la classe. Les travaux non terminés restent sur les pupitres comme devoirs.",
         "alt": "Fin de classe dans le Hub : Terminer la classe affiche un court résumé et clôt la séance."
       }
     },

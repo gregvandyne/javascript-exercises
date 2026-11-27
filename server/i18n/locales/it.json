@@ -11187,7 +11187,7 @@
     "tour": {
       "kicker": "Tour interattivo",
       "h": "Prova l’Hub prima di iscriverti.",
-      "lead": "Un breve giro su schermate reali. Tocca i punti gialli o premi Avanti.",
+      "lead": "Sei passi in una lezione nell’Hub. Premi Avanti.",
       "label": "Il tour dell’Hub",
       "stepOf": "Passo {n} di {total}",
       "back": "Indietro",
@@ -11196,38 +11196,32 @@
       "note": "Schermate reali dell’app con alunni inventati.",
       "s1": {
         "t": "Disponi i posti",
-        "h": "Come la tua aula vera",
-        "p": "Scegli file, isole da quattro, una U o un cerchio, oppure trascina un banco dove sta davvero. I gruppi mantengono i loro colori.",
+        "p": "Scegli file, isole da quattro, una U o un cerchio, oppure trascina un banco al suo posto vero.",
         "alt": "Disponi i posti nell’Hub: file, isole da quattro, a U e a cerchio, con i banchi a isole da quattro."
       },
       "s2": {
         "t": "Distribuisci una lezione",
-        "h": "Tocca, poi un banco",
-        "p": "Tocca una lezione, un gioco o uno strumento di matematica, poi un banco, un gruppo o tutta la classe. Oppure trascinalo lì.",
+        "p": "Tocca una lezione, qui Mistake Hunt, poi un banco, un gruppo o tutta la classe.",
         "alt": "Mistake Hunt scelto nell’Hub: ora tocca un banco, un gruppo, Tutta la classe o Il mio banco."
       },
       "s3": {
         "t": "Guarda ogni banco",
-        "h": "Ogni banco, dal vivo",
-        "p": "Ogni banco mostra cosa ha aperto l’alunno, qui Arithmetic Lab. I banchi tratteggiati non sono ancora arrivati. Tocca un banco per guardare meglio.",
+        "p": "Ogni banco mostra cosa ha aperto quell’alunno adesso. Toccane uno per guardare da vicino.",
         "alt": "L’Hub con ogni banco dal vivo: quasi tutti giocano ad Arithmetic Lab, due non sono ancora arrivati."
       },
       "s4": {
         "t": "Rispondi alle mani",
-        "h": "Mani alzate, in ordine",
-        "p": "Una domanda e una richiesta di aiuto, nell’ordine in cui sono arrivate. Risposto le toglie. Qui c’è anche il permesso per uscire, mai sul proiettore.",
+        "p": "Le mani alzate si mettono in fila in ordine. Tocca Risposto quando hai aiutato.",
         "alt": "Il pannello Mani alzate: Cleo ha una domanda, Gus ha bisogno di aiuto, e il permesso per uscire."
       },
       "s5": {
         "t": "Chiedi a Oomba",
-        "h": "Pianificalo con Oomba",
-        "p": "Chiedi il piano di oggi. Oomba lo prepara come scheda, e nulla va sui banchi finché non tocchi Usa questo piano.",
+        "p": "Chiedi il piano di oggi. Nulla va sui banchi finché non tocchi Usa questo piano.",
         "alt": "La chat di Oomba accanto all’Hub con una scheda di piano Giornata delle frazioni e Usa questo piano."
       },
       "s6": {
         "t": "Termina la lezione",
-        "h": "Termina la lezione",
-        "p": "Termina la lezione mostra un breve riepilogo e chiude la lezione. Il lavoro non finito resta sui banchi come compito.",
+        "p": "Tocca Termina la lezione. Il lavoro non finito resta sui banchi come compito.",
         "alt": "Termina la lezione nell’Hub: un breve riepilogo, poi la lezione si chiude."
       }
     },

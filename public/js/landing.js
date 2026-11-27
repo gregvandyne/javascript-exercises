@@ -24,9 +24,11 @@ if (menu) {
 }
 
 // ---- the Hub tour: one step at a time, with the stepper, Back and Next, the arrow keys (and Home/End), a swipe on the
-// picture and the progress bar. A step change says "Step 3 of 6: Watch every desk" to screen readers; Back and Next keep
-// the focus where it was (on the other button at either end), and a step picked in the stepper moves the focus to its
-// heading. The last step's Next starts again.
+// picture and the progress bar. Each step's picture is zoomed to the part of the screen that matters, with a ring around
+// the control (server/routes/landing.js STEPS); a step change pans and zooms the camera from the last step's region to the
+// new one (the CSS transition, none under prefers-reduced-motion). The picture itself is not a button. A step change says
+// "Step 3 of 6: Watch every desk" to screen readers; Back and Next keep the focus where it was (on the other button at
+// either end), and a step picked in the stepper moves the focus to its heading. The last step's Next starts again.
 export function startTour(box) {
   const steps = [...box.querySelectorAll('.lp-tstep')];
   const picks = [...box.querySelectorAll('.lp-step')];
@@ -36,10 +38,29 @@ export function startTour(box) {
   if (!n) return null;
   let at = 0;
   box.classList.add('is-on');
+  // The other steps' pictures are fetched once the tour is near, so Next never waits on a blank window.
+  const eager = () => { for (const img of box.querySelectorAll('.lp-tstage img[loading="lazy"]')) img.loading = 'eager'; };
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { eager(); io.disconnect(); } }, { rootMargin: '600px 0px' });
+    io.observe(box);
+  } else eager();
+  const camOf = s => s.querySelector('.lp-tcam');
   for (const s of steps) s.querySelector('.lp-tipbtns')?.removeAttribute('hidden');
   function show(i, { focus = null } = {}) {
+    const from = at;
     at = (i + n) % n;
     steps.forEach((s, j) => { s.classList.toggle('on', j === at); s.toggleAttribute('hidden', j !== at); });
+    // The camera starts where the last step's was and moves to this step's region.
+    const cam = camOf(steps[at]), was = camOf(steps[from]);
+    if (cam && was && from !== at) {
+      const [cx, cy, w] = was.dataset.cam.split(',');
+      cam.style.transition = 'none';
+      cam.style.setProperty('--cx', cx); cam.style.setProperty('--cy', cy); cam.style.setProperty('--w', w);
+      void cam.offsetWidth;
+      cam.style.transition = '';
+      const [tx, ty, tw] = cam.dataset.cam.split(',');
+      cam.style.setProperty('--cx', tx); cam.style.setProperty('--cy', ty); cam.style.setProperty('--w', tw);
+    }
     picks.forEach((p, j) => { if (j === at) p.setAttribute('aria-current', 'step'); else p.removeAttribute('aria-current'); p.classList.toggle('done', j < at); });
     if (bar) { bar.setAttribute('aria-valuenow', String(at + 1)); fill.style.width = `${((at + 1) / n * 100).toFixed(2)}%`; }
     const step = steps[at];
@@ -56,7 +77,6 @@ export function startTour(box) {
     if (t.closest('[data-next]')) show(at + 1, { focus: 'next' });
     else if (t.closest('[data-back]')) show(at - 1, { focus: 'back' });
     else if (t.closest('[data-go]')) show(+t.closest('[data-go]').dataset.go, { focus: 'heading' });
-    else if (t.closest('.lp-tstage')) show(at + 1);   // a tap on the picture (its yellow dots) moves on
   });
   box.addEventListener('keydown', e => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;

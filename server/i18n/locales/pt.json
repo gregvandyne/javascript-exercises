@@ -11188,7 +11188,7 @@
     "tour": {
       "kicker": "Tour interativo",
       "h": "Experimente o Hub antes de se cadastrar.",
-      "lead": "Um passeio curto por telas reais. Toque nos pontos amarelos ou em Próximo.",
+      "lead": "Seis passos por uma aula no Hub. Toque em Próximo.",
       "label": "O tour do Hub",
       "stepOf": "Passo {n} de {total}",
       "back": "Voltar",
@@ -11197,38 +11197,32 @@
       "note": "Telas reais do aplicativo com alunos inventados.",
       "s1": {
         "t": "Organizar os lugares",
-        "h": "Igual à sua sala de verdade",
-        "p": "Escolha fileiras, mesas de quatro, um U ou um círculo, ou arraste uma carteira até onde ela fica de verdade. Os grupos mantêm suas cores.",
+        "p": "Escolha fileiras, mesas de quatro, um U ou um círculo, ou arraste uma carteira até o lugar real dela.",
         "alt": "Organizar os lugares no Hub: fileiras, mesas de quatro, em U e em círculo, com as carteiras em mesas de quatro."
       },
       "s2": {
         "t": "Distribuir uma aula",
-        "h": "Toque, depois uma carteira",
-        "p": "Toque em uma aula, um jogo ou uma ferramenta de matemática, depois em uma carteira, um grupo ou a turma toda. Ou arraste até lá.",
+        "p": "Toque em uma aula, aqui Mistake Hunt, depois em uma carteira, um grupo ou a turma toda.",
         "alt": "Mistake Hunt escolhido no Hub: agora toque em uma carteira, um grupo, Turma toda ou Minha mesa."
       },
       "s3": {
         "t": "Ver cada carteira",
-        "h": "Cada carteira, ao vivo",
-        "p": "Cada carteira mostra o que o aluno tem aberto, aqui o Arithmetic Lab. Carteiras tracejadas ainda não chegaram. Toque em uma carteira para ver de perto.",
+        "p": "Cada carteira mostra o que aquele aluno tem aberto agora. Toque em uma para ver de perto.",
         "alt": "O Hub com cada carteira ao vivo: a maioria jogando Arithmetic Lab, dois ainda não chegaram."
       },
       "s4": {
         "t": "Responder às mãos",
-        "h": "Mãos levantadas, em ordem",
-        "p": "Uma pergunta e um pedido de ajuda, na ordem em que chegaram. Respondido os tira da fila. O passe de corredor também fica aqui, e nunca no projetor.",
+        "p": "As mãos levantadas ficam em ordem. Toque em Respondido depois de ajudar.",
         "alt": "O painel Mãos levantadas: Cleo tem uma pergunta, Gus precisa de ajuda, e o passe de corredor."
       },
       "s5": {
         "t": "Pergunte ao Oomba",
-        "h": "Planeje com o Oomba",
-        "p": "Peça o plano de hoje. O Oomba faz um cartão, e nada vai para as carteiras até você tocar em Usar este plano.",
+        "p": "Peça o plano de hoje. Nada vai para as carteiras até você tocar em Usar este plano.",
         "alt": "O chat do Oomba ao lado do Hub com um cartão de plano Dia de frações e Usar este plano."
       },
       "s6": {
         "t": "Encerrar a aula",
-        "h": "Encerrar a aula",
-        "p": "Encerrar a aula mostra um breve resumo e termina a aula. O que não foi concluído fica nas carteiras como lição de casa.",
+        "p": "Toque em Encerrar a aula. O que não foi concluído fica nas carteiras como lição de casa.",
         "alt": "Encerrar a aula no Hub: mostra um breve resumo e termina a aula."
       }
     },
