@@ -47,6 +47,7 @@ import { GAMES_META } from './companion-games.js';
 import { gameHidden, coursesHidden, mayOpenHidden } from './game-focus.js';
 import * as GF from './game-folders.js';
 import * as GLA from './grammar-lab-assign.js';
+import * as GL from './grammar-lab.js';
 import * as GSETS from './game-sets.js';
 import * as LES from './lessons.js';
 import { liveGameOf } from '../live/live-games.js';
@@ -730,7 +731,7 @@ const str = (description, extra = {}) => ({ type: 'string', description, ...extr
 const TOOLS_BASE = Object.freeze([
   { name: 'explainOomba', description: 'What Oomba Academy offers teachers and what you (Oomba) can and cannot do. Use it when the teacher asks how something on the site works.', input_schema: { type: 'object', properties: { topic: str('What they asked about, in a few words.') } } },
   { name: 'getPageContext', description: 'The page the teacher has open: its kind, the class (id, grade, subject, number of students: never names) and, on a class dashboard, the current layout with its widgets (ids, types, sizes, safe settings) and the widget library.', input_schema: { type: 'object', properties: {} } },
-  { name: 'searchGames', description: 'Search Oomba\'s official games by topic, grade, subject, standard (CCSS id like 3.NF.A.1) and minutes. Returns ids you can show as cards.', input_schema: { type: 'object', properties: { topic: str('Topic words, like "fractions" or "telling time".'), grade: str('K or 1 to 12.'), subject: str('math, ela, science, social studies, computer science.'), standard: str('A standard id, optional.'), minutes: { type: 'integer', description: 'About how long, optional.' }, live: { type: 'boolean', description: 'Only live class games.' } } } },
+  { name: 'searchGames', description: 'Search Oomba\'s official games by topic, grade, subject, standard (CCSS id like 3.NF.A.1) and minutes. Returns ids you can show as cards, and, when the teacher has Grammar Lab, its units and topics on the same topic words (assign them with kind "grammar").', input_schema: { type: 'object', properties: { topic: str('Topic words, like "fractions" or "telling time".'), grade: str('K or 1 to 12.'), subject: str('math, ela, science, social studies, computer science.'), standard: str('A standard id, optional.'), minutes: { type: 'integer', description: 'About how long, optional.' }, live: { type: 'boolean', description: 'Only live class games.' } } } },
   { name: 'searchBooks', description: 'Search the Story Library (free picture books with Read to me and 3 questions). It sorts books by US grade (K, 1, 2, 3, 4-5), not guided reading level: pass readingLevel (A to Z) and it maps it to grades.', input_schema: { type: 'object', properties: { words: str('Topic words, like "animals".'), grade: str('K or 1 to 5.'), readingLevel: str('A guided reading level A to Z, optional.') } } },
   { name: 'searchLessons', description: 'Search ready-made lessons (CS Quest), Figures worksheet generators (printable math and science questions with drawn figures) and dashboard layout templates.', input_schema: { type: 'object', properties: { topic: str('Topic words.'), grade: str('K or 1 to 12.') } } },
   { name: 'proposeDashboardChange', description: 'Propose a change to the class dashboard the teacher has open. Nothing changes until the teacher taps Apply on the card. Prefer changing a widget already on the layout over adding a second of the same type. There is no way to make a new kind of widget: if none fits, suggest existing widgets or a combination.', input_schema: { type: 'object', required: ['changes'], properties: { layoutId: str('The layout to change; the one on screen when left out.'), changes: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['set', 'add', 'remove'] }, widgetId: str('For set and remove.'), type: str('For add: a widget type from the library.'), settings: { type: 'object', description: 'Only number, switch and choice settings, like {"minutes": 5}.' }, allowDuplicate: { type: 'boolean' } } } } } } },
@@ -1011,11 +1012,18 @@ export const BOOK_TOOL_NAMES = Object.freeze(['makeBook', 'findMyBooks', 'change
 const BOOK_TOOLS = () => [BK.bookTool(), { name: 'findMyBooks', description: 'The teacher\'s own books from the book maker (made now or in the past): id, title, kind, last changed, pages, best match first. Use it to find which book they mean ("my water cycle book", "the dragon adventure from last week").', input_schema: { type: 'object', properties: { words: str('Words from the title or topic, optional.') } } }, ...BK.BOOK_PAGE_TOOLS];
 
 const EXPLAIN = [
-  'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
+  'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest)<<GL>>, classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
   'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); assign a game or a Story Library book to a class or some of its students, with a due day, after the teacher taps Assign (with Undo); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; make a Manipulatives board, a Figures worksheet or test and a lesson plan themselves (checked, with a card that opens it); find a lesson by its name in the teacher\'s own folders and the class\'s assignments; write a class progress report in counts; hand off a game build to the Builder with a brief; make a book with the book maker (cards for its choices, a check of what will be sent, then Make my book) and change the teacher\'s books, new or old, with Undo; and do other teacher actions with doAction, after the teacher taps Do it on its card (its description lists them), such as adding new students to a class with their login cards (the teacher types the names on the card, never in the chat), changing a due day, taking an assignment off a class or renaming a class.',
   'You cannot: see students\' names, answers or work; grade or message students; invite people; change school settings; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap. For these, call howTo and give its steps.',
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
+/** Grammar Lab as the AI may offer it (only for a teacher it lets in: grammar-lab-access.js mayAssignGrammarLab). */
+export const GRAMMAR_LAB_LINE = 'Grammar Lab: a K-12 grammar and writing course (US grades) in four grade bands (K-2, 3-5, 6-8, 9-12), unit by unit: punctuation and commas, capital letters, parts of speech (nouns, verbs, adjectives, adverbs, pronouns), sentences, sound-alike words, verb tenses, agreement, and writing with evidence. Each topic has a teaching card, questions until it is mastered (a mastery check, with a review of misses), and many have a proofread room where students fix the mistakes in a short passage. Teachers assign a whole unit, one topic or a proofread room, to a class or some students, and see each topic mastered or started on the class\'s Grammar Lab progress. The lessons are in English; the pages around them are in the teacher\'s language.';
+/** What explainOomba says to this teacher: Grammar Lab named only where it lets them in. */
+export const explainFor = u => {
+  const gl = CM.mayGrammar(u);
+  return EXPLAIN.replace('<<GL>>', gl ? ', Grammar Lab (K-12 grammar and writing)' : '') + (gl ? `\n${GRAMMAR_LAB_LINE}` : '');
+};
 
 /** Two editWorksheet calls in one answer, written as one change (one Undo): the second's numbers are the worksheet's
  *  after the first (its dry run ran on top of the first), and new questions keep the ids chosen for them. */
@@ -1032,7 +1040,7 @@ export function runTool(name, input, ctx) {
   const i = input && typeof input === 'object' ? input : {};
   const u = ctx.user, t = tFor(ctx.lang);
   switch (name) {
-    case 'explainOomba': return { result: { text: EXPLAIN }, step: { k: 'explain' } };
+    case 'explainOomba': return { result: { text: explainFor(u) }, step: { k: 'explain' } };
     case 'getPageContext': {
       const r = pageContext(u, ctx.page, { lang: ctx.lang, names: ctx.names });
       if (ctx.page.type === 'figures-sheet') { const w = F.ownWorksheet(u, ctx.page.sheetId); if (w) r.worksheet = FC.sheetContext(u, w); }
@@ -1054,7 +1062,10 @@ export function runTool(name, input, ctx) {
       const list = searchGames(i, u);
       for (const g of list) ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g });
       ctx.lastList = list.map(g => `game:${g.id}`);
-      return { result: { games: list.map(({ gameId, ...g }) => g) }, step: { k: 'games', n: list.length, q: [i.grade ? `grade ${i.grade}` : '', i.topic || i.subject || '', i.standard || ''].filter(Boolean).join(' · ').slice(0, 60) } };
+      // Grammar Lab units and topics on the same words, for a teacher it lets in ("practice for commas"): the class's
+      // grade band first, then the one the teacher asked for.
+      const gl = CM.mayGrammar(u) && String(i.topic || '').trim() ? glFound(u, String(i.topic), ctx, i.grade) : [];
+      return { result: { games: list.map(({ gameId, ...g }) => g), ...(gl.length ? { grammarLab: gl.map(x => ({ id: glId(x), what: x.what, title: x.title, band: x.band })), grammarLabNote: 'Grammar Lab fits too: offer the unit or topic for the class\'s grade band. To assign it, call assign with kind "grammar" and its id.' } : {}) }, step: { k: 'games', n: list.length, q: [i.grade ? `grade ${i.grade}` : '', i.topic || i.subject || '', i.standard || ''].filter(Boolean).join(' · ').slice(0, 60) } };
     }
     case 'searchBooks': {
       const r = searchBooks(i);
@@ -1474,6 +1485,16 @@ function findLessonTool(i, ctx) {
   return { result: { yourFolders: f.mine.map(({ id, ...x }) => x), assignedToClass: f.assigned, catalog: catalog.map(({ gameId, ...g }) => g), turnedOff: off.map(x => ({ title: x.title, ...(x.folder ? { folder: x.folder } : {}) })), closestOpen: closest, ...(CM.mayGrammar(u) ? { grammarLab: f.grammarLab.map(x => ({ id: glId(x), what: x.what, title: x.title, band: x.band })) } : {}), note }, step: { k: 'find', n: found, q: clip(name0, 40) } };
 }
 const glId = x => `${x.what}:${x.unit}:${x.band}${x.topic ? `:${x.topic}` : ''}`;
+/** Grammar Lab units and topics for these words (companion-make.js findByName's own search, the class's band first, or
+ *  the grade asked for), each kept for assign. */
+function glFound(u, words, ctx, grade = null) {
+  const g = GL.gradeNumber(grade), band = g === null ? null : GL.bandOfGrade(g);
+  let list = CM.findByName(u, clip(cleanText(u, words, ctx.names), 120), { classId: ctx.page.classId || null, names: ctx.names }).grammarLab;
+  if (band) list = [...list.filter(x => x.band === band), ...list.filter(x => x.band !== band)];
+  list = list.slice(0, 4);
+  for (const x of list) ctx.seen.set(`gl:${glId(x)}`, x);
+  return list;
+}
 /** classProgress: counts only, students as placeholders the page names (note.who), never supports. */
 function reportTool(i, ctx) {
   const u = ctx.user, t = tFor(ctx.lang);
@@ -1589,6 +1610,7 @@ function system(u, lang, page, settings) {
     'Formats: Figures draws one figure per question and checks a number or a multiple-choice answer. It cannot check a point students plot online, and has no column addition or regrouping box. The app asks the teacher first when a request needs one (makeWorksheet says askedFirst); say the limit in one short sentence before anything is built. A figure that cannot be drawn (sides that make no triangle, a point past the end of the line) is never swapped for another question: say its one-line reason (tellTeacher) and offer one that can be drawn.',
     'Finding and building are separate: when the teacher names a lesson ("assign Sum Racer"), call findLesson before anything else; never say a lesson is not on Oomba before it. A lesson that is turned off right now is named as turned off, with the closest open lesson of the same topic. Build only when the teacher asks to build; never make a lesson with the name of one you could not find.',
     'Missing details: "build a lesson" with no topic, "assign it" with no clear lesson: ask in one short question in plain words (topic and grade; which lesson). Never guess from earlier messages, and offer only lessons a tool of this answer returned.',
+    ...(CM.mayGrammar(u) ? [`${GRAMMAR_LAB_LINE} Recommend it for grammar, punctuation, capitalization and sentence work ("practice for commas" is its Commas unit): findLesson and searchGames list its units and topics (pick the class's grade band), assign takes kind "grammar" with that id, and classProgress counts what students mastered. Only offer units and topics a tool returned.`] : []),
     'Progress: for how a class is doing or a progress report, call classProgress (counts only; students are placeholders like "Student A" the page names). A class with no students: say so and how to add them.',
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,

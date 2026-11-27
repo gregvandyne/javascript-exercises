@@ -16713,3 +16713,60 @@ oomba_jobs, migration 0147) and the chat stays usable while they run.
 - **Unchanged**: students' names never go to the AI (job inputs are what the tools already checked and scrubbed); the
   messages-an-hour limit; the budget. Finished jobs are kept 7 days (the card keeps what was made); they go with the
   chat and with the account. Tests: tests/unit/oomba-jobs.test.js.
+
+## Grammar Lab listed everywhere (27 Nov 2026)
+
+Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.
+One module says who sees it and what finds it: `services/grammar-lab-listing.js`.
+- **Gated on the flag.** Listed only where `mayOpenGrammarLab` lets the visitor in: nowhere with GRAMMAR_LAB off; for a
+  restricted list, only the listed accounts (and students with assigned work); signed out, and in the sitemap, only
+  while it is open to all (`listedForAll`, the same condition /compare uses).
+- **Where:** the Learn card (now also signed out while open to all, and under Learn's Words subject and grade filters),
+  the Words subject page (/learn/word-games), the teachers' Find on Oomba catalog (first, with See the course and
+  Assign to /teach/grammar-lab), site search (a "Courses" card above the games, with deep links to the units a search
+  names) and the sitemap (/courses/grammar-lab, English only, like the other course pages). Grown-up (parent) accounts
+  still get no Learn card, as before.
+- **Tags and grades:** "English, grammar, writing · Grades K-12" and a short description, in every language
+  (grammarLab.listing.*). Unit and topic titles stay English.
+- **Search words:** grammar, Grammar Lab, punctuation, commas, capital letters, nouns, verbs, writing and other grammar
+  terms, plus each language's own (grammarLab.listing.terms). One word of a topic title alone ("math", "space") does
+  not find it; two words of a title ("who vs whom") do.
+- **Oomba (the chat):** for a teacher Grammar Lab lets in, the prompt and explainOomba describe it (K-12, four bands,
+  teaching cards, mastery, proofread rooms); findLesson and searchGames list its units and topics (the words around a
+  topic like "practice for" are ignored; the class's grade band first); classProgress adds what the class mastered in all
+  of Grammar Lab, in counts; howTo has "assign-grammar" and "grammar-progress". With the flag off none of it is said.
+- **Teaching cards:** MORE EXAMPLES is unbulleted, the same blocks as EXAMPLE (still a list, role="list").
+- **Pressing a tile:** a topic tile's link covers the whole tile (the ⋯ button sits over it as its own target), and the
+  hover, press and focus ring are the tile's, so the highlight is never split; a unit row and a band's fold do the same.
+- Tests: tests/unit/grammar-lab-listing.test.js, grammar-lab-press-browser.test.js, companion-make.test.js,
+  companion-help.test.js.
+
+## A Courses section on Learn (27 Nov 2026)
+
+A new "Courses" section (learn.courses.h), first on /learn after its heading, in the course cards' style
+(views/courses.js coursesSection): Grammar Lab (its cover, "Grammar and writing, one skill at a time", English,
+grammar, writing · Grades K-12) and Typing Zoo, the typing course with its pets (the game's own title; its cover; "Learn
+to touch type, one key at a time: 40 short lessons and 41 pets to hatch."; Typing · Grades 1-8). It does not depend on
+COURSES: Grammar Lab's card follows Grammar Lab's own gate (as its Learn card did; the card moved here), Typing Zoo is
+always listed while it is a published, unhidden game. Both follow Learn's subject and grade filters. The old COURSES row
+(CS Quest, Number Quest, Cyber Defenders) is unchanged and stays hidden while COURSES is off. The teacher home (a class
+list) and the Lesson Folder (a list of rows) have no card sections, so the section is on Learn only; the Lesson Folder
+already lists Grammar Lab first in Find on Oomba.
+
+## No stars, plays or favorite counts (27 Nov 2026)
+
+The owner: no rating stars and no number of plays on any game card, and no favorite count anywhere. Removed from the
+display only (the data, the popularity sorts and the admin tables stay):
+- game cards (views/components.js gameCard, every list: Learn, search, My favorites, profiles, class pages): no stars,
+  no "N plays";
+- the game page: no rating, plays or favorites stats (only "playing now" stays), and its heart has no count;
+  the heart's label is "Add to favorites" / "Remove from favorites" (game.favAdd, game.favRemove), on the game page
+  and the play bar, and it still toggles and fills My favorites. The play bar's "N playing" is the live player count,
+  not a favorite count, and stays;
+- a profile: no plays or favorites totals;
+- a player's own rating stays (the game page's "Rate this game" and the play bar's Rate), but its thank-you no longer
+  says the new average;
+- structured data: no aggregateRating (the page shows no rating); applicationCategory and operatingSystem came only
+  with it, so they go too.
+Unused keys dropped: cards.plays, cards.new, cards.noRatings, cards.starsLabel, game.stats.ratings, noRatings, plays,
+likes, js.game.rated. Tests: tests/unit/no-counts.test.js.

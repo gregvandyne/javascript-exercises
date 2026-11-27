@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "Nuovo",
-    "noRatings": "Ancora nessun voto",
-    "starsLabel": "{stars} stelle su 5 da {count, plural, one {# voto} other {# voti}}",
     "playing": "{count} in gioco",
     "gameBy": "{title}, di {name}",
     "classOnly": "Solo la classe",
     "by": "di {name}",
-    "plays": "{count, plural, one {{n} partita} other {{n} partite}}",
     "seeAll": "Vedi tutti",
     "scrollBack": "Scorri {title} indietro",
     "scrollForward": "Scorri {title} avanti"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, one {# gioco} other {# giochi}}",
     "noMatch": "Nessun gioco corrisponde a «{text}»",
     "noneYet": "Ancora nessun gioco qui",
-    "tryCategory": "Prova invece una categoria:"
+    "tryCategory": "Prova invece una categoria:",
+    "courses": "Corsi"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "un aggiornamento è in attesa di revisione",
     "reviewer": "Revisore: «{note}»",
     "stats": {
-      "ratings": "{count, plural, one {{n} voto} other {{n} voti}}",
-      "noRatings": "ancora nessun voto",
-      "playingNow": "in gioco ora",
-      "plays": "{count, plural, one {partita} other {partite}}",
-      "likes": "{count, plural, one {preferito} other {preferiti}}"
+      "playingNow": "in gioco ora"
     },
     "about": {
       "heading": "Info su questo gioco",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "Il tuo record"
-    }
+    },
+    "favAdd": "Aggiungi ai preferiti",
+    "favRemove": "Togli dai preferiti"
   },
   "play": {
     "backTo": "Torna a {title}",
@@ -2444,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "Tocca «Gioca come ospite» oppure accedi prima.",
-      "rated": "Gli hai dato {count, plural, one {# stella} other {# stelle}}. Ora la media è {average}.",
       "thanksRating": "Grazie per il voto!",
       "liked": "Aggiunto ai tuoi preferiti!",
       "unliked": "Tolto dai tuoi preferiti",
@@ -8751,6 +8745,11 @@
       "try": "Prova",
       "also": "Anche su Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Corsi",
+      "typing": "Impara a scrivere con la tastiera, un tasto alla volta: 40 brevi lezioni e 41 cuccioli da far nascere.",
+      "grades": "Classi {grades}"
     }
   },
   "parents": {
@@ -16926,6 +16925,12 @@
       "band": "{mastered} padroneggiati · {started} in corso",
       "unit": "{started} in corso",
       "unitHead": "{mastered} su {total} padroneggiati · {started} in corso"
+    },
+    "listing": {
+      "desc": "Grammatica e scrittura dal grado K al 12: quattro livelli, una scheda per ogni argomento, esercizi fino alla padronanza e stanze di correzione.",
+      "tags": "Inglese, grammatica, scrittura",
+      "terms": "grammatica, punteggiatura, virgole, maiuscole, nomi, verbi, scrittura, inglese",
+      "units": "Unità per «{text}»"
     }
   }
 }

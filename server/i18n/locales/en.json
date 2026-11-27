@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "New",
-    "noRatings": "No ratings yet",
-    "starsLabel": "{stars} out of 5 stars from {count, plural, one {# rating} other {# ratings}}",
     "playing": "{count} playing",
     "gameBy": "{title}, by {name}",
     "classOnly": "Class only",
     "by": "by {name}",
-    "plays": "{count, plural, one {{n} play} other {{n} plays}}",
     "seeAll": "See all",
     "scrollBack": "Scroll {title} back",
     "scrollForward": "Scroll {title} forward"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, one {# game} other {# games}}",
     "noMatch": "No games match “{text}”",
     "noneYet": "No games here yet",
-    "tryCategory": "Try a category instead:"
+    "tryCategory": "Try a category instead:",
+    "courses": "Courses"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "an update is waiting for review",
     "reviewer": "Reviewer: “{note}”",
     "stats": {
-      "ratings": "{count, plural, one {{n} rating} other {{n} ratings}}",
-      "noRatings": "no ratings yet",
-      "playingNow": "playing now",
-      "plays": "{count, plural, one {play} other {plays}}",
-      "likes": "{count, plural, one {favorite} other {favorites}}"
+      "playingNow": "playing now"
     },
     "about": {
       "heading": "About this game",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "Your best"
-    }
+    },
+    "favAdd": "Add to favorites",
+    "favRemove": "Remove from favorites"
   },
   "play": {
     "backTo": "Back to {title}",
@@ -2518,7 +2513,6 @@
     },
     "game": {
       "needSignIn": "Tap “Play as guest” or sign in first.",
-      "rated": "You gave it {count, plural, one {# star} other {# stars}}. Average is now {average}.",
       "thanksRating": "Thanks for rating!",
       "liked": "Added to your favorites!",
       "unliked": "Removed from your favorites",
@@ -10163,6 +10157,11 @@
       "try": "Try it",
       "also": "Also on Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Courses",
+      "typing": "Learn to touch type, one key at a time: 40 short lessons and 41 pets to hatch.",
+      "grades": "Grades {grades}"
     }
   },
   "parents": {
@@ -18668,6 +18667,12 @@
       "band": "{mastered} mastered · {started} in progress",
       "unit": "{started} in progress",
       "unitHead": "{mastered} of {total} mastered · {started} in progress"
+    },
+    "listing": {
+      "desc": "Grammar and writing for grades K to 12: four grade bands, a teaching card for every topic, practice until it is mastered, and proofread rooms.",
+      "tags": "English, grammar, writing",
+      "terms": "grammar, punctuation, commas, capital letters, nouns, verbs, writing, English",
+      "units": "Units for “{text}”"
     }
   }
 }

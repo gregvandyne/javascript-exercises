@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "Nieuw",
-    "noRatings": "Nog geen beoordelingen",
-    "starsLabel": "{stars} van de 5 sterren uit {count, plural, one {# beoordeling} other {# beoordelingen}}",
     "playing": "{count} spelen",
     "gameBy": "{title}, door {name}",
     "classOnly": "Alleen de klas",
     "by": "door {name}",
-    "plays": "{count, plural, one {{n}× gespeeld} other {{n}× gespeeld}}",
     "seeAll": "Alles zien",
     "scrollBack": "{title} terug scrollen",
     "scrollForward": "{title} verder scrollen"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, one {# game} other {# games}}",
     "noMatch": "Geen games gevonden voor “{text}”",
     "noneYet": "Hier zijn nog geen games",
-    "tryCategory": "Probeer liever een categorie:"
+    "tryCategory": "Probeer liever een categorie:",
+    "courses": "Cursussen"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "een update wacht op controle",
     "reviewer": "Controleur: “{note}”",
     "stats": {
-      "ratings": "{count, plural, one {{n} beoordeling} other {{n} beoordelingen}}",
-      "noRatings": "nog geen beoordelingen",
-      "playingNow": "spelen nu",
-      "plays": "keer gespeeld",
-      "likes": "{count, plural, one {favoriet} other {favorieten}}"
+      "playingNow": "spelen nu"
     },
     "about": {
       "heading": "Over deze game",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "Jouw beste score"
-    }
+    },
+    "favAdd": "Toevoegen aan favorieten",
+    "favRemove": "Verwijderen uit favorieten"
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -2444,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
-      "rated": "Je gaf {count, plural, one {# ster} other {# sterren}}. Het gemiddelde is nu {average}.",
       "thanksRating": "Bedankt voor je beoordeling!",
       "liked": "Toegevoegd aan je favorieten!",
       "unliked": "Weggehaald uit je favorieten",
@@ -8751,6 +8745,11 @@
       "try": "Proberen",
       "also": "Ook op Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Cursussen",
+      "typing": "Leer blind typen, één toets tegelijk: 40 korte lessen en 41 dieren om uit te broeden.",
+      "grades": "Groep {grades}"
     }
   },
   "parents": {
@@ -16926,6 +16925,12 @@
       "band": "{mastered} beheerst · {started} bezig",
       "unit": "{started} bezig",
       "unitHead": "{mastered} van {total} beheerst · {started} bezig"
+    },
+    "listing": {
+      "desc": "Grammatica en schrijven voor groep K tot en met 12: vier niveaus, een uitlegkaart voor elk onderwerp, oefenen tot je het beheerst en nakijkkamers.",
+      "tags": "Engels, grammatica, schrijven",
+      "terms": "grammatica, interpunctie, komma’s, kommas, hoofdletters, zelfstandige naamwoorden, werkwoorden, schrijven, Engels",
+      "units": "Units voor ‘{text}’"
     }
   }
 }

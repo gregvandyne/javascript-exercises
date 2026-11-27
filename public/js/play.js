@@ -340,7 +340,7 @@ if (orientEl && orientOk) {
 }
 $('#p-like') && $('#p-like').addEventListener('click', async () => {
   if (!d.signedIn) return toast(t('js.play.signInToLike'));
-  try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? t('js.play.liked') : t('js.play.unliked')); } catch (err) { toast(err.message, { bad: true }); }
+  try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.setAttribute('aria-label', r.liked ? b.dataset.on : b.dataset.off); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? t('js.play.liked') : t('js.play.unliked')); } catch (err) { toast(err.message, { bad: true }); }
 });
 $('#p-rate') && $('#p-rate').addEventListener('click', () => {
   if (!d.signedIn) return toast(t('js.play.signInToRate'));

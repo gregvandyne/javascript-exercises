@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "جديدة",
-    "noRatings": "لا تقييمات بعد",
-    "starsLabel": "{stars} من 5 نجوم من {count, plural, zero {# تقييم} one {تقييم واحد} two {تقييمين} few {# تقييمات} many {# تقييمًا} other {# تقييم}}",
     "playing": "{count} يلعبون",
     "gameBy": "{title}، من صنع {name}",
     "classOnly": "للفصل فقط",
     "by": "من صنع {name}",
-    "plays": "{count, plural, zero {لم تُلعب بعد} one {لُعبت مرة واحدة} two {لُعبت مرتين} few {لُعبت {n} مرات} many {لُعبت {n} مرة} other {لُعبت {n} مرة}}",
     "seeAll": "عرض الكل",
     "scrollBack": "مرّر {title} إلى الخلف",
     "scrollForward": "مرّر {title} إلى الأمام"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, zero {لا ألعاب} one {لعبة واحدة} two {لعبتان} few {# ألعاب} many {# لعبة} other {# لعبة}}",
     "noMatch": "لا توجد ألعاب تطابق «{text}»",
     "noneYet": "لا ألعاب هنا بعد",
-    "tryCategory": "جرّب فئة بدلًا من ذلك:"
+    "tryCategory": "جرّب فئة بدلًا من ذلك:",
+    "courses": "الدورات"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "تحديث ينتظر المراجعة",
     "reviewer": "المراجع: «{note}»",
     "stats": {
-      "ratings": "{count, plural, zero {{n} تقييم} one {تقييم واحد} two {تقييمان} few {{n} تقييمات} many {{n} تقييمًا} other {{n} تقييم}}",
-      "noRatings": "لا تقييمات بعد",
-      "playingNow": "يلعبون الآن",
-      "plays": "{count, plural, zero {مرة لعب} one {مرة لعب} two {مرات لعب} few {مرات لعب} many {مرة لعب} other {مرة لعب}}",
-      "likes": "{count, plural, zero {مفضّلة} one {مفضّلة} two {مفضّلتان} few {مفضّلات} many {مفضّلة} other {مفضّلة}}"
+      "playingNow": "يلعبون الآن"
     },
     "about": {
       "heading": "عن هذه اللعبة",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "أفضل نتيجة لك"
-    }
+    },
+    "favAdd": "أضف إلى المفضلة",
+    "favRemove": "أزل من المفضلة"
   },
   "play": {
     "backTo": "العودة إلى {title}",
@@ -2444,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "اضغط «العب كضيف» أو سجّل الدخول أولًا.",
-      "rated": "أعطيتها {count, plural, zero {# نجوم} one {نجمة واحدة} two {نجمتين} few {# نجوم} many {# نجمة} other {# نجمة}}. المتوسط الآن {average}.",
       "thanksRating": "شكرًا على التقييم!",
       "liked": "أُضيفت إلى مفضّلتك!",
       "unliked": "أُزيلت من مفضّلتك",
@@ -8751,6 +8745,11 @@
       "try": "جرّبها",
       "also": "أيضًا على Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "الدورات",
+      "typing": "تعلّم الكتابة باللمس، مفتاحًا بعد مفتاح: 40 درسًا قصيرًا و41 حيوانًا أليفًا تفقس من البيض.",
+      "grades": "الصفوف {grades}"
     }
   },
   "parents": {
@@ -16926,6 +16925,12 @@
       "band": "أتقن: {mastered} · قيد العمل: {started}",
       "unit": "قيد العمل: {started}",
       "unitHead": "أتقن: {mastered} من {total} · قيد العمل: {started}"
+    },
+    "listing": {
+      "desc": "القواعد والكتابة للصفوف من الروضة إلى الثاني عشر: أربعة مستويات، وبطاقة تعليمية لكل موضوع، وتدريب حتى الإتقان، وغرف للتدقيق.",
+      "tags": "الإنجليزية، القواعد، الكتابة",
+      "terms": "قواعد، القواعد، علامات الترقيم، الفواصل، الحروف الكبيرة، الأسماء، الأفعال، الكتابة، الإنجليزية",
+      "units": "وحدات عن «{text}»"
     }
   }
 }

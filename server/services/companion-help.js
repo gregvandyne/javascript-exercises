@@ -8,6 +8,7 @@ import * as D from './dash.js';
 import { enabled as gcOn } from './gclassroom.js';
 import { liveOn } from './classlive-sessions.js';
 import { canHost } from './classlive-access.js';
+import { mayAssignGrammarLab } from './grammar-lab-access.js';
 import { tFor, teacherT } from '../i18n/index.js';
 
 /** The pages a step can link to. A path's :class is one of the teacher's classes, :school one of their schools. */
@@ -29,6 +30,9 @@ export const PAGES = Object.freeze({
   figures: '/figures',
   library: '/read',
   makeSchool: '/signup/teacher/school',
+  grammarLab: '/courses/grammar-lab',
+  grammarTeach: '/teach/grammar-lab',
+  grammarProgress: '/class/:class/grammar-lab',
 });
 
 // Steps. In text: {link} is the step's page (its words in link), {b:<locale key>} a button or tab's label in bold.
@@ -92,6 +96,17 @@ export const HELP = Object.freeze({
     step('Tap {b:gclassroom.connect.button} and sign in with your school Google account.'),
     step('Pick the Classroom class to link to this class.'),
   ] },
+  // Grammar Lab (behind GRAMMAR_LAB): only for a teacher it lets in (grammar-lab-access.js mayAssignGrammarLab).
+  'assign-grammar': { title: 'Assign Grammar Lab (K-12 grammar and writing)', when: 'grammar', steps: [
+    step('Open {link}.', 'grammarTeach', 'Grammar Lab for your classes'),
+    step('Pick the grade band, then a unit: tap {b:grammarLab.teach.assignUnit} for the whole unit, or {b:grammarLab.teach.assignTopic} for one topic ({b:grammarLab.teach.assignRoom} for a proofread room).'),
+    step('Pick the class (or some students) and, if you like, a due day, then tap {b:grammarLab.teach.assign}.'),
+    step('To try it as a student first, open {link}.', 'grammarLab', 'Grammar Lab'),
+  ] },
+  'grammar-progress': { title: 'See Grammar Lab progress', need: 'class', when: 'grammar', steps: [
+    step('Open {link}.', 'grammarProgress', 'your class\'s Grammar Lab progress'),
+    step('Each topic shows how many students mastered it or started it; open a student for their topics.'),
+  ] },
   'find-books': { title: 'Find a book for the class', steps: [
     step('Open {link}.', 'library', 'the Story Library'),
     step('Pick a grade, then open a book: {b:js.companion.card.read} or {b:js.companion.card.assign}.'),
@@ -100,13 +115,13 @@ export const HELP = Object.freeze({
 export const TASKS = Object.freeze(Object.keys(HELP));
 
 // A class step once the class is open (no link to it): its tab or button.
-const PICKED_TAB = Object.freeze({ classStudents: 'school.classTabs.students', classSettings: 'school.classTabs.settings', classLessons: 'school.classTabs.games', classAssigned: 'school.classTabs.games', dashboard: 'dash.entry.teacher', progress: 'school.classTabs.progress' });
+const PICKED_TAB = Object.freeze({ classStudents: 'school.classTabs.students', classSettings: 'school.classTabs.settings', classLessons: 'school.classTabs.games', classAssigned: 'school.classTabs.games', dashboard: 'dash.entry.teacher', progress: 'school.classTabs.progress', grammarProgress: 'school.classTabs.progress' });
 const EXTRA_LABELS = ['school.class.new'];
 
 /** The teacher's schools (staff only) and classes (as their teacher). */
 const schoolsOfU = u => S.schoolsOf(u.id).filter(s => s.role && s.role !== 'student');
 const classesOfU = u => S.classesOf(u.id, 'teacher').filter(c => !c.archived_at);
-const on = (when, u) => (when === 'live' ? liveOn() && canHost(u) : when === 'gc' ? gcOn() : true);
+const on = (when, u) => (when === 'live' ? liveOn() && canHost(u) : when === 'gc' ? gcOn() : when === 'grammar' ? mayAssignGrammarLab(u) : true);
 
 /** The class and school a how-to is about: the page's own, else the teacher's only one. */
 export function placeOf(u, page = {}) {

@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "חדש",
-    "noRatings": "עוד אין דירוגים",
-    "starsLabel": "{stars} מתוך 5 כוכבים לפי {count, plural, one {דירוג אחד} two {שני דירוגים} other {# דירוגים}}",
     "playing": "{count} שחקנים עכשיו",
     "gameBy": "{title}, מאת {name}",
     "classOnly": "רק לכיתה",
     "by": "מאת {name}",
-    "plays": "{count, plural, one {{n} שיחק} other {{n} שיחקו}}",
     "seeAll": "ראו הכול",
     "scrollBack": "גלילת {title} אחורה",
     "scrollForward": "גלילת {title} קדימה"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, one {משחק אחד} two {שני משחקים} other {# משחקים}}",
     "noMatch": "לא נמצאו משחקים עבור \"{text}\"",
     "noneYet": "עוד אין כאן משחקים",
-    "tryCategory": "אפשר לנסות קטגוריה במקום:"
+    "tryCategory": "אפשר לנסות קטגוריה במקום:",
+    "courses": "קורסים"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "עדכון מחכה לבדיקה",
     "reviewer": "הערת הבודק: \"{note}\"",
     "stats": {
-      "ratings": "{count, plural, one {דירוג אחד} two {{n} דירוגים} other {{n} דירוגים}}",
-      "noRatings": "עוד אין דירוגים",
-      "playingNow": "שחקנים עכשיו",
-      "plays": "{count, plural, one {שיחק} other {שיחקו}}",
-      "likes": "{count, plural, one {מועדף} other {מועדפים}}"
+      "playingNow": "שחקנים עכשיו"
     },
     "about": {
       "heading": "על המשחק",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "השיא שלך"
-    }
+    },
+    "favAdd": "הוספה למועדפים",
+    "favRemove": "הסרה מהמועדפים"
   },
   "play": {
     "backTo": "חזרה אל {title}",
@@ -2444,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "לחצו על \"לשחק כאורח\" או התחברו קודם.",
-      "rated": "נתתם {count, plural, one {כוכב אחד} two {שני כוכבים} other {# כוכבים}}. הממוצע עכשיו {average}.",
       "thanksRating": "תודה על הדירוג!",
       "liked": "נוסף למועדפים שלך!",
       "unliked": "הוסר מהמועדפים שלך",
@@ -8752,6 +8746,11 @@
       "try": "לנסות",
       "also": "עוד ב־Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "קורסים",
+      "typing": "לומדים להקליד עיוור, מקש אחר מקש: 40 שיעורים קצרים ו־41 חיות מחמד שבוקעות מביצה.",
+      "grades": "כיתות {grades}"
     }
   },
   "parents": {
@@ -16927,6 +16926,12 @@
       "band": "נשלט: {mastered} · בתהליך: {started}",
       "unit": "בתהליך: {started}",
       "unitHead": "נשלט: {mastered} מתוך {total} · בתהליך: {started}"
+    },
+    "listing": {
+      "desc": "דקדוק וכתיבה לכיתות גן עד י״ב: ארבע רמות, כרטיס לימוד לכל נושא, תרגול עד שליטה וחדרי הגהה.",
+      "tags": "אנגלית, דקדוק, כתיבה",
+      "terms": "דקדוק, פיסוק, פסיקים, אותיות גדולות, שמות עצם, פעלים, כתיבה, אנגלית",
+      "units": "יחידות עבור „{text}”"
     }
   }
 }

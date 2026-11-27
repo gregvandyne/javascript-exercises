@@ -518,14 +518,10 @@
     }
   },
   "cards": {
-    "new": "新着",
-    "noRatings": "まだひょうかなし",
-    "starsLabel": "ほし5つ中 {stars}（ひょうか{count}件）",
     "playing": "{count}人プレイ中",
     "gameBy": "{name}がつくった{title}",
     "classOnly": "クラスだけ",
     "by": "作：{name}",
-    "plays": "{n}回プレイ",
     "seeAll": "すべて見る",
     "scrollBack": "{title}を前へスクロール",
     "scrollForward": "{title}を次へスクロール"
@@ -637,7 +633,8 @@
     "gameCount": "{count}本のゲーム",
     "noMatch": "「{text}」に合うゲームはありません",
     "noneYet": "ここにはまだゲームがありません",
-    "tryCategory": "かわりにカテゴリからさがしてみよう："
+    "tryCategory": "かわりにカテゴリからさがしてみよう：",
+    "courses": "コース"
   },
   "info": {
     "safety": {
@@ -1148,11 +1145,7 @@
     "updateWaiting": "アップデートがチェック待ちです",
     "reviewer": "チェック係：「{note}」",
     "stats": {
-      "ratings": "ひょうか{n}件",
-      "noRatings": "ひょうかなし",
-      "playingNow": "いまプレイ中",
-      "plays": "プレイ回数",
-      "likes": "お気に入り"
+      "playingNow": "いまプレイ中"
     },
     "about": {
       "heading": "このゲームについて",
@@ -1219,7 +1212,9 @@
     },
     "best": {
       "heading": "じぶんのベスト"
-    }
+    },
+    "favAdd": "お気に入りに追加",
+    "favRemove": "お気に入りから外す"
   },
   "play": {
     "backTo": "{title}にもどる",
@@ -2443,7 +2438,6 @@
     },
     "game": {
       "needSignIn": "「ゲストであそぶ」をタップするか、先にログインしてください。",
-      "rated": "ほし{count}つをつけました。いまのへいきんは{average}です。",
       "thanksRating": "ひょうかしてくれてありがとう！",
       "liked": "お気に入りに入れました！",
       "unliked": "お気に入りからはずしました",
@@ -8750,6 +8744,11 @@
       "try": "ためす",
       "also": "Oombaでほかにも",
       "hubNamed": "{subject}：{hub}"
+    },
+    "courses": {
+      "h": "コース",
+      "typing": "キーをひとつずつおぼえてタイピングを学ぼう。40のみじかいレッスンと、たまごから生まれる41ひきのペット。",
+      "grades": "{grades} 年生"
     }
   },
   "parents": {
@@ -16925,6 +16924,12 @@
       "band": "マスター {mastered} · とちゅう {started}",
       "unit": "とちゅう {started}",
       "unitHead": "マスター {mastered} / {total} · とちゅう {started}"
+    },
+    "listing": {
+      "desc": "K から 12 年生までの文法とライティング。4 つの学年帯、トピックごとの学習カード、身につくまでの練習、校正ルームがあります。",
+      "tags": "英語、文法、ライティング",
+      "terms": "文法, 句読点, コンマ, 大文字, 名詞, 動詞, ライティング, 作文, 英語",
+      "units": "「{text}」のユニット"
     }
   }
 }

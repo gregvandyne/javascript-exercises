@@ -13,7 +13,9 @@
 //   - "Build a lesson" asks; "Assign it" asks in plain words; one-word messages send;
 //   - "Assign Sum Racer" with the arcade off: in the teacher's folder, turned off, never "not on Oomba"; the closest open
 //     lesson shares its topic (not Arithmetic Lab's long division);
-//   - Grammar Lab: found and assigned for a teacher it lets in, not available otherwise;
+//   - Grammar Lab: found and assigned for a teacher it lets in, not available otherwise; open to everyone (*), any
+//     teacher's "practice for commas" finds the Commas unit (searchGames too), assign and classProgress work, the
+//     prompt names it; with the flag off it is never offered;
 //   - an attached plan with regrouping: the limit asked first, then the worksheet made with the plan's problems in one
 //     step (never an empty worksheet first).
 import './_setup.js';
@@ -332,6 +334,69 @@ test('Grammar Lab: found and assigned for a teacher it lets in (the course\'s ow
     config.grammarLabUsers = [];
     const c2 = standIn((p, i) => (i === 0 ? toolUse('assign', { kind: 'grammar', id: hit.id, classRef: x.A.id }) : 'Not available.'));
     await say(x, 'Assign Identifying Adjectives', { type: 'class', classId: x.A.id });
+    assert.match(lastResult(c2).error, /not available/);
+  } finally { config.grammarLab = was.on; config.grammarLabUsers = was.users; }
+  await reset(x);
+});
+
+test('Grammar Lab open to everyone (GRAMMAR_LAB_USERS=*): any teacher finds "commas", searchGames offers it, assign works, the prompt names it; with the flag off it is never offered', async () => {
+  const x = world();
+  const was = { on: config.grammarLab, users: config.grammarLabUsers };
+  config.grammarLab = true; config.grammarLabUsers = ['*'];
+  try {
+    assert.ok(!was.users.includes(x.teacher.username.toLowerCase()), 'a teacher not on any list');
+    // findLesson("commas"): the Commas unit, the class's grade band (grade 4: 3-5) first
+    let calls = standIn((p, i) => (i === 0 ? toolUse('findLesson', { name: 'commas' }) : 'Here is the Commas unit.'));
+    await say(x, 'practice for commas', { type: 'class', classId: x.A.id });
+    const sys = calls[0].system.map ? calls[0].system.map(b => b.text || '').join('\n') : String(calls[0].system);
+    assert.match(sys, /Grammar Lab: a K-12 grammar and writing course/, 'the prompt tells the model Grammar Lab exists');
+    assert.match(sys, /proofread room/); assert.match(sys, /practice for commas/);
+    const found = lastResult(calls).grammarLab;
+    assert.ok(found && found.length, JSON.stringify(lastResult(calls)));
+    assert.deepEqual([found[0].what, found[0].title, found[0].band], ['unit', 'Commas', '3-5'], JSON.stringify(found));
+    // searchGames on the same words lists Grammar Lab too
+    calls = standIn((p, i) => (i === 0 ? toolUse('searchGames', { topic: 'commas', grade: '4' }) : 'Grammar Lab has a Commas unit.'));
+    await say(x, 'a game for commas, grade 4', { type: 'class', classId: x.A.id });
+    const sg = lastResult(calls);
+    assert.ok(sg.grammarLab.some(g => g.title === 'Commas' && g.band === '3-5'), JSON.stringify(sg));
+    // explainOomba names it
+    calls = standIn((p, i) => (i === 0 ? toolUse('explainOomba', { topic: 'what is on Oomba' }) : 'Lots.'));
+    await say(x, 'what does Oomba offer?');
+    assert.match(lastResult(calls).text, /Grammar Lab \(K-12 grammar and writing\)/);
+    // assign the unit: the card, then Assign, then the class has it
+    standIn((p, i) => (i === 0 ? toolUse('assign', { kind: 'grammar', id: found[0].id, classRef: x.A.id }) : 'Tap Assign on the card.'));
+    await say(x, 'Assign the Commas unit to 4b math', { type: 'class', classId: x.A.id });
+    const bot = await lastBot(x.tc);
+    assert.equal(bot.note.assign.kind, 'grammar');
+    const r = await act(x.tc, bot.id, 'assign');
+    assert.ok(r.chat, JSON.stringify(r));
+    const done = (await lastBot(x.tc)).change;
+    const row = q.get("SELECT l.kind, l.title FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE cl.id=?", done.clId);
+    assert.equal(row.kind, 'grammar'); assert.match(row.title, /Commas/);
+    // classProgress: Grammar Lab counts (the assigned unit, and all topics mastered), never a name
+    q.run("INSERT OR REPLACE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?, 'grammar-lab', 'identifying-adjectives', 'k-2', 1, 1, 0, NULL, 1)", x.kids[0].id);
+    calls = standIn((p, i) => (i === 0 ? toolUse('classProgress', { classRef: x.A.id }) : 'Here is how it is going.'));
+    await say(x, 'How is 4b math doing?', { type: 'class', classId: x.A.id });
+    const rep = lastResult(calls);
+    assert.ok(rep.grammarLab && rep.grammarLab.some(u => u.unit === 'Commas'), JSON.stringify(rep));
+    assert.deepEqual(rep.grammarLabAll, { studentsWithTopicsMastered: 1, topicsMastered: 1 });
+    assert.doesNotMatch(JSON.stringify(rep), /Maya|Brook|Leo|Stone|support/i, 'no names, no supports');
+    // the flag off: no Grammar Lab anywhere in the chat, and assign says it is not available
+    config.grammarLab = false;
+    calls = standIn((p, i) => (i === 0 ? toolUse('findLesson', { name: 'commas' }) : 'Not found.'));
+    await say(x, 'practice for commas', { type: 'class', classId: x.A.id });
+    const off = lastResult(calls);
+    assert.equal(off.grammarLab, undefined, JSON.stringify(off));
+    const sysOff = calls[0].system.map ? calls[0].system.map(b => b.text || '').join('\n') : String(calls[0].system);
+    assert.doesNotMatch(sysOff, /Grammar Lab: a K-12/);
+    calls = standIn((p, i) => (i === 0 ? toolUse('searchGames', { topic: 'commas' }) : 'Ok.'));
+    await say(x, 'a game for commas', { type: 'class', classId: x.A.id });
+    assert.equal(lastResult(calls).grammarLab, undefined);
+    calls = standIn((p, i) => (i === 0 ? toolUse('explainOomba', {}) : 'Ok.'));
+    await say(x, 'what does Oomba offer?');
+    assert.doesNotMatch(lastResult(calls).text, /Grammar Lab/);
+    const c2 = standIn((p, i) => (i === 0 ? toolUse('assign', { kind: 'grammar', id: found[0].id, classRef: x.A.id }) : 'Not available.'));
+    await say(x, 'Assign the Commas unit', { type: 'class', classId: x.A.id });
     assert.match(lastResult(c2).error, /not available/);
   } finally { config.grammarLab = was.on; config.grammarLabUsers = was.users; }
   await reset(x);

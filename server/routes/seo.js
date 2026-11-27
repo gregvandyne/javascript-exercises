@@ -1,7 +1,8 @@
 // /robots.txt and /sitemap.xml (server/seo.js has the rules). Registered before the session: no cookie, no database
 // write, the same answer for everyone.
 //
-// The sitemap lists only what may be indexed: the home page, /teachers, /research, /compliance, /compare, the /learn/* subject and age pages, the official launch games
+// The sitemap lists only what may be indexed: the home page, /teachers, /research, /compliance, /compare, the /learn/* subject and age pages, the courses while
+// they are on (Grammar Lab while it is open to every visitor), the official launch games
 // that are live and public (visibleWhere(null), source='seed', owned by the official account), /safety, /parents and
 // its guides, the legal pages, /sdk/ and, once paid plans are public, /plans. Never a profile, a class, or a game a child made.
 import { Router } from 'express';
@@ -19,6 +20,7 @@ import { legacyHosts, hostOnly } from '../site.js';
 import { state as domainState } from '../domain.js';
 import { abs, origin, localeUrl, localizable, pageLangs, langsWithKey } from '../seo.js';
 import { COURSES } from '../services/course-catalog.js';
+import { listedForAll as grammarListed, HREF as GRAMMAR_HREF, COVER as GRAMMAR_COVER } from '../services/grammar-lab-listing.js';
 import { coursesHidden, openHubs } from '../services/game-focus.js';
 import { landingAtRoot } from './landing.js';
 import { TRUST_UPDATED } from './trust.js';
@@ -62,6 +64,8 @@ export function sitemapEntries() {
     ...(courses ? [{ path: '/teachers/number-quest', langs: langsWithKey('teachers.nq.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] }] : []),
     // Courses (services/course-catalog.js): their games have no page of their own, the course page stands for them.
     ...(courses ? COURSES : []).map(c => ({ path: `/courses/${c.slug}`, langs: langsWithKey(`${c.key}.about`), lastmod: CONTENT_UPDATED, images: c.games.map(g => `/covers/${g.slug}.jpg`) })),
+    // Grammar Lab (its own flag, services/grammar-lab-listing.js): only while it is open to every visitor.
+    ...(grammarListed() ? [{ path: GRAMMAR_HREF, langs: langsWithKey('grammarLab.sub'), lastmod: CONTENT_UPDATED, images: [GRAMMAR_COVER] }] : []),
     { path: '/learn', langs: langsWithKey('learn.index.h1'), lastmod: CONTENT_UPDATED },
     ...openHubs(HUBS).map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
     ...list.map(g => {

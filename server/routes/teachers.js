@@ -20,10 +20,12 @@ import { courseOwned } from '../services/course-catalog.js';
 /** A Play topic's Learn subject (the filters' subjects), for the games with no Learn subject of their own. */
 const TOPIC_SUBJECT = { math: 'math', reading: 'words', geography: 'maps', strategy: 'thinking' };
 import { coverArt, gameCard, rail } from '../views/components.js';
-import { courseRow } from '../views/courses.js';
+import { courseRow, coursesSection } from '../views/courses.js';
 import { learnCard as glLearnCard } from '../views/grammar-lab.js';
+import * as GLL from '../services/grammar-lab-listing.js';
+import { SLUG as TYPING_SLUG } from '../services/typing.js';
 import * as GLAB from '../services/grammar-lab.js';
-import { mayOpenGrammarLab, reachOf as glReachOf, unitInReach as glUnitInReach } from '../services/grammar-lab-access.js';
+import { reachOf as glReachOf, unitInReach as glUnitInReach } from '../services/grammar-lab-access.js';
 import * as focus from '../services/game-focus.js';
 import * as courses from '../services/courses.js';
 import { log } from '../services/log.js';
@@ -750,18 +752,36 @@ export function learnPage(req, res, { landing = false } = {}) {
       courseMarkup = items.length ? courseRow(items, { staff, title: mine ? t('learn.tab.myCourses') : null }) : '';
     } catch (e) { log('error', 'learn courses', { error: e.message }); }
   }
-  // Grammar Lab (behind GRAMMAR_LAB: services/grammar-lab-access.js): its own card for whoever it lets in (a student with
-  // assigned work too), whatever COURSES says; never for a visitor without a session (an indexed page never lists it).
-  if (u && f.how !== 'two' && f.how !== 'live' && !std && mayOpenGrammarLab(u) && !isGrownup(u)) {
-    try {
-      const reach = glReachOf(u);
-      const units = reach.all ? [] : GLAB.bands().flatMap(b => GLAB.pathwaysOf(b.id)).filter(p => glUnitInReach(reach, p.id));
-      const prog = units.map(p => GLAB.unitProgress(u, p, reach));
-      const done = staff ? 0 : reach.all ? GLAB.masteredSet(u).size : prog.reduce((n, x) => n + x.done, 0);
-      courseMarkup = html`${courseMarkup}${glLearnCard({ t, staff, done, total: reach.all ? 0 : prog.reduce((n, x) => n + x.total, 0), begun: done > 0,
-        meta: t('learn.grades', { from: 'K', to: '12' }) })}`;
-    } catch (e) { log('error', 'learn grammar lab', { error: e.message }); }
+  // The "Courses" section (views/courses.js coursesSection; docs/decisions.md "A Courses section on Learn"), first on the
+  // page after its heading, whatever COURSES says: Grammar Lab where its own gate lets the visitor in (grammar-lab-access.js
+  // through grammar-lab-listing.js: a visitor without a session only while it is open to everyone; never a grown-up's
+  // account, as before) and Typing Zoo, the typing course with its pets (an open official game, always listed). Both
+  // under Learn's subject and grade filters, not in the "two players" or "live" views or with a ?std= filter.
+  const learnCourses = [];
+  if (f.how !== 'two' && f.how !== 'live' && !std) {
+    if (GLL.listedFor(u) && !isGrownup(u) && fits(GLL.INFO, f)) {
+      try {
+        const reach = glReachOf(u);
+        const units = reach.all ? [] : GLAB.bands().flatMap(b => GLAB.pathwaysOf(b.id)).filter(p => glUnitInReach(reach, p.id));
+        const prog = units.map(p => GLAB.unitProgress(u, p, reach));
+        const done = staff ? 0 : reach.all ? GLAB.masteredSet(u).size : prog.reduce((n, x) => n + x.done, 0);
+        const total = staff || reach.all ? 0 : prog.reduce((n, x) => n + x.total, 0);
+        learnCourses.push({ id: 'grammar-lab', cls: 'gl-learn', href: GLL.HREF, cover: GLL.COVER, title: t('grammarLab.title'), desc: t('grammarLab.sub'), meta: GLL.metaLine(t),
+          prog: { done, total, label: t('grammarLab.ringLabel', { done, total }) },
+          actions: staff ? [{ href: '/teach/grammar-lab', label: `📌 ${t('learn.tab.assignCourse')}`, primary: true, id: 'gl-learn-assign' }, { href: GLL.HREF, label: t('grammarLab.learn.see') }]
+            : [{ href: GLL.HREF, label: `▶ ${done > 0 ? t('courses.continue') : t('courses.start')}`, primary: true, id: 'gl-learn-go' }] });
+      } catch (e) { log('error', 'learn grammar lab', { error: e.message }); }
+    }
+    const TYPING = { subject: 'typing', from: 1, to: 8 };
+    const tz = games.getGameBySlug(TYPING_SLUG);
+    if (tz && tz.status === 'published' && !focus.gameHidden(tz) && fits(TYPING, f)) {
+      learnCourses.push({ id: 'typing', href: lp(req, `/g/${TYPING_SLUG}`), cover: `/covers/${TYPING_SLUG}.jpg`, title: games.localizeGame(tz).title, desc: t('learn.courses.typing'),
+        meta: t('learn.tab.meta', { subject: subjName('typing'), grades: t('learn.courses.grades', { grades: '1-8' }) }),
+        actions: staff ? [{ href: `/teach/assign?game=${TYPING_SLUG}`, label: `📌 ${t('learn.tab.assign')}`, primary: true, id: 'typing-learn-assign' }, { href: keepLang(req, `/play/${TYPING_SLUG}`), label: `▶ ${t('learn.tab.try')}` }]
+          : [{ href: keepLang(req, `/play/${TYPING_SLUG}`), label: `▶ ${t('learn.play')}`, primary: true, id: 'typing-learn-go' }] });
+    }
   }
+  const learnCoursesMarkup = coursesSection(learnCourses);
   // Games other players made (any kind: Play and Learn are one page), on the topics view: signed in only (an indexed page
   // never carries a child's name or words), and only while PUBLIC_GAMES is on (services/games.js openToAll).
   const players = !config.publicGames || out || gridView ? [] : games.listVisible(u, { limit: 16, order: 'popular' }).filter(g => g.source !== 'seed' && !courseOwned(g));
@@ -838,14 +858,14 @@ export function learnPage(req, res, { landing = false } = {}) {
       ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
       ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
     </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('💡', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t(focus.coursesHidden() ? 'learn.tab.leadGames' : 'learn.tab.lead')}</p></div>${classStrip(req)}`;
-  const gridMarkup = html`${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
+  const gridMarkup = html`${learnCoursesMarkup}${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
     ${courseMarkup}
     ${liveFirst ? liveSec : ''}
     ${grid.length || !liveList.length ? html`<section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">${ico('🎓', { size: 28 })} ${t('learn.tab.games')}</h2>
       ${grid.length ? cards(grid) : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}${defGrade ? '?grade=any' : ''}#filters">${t('learn.tab.clear')}</a></p>`}
       ${staff && [...grid, ...liveList].some(g => codesOf(g.slug).length) ? stdNotice(t) : ''}</section>` : ''}
     ${liveFirst ? '' : liveSec}`;
-  const topicMarkup = html`${favs.length ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: favs, user: u, id: 'favorites', more: '/favorites' }) : ''}
+  const topicMarkup = html`${learnCoursesMarkup}${favs.length ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: favs, user: u, id: 'favorites', more: '/favorites' }) : ''}
     ${courseMarkup}
     ${topicSecs.map(sec => rail({ title: t(sec.key), emoji: sec.emoji, games: sec.games, user: u, id: `sec-${sec.id}` }))}
     ${!topicSecs.length ? html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}${defGrade ? '?grade=any' : ''}">${t('learn.tab.clear')}</a></p>` : ''}
@@ -942,6 +962,7 @@ router.get('/learn/:hub', (req, res) => {
     ${hub.extra === 'builder' ? builder(req, t) : html`<section class="lp-sec" aria-label="${t('learn.gamesHeading')}">${list.length ? list.map(gameItem) : html`<p class="notice">${t('learn.noGames')}</p>`}</section>`}
     ${hub.extra === 'tracks' && !focus.slugHidden('sum-racer') ? tracks(t) : ''}
     ${hub.extra === 'cs' && !focus.coursesHidden() ? csTeaser(req, t) : ''}
+    ${hub.key === 'words' && GLL.listedFor(req.user) && !isGrownup(req.user) ? glLearnCard({ t, staff: !signedOut(req.user) && isSchoolStaff(req.user), meta: GLL.metaLine(t) }) : ''}
     <section class="panel" id="classroom" aria-labelledby="cls-h">${el(t, 'h2', 'learn.tipsHeading', {}, ' id="cls-h"')}${el(t, 'p', `${k}.tips`)}</section>
     ${HOME_TIPS.includes(hub.key) && t.own(`${k}.home`) ? html`<section class="panel" id="home" aria-labelledby="home-h">${el(t, 'h2', 'learn.homeHeading', {}, ' id="home-h"')}${el(t, 'p', `${k}.home`)}</section>` : ''}
     ${faq.markup}

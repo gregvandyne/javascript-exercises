@@ -518,14 +518,10 @@
     }
   },
   "cards": {
-    "new": "Nuevo",
-    "noRatings": "Sin calificaciones aún",
-    "starsLabel": "{stars} de 5 estrellas, {count, plural, one {# calificación} other {# calificaciones}}",
     "playing": "{count} jugando",
     "gameBy": "{title}, de {name}",
     "classOnly": "Solo la clase",
     "by": "de {name}",
-    "plays": "{count, plural, one {{n} partida} other {{n} partidas}}",
     "seeAll": "Ver todo",
     "scrollBack": "Mover {title} hacia atrás",
     "scrollForward": "Mover {title} hacia adelante"
@@ -637,7 +633,8 @@
     "gameCount": "{count, plural, one {# juego} other {# juegos}}",
     "noMatch": "Ningún juego coincide con “{text}”",
     "noneYet": "Todavía no hay juegos aquí",
-    "tryCategory": "Mejor prueba una categoría:"
+    "tryCategory": "Mejor prueba una categoría:",
+    "courses": "Cursos"
   },
   "info": {
     "safety": {
@@ -1148,11 +1145,7 @@
     "updateWaiting": "hay una actualización esperando revisión",
     "reviewer": "Revisor: “{note}”",
     "stats": {
-      "ratings": "{count, plural, one {{n} calificación} other {{n} calificaciones}}",
-      "noRatings": "sin calificaciones aún",
-      "playingNow": "jugando ahora",
-      "plays": "{count, plural, one {partida} other {partidas}}",
-      "likes": "{count, plural, one {favorito} other {favoritos}}"
+      "playingNow": "jugando ahora"
     },
     "about": {
       "heading": "Sobre este juego",
@@ -1219,7 +1212,9 @@
     },
     "best": {
       "heading": "Tu mejor puntuación"
-    }
+    },
+    "favAdd": "Añadir a favoritos",
+    "favRemove": "Quitar de favoritos"
   },
   "play": {
     "backTo": "Volver a {title}",
@@ -2443,7 +2438,6 @@
     },
     "game": {
       "needSignIn": "Primero toca “Jugar como invitado” o entra a tu cuenta.",
-      "rated": "Le diste {count, plural, one {# estrella} other {# estrellas}}. Ahora el promedio es {average}.",
       "thanksRating": "¡Gracias por calificar!",
       "liked": "¡Añadido a tus favoritos!",
       "unliked": "Quitado de tus favoritos",
@@ -8750,6 +8744,11 @@
       "try": "Probar",
       "also": "También en Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Cursos",
+      "typing": "Aprende a escribir con el teclado, tecla a tecla: 40 lecciones cortas y 41 mascotas por nacer.",
+      "grades": "Grados {grades}"
     }
   },
   "parents": {
@@ -16925,6 +16924,12 @@
       "band": "{mastered} dominados · {started} en curso",
       "unit": "{started} en curso",
       "unitHead": "{mastered} de {total} dominados · {started} en curso"
+    },
+    "listing": {
+      "desc": "Gramática y escritura para los grados K a 12: cuatro niveles, una tarjeta de enseñanza para cada tema, práctica hasta dominarlo y salas de corrección.",
+      "tags": "Inglés, gramática, escritura",
+      "terms": "gramática, puntuación, comas, mayúsculas, sustantivos, verbos, escritura, inglés",
+      "units": "Unidades para «{text}»"
     }
   }
 }

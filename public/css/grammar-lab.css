@@ -10,12 +10,16 @@
 .gl-label{margin:0 0 4px;font-size:14px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
 
 /* The course page: a band with its cover and its units. */
-.gl-bandsec{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:16px;margin-bottom:20px}
+.gl-bandsec{--gl-pt:16px;--gl-px:16px;--gl-pb:16px;background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:var(--gl-pt) var(--gl-px) var(--gl-pb);margin-bottom:20px}
 .gl-cover{border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:var(--card-2)}
 .gl-cover svg{width:100%;height:100%}
 .gl-units{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .gl-unit{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r);background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 2px var(--line)}
 .gl-unit:hover{text-decoration:none;box-shadow:inset 0 0 0 2px var(--accent-line)}
+/* Pressing a row, a tile or a band's fold shows one even highlight over all of it, edge to edge (never the browser's
+   gray tap box over part of it). */
+.gl-unit,.gl-tile-main,.gl-bandfold>summary,.gl-menu summary{-webkit-tap-highlight-color:transparent}
+.gl-unit:active{background:var(--hover);box-shadow:inset 0 0 0 2px var(--accent-line)}
 .gl-unit-t{display:flex;flex-direction:column;flex:1;min-width:0}
 .gl-unit-name{font-weight:700;font-size:19px}
 .gl-go{font-size:28px;color:var(--muted)}
@@ -31,7 +35,15 @@
 .gl-topics{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .gl-tile{position:relative;display:flex;align-items:stretch;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 2px var(--line)}
 .gl-tile-main{flex:1;min-width:0;display:flex;align-items:center;gap:14px;padding:16px;color:var(--text);border-radius:var(--r)}
-a.gl-tile-main:hover{text-decoration:none;background:var(--hover)}
+/* A topic tile: its link covers the whole tile (::after, up to the rounded edge, under the ⋯ button, which sits over it
+   as its own target), and the hover, press and focus ring are the tile's, so the highlight is never split in two. A
+   locked tile is no link: no highlight. */
+a.gl-tile-main::after{content:"";position:absolute;inset:0;border-radius:inherit}
+a.gl-tile-main:hover{text-decoration:none}
+a.gl-tile-main:focus-visible{outline:none}
+.gl-tile:has(>a.gl-tile-main:hover){background:var(--hover)}
+.gl-tile:has(>a.gl-tile-main:active){background:var(--hover);box-shadow:var(--shadow),inset 0 0 0 2px var(--accent-line)}
+.gl-tile:has(>a.gl-tile-main:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .gl-tile-n{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);font-weight:800;font-size:20px}
 .gl-tile-t{display:flex;flex-direction:column;min-width:0}
 .gl-tile-name{font-weight:700;font-size:20px}
@@ -41,10 +53,12 @@ a.gl-tile-main:hover{text-decoration:none;background:var(--hover)}
 .gl-mastered .gl-tile-state{color:var(--ok);font-weight:700}
 .gl-pending .gl-tile-n{background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark)}
 .gl-locked .gl-tile-main{opacity:.7}
-.gl-menu{position:relative;flex:none;align-self:center;margin-inline-end:8px}
+.gl-menu{position:relative;z-index:1;flex:none;align-self:center;margin-inline-end:8px}
 .gl-menu summary{list-style:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:24px;font-weight:800;color:var(--text)}
 .gl-menu summary::-webkit-details-marker{display:none}
 .gl-menu summary:hover,.gl-menu[open] summary{background:var(--hover)}
+.gl-menu summary:active{background:var(--line)}
+.gl-tile:has(>a.gl-tile-main:hover) .gl-menu summary:hover{background:var(--line)}
 .gl-menu-list{position:absolute;inset-inline-end:0;top:48px;z-index:5;min-width:230px;display:flex;flex-direction:column;padding:6px;border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg),inset 0 0 0 1px var(--line)}
 .gl-mi{display:flex;flex-direction:column;padding:10px 12px;border-radius:10px;color:var(--text);font-weight:600}
 a.gl-mi:hover{background:var(--hover);text-decoration:none}
@@ -120,9 +134,8 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-card-small .gl-example{background:var(--card)}
 .gl-ex-text{font-size:22px;font-weight:600;line-height:1.6;margin:0}
 .gl-ex-note{color:var(--text-2);margin:0}
-.gl-tips ul{margin:0;padding-inline-start:20px}
-.gl-tips li{margin:4px 0}
-.gl-tips .gl-ex-text{font-size:20px}
+/* More examples: the same unbulleted blocks as the worked example (each a .gl-ex, its own spacing), still a list */
+.gl-tips ul{margin:0;padding:0;list-style:none}
 .gl-how{margin:0 0 12px}
 /* A marked word: the highlighted word over its small label, both in the line's flow (they used to hang the label under
    the word on its own, so a label wider than its word ran into the next word's label, and on a phone into the next
@@ -179,6 +192,7 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 @media (prefers-reduced-motion:reduce){.gl-check{animation:none}}
 @media (max-width:520px){
   .gl-screen,.gl-card,.gl-bandsec{padding:14px 12px 18px;border-radius:var(--r)}
+  .gl-bandsec{--gl-pt:14px;--gl-px:12px;--gl-pb:18px;padding:var(--gl-pt) var(--gl-px) var(--gl-pb)}
   .gl-actions .btn{flex:1 1 auto}
 }
 .gl .btn{max-width:100%;white-space:normal;text-align:center}
@@ -313,8 +327,12 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 /* The course page: the student's band first, the others folded; the grade question on a first visit. */
 .gl-badge-yours{background:var(--accent-soft);color:var(--accent-ink)}
 .gl-other-h{margin-top:24px}
-.gl-bandfold>summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;min-height:48px;cursor:pointer;font-weight:800;font-size:20px}
-.gl-bandfold[open]>summary{margin-bottom:12px}
+.gl-bandfold>summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;min-height:48px;cursor:pointer;font-weight:800;font-size:20px;
+  margin:calc(-1 * var(--gl-pt)) calc(-1 * var(--gl-px)) calc(-1 * var(--gl-pb));padding:var(--gl-pt) var(--gl-px) var(--gl-pb);border-radius:inherit}
+.gl-bandfold>summary:hover,.gl-bandfold>summary:active{background:var(--hover)}
+.gl-bandfold>summary:focus-visible{outline-offset:-3px}
+/* (open: the summary row is the card's top, its own corners rounded, and the band's units follow) */
+.gl-bandfold[open]>summary{margin-bottom:12px;padding-bottom:var(--gl-pt);border-end-start-radius:0;border-end-end-radius:0}
 .gl-ask-grade{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:16px;margin-bottom:20px}
 .gl-ask-grade h2{margin-top:0}
 .gl-ask-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
@@ -441,7 +459,7 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 /* A narrow phone: a unit's card gives its name more room (a long name like "Punctuation with Conjunctions: All" no
    longer breaks inside a word, which left its colon starting a line). */
 @media (max-width:360px){
-  .gl-bandsec{padding:12px}
+  .gl-bandsec{--gl-pt:12px;--gl-px:12px;--gl-pb:12px;padding:12px}
   .gl-unit{gap:10px;padding:10px 12px}
   .gl-unit .gl-ring{width:46px;height:46px}
   .gl-unit .gl-ring span{width:34px;height:34px;font-size:12px}

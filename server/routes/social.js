@@ -165,7 +165,8 @@ router.get('/u/:username', (req, res) => {
   const built = games.listVisible(viewer, { ownerId: p.id, limit: 60, order: 'popular' });
   const favs = favouriteGames(viewer, p.id);
   const badges = profileBadges(p, built, t);
-  const stats = { games: built.length, plays: built.reduce((s, g) => s + g.plays, 0), likes: built.reduce((s, g) => s + g.likes, 0) };
+  // (no plays and no favorites count: the owner, 27 Nov 2026)
+  const stats = { games: built.length };
   const isMe = viewer && viewer.id === p.id;
   const rel = viewer && !isMe ? friends.status(viewer.id, p.id) : 'none';
   const can = rel === 'friends' ? chat.canChat(viewer, p, t) : null;
@@ -189,8 +190,6 @@ router.get('/u/:username', (req, res) => {
   ${isMe ? html`<p class="notice small" style="margin-top:12px">${t('profile.yourProfile')}</p>` : ''}
   <div class="statrow pstats" aria-label="${t('profile.statsLabel')}">
     <div class="stat"><b>${f.num(stats.games)}</b>${t('profile.stats.games', { count: stats.games })}</div>
-    <div class="stat"><b>${f.num(stats.plays)}</b>${t('game.stats.plays', { count: stats.plays })}</div>
-    <div class="stat"><b>${f.num(stats.likes)}</b>${t('game.stats.likes', { count: stats.likes })}</div>
   </div>
   <section aria-labelledby="built-h"><h2 id="built-h">${ico('🛠️', { size: 28 })} ${t('profile.gamesBy', { name: p.display_name })}</h2>
     ${built.length ? cardGrid(built, {}) : emptyState({ emoji: '🧱', title: t('profile.noGames'), text: isMe ? t('profile.noGamesMe') : '', action: isMe ? { href: '/build', label: t('home.empty.action') } : null })}

@@ -78,13 +78,20 @@ test('the help map: every linked page opens for a teacher (200), every button la
   for (const key of pages) {
     const p = H.pathOf(key, place);
     assert.ok(p && p.startsWith('/') && !p.includes(':'), key);
-    if (key === 'gclassroom' || key === 'live') continue;   // turned on below when the feature is on
+    if (key === 'gclassroom' || key === 'live' || key.startsWith('grammar')) continue;   // turned on below when the feature is on
     const r = await as(u)(p);
     // makeSchool: a teacher with a school is sent on to the next step; still a real page, never a 404.
     assert.ok(r.status === 200 || (key === 'makeSchool' && r.status === 302) || (key === 'inviteTeacher' && r.status === 302 && /tab=people/.test(r.location)), `${key} ${p} -> ${r.status}`);
   }
   config.liveClassroom = true;
   assert.equal((await as(u)(H.pathOf('live', place))).status, 200, '/live when Live is on');
+  // Grammar Lab's pages: 404 with GRAMMAR_LAB off, 200 once it lets the teacher in (open to everyone here)
+  const gl = { on: config.grammarLab, users: config.grammarLabUsers };
+  for (const key of pages.filter(k => k.startsWith('grammar'))) assert.equal((await as(u)(H.pathOf(key, place))).status, 404, `${key} with Grammar Lab off`);
+  Object.assign(config, { grammarLab: true, grammarLabUsers: ['*'] });
+  try {
+    for (const key of pages.filter(k => k.startsWith('grammar'))) assert.equal((await as(u)(H.pathOf(key, place))).status, 200, `${key} with Grammar Lab open`);
+  } finally { Object.assign(config, { grammarLab: gl.on, grammarLabUsers: gl.users }); }
   Object.assign(config, { googleClassroom: prev.gc, liveClassroom: prev.live });
   // The router knows the Google Classroom page (on only with Google set up); its path is the class's own.
   assert.match(fs.readFileSync(path.join(ROOT, 'server/routes/gclassroom.js'), 'utf8'), /router\.get\('\/class\/:id\/google-classroom'/);

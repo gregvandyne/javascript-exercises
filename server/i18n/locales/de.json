@@ -519,14 +519,10 @@
     }
   },
   "cards": {
-    "new": "Neu",
-    "noRatings": "Noch keine Bewertungen",
-    "starsLabel": "{stars} von 5 Sternen aus {count, plural, one {# Bewertung} other {# Bewertungen}}",
     "playing": "{count} spielen",
     "gameBy": "{title}, von {name}",
     "classOnly": "Nur Klasse",
     "by": "von {name}",
-    "plays": "{count, plural, one {{n}× gespielt} other {{n}× gespielt}}",
     "seeAll": "Alle zeigen",
     "scrollBack": "{title} zurückblättern",
     "scrollForward": "{title} weiterblättern"
@@ -638,7 +634,8 @@
     "gameCount": "{count, plural, one {# Spiel} other {# Spiele}}",
     "noMatch": "Keine Spiele zu „{text}“",
     "noneYet": "Hier gibt es noch keine Spiele",
-    "tryCategory": "Probier lieber eine Kategorie:"
+    "tryCategory": "Probier lieber eine Kategorie:",
+    "courses": "Kurse"
   },
   "info": {
     "safety": {
@@ -1149,11 +1146,7 @@
     "updateWaiting": "ein Update wartet auf die Prüfung",
     "reviewer": "Prüfer: „{note}“",
     "stats": {
-      "ratings": "{count, plural, one {{n} Bewertung} other {{n} Bewertungen}}",
-      "noRatings": "noch keine Bewertungen",
-      "playingNow": "spielen gerade",
-      "plays": "Mal gespielt",
-      "likes": "{count, plural, one {Favorit} other {Favoriten}}"
+      "playingNow": "spielen gerade"
     },
     "about": {
       "heading": "Über dieses Spiel",
@@ -1220,7 +1213,9 @@
     },
     "best": {
       "heading": "Dein bester Punktestand"
-    }
+    },
+    "favAdd": "Zu Favoriten hinzufügen",
+    "favRemove": "Aus Favoriten entfernen"
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -2444,7 +2439,6 @@
     },
     "game": {
       "needSignIn": "Tipp auf „Als Gast spielen“ oder melde dich zuerst an.",
-      "rated": "Du hast {count, plural, one {# Stern} other {# Sterne}} gegeben. Der Schnitt ist jetzt {average}.",
       "thanksRating": "Danke fürs Bewerten!",
       "liked": "Zu deinen Favoriten hinzugefügt!",
       "unliked": "Aus deinen Favoriten entfernt",
@@ -8751,6 +8745,11 @@
       "try": "Ausprobieren",
       "also": "Außerdem auf Oomba",
       "hubNamed": "{subject}: {hub}"
+    },
+    "courses": {
+      "h": "Kurse",
+      "typing": "Lerne Tippen, eine Taste nach der anderen: 40 kurze Lektionen und 41 Tiere zum Ausbrüten.",
+      "grades": "Klassen {grades}"
     }
   },
   "parents": {
@@ -16926,6 +16925,12 @@
       "band": "{mastered} gemeistert · {started} in Arbeit",
       "unit": "{started} in Arbeit",
       "unitHead": "{mastered} von {total} gemeistert · {started} in Arbeit"
+    },
+    "listing": {
+      "desc": "Grammatik und Schreiben für die Klassen K bis 12: vier Stufen, eine Lernkarte zu jedem Thema, Üben bis es sitzt und Korrekturräume.",
+      "tags": "Englisch, Grammatik, Schreiben",
+      "terms": "Grammatik, Zeichensetzung, Kommas, Großbuchstaben, Großschreibung, Nomen, Substantive, Verben, Schreiben, Englisch",
+      "units": "Einheiten zu „{text}“"
     }
   }
 }
