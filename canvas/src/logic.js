@@ -192,7 +192,37 @@ Object.assign(jump, { solve: lineBase(jump).solve });
 // ---------------------------------------------------------------- digit boxes (column add, subtract, multiply)
 // p: { a, b }. The student fills the answer's digits in graph-paper boxes, ones on the right. st.ans: digits by column
 // from the ones (null for an empty box). Leading empty boxes are fine; a wrong or missing digit is not.
+// 1.6.0: story, the Builder's own line for the problem in the activity's theme ("The farm packs {a} eggs, then {b}
+// more. How many eggs?"): a template with {a} and {b}, so the numbers always match (the Activity panel may change them).
+// The generator's regroup ("some": every problem carries (add) or borrows (sub) at least once; "all": in every column
+// that can; "none": never) and lo / hi (each number's range, inside its number of digits) keep a set on the skill asked.
+// Hints use the problem's own digits and the column the student is on: hints(p, st, focus).
 const OPS = { 'digits.add': (a, b) => a + b, 'digits.sub': (a, b) => a - b, 'digits.mul': (a, b) => a * b };
+export const REGROUP = ['some', 'all', 'none'];
+const storyOf = s => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, 160) : '');
+/** The columns of a column sum, from the ones: [{ i, x, y, c, s, out }]. c: what came in (a carry, or a borrow taken
+ *  from this column), s: the column's sum, difference (after a borrow) or product, out: the carry or borrow passed on. */
+export function columnsOf(tool, a, b) {
+  const A = digitsOf(a), B = digitsOf(b), out = [];
+  if (tool === 'digits.add') { let c = 0; for (let i = 0; i < Math.max(A.length, B.length); i++) { const x = A[i] || 0, y = B[i] || 0, s = x + y + c; out.push({ i, x, y, c, s, out: s >= 10 ? 1 : 0 }); c = s >= 10 ? 1 : 0; } }
+  else if (tool === 'digits.sub') { let bw = 0; for (let i = 0; i < A.length; i++) { const x = A[i] - bw, y = B[i] || 0, take = x < y ? 1 : 0; out.push({ i, x, y, c: bw, s: x + take * 10 - y, out: take }); bw = take; } }
+  else { let c = 0; for (let i = 0; i < A.length; i++) { const x = A[i], s = x * b + c; out.push({ i, x, y: b, c, s, out: Math.floor(s / 10) }); c = Math.floor(s / 10); } }
+  return out;
+}
+/** The columns that can regroup: addition, the columns where both numbers have a digit; subtraction, every column of a
+ *  but its top one; multiplication, every digit of a. */
+const canRegroup = (tool, a, b) => (tool === 'digits.add' ? Math.min(digitsOf(a).length, digitsOf(b).length) : tool === 'digits.sub' ? digitsOf(a).length - 1 : digitsOf(a).length);
+/** How a problem regroups: { n: the columns that carry or borrow, can: the columns that could }. */
+export function regroupsOf(tool, a, b) {
+  const can = canRegroup(tool, a, b), cols = columnsOf(tool, a, b);
+  return { n: cols.filter(c => c.out > 0).length, can, all: can > 0 && cols.slice(0, can).every(c => c.out > 0) };
+}
+/** Does { a, b } practise this regrouping ("some": at least once, "all": in every column that can, "none": never)? */
+export function fitsRegroup(tool, a, b, want) {
+  if (!REGROUP.includes(want)) return true;
+  const r = regroupsOf(tool, a, b);
+  return want === 'none' ? r.n === 0 : want === 'all' ? r.all : r.n > 0;
+}
 const colTool = tool => {
   const op = OPS[tool];
   const t = {
@@ -200,6 +230,11 @@ const colTool = tool => {
       if (!isInt(p.a, 0, 99999) || !isInt(p.b, 0, 99999)) return fail('"a" and "b" must be whole numbers from 0 to 99999', t.clean);
       if (tool === 'digits.sub' && p.b > p.a) return fail('"a" must be at least "b" (no negative answers)', t.clean);
       if (tool === 'digits.mul' && (p.a > 9999 || !isInt(p.b, 1, 9))) return fail('"a" must be up to 9999 and "b" a single digit from 1 to 9', t.clean);
+      if (p.story !== undefined && p.story !== null && p.story !== '') {
+        const s = storyOf(p.story), rest = s.replace(/\{[ab]\}/g, '');
+        if (!s || !s.includes('{a}') || !s.includes('{b}') || /[{}<>]/.test(rest)) return fail('"story" must be one short line with {a} and {b} where the two numbers go (no other { } and no < >)', t.clean);
+        return { tool, a: p.a, b: p.b, story: s };
+      }
       return { tool, a: p.a, b: p.b };
     },
     result: p => op(p.a, p.b),
@@ -210,8 +245,8 @@ const colTool = tool => {
       if (!ans.some(x => isInt(x, 0, 9))) return { ok: false, hint: { k: 'fbEmpty', v: {} } };
       for (let i = 0; i < Math.max(ans.length, want.length); i++) {
         const got = ans[i], w = want[i];
-        if (w === undefined) { if (isInt(got, 1, 9)) return { ok: false, hint: { k: 'fbCol', v: { place: PLACE[i] || 'ones' } } }; continue; }
-        if (got !== w) return { ok: false, hint: { k: got === null || got === undefined ? 'fbFill' : 'fbCol', v: { place: PLACE[i] || 'ones' } } };
+        if (w === undefined) { if (isInt(got, 1, 9)) return { ok: false, hint: { k: 'fbCol', v: { place: PLACE[i] || 'ones' } }, col: i }; continue; }
+        if (got !== w) return { ok: false, hint: { k: got === null || got === undefined ? 'fbFill' : 'fbCol', v: { place: PLACE[i] || 'ones' } }, col: i };
       }
       return { ok: true, hint: null };
     },
@@ -220,25 +255,52 @@ const colTool = tool => {
       const A = digitsOf(p.a), B = digitsOf(p.b), out = [];
       if (tool === 'digits.add') {
         let c = 0;
-        for (let i = 0; i < Math.max(A.length, B.length) && out.length < 4; i++) { const x = A[i] || 0, y = B[i] || 0, s = x + y + c; out.push({ k: c ? 'colAddC' : 'colAdd', v: { place: PLACE[i], x, y, c }, ans: s }); c = s >= 10 ? 1 : 0; }
+        for (let i = 0; i < Math.max(A.length, B.length) && out.length < 4; i++) { const x = A[i] || 0, y = B[i] || 0, s = x + y + c; out.push({ k: c ? 'colAddC' : 'colAdd', v: { place: PLACE[i], x, y, c }, ans: s, col: i }); c = s >= 10 ? 1 : 0; }
       } else if (tool === 'digits.sub') {
         let borrow = 0;
-        for (let i = 0; i < A.length && out.length < 4; i++) { let x = A[i] - borrow; const y = B[i] || 0; borrow = 0; if (x < y) { out.push({ k: 'colBorrow', v: { place: PLACE[i], x, y } }); x += 10; borrow = 1; } out.push({ k: 'colSub', v: { place: PLACE[i], x, y }, ans: x - y }); }
+        for (let i = 0; i < A.length && out.length < 4; i++) { let x = A[i] - borrow; const y = B[i] || 0; borrow = 0; if (x < y) { out.push({ k: 'colBorrow', v: { place: PLACE[i], x, y } }); x += 10; borrow = 1; } out.push({ k: 'colSub', v: { place: PLACE[i], x, y }, ans: x - y, col: i }); }
       } else {
         let c = 0;
-        for (let i = 0; i < A.length && out.length < 4; i++) { const x = A[i], s = x * p.b + c; out.push({ k: c ? 'colMulC' : 'colMul', v: { place: PLACE[i], x, y: p.b, c }, ans: s }); c = Math.floor(s / 10); }
+        for (let i = 0; i < A.length && out.length < 4; i++) { const x = A[i], s = x * p.b + c; out.push({ k: c ? 'colMulC' : 'colMul', v: { place: PLACE[i], x, y: p.b, c }, ans: s, col: i }); c = Math.floor(s / 10); }
       }
       return [...out.slice(0, 4), { k: 'colWrite', v: {} }, PRESS];
     },
-    hints: p => [{ k: 'colH1', v: {} }, { k: tool === 'digits.add' ? 'colH2add' : tool === 'digits.sub' ? 'colH2sub' : 'colH2mul', v: {} }, { k: 'colH3', v: { d: digitsOf(op(p.a, p.b))[0] } }],
-    task: p => ({ k: tool === 'digits.add' ? 'addTask' : tool === 'digits.sub' ? 'subTask' : 'mulTask', v: { a: p.a, b: p.b } }),
+    /** 1.6.0: three hints with this problem's own digits, for one column: by default the first whose answer box is not
+     *  right yet; focus (a column index) when the last answer or step box was wrong there. [a nudge for that column,
+     *  its worked line ("Ones: 6 + 8 = 14. Write 4 and carry 1 to the tens."), the next column's worked line]. */
+    hints(p, st, focus) {
+      const cols = columnsOf(tool, p.a, p.b), want = digitsOf(op(p.a, p.b)), ans = Array.isArray(st && st.ans) ? st.ans : [];
+      let at = Number.isInteger(focus) && focus >= 0 && focus < cols.length ? focus : cols.findIndex((c, i) => ans[i] !== want[i]);
+      if (at < 0) at = 0;
+      const line = (c, worked) => {
+        const v = { place: PLACE[c.i] || 'ones', x: c.x, y: c.y, c: c.c, s: c.s, d: c.s % 10, next: PLACE[c.i + 1] || 'tens' }, top = c.i === cols.length - 1, C = c.c ? 'C' : '';
+        if (tool === 'digits.sub') {
+          if (c.x < 0) return { k: 'hSub0', v };   // a 0 on top that already gave 1 away (503 − 128, the tens)
+          if (!worked) return { k: c.c ? 'hSubC1' : 'hSub1', v };
+          return c.out ? { k: 'hSub10', v: { ...v, t: c.x + 10 } } : { k: 'hSub2', v };
+        }
+        const m = tool === 'digits.mul' ? 'Mul' : 'Add';
+        if (!worked) return { k: `h${m}${C}1`, v };
+        if (c.s >= 10) return { k: `h${m}${C}${top ? 'Top' : '10'}`, v: { ...v, k: Math.floor(c.s / 10) } };
+        return { k: `h${m}${C}2`, v };
+      };
+      return [line(cols[at], false), line(cols[at], true), at + 1 < cols.length ? line(cols[at + 1], true) : { k: 'hLast', v: {} }];
+    },
+    task: p => (p.story ? { text: p.story.replace(/\{a\}/g, String(p.a)).replace(/\{b\}/g, String(p.b)) } : { k: tool === 'digits.add' ? 'addTask' : tool === 'digits.sub' ? 'subTask' : 'mulTask', v: { a: p.a, b: p.b } }),
     ask: () => ({ k: 'digQ', v: {} }),
     gen(rnd, o) {
-      const size = isInt(o.digits, 1, 4) ? o.digits : 2, lo = 10 ** (size - 1), hi = 10 ** size - 1;
-      if (tool === 'digits.mul') return { tool, a: between(rnd, Math.max(2, lo), hi), b: between(rnd, 2, 9) };
-      let a = between(rnd, lo, hi), b = between(rnd, lo, hi);
-      if (tool === 'digits.sub' && b > a) [a, b] = [b, a];
-      return { tool, a, b };
+      const size = isInt(o.digits, 1, 4) ? o.digits : 2, lo0 = 10 ** (size - 1), hi0 = 10 ** size - 1;
+      // 1.6.0: lo / hi, each number's range, always inside its number of digits ("bigger numbers" stay that size)
+      const lo = isInt(o.lo, lo0, hi0) ? o.lo : lo0, hi = isInt(o.hi, lo, hi0) ? o.hi : hi0;
+      const want = REGROUP.includes(o.regroup) ? o.regroup : o.regroup === true ? 'some' : o.regroup === false ? 'none' : null, story = storyOf(o.story);
+      const make = () => {
+        if (tool === 'digits.mul') return [between(rnd, Math.max(2, lo), Math.max(2, hi)), between(rnd, 2, 9)];
+        const a = between(rnd, lo, hi), b = between(rnd, lo, hi);
+        return tool === 'digits.sub' && b > a ? [b, a] : [a, b];
+      };
+      let [a, b] = make();
+      for (let i = 0; want && i < 600 && !fitsRegroup(tool, a, b, want); i++) [a, b] = make();
+      return { tool, a, b, ...(story ? { story } : {}) };
     },
     key: p => `${tool}:${p.a}:${p.b}`,
   };
@@ -471,6 +533,27 @@ export const TOOL_IDS = Object.keys(TOOLS);
 export const manipulativeOf = id => String(id || '').split('.')[0];
 export { PLACE, ratOf as rat, lcm };
 
+/** 1.6.0: the activity's theme (task.theme) as the kit shows it: { icon: one emoji, cheers: up to 4 short lines for a
+ *  right answer, end: the end card's line }, or null. Anything else in it is left out. */
+const themeLine = (s, n) => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, n) : '');
+export function themeOf(t) {
+  if (!t || typeof t !== 'object' || Array.isArray(t)) return null;
+  const ic = typeof t.icon === 'string' ? t.icon.trim() : '';
+  const icon = ic && [...ic].length <= 8 && !/[\p{L}\p{N}<>{}]/u.test(ic) ? ic : '';
+  const cheers = Array.isArray(t.cheers) ? t.cheers.map(x => themeLine(x, 60)).filter(Boolean).slice(0, 4) : [];
+  const end = themeLine(t.end, 100);
+  return icon || cheers.length || end ? { icon, cheers, end } : null;
+}
+/** What is wrong with a theme, or '' (the self-test's words for the Builder). */
+function themeWhy(t) {
+  if (t === undefined || t === null) return '';
+  if (typeof t !== 'object' || Array.isArray(t)) return 'task.theme must be { "icon": one emoji, "cheers": [up to 4 short lines], "end": one short line }';
+  if (t.icon !== undefined && !(themeOf({ icon: t.icon }) || {}).icon) return 'task.theme.icon must be one emoji';
+  if (t.cheers !== undefined && (!Array.isArray(t.cheers) || t.cheers.length > 4 || t.cheers.some(x => typeof x !== 'string' || !x.trim() || x.length > 60))) return 'task.theme.cheers must be up to 4 short lines (60 characters each)';
+  if (t.end !== undefined && (typeof t.end !== 'string' || t.end.length > 100)) return 'task.theme.end must be one short line (100 characters)';
+  return '';
+}
+
 /** A problem as data -> { p } (the cleaned problem) or { why }. */
 export function cleanProblem(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { why: 'a problem must be an object with a "tool"' };
@@ -514,6 +597,7 @@ export function selfTest(activity, words = null) {
   if (cfg.supports !== undefined && (!Array.isArray(cfg.supports) || !cfg.supports.length || cfg.supports.length > SUPPORTS.length || cfg.supports.some(x => !SUPPORTS.includes(x)) || new Set(cfg.supports).size !== cfg.supports.length)) add('config', `supports must be a list of one to four of ${SUPPORTS.join(', ')}, each once`);
   else if (Array.isArray(cfg.supports) && cfg.support !== undefined && SUPPORTS.includes(cfg.support) && !cfg.supports.includes(cfg.support)) add('config', 'support must be one of supports (where the activity starts)');
   if (cfg.count !== undefined && !isInt(cfg.count, 1, MAX_COUNT)) add('config', `count must be a whole number from 1 to ${MAX_COUNT}`);
+  const thWhy = themeWhy(a.task && typeof a.task === 'object' ? a.task.theme : undefined); if (thWhy) add('task', thWhy);
   const fixed = Array.isArray(a.problems) ? a.problems : [];
   if (a.problems !== undefined && !Array.isArray(a.problems)) add('problems', 'problems must be a list');
   if (fixed.length > MAX_PROBLEMS) add('problems', `at most ${MAX_PROBLEMS} problems`);
@@ -541,6 +625,12 @@ export function selfTest(activity, words = null) {
   if (gen && TOOLS[gen.tool]) {
     const T = TOOLS[gen.tool];
     for (let i = 1; i <= 30; i++) { const raw = T.gen(seeded(i * 7919), gen); if (!cleanProblem(raw).p || one(raw, 'generator') !== null) { if (!cleanProblem(raw).p) add('generator', `made a problem it cannot use (${cleanProblem(raw).why})`); break; } if (out.some(x => x.at === 'generator')) break; }
+    // 1.6.0: a column generator's regroup ("some" | "all" | "none") must be one it can keep with its numbers
+    if (/^digits\./.test(gen.tool) && gen.regroup !== undefined) {
+      const want = gen.regroup === true ? 'some' : gen.regroup === false ? 'none' : gen.regroup;
+      if (!REGROUP.includes(want)) add('generator', 'regroup must be "some" (every problem regroups at least once), "all" (in every column) or "none"');
+      else for (let i = 1; i <= 30; i++) { const p = T.gen(seeded(i * 7919), gen); if (!fitsRegroup(gen.tool, p.a, p.b, want)) { add('generator', `regroup "${want}" cannot be kept with these numbers (it made ${p.a} and ${p.b}): widen lo and hi or change digits`); break; } }
+    }
   }
   // 1.2.0: what the activity is for. A question generator needs a generator; a printed worksheet needs problems (or a
   // generator), and a sheet of N questions must have N answers in its key (sheet.js makes both from the same problems).
