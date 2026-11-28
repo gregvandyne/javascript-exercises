@@ -179,7 +179,7 @@ test('4 and 8. the system prompt: the class\'s full name, and one vocabulary (ga
   const calls = H.standIn(() => 'Hello!');
   await H.say(x, 'Hi', { type: 'teach' });
   const sys = typeof calls[0].system === 'string' ? calls[0].system : JSON.stringify(calls[0].system);
-  assert.match(sys, /name a class by its full name/); assert.match(sys, /"4b math"/);
+  assert.match(sys, /name a class by its full name/); assert.match(sys, /never shortened to the words the teacher typed/);
   assert.match(sys, /A "game" is one playable thing/); assert.match(sys, /A "lesson plan" is/); assert.match(sys, /A "worksheet" is/);
   assert.match(sys, /Never call a game a "lesson"/);
   assert.doesNotMatch(sys, /call a single playable thing .* a "lesson"/);
