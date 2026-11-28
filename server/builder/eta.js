@@ -38,9 +38,12 @@ export const quantile = (sorted, p) => sorted[clamp(Math.ceil(p * sorted.length)
 
 // First guesses that real builds replace (seconds). AI: from the standard 2D builds on record (40, 71 and 75 s, all
 // inside "1–2 minutes") and reasoning; Pro takes about twice as long, 3D a little longer. [p25, p50, p75, tail p50, tail p75]
+// A new Pro build is a teacher's (trusted makers always build with Pro, runner.js): up to three playtest and fix rounds
+// after the first version, each a full play in the browser. The owner's fifth audit timed two of them from the chat:
+// 199 s and 353 s (the "oomba job ended" log lines), so the first guess is 2 to 6 minutes, never "1-2 minutes".
 const AI = {
   'std:new:2d': [50, 75, 120, 30, 50], 'std:change:2d': [30, 45, 70, 25, 40], 'std:new:3d': [55, 80, 130, 60, 100], 'std:change:3d': [35, 55, 90, 30, 50],
-  'pro:new:2d': [100, 150, 240, 60, 100], 'pro:change:2d': [60, 90, 150, 50, 80], 'pro:new:3d': [110, 160, 260, 120, 200], 'pro:change:3d': [70, 110, 180, 60, 100],
+  'pro:new:2d': [120, 200, 330, 120, 200], 'pro:change:2d': [60, 90, 150, 50, 80], 'pro:new:3d': [110, 160, 260, 120, 200], 'pro:change:3d': [70, 110, 180, 60, 100],
 };
 // The building blocks stream chunks at a fixed delay d: measured as chunks × d + a fixed overhead (ms).
 // [[chunks, ms] for p25, p50, p75, tail p50, tail p75]

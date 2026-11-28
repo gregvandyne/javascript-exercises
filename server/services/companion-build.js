@@ -149,7 +149,10 @@ function planOf(u, card) {
  *  live), its topic as what it teaches, with the grade and the help (planNote says them), the words as a brief (brief:
  *  true: runner.submit sends them word for word). On the board: the classroom activity kind, played on the board.
  *  (docs/decisions.md "Builder in the chat: audit 4 fixes": devices had been the activity kind too, so a game for
- *  devices was labelled "Classroom activity" and could not be made live.) */
+ *  devices was labelled "Classroom activity" and could not be made live.)
+ *  Column arithmetic on their own devices (regrouping addition, subtracting in columns: plan.js columnGame, when the
+ *  runner reads the plan) becomes the canvas activity labelled a class game (game: true): the kit's column tool with
+ *  its steps, hints, stars and sound, never a quiz the Builder writes (docs/decisions.md "Builder: audit 5 fixes"). */
 export function builderPlan(card, told) {
   const help = HELP[card.pick.help] || ['guided'];
   if (card.pick.use === 'board') {
@@ -553,7 +556,15 @@ function liveSteps(gameId) {
     if (name === 'step') rows.set(d.i, { key: d.key, facts: { ...d } });
     else if (name === 'stepinfo' && rows.has(d.i)) Object.assign(rows.get(d.i).facts, d);
   }
-  return { steps: [...rows.values()], phase: job.phase };
+  return { steps: [...rows.values()], phase: job.phase, eta: job.est && job.est.start ? etaOf(job.est.start) : null };
+}
+/** The card's time line, from the build's own estimate (builder/eta.js: recent timed builds of this kind, else its first
+ *  guess): { show: 'under' | 'about' | 'range', lo?, hi?, guess } (whole minutes), or null (a quick build: no line).
+ *  The page words it ("Usually 2-4 minutes", "About 2-6 minutes"); it was always "Usually 1-2 minutes", whatever the
+ *  build (docs/decisions.md "Builder: audit 5 fixes"). */
+export function etaOf(start) {
+  if (!start || !['under', 'about', 'range'].includes(start.show)) return null;
+  return { show: start.show, ...(start.show !== 'under' ? { lo: start.lo || start.hi || 1, hi: start.hi || 1 } : {}), guess: start.src !== 'data' };
 }
 /** GET /api/companion/build/:gameId: the live rows, the preview (this viewer's own frame address) and builds left. */
 export function view(u, gameId, { versionId = '', lang = 'en' } = {}) {
@@ -566,6 +577,7 @@ export function view(u, gameId, { versionId = '', lang = 'en' } = {}) {
   return {
     ok: true, busy: runner.isBusy(g.id), title: g.title,
     rows: ls ? rowsOf(ls.steps, { phase: ls.phase }) : null,
+    eta: ls ? ls.eta : null,
     preview: ver ? { url: previewUrl(ver, g, u.id, lang), number: ver.number, sandbox: SANDBOX, safety: ver.safety_status || '' } : null,
     // the done card's Versions (newest first): every version of the game, the earlier ones too
     versions: games.listVersions(g.id).map(x => ({ id: x.id, number: x.number })).sort((a, b) => b.number - a.number).slice(0, 60),

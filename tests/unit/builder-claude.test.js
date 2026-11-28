@@ -747,12 +747,12 @@ test('CL-13 estimates for the AI: a Pro build is in the Pro bucket with its roun
   const events = [];
   await runTurn({ user: u, gameId: g.id, text: 'a fox jumping game', pro: true, emit: (n, d) => events.push([n, d]) });
   const start = events.find(e => e[0] === 'eta')[1], done = events.find(e => e[0] === 'done')[1];
-  assert.deepEqual([start.phase, start.p, start.src, start.show, start.lo, start.hi], ['start', 'ai', 'default', 'range', 2, 4], 'Pro: about 2–4 minutes, a first guess');
+  assert.deepEqual([start.phase, start.p, start.src, start.show, start.lo, start.hi], ['start', 'ai', 'default', 'range', 2, 6], 'Pro: about 2–6 minutes, a first guess (a teacher\'s build: audit 5 timed 199 s and 353 s)');
   let r = row();
   assert.deepEqual(['est_key', 'kind', 'end_reason', 'versions'].map(k => r[k]), ['ai:pro:new:2d', 'new', 'ok', 1]);
   assert.equal(r.model_calls, done.steps.r); assert.equal(r.model_calls, 2);
   assert.equal(r.tokens_out, done.steps.to); assert.equal(r.tokens_out, 2 * 42, 'what the fake API said it wrote');
-  assert.equal(r.eta_hi_ms, 4 * 60e3);
+  assert.equal(r.eta_hi_ms, 6 * 60e3);
   assert.ok(!/claude|sonnet|opus|haiku/i.test(JSON.stringify(events.filter(e => e[0] === 'eta'))), 'no model name');
   // An error: charged, so it had its estimate; never a sample.
   const err = await stepTurn(u, g, 'make it harder', ['error400']);

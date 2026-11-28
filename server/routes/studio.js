@@ -26,7 +26,7 @@ import { audit } from '../db.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from '../builder/catalog.js';
 import { canvasVersion, canvasSrc } from '../services/canvaskit.js';
 import { figureLibs, figSrc, figPackSrc, FIG_PACKS } from '../services/figlibs.js';
-import { panelOf, PANEL_KIT } from '../builder/activity-data.js';
+import { panelOf, PANEL_KIT, upgradeCanvas } from '../builder/activity-data.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
@@ -222,7 +222,8 @@ export function liveClassState(user, g, cur, t, state = {}) {
   const loads = /\/packs\/live\.js/.test(cur.html), published = gameLiveReady(g), canHost = liveCanHost(user);
   const play = (state && state.play) || null;
   // (the arcade side off: a plain classroom game has no live play; a game made on the Oomba Kit before still can)
-  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || (!config.arcade && !kitVersion(cur.html) ? LIVE_NOT_PLAIN : '');
+  // (a class game on the canvas, plan.js columnGame, says what any classroom game says, not "Classroom activities...")
+  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? (state && state.classGame ? LIVE_NOT_PLAIN : LIVE_NOT_ENGINE.canvas) : (play && play.type && LIVE_NOT[play.type]) || (!config.arcade && !kitVersion(cur.html) ? LIVE_NOT_PLAIN : '');
   const line = chk.ready ? (published ? 'host' : 'publish') : loads ? 'fix' : 'off';
   return {
     line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
@@ -240,6 +241,9 @@ export function liveClassState(user, g, cur, t, state = {}) {
 export function canvasLineState(cur, t, state = {}) {
   if (canvasVersion(cur.html)) {
     const board = /"board"\s*:\s*true/.test(cur.html);
+    // A class game for column arithmetic built on the canvas (plan.js columnGame: the teacher asked for a game): "Class
+    // game · results go to Progress", never "Classroom activity" (docs/decisions.md "Builder: audit 5 fixes").
+    if (state && state.classGame && !board) return { kind: 'game', label: t('studio.canvasLine.game'), button: '', ask: '' };
     // While the arcade is hidden (ARCADE off, services/game-focus.js) the line has no "Make it an arcade game" switch.
     if (!config.arcade) return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: '', ask: '' };
     return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: t('studio.canvasLine.toArcade'), ask: t('studio.canvasLine.toArcadeAsk') };
@@ -486,7 +490,15 @@ router.post('/api/studio/:id/save', requireBuilder, rateLimit('studio-save', 30,
   const t = req.t;
   if (!cur) return res.status(400).json({ error: t('studio.api.buildFirst') });
   const c = cleanText((req.body || {}).note || '', 80, t); if (!c.ok) return res.status(400).json({ error: c.error });
-  const v = games.addVersion(g.id, cur.html, { notes: `⭐ ${t('studio.api.savedNote', { note: c.value || t('studio.api.savedDefault') })}`, createdBy: req.user.id, safetyStatus: cur.safety_status, safetyReport: JSON.parse(cur.safety_report || '{}') });
+  const notes = `⭐ ${t('studio.api.savedNote', { note: c.value || t('studio.api.savedDefault') })}`;
+  // A classroom activity on an older Oomba Canvas moves to the newest kit when it is saved again (activity-data.js
+  // upgradeCanvas: only its pinned tag changes, and only when the newest kit's self-test takes its data), scanned again
+  // like every new page. The owner's fifth audit: "Save version" on a 1.5.0 activity said "Saved as version 4." and kept
+  // playing 1.5.0 (docs/decisions.md "Builder: audit 5 fixes").
+  const up = upgradeCanvas(cur.html), html = up ? sanitizeGameHtml(up).html : null, report = html ? scanVersion(html) : null;
+  const v = html && report.status !== 'fail'
+    ? games.addVersion(g.id, html, { notes, createdBy: req.user.id, safetyStatus: report.status, safetyReport: report })
+    : games.addVersion(g.id, cur.html, { notes, createdBy: req.user.id, safetyStatus: cur.safety_status, safetyReport: JSON.parse(cur.safety_report || '{}') });
   res.json({ ok: true, message: t('studio.api.saved', { number: v.number }), state: studioState(req.user, g.id, t, req) });
 });
 

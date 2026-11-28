@@ -3,13 +3,16 @@
 //   panelOf(html)                    what the panel shows for a version: { data, kit } or null (not an activity)
 //   cleanPanel(base, body)           the panel's data (config, problems, gen) on top of the version's own -> { data } | { code, at?, why? }
 //   newTexts(base, data)             every piece of text in data that the version did not have (to screen)
-//   applyPanel(html, data)           the page with only its oc-activity block rewritten, on Oomba Canvas 1.6.0
+//   applyPanel(html, data)           the page with only its oc-activity block rewritten, on the newest Oomba Canvas
+//   upgradeCanvas(html)              the page moved to the newest kit (its data cleaned by that kit), or null: nothing to do
 //   noteFor(changes, t)              the version's label: "Activity panel: problem 3 moved up, 6 in a set"
 // Only the oc-activity JSON changes; task, steps and hints stay as the Builder wrote them. Problems are cleaned by the
-// kit's own frozen 1.6.0 file (cleanProblem: its allow-list of fields), so nothing but data the kit reads is ever saved.
-import { activityData, withActivityData, canvasVersion, canvasKit, canvasTag, CANVAS_PATH } from '../services/canvaskit.js';
+// kit's own frozen file of the newest version (cleanProblem: its allow-list of fields), so nothing but data the kit reads
+// is ever saved.
+import { activityData, withActivityData, canvasVersion, canvasKit, canvasTag, selfTestHtml, CANVAS_PATH, CANVAS_LATEST } from '../services/canvaskit.js';
 
-export const PANEL_KIT = '1.6.0';
+/** The kit the panel saves on: always the newest one (canvaskit.js CANVAS_LATEST: 1.6.1 the day it ships). */
+export const PANEL_KIT = CANVAS_LATEST;
 const SUPPORTS = ['watch', 'count', 'guided', 'own'];
 const PURPOSES = ['screen', 'worksheet', 'generator'];
 const MAX_PROBLEMS = 30, MAX_COUNT = 12, MAX_JSON = 60000, MAX_TEXT = 200;
@@ -18,7 +21,8 @@ const GEN_FIG = ['vars', 'where', 'q', 'fig', 'answer', 'dp', 'unit', 'work', 'h
 const GEN_TOOL = ['dens', 'mult', 'lo', 'hi', 'subs', 'digits', 'rule', 'n', 'tiles', 'fractions', 'dir', 'regroup', 'story'];
 // Fields whose strings are names the kit knows, not words anyone reads.
 const NOT_TEXT = new Set(['tool', 'kind', 'type', 'hide', 'rule', 'dir', 'element', 'regroup']);
-export const CHANGE_KEYS = ['moved', 'edited', 'added', 'copied', 'deleted', 'list', 'gen', 'help', 'count', 'purpose'];
+// kit: saved with no other change, to move the activity to the newest kit (the panel offers it on an older one).
+export const CHANGE_KEYS = ['moved', 'edited', 'added', 'copied', 'deleted', 'list', 'gen', 'help', 'count', 'purpose', 'kit'];
 
 /** -> { data, kit } for a classroom activity version (its data block read as JSON), else null. */
 export function panelOf(html) {
@@ -107,13 +111,26 @@ export function newTexts(base, data) {
 /** Text only: no markup in what a teacher types. */
 export const hasMarkup = list => list.some(s => /[<>]/.test(s));
 
-/** The page with its data block set to data, and its kit tag moved to 1.6.0, the newest (an activity saved from the panel, only). */
+/** The page with its kit tag on the newest kit (nothing else changes). */
+const onLatest = html => (canvasVersion(html) === PANEL_KIT ? html
+  : String(html).replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, m => (m.slice(0, m.indexOf('>')).includes(CANVAS_PATH) ? canvasTag(PANEL_KIT) : m)));
+/** The page with its data block set to data, and its kit tag moved to the newest kit (PANEL_KIT). */
 export function applyPanel(html, data) {
-  let out = withActivityData(html, data);
-  if (canvasVersion(out) !== PANEL_KIT) {
-    out = out.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, m => (m.slice(0, m.indexOf('>')).includes(CANVAS_PATH) ? canvasTag(PANEL_KIT) : m));
-  }
-  return out;
+  return onLatest(withActivityData(html, data));
+}
+/**
+ * An activity on an older Oomba Canvas, moved to the newest one: the newest pinned tag, and nothing else on the page
+ * changes (its data was checked when it was saved, and the kit reads it with its own allow-list). Every field a newer
+ * kit adds is optional, so older data plays the same, with the newer kit's feedback, hints, stars and sound. -> the new
+ * page, or null when there is nothing to do (not an activity, already on the newest kit) or the newest kit does not
+ * take this data (its self-test fails: the page keeps its own kit, never a broken activity). Used where a teacher saves
+ * an activity again (Save version, the Activity panel) and where the Builder saves one (tools.js saveVersion), so saving
+ * again is what moves an older activity on (docs/decisions.md "Builder: audit 5 fixes").
+ */
+export function upgradeCanvas(html) {
+  const p = panelOf(html); if (!p || p.kit === PANEL_KIT) return null;
+  const out = onLatest(html), st = selfTestHtml(out);
+  return st && st.ok ? out : null;
 }
 
 /** The changes the page lists ([{ k, n? }]) -> the same, cleaned (known kinds, small numbers, no repeats, at most 12). */

@@ -269,6 +269,36 @@ export function topicFor(text, grade = '') {
   }
   return hit;
 }
+// Column arithmetic (docs/decisions.md "Builder: audit 5 fixes"): a game that practises adding, subtracting or
+// multiplying in columns is built on Oomba Canvas's column tools (digits.add / digits.sub / digits.mul), whatever door it
+// came through (the chat's On their own devices, Studio's Classroom game), so it gets the kit's checked steps, hints,
+// stars and sound instead of a multiple-choice quiz the Builder writes itself. The owner's fifth audit: "Farm Carry
+// Stars" (regrouping addition, grade 4, from the chat) was a plain A-D quiz with 46 + 29.
+const COLUMN_OP = /\badd(s|ing|ition)?\b|\bsums?\b|\bplus\b|\bsubtract\w*|\bminus\b|\btake[- ]away\b|\bmultipl\w*/;
+const COLUMN_HOW = /\bregroup\w*|\bcarr(y|ies|ied|ying)\b|\bborrow\w*|\bcolumns?\b|\b(one|two|three|four|five|single|multi|[1-5])[- ]?digits?\b|\bplace values?\b|\bvertical\w*|\bstandard algorithm\b/;
+const COLUMN_NOT = /\bfraction|\bdecimal|\bpercent|\bintegers?\b|\bnegative|\balgebra|\bequations?\b|\bpolynomial|\bmatri(x|ces)\b|\bvectors?\b|\bmoney\b|\bclocks?\b|\bvocabulary\b|\bspelling\b|\bbooks?\b|\blibrar|\binto (teams|groups)\b/;
+/**
+ * Does this topic practise column arithmetic? -> the ready generator it means (a CANVAS_TOPICS entry: topicFor, with
+ * the skill and the digits its words name and the grade's numbers), or null. topic: a short topic ("regrouping
+ * addition"): an operation is enough for adding and subtracting. words (the teacher's whole message): an operation and
+ * how it is done in columns (regrouping, carrying, borrowing, columns, digits, place value), so "add a timer" or "add
+ * sound" never counts. Multiplying needs the how in both (times tables are facts, not columns). Never fractions,
+ * decimals, money, negative numbers or algebra.
+ */
+export function columnTopic({ topic = '', words = '', grade = '' } = {}) {
+  const pick = (s, strict) => {
+    const low = String(s || '').toLocaleLowerCase().replace(/[\u2010-\u2015]/g, '-');
+    if (!low.trim() || COLUMN_NOT.test(low)) return null;
+    // "regrouping" (or "borrowing") alone is column arithmetic too: adding (subtracting) unless the words say otherwise
+    const op = COLUMN_OP.test(low), implied = !op && /\bregroup\w*/.test(low) ? ' addition' : !op && /\bborrow\w*/.test(low) ? ' subtraction' : '';
+    if (!op && !implied) return null;
+    const mul = /\bmultipl\w*/.test(low) && !/\badd|\bsums?\b|\bplus\b|\bsubtract|\bminus\b|\btake[- ]away/.test(low);
+    if ((strict || mul) && !COLUMN_HOW.test(low)) return null;
+    const hit = topicFor(low + implied, grade);
+    return hit && /^digits\./.test(hit.gen.tool) ? hit : null;
+  };
+  return pick(topic, false) || pick(words, true);
+}
 /** The chips for a grade, in order (no grade, or one with no chips: the middle grades' chips). */
 export function topicsFor(grade) {
   const g = gradeOf(grade), list = g ? CANVAS_TOPICS.filter(x => x.grades.includes(g)) : [];
@@ -325,6 +355,8 @@ const choice = (v, ids) => {
 export function normalisePlan(raw, { forKid = false } = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   if (raw.kind === 'activity') return activityPlan(raw);
+  const col = columnGame(raw, { forKid });
+  if (col) return col;
   const ids = forKid ? TYPE_IDS.filter(id => !typeById(id).teacher) : TYPE_IDS;
   let type = choice(raw.type, ids);
   if (type && type.from === 'custom') { const id = classroomTypeFor(type.text, { forKid }); if (id) type = { from: 'pack', id }; }
@@ -364,6 +396,30 @@ export function normalisePlan(raw, { forKid = false } = {}) {
   if (PLAYS.includes(raw.play)) plan.play = raw.play === 'live' && liveNot(plan) ? playDefault(plan, { forKid }) : raw.play;
   return plan.type || plan.look || plan.world || characters.length || learn.length || plan.notes || plan.play ? plan : null;
 }
+/**
+ * A game plan (Studio's Classroom game, the chat's On their own devices) that practises column arithmetic -> the
+ * classroom activity's plan for it, labelled a game (game: true), or null. Only when the kind of game is not chosen (or
+ * is typed words that name no classroom starter) and nothing else of an arcade game was (no look, world or characters):
+ * a teacher who picks Quiz, Bingo or Flashcards gets that. The Builder then builds on Oomba Canvas's column tool (the
+ * CANVAS RULES), with its steps, hints, stars and sound, and the plan keeps what the game plan said: the teacher's
+ * brief, the grade, the help, the chat flag. played 'both': each student on their own device, results to Progress, and
+ * the kit's Board mode for the teacher. (docs/decisions.md "Builder: audit 5 fixes".)
+ */
+function columnGame(raw, { forKid = false } = {}) {
+  const ty = raw.type && typeof raw.type === 'object' ? raw.type : null;
+  if (ty && !(ty.from === 'custom' && !classroomTypeFor(clean(ty.text, LIMITS.idea), { forKid }) && !plainTemplateFor(clean(ty.text, LIMITS.idea)))) return null;
+  if (arcadeOn() && (LOOKS.includes(raw.look) && raw.look !== 'auto' || raw.world || (Array.isArray(raw.characters) && raw.characters.length))) return null;
+  const learn = (Array.isArray(raw.learn) ? raw.learn : []).map(l => (l && typeof l.text === 'string' ? clean(l.text, LIMITS.idea) : '')).filter(Boolean);
+  const grade = gradeOf(raw.grade);
+  const topic = learn.find(x => columnTopic({ topic: x, grade })) || '';
+  const words = [ty && ty.from === 'custom' ? ty.text : '', raw.notes, raw.brief === true && typeof raw.told === 'string' ? raw.told : ''].map(x => clean(x, 2000)).join('\n');
+  if (!topic && !columnTopic({ words, grade })) return null;
+  const use = usesPlan(['screen']);
+  return activityPlan({
+    kind: 'activity', topic: { text: topic || clean(words, LIMITS.idea) }, grade, help: raw.help, purpose: use.purpose, played: use.played,
+    notes: raw.notes, ...(raw.forClass === true ? { forClass: true } : {}), ...(raw.chat === true ? { chat: true } : {}), game: true,
+  });
+}
 /** A classroom activity's plan (normalisePlan, kind 'activity'): a known topic chip (and its tool) or typed words, a
  *  known support and way of playing (Guided and their own devices when left out), the grade if it is one. Kids may make
  *  one too: nothing in it depends on who builds it. The arcade fields are there and empty. */
@@ -376,6 +432,8 @@ function activityPlan(raw) {
     help, support: help[0], purpose: purposeOf(raw.purpose), played: CANVAS_PLAYS.includes(raw.played) ? raw.played : 'devices', grade,
     type: null, look: null, world: null, characters: [], learn: [], notes: clean(raw.notes, LIMITS.notes), ...(raw.forClass === true ? { forClass: true } : {}),
     ...(lesson ? { lesson } : {}), ...(raw.chat === true ? { chat: true } : {}),
+    // a class game on the canvas (columnGame: a game plan for column arithmetic): Studio calls it a game
+    ...(raw.game === true ? { game: true } : {}),
   };
   // the plan flag for figures (builder/figures.js): the topic, the lesson or the note calls for science, maths or graph
   // figures, in any site language; then the FIGURE RULES go with the build
@@ -453,7 +511,7 @@ export const topicLabel = (topic, t = tEn) => (!topic ? '' : topic.id ? t(`build
 export function planSentence(plan, t = tEn, { files = 0 } = {}) {
   const loc = t.locale || 'en', out = [t('buildSetup.say.start')];
   if (isActivity(plan)) {
-    out[0] = t('buildSetup.say.activity');   // "Here is my plan: a classroom activity."
+    out[0] = t(plan.game ? 'buildSetup.say.start' : 'buildSetup.say.activity');   // "Here is my plan: a classroom activity." (a class game: "Here is my game plan.")
     if (plan.grade) out.push(plan.grade === 'K' ? t('buildSetup.say.gradeK') : t('buildSetup.say.grade', { grade: plan.grade }));
     if (plan.topic) out.push(t('buildSetup.say.practise', { topic: topicLabel(plan.topic, t) }));
     // how students use it (an older plan's "On the board" on screen still says so, and paper too if it had a
@@ -581,7 +639,11 @@ export function engineFor(state, plan, text, version) {
  */
 export function playFor(state, plan) {
   if (state && plan && plan.forClass) state.fromClass = true;
-  if (state && isActivity(plan)) { delete state.wantsLive; state.canvas = true; state.play = { how: plan.played === 'board' ? 'screen' : 'solo', type: '' }; return; }
+  if (state && isActivity(plan)) {
+    delete state.wantsLive; state.canvas = true; state.play = { how: plan.played === 'board' ? 'screen' : 'solo', type: '' };
+    if (plan.game) state.classGame = true;
+    return;
+  }
   if (!state || !plan || !plan.play) return;
   if (plan.play === 'live') state.wantsLive = true; else delete state.wantsLive;
   state.play = { how: plan.play, type: plan.type && plan.type.from === 'pack' ? plan.type.id : '' };
@@ -646,11 +708,14 @@ const PLAYED_BRIEF = {
 };
 /** On paper only (played 'board' without practice on screen): nobody plays it on their own device. */
 const PAPER_BRIEF = 'NOT PLAYED ON STUDENTS\' DEVICES: it is used on paper (the teacher opens it to print worksheets, and may show it on the board), so nothing goes to Progress (config.board true: big type, no score sent)';
+/** A class game on the canvas (plan.game): how it stays a game, and what a later "add stars" means. */
+export const GAME_CANVAS = 'Make it feel like a game with what the kit already has: its stars for each problem and on the end card, its sound, and a theme (task.theme { icon, cheers, end } and a "story" for the problems or the generator, with {a} and {b}) that carries their title\'s idea through task.title, task.say and the stories. If they later ask for stars, a reward, sounds, a theme or "more like a game", do it in the data (task.theme, stories, the title) and say in one short sentence that the stars and sound are built in: never say you cannot, never write a game of your own around the kit.';
 /** The SETUP CHOICES block of a classroom activity's first build (planNote), then its LESSON CONTEXT (lessonContext). */
 function canvasNote(plan) {
   const chip = plan.topic && plan.topic.id ? topicById(plan.topic.id) : null, lines = [], help = helpOf(plan.help, plan.support);
   const near = !chip && plan.topic ? topicFor(plan.topic.text, plan.grade) : null;
-  lines.push('- Kind: a CLASSROOM ACTIVITY on Oomba Canvas (the builder chose "Classroom activity", not "Arcade game").');
+  lines.push(plan.game ? `- Kind: a CLASS GAME for column arithmetic, built as a classroom activity on Oomba Canvas (the builder asked for a game; a game that practises ${plan.topic ? q(topicLabel(plan.topic)) : 'adding or subtracting in columns'} is always made on the kit's column tool, never as a quiz of your own).`
+    : '- Kind: a CLASSROOM ACTIVITY on Oomba Canvas (the builder chose "Classroom activity", not "Arcade game").');
   lines.push(chip ? `- Practise: PACK topic ${q(chip.id)} (${tEn(`buildSetup.canvas.topics.${chip.id}`)}): tool ${q(chip.gen.tool)}, generator ${JSON.stringify(chip.gen)}.`
     : plan.topic ? `- Practise: CUSTOM ${q(plan.topic.text)} (typed by the builder): pick the kit tool that fits best and make problems or a generator for it.${near ? ` A ready generator that matches these words: tool ${q(near.gen.tool)}, ${JSON.stringify(near.gen)} (use it if it fits the topic and the lesson; tune its numbers).` : ''}`
       : '- Practise: not chosen (you decide a good first activity for the grade, or from the lesson context below).');
@@ -664,7 +729,10 @@ function canvasNote(plan) {
   if (plan.figures) lines.push('- Figures: the topic or the lesson calls for science, maths or graph figures: use figure questions drawn by Oomba Figures (the FIGURE RULES), correct to scale.');
   if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
   const how = [
-    'Build it as a classroom activity on Oomba Canvas (the CANVAS RULES): start_from_template "canvas", then edit_game its oc-activity JSON block only (config, task, problems or gen) and the <title>. It is not an Oomba Kit game: never add the kit, lives, timers, enemies or a title screen.',
+    plan.chat
+      // a chat build starts with the canvas starter already loaded (tools.js seedCanvas): no start_from_template round
+      ? 'Build it as a classroom activity on Oomba Canvas (the CANVAS RULES): the canvas starter is already the CURRENT GAME (not saved yet, with a first generator for this topic), so do not call start_from_template: edit_game its oc-activity JSON block only (config, task, problems or gen) and the <title>, in as few edits as you can (one edit_game with every change is best). It is not an Oomba Kit game: never add the kit, lives, timers, enemies or a title screen.'
+      : 'Build it as a classroom activity on Oomba Canvas (the CANVAS RULES): start_from_template "canvas", then edit_game its oc-activity JSON block only (config, task, problems or gen) and the <title>. It is not an Oomba Kit game: never add the kit, lives, timers, enemies or a title screen.',
     chip ? `Use the generator for a fresh set per student: "gen": ${JSON.stringify(chip.gen)}, config.count 5, config.fresh true (tune its numbers to the grade if needed), and "problems": [] or a few fixed ones of the same tool.` : 'Choose problems (or a generator) that the kit can check: never write a checker of your own.',
     'Offer only the help modes above: config.supports lists exactly those, never another one.',
     'Every version must pass the kit\'s self-test (each problem solvable by its worked answer, never right when empty): a version that fails is not saved, and the reply names the problem to fix.',
@@ -673,6 +741,7 @@ function canvasNote(plan) {
   ];
   if (pu.includes('worksheet')) how.push('It prints a worksheet: give a generator ("gen") or at least config.count problems, each with a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.');
   if (pu.includes('generator')) how.push(`Fresh sets whenever possible: give a generator ("gen") when the problems allow one, so each new set${pu.includes('worksheet') ? ' and each New sheet' : ''} is fresh, with a worked answer for every problem (figure questions: "work" lines ending on the answer). If no generator fits these problems, give at least config.count fixed problems and leave "generator" out of config.purpose (the kit refuses "generator" without "gen").${pu.includes('worksheet') ? '' : ' Never build printing of your own: the kit prints.'}`);
+  if (plan.game) how.push(GAME_CANVAS);
   if (plan.lesson) how.push('Use the LESSON CONTEXT below to choose the tool, the numbers, the difficulty and the words of task.title and task.say (its goal and its words or examples first). If it asks for something the kit cannot check, use the nearest tool and say so in one short sentence.');
   return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
 ${lines.join('\n')}
@@ -721,7 +790,7 @@ export function planBrief(plan) {
   if (!plan) return '';
   if (isActivity(plan)) {
     const help = helpOf(plan.help, plan.support);
-    const line = `[Setup choices: a CLASSROOM ACTIVITY on Oomba Canvas (not an arcade game); topic ${plan.topic ? (plan.topic.id ? `pack ${plan.topic.id} (tool ${plan.tool})` : `custom ${q(plan.topic.text)}`) : 'not chosen'}; ${plan.grade ? `grade ${plan.grade}; ` : ''}help ${help.join(', ')} (config.supports ${JSON.stringify(help)}, starts on ${help[0]}); for ${purposeOf(plan.purpose).join(', ')} (config.purpose); played ${plan.played}${plan.figures ? '; figures: yes (the FIGURE RULES)' : ''}. The CANVAS RULES apply; do not ask the setup questions again.]`;
+    const line = `[Setup choices: ${plan.game ? 'a CLASS GAME for column arithmetic, built as a CLASSROOM ACTIVITY on Oomba Canvas (stars, sound and task.theme are how it is a game: a later ask for stars, rewards or a theme is a change to the data, never "I cannot")' : 'a CLASSROOM ACTIVITY on Oomba Canvas'} (not an arcade game); topic ${plan.topic ? (plan.topic.id ? `pack ${plan.topic.id} (tool ${plan.tool})` : `custom ${q(plan.topic.text)}`) : 'not chosen'}; ${plan.grade ? `grade ${plan.grade}; ` : ''}help ${help.join(', ')} (config.supports ${JSON.stringify(help)}, starts on ${help[0]}); for ${purposeOf(plan.purpose).join(', ')} (config.purpose); played ${plan.played}${plan.figures ? '; figures: yes (the FIGURE RULES)' : ''}. The CANVAS RULES apply; do not ask the setup questions again.]`;
     return plan.lesson ? `${line}\n[${lessonContext(plan.lesson, { short: true })}]` : line;
   }
   const part = (name, c) => (c ? `${name} ${c.from === 'pack' ? `pack ${c.id}` : `custom ${q(c.text)}`}` : '');

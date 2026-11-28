@@ -18,6 +18,8 @@ const ico = (e, size = 18) => iconHtml(e, { size });
 
 const SUPPORTS = ['watch', 'count', 'guided', 'own'], PURPOSES = ['screen', 'worksheet', 'generator'];
 const narrow = matchMedia('(max-width: 960px)');
+/** The teacher's own changes (not the move to the newest kit, which is there until it is saved). */
+const edited = M => M.changes.filter(c => c.k !== 'kit').length;
 
 export async function mountPanel(S0, H) {
   const A0 = S0.activity;
@@ -30,6 +32,9 @@ export async function mountPanel(S0, H) {
     M.kit = A.kit; M.latest = A.latest;
     M.data = clone(A.data); if (!Array.isArray(M.data.problems)) M.data.problems = []; if (!M.data.config || typeof M.data.config !== 'object') M.data.config = {};
     M.changes = []; M.undo = []; M.fail = ''; M.stale = false; M.genKeep = M.data.gen ? clone(M.data.gen) : M.genKeep;
+    // An activity on an older kit: saving it as it is moves it to the newest one, so Save is there with no other change
+    // (docs/decisions.md "Builder: audit 5 fixes").
+    if (M.kit !== M.latest) M.changes.push({ k: 'kit' });
     M.sel = Math.min(M.sel, Math.max(0, M.data.problems.length - 1));
   }
   load(A0, S0);
@@ -136,14 +141,14 @@ export async function mountPanel(S0, H) {
   M.render = render;
   render();
   return {
-    dirty: () => M.changes.length > 0,
+    dirty: () => edited(M) > 0,
     toggleInline,
     /** A new Studio state (a Builder version, a restore): the panel follows it, unless it holds changes (then it says so). */
     update(S) {
       if (!S.activity) { box.remove(); tabs.remove(); chat.classList.remove('ap-tab'); open = false; const slot = $('#st-acc'); if (slot) slot.hidden = true; return false; }
       place();
       if (S.activity.base === M.base) { render(); return true; }
-      if (M.changes.length) M.stale = true; else load(S.activity, S);
+      if (edited(M)) M.stale = true; else load(S.activity, S);
       render(); return true;
     },
   };

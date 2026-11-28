@@ -1853,7 +1853,8 @@
       "toArcade": "Maak er een arcadespel van",
       "toArcadeAsk": "Maak er toch een arcadespel van: een quiz-, ren- of vangspel met dezelfde opgaven.",
       "toCanvas": "Maak er een klasactiviteit van",
-      "toCanvasAsk": "Maak er toch een klasactiviteit van: een werkvlak met dezelfde vragen, stappen en tips."
+      "toCanvasAsk": "Maak er toch een klasactiviteit van: een werkvlak met dezelfde vragen, stappen en tips.",
+      "game": "Klassenspel · resultaten gaan naar Voortgang"
     },
     "activity": {
       "note": "Activiteitenpaneel: {what}",
@@ -1869,7 +1870,8 @@
         "help": "hulp gewijzigd",
         "count": "{n} per reeks",
         "purpose": "doel gewijzigd",
-        "more": "+{n} meer"
+        "more": "+{n} meer",
+        "kit": "naar de nieuwste kit gezet"
       },
       "saved": "Opgeslagen als versie {number}.",
       "savedJoined": "Opgeslagen in versie {number}.",
@@ -3627,7 +3629,7 @@
       "versionN": "versie {n}",
       "close": "Sluiten",
       "intro": "Pas de activiteit zelf aan. Elke keer opslaan maakt een nieuwe versie, gecontroleerd zoals elke andere. Voor grotere wijzigingen is de Builder er nog steeds.",
-      "upgradeNote": "Als je hier opslaat, gaat de activiteit naar de nieuwste kit. Daarmee krijg je Antwoord tonen en Bordmodus.",
+      "upgradeNote": "Deze activiteit gebruikt een oudere kit. Sla haar op om naar de nieuwste te gaan: vriendelijke feedback bij elke stap, hints met de getallen van de som zelf, sterren en geluid.",
       "problems": "Opgaven",
       "inList": "{n} in de lijst",
       "sameList": "Dezelfde lijst voor iedereen",
@@ -3688,7 +3690,8 @@
         "gen": "Nieuwe opgaven voor elke leerling",
         "help": "Hulp gewijzigd",
         "count": "{n} per reeks",
-        "purpose": "Doel gewijzigd"
+        "purpose": "Doel gewijzigd",
+        "kit": "Naar de nieuwste kit gezet"
       },
       "needsFix": "Moet worden verbeterd",
       "answerIs": "Antwoord: {a}",
@@ -5414,7 +5417,7 @@
         "play": "Testen op een telefoon, een tablet en een laptop",
         "scan": "Veiligheidscontrole"
       },
-      "usually": "Meestal 1-2 minuten. Je kunt verder chatten of deze pagina sluiten.",
+      "usually": "Dit duurt een paar minuten. Je kunt verder chatten of deze pagina sluiten.",
       "vBuilding": "Versie {n} wordt gebouwd…",
       "vWorks": "Versie {n} werkt nog terwijl je wacht.",
       "tap": "Tik om te spelen",
@@ -5491,7 +5494,10 @@
       "showingBigAbove": "Groot te zien in de voorvertoning hierboven",
       "versions": "Versies",
       "versionOf": "Versie {n} van {total}",
-      "olderShown": "Versie {n} wordt getoond. Versie {newest} is de nieuwste, en wijzigingen gaan naar die versie."
+      "olderShown": "Versie {n} wordt getoond. Versie {newest} is de nieuwste, en wijzigingen gaan naar die versie.",
+      "etaRange": "Meestal {time}. Je kunt verder chatten of deze pagina sluiten.",
+      "etaGuess": "Ongeveer {time}. Je kunt verder chatten of deze pagina sluiten.",
+      "etaUnder": "Meestal minder dan een minuut. Je kunt verder chatten of deze pagina sluiten."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# woord} other {# woorden}}",

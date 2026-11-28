@@ -35,7 +35,7 @@ import * as search from './search.js';
 import { getUser } from '../auth.js';
 import { cleanText } from '../services/textfilter.js';
 import * as autotest from './autotest.js';
-import { engineFor, art2dFor, planNote, planBrief } from './plan.js';
+import { engineFor, art2dFor, planNote, planBrief, GAME_CANVAS } from './plan.js';
 
 export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
 export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
@@ -119,6 +119,8 @@ export function resumeNote(resume) {
     + 'Start with one short, friendly sentence saying you\'re carrying on.]';
 }
 
+/** A new game asked for in words alone that practises column arithmetic (prompt.js wantsCanvas sets state.classGame). */
+const COLUMN_GAME_NOTE = `THIS BUILD: a new game that practises column arithmetic (adding, subtracting or multiplying in columns). Build it as a class game on Oomba Canvas (the CANVAS RULES): start_from_template "canvas", then edit_game its oc-activity JSON block (config, task, problems or a "gen" generator on the column tool digits.add, digits.sub or digits.mul with the skill and digits they asked for) and the <title>. Never a multiple-choice quiz or a game of your own for it: the kit checks every step. ${GAME_CANVAS}`;
 // Sent when a round used all its output on planning: the next round should write, not plan again.
 const CUT_OFF_NUDGE = 'You ran out of room before calling a tool, so nothing was built yet. Keep your planning very short now and call write_game (or edit_game for a change to the current game) right away. If the request is big, build the most important part first; the player can ask for the rest next.';
 
@@ -139,6 +141,8 @@ export async function run(ctx) {
   const auto = { left: Number.isInteger(ctx.autoFixes) ? ctx.autoFixes : 1, dirty: false, seen: new Set(), left2fix: null };
   const timeLeft = () => (ctx.deadline ? ctx.deadline - Date.now() : Infinity);
   const aborted = () => !!(ctx.signal && ctx.signal.aborted);
+  // Where the build's time goes (agent.js logs it when the build ends): model rounds, and the fix rounds started here.
+  const perf = ctx.perf || null;
   /** Play the newest version if the AI saved one since the last check. -> the report to fix now, or null (none, clean,
    *  nothing new, or no fix round possible: then left2fix holds the real problems still there). */
   async function autoCheck() {
@@ -152,7 +156,7 @@ export async function run(ctx) {
     for (const i of a.issues) auto.seen.add(i.key);
     if (!fresh.length) return null;
     if (auto.left < 1 || !aiBudget.ok(ctx.pool || 'free') || timeLeft() < autotest.FIX_NEEDS_MS) return null;
-    auto.left--; auto.left2fix = null;
+    auto.left--; auto.left2fix = null; if (perf) perf.fixes++;
     max = Math.max(max, step0() + 4);   // room for the fix round and one retry
     return a;
   }
@@ -233,7 +237,7 @@ export async function run(ctx) {
       ...(!k2 && live ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       // A classroom activity (Oomba Canvas): its fixed rules, only for canvas builds (no cache point of its own: the
       // game's block caches it), so an arcade build's prefix never changes.
-      ...(!k2 && wantsCanvas(st, ctx.text, cur) ? [{ type: 'text', text: CANVAS_RULES }] : []),
+      ...(!k2 && wantsCanvas(st, ctx.text, cur, { plan: ctx.plan }) ? [{ type: 'text', text: CANVAS_RULES }] : []),
       // Science, maths or graph figures (Oomba Figures): its fixed rules, only for builds that call for them (builder/figures.js).
       ...(!k2 && wantsFigures(st, ctx.text, cur, ctx.plan) ? [{ type: 'text', text: FIGURE_RULES }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
@@ -243,6 +247,8 @@ export async function run(ctx) {
       ...(a2 ? [{ type: 'text', text: ART2D_RULES }, { type: 'text', text: art2dNote(a2) }] : []),
       // The setup steps' choices as data: which parts are pack choices (used as given) and which are custom (from scratch).
       ...(ctx.plan ? [{ type: 'text', text: planNote(ctx.plan) }] : []),
+      // A new game asked for in words that practises column arithmetic (prompt.js wantsCanvas): a class game on the canvas.
+      ...(!ctx.plan && !cur && st.classGame ? [{ type: 'text', text: COLUMN_GAME_NOTE }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).
@@ -272,6 +278,7 @@ export async function run(ctx) {
     };
     const startHolding = () => { round.searched = true; searchedBuild = true; if (held === null) { say(lf && lf.flush()); held = ''; } };
     let msg;
+    const roundT0 = Date.now();
     try {
       for await (const ev of stream) {
         if (round.blocked) continue;   // a stopped search: nothing more from this round is used
@@ -325,6 +332,7 @@ export async function run(ctx) {
         }
       }
       msg = await stream.finalMessage();
+      if (perf) { perf.rounds++; perf.modelMs += Date.now() - roundT0; }
       if (round.blocked) throw new Error('web search stopped');   // the answer was complete before the stop took hold
     } catch (e) {
       // The round was cut off (time cap, stop, delete, ban, hand-off, a broken stream): it was still paid for.

@@ -24,6 +24,7 @@ import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFA
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
 import { planArt2d, playFor, isActivity, canvasActivity } from './plan.js';
 import { withActivityData } from '../services/canvaskit.js';
+import { upgradeCanvas } from './activity-data.js';
 import { withClassroomStyle } from './templates/index.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
@@ -122,6 +123,10 @@ export function toolbox(ctx) {
     }
     // A classroom activity (Oomba Canvas): its answer key must pass the kit's self-test (autotest.js canvasSelfTest), or
     // the version is not saved at all, so a broken activity can never be shared or published.
+    // ...on the newest Oomba Canvas: an activity made on an older kit moves to it whenever the Builder saves it (only the
+    // pinned tag changes, and only when the newest kit takes its data: activity-data.js upgradeCanvas), as the Oomba Kit's
+    // patch releases do below.
+    rawHtml = upgradeCanvas(rawHtml) || rawHtml;
     const canvas = autotest.canvasSelfTest(rawHtml);
     if (canvas && !canvas.ok) return { ok: false, forModel: `Not saved: the classroom activity's self-test failed. ${autotest.canvasProblemsText(canvas)}. Fix the data in the oc-activity block (PROBLEMS or GEN; see the CANVAS RULES) and save again. Never write a checker of your own for a standard tool.` };
     // a game on a patched kit version (kit.js KIT_PATCHES) moves to the patch release whenever the Builder saves it
@@ -338,6 +343,7 @@ export function toolbox(ctx) {
     if (!cur || !g || stopped()) return { ran: false };
     if (!autotest.hooks.raw && !snapshot.enabled()) return { ran: false };
     const row = steps.start('autotest', { v: cur.number });
+    const perf = ctx.perf || null, t0 = Date.now();
     let raw;
     try {
       raw = autotest.hooks.raw ? await autotest.hooks.raw(cur.html, cur)
@@ -347,10 +353,13 @@ export function toolbox(ctx) {
       if (e && e.workerDown) { steps.info({ ok: false }, row); return { ran: false }; }
       raw = { failed: String((e && e.message) || e).split('\n')[0] };
     }
+    if (perf) { perf.tests++; perf.testMs += Date.now() - t0; }
     if (stopped()) return { ran: false };
     let pt = null;
     if (opts.playthrough !== false && !raw.failed && playthrough.available()) {
+      const t1 = Date.now();
       pt = await playthrough.play(cur.html, { orientation: g.orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title });
+      if (perf) { perf.plays++; perf.playMs += Date.now() - t1; }
       if (stopped()) return { ran: false };
       playthrough.record(cur.id, pt);
     }
@@ -385,6 +394,22 @@ export function toolbox(ctx) {
     return r;
   }
 
+  /**
+   * A chat build of a classroom activity (plan.chat, kind 'activity': the board, or a class game for column arithmetic)
+   * starts with the canvas starter already loaded as its draft, with the plan's topic, help and generator in its data
+   * (plan.canvasActivity, the same data planFallback saves), so the model's first round goes straight to edit_game
+   * instead of spending a whole round on start_from_template (docs/decisions.md "Builder: audit 5 fixes": build time).
+   * Nothing is saved: the first save is still version 1, and a draft never changed is saved at the end (flushDraft).
+   * -> true when the draft is there.
+   */
+  async function seedCanvas() {
+    if (!draftOn || !isActivity(ctx.plan) || saved() || draft) return false;
+    const { html, fallback } = await templateHtml('canvas');
+    if (fallback || saved() || draft) return false;
+    draft = { id: null, number: 0, draft: true, game_id: ctx.gameId, html: withActivityData(html, canvasActivity(ctx.plan, tFor(ctx.locale || 'en'))), notes: 'Started your classroom activity', seeded: true };
+    return true;
+  }
+
   /** A chat build's starter that was never saved (the Builder ended without a change): saved now as a version, as
    *  start_from_template always did, so the build is not lost. -> the saveVersion result (its event sent), or null. */
   function flushDraft() {
@@ -399,6 +424,7 @@ export function toolbox(ctx) {
     current,
     game,
     autoPlaytest,
+    seedCanvas,
     planFallback,
     flushDraft,
     /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */

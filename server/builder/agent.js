@@ -22,6 +22,7 @@ import * as turns from './turns.js';
 import * as eta from './eta.js';
 import * as runner from './runner.js';
 import * as autotest from './autotest.js';
+import { log } from '../services/log.js';
 export { isBusy, busyCount } from './runner.js';
 
 export const MAX_INPUT = 2000;
@@ -110,12 +111,17 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   // The builder's own words for this game (every message so far and this one): the style check never undoes what they asked for.
   const requests = [...chat.messages.filter(m => m && m.role === 'user' && typeof m.text === 'string').map(m => m.text), text, ...job.waiting.map(e => e.text)].filter(Boolean).slice(-40);
-  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests, plan });
+  // Where the build's time goes (logged at its end, endBuild): model rounds and their time, playtests, playthroughs, fix rounds.
+  const perf = job.perf = { rounds: 0, modelMs: 0, tests: 0, testMs: 0, plays: 0, playMs: 0, fixes: 0 };
+  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests, plan, perf });
   // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
   // carried messages). Resumed attempts get a fresh one from now.
   const words = text || job.waiting.map(e => e.text).join('\n');
   job.est = eta.estimate(eta.predict({ provider: name, pro, cur: tb.current(), state, text: words }), { capMs: turnCapMs(user) });
   if (job.est) emit('eta', { ...job.est.start, el: Date.now() - job.t0 });
+  // A chat build of a classroom activity: the canvas starter is its draft from the start (tools.js seedCanvas).
+  if (plan) { try { await tb.seedCanvas(); } catch { /* the model starts it itself */ } }
+  if (job.handedOff || job.ended) return;
   // A Continue carries on an earlier build that stopped: the provider gets what it saved and its message.
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
   let usage = { tokensIn: 0, tokensOut: 0, model: name };
@@ -131,7 +137,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
       resume: carry, maxRounds, trusted: trustedMaker(user), plan,
       // the automatic playtest's fix rounds (autotest.js), and when the build's time cap ends it
-      autoFixes: autotest.fixRounds(user), deadline: job.t0 + turnCapMs(user),
+      autoFixes: autotest.fixRounds(user), deadline: job.t0 + turnCapMs(user), perf,
     })) };
   } catch (e) {
     // An abort (time cap, delete, ban, hand-off) is not the Builder getting muddled.
@@ -189,6 +195,9 @@ export function endBuild(job, { usage = job.usage || {} } = {}) {
   turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs, canContinue: end === 'timeout' && !!job.request.text });
   eta.finish({ id: job.id, est: job.est, versions, base: job.base, firstVersionMs: job.firstV, followups: job.read, end, attempt: job.attempt, chain: job.chain, durationMs, capMs: turnCapMs(job.userId) });
   const refunded = refundable(status, end, versions) && turns.refund(job.id);
+  // One line per build with where its time went (numbers only: no words, no code, no names), so a slow build can be
+  // read from the logs (docs/decisions.md "Builder: audit 5 fixes": the logs had only the job's total).
+  if (job.perf) log('info', 'builder build ended', { turn: job.id, game: job.gameId, end, ms: durationMs, firstV: job.firstV || 0, versions, ...job.perf, otherMs: Math.max(0, durationMs - job.perf.modelMs - job.perf.testMs - job.perf.playMs), canvas: !!(state && state.canvas) });
   const left = turnsLeft(job.userId);
   job.emit('done', { turnsLeft: left, ...(rec ? { steps: rec } : {}), ...(refunded ? { refunded: true } : {}), end });
   runner.ended(job, { ok: end === 'ok', ...(end === 'ok' ? {} : { error: end === 'error' ? usage.error : end }), turnsLeft: left });

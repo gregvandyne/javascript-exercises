@@ -100,9 +100,9 @@ agent.registerProvider('a4game', {
   },
 });
 const START = { title: 'Regrouping Race', grade: '4', topic: 'regrouping' };
-async function buildIt(x, picks = { kind: 'game', use: 'devices', help: 'hints' }) {
-  standIn((p, i) => (i === 0 ? uses('startBuild', START) : 'Sure!'));
-  await say(x, 'Make a grade 4 game about regrouping');
+async function buildIt(x, picks = { kind: 'game', use: 'devices', help: 'hints' }, { start = START, words = 'Make a grade 4 game about regrouping' } = {}) {
+  standIn((p, i) => (i === 0 ? uses('startBuild', start) : 'Sure!'));
+  await say(x, words);
   let bot = await lastBot(x.tc);
   if (bot.note.build.state === 'ask') { assert.equal((await tap(x, bot.id, 'buildPlan', JSON.stringify(picks))).status, 200); bot = await lastBot(x.tc); }
   const r = await tap(x, bot.id, 'buildGo', bot.note.build.words);
@@ -138,12 +138,13 @@ test('1. a chat build that starts from a starter saves Version 1 only (the start
 
 test('3. On their own devices builds the class game kind; On the board the classroom activity kind', async () => {
   const x = world(); sent = []; script = 'write';
-  const dev = await buildIt(x);
+  // (column arithmetic on devices is the canvas class game since audit 5: builder-audit5.test.js; this is any other topic)
+  const dev = await buildIt(x, undefined, { start: { title: 'Water Cycle Race', grade: '4', topic: 'the water cycle' }, words: 'Make a grade 4 game about the water cycle' });
   const p = sent.at(-1).plan;
   assert.equal(p.kind, undefined, 'a game plan, not the activity kind');
   assert.equal(p.play, 'solo'); assert.equal(p.chat, true); assert.equal(p.grade, '4'); assert.deepEqual(p.help, ['guided']);
-  assert.deepEqual(p.learn, [{ text: 'regrouping' }]);
-  assert.equal(sent.at(-1).text, 'Make a grade 4 game about regrouping', 'the teacher\'s words, word for word');
+  assert.deepEqual(p.learn, [{ text: 'the water cycle' }]);
+  assert.equal(sent.at(-1).text, 'Make a grade 4 game about the water cycle', 'the teacher\'s words, word for word');
   assert.match(planNote(p), /Grade: 4/); assert.match(planNote(p), /a short hint after a wrong try/);
   assert.match(planNote(p), /ON MY OWN \(one player on one device\)/);
   // Studio calls it a game: no "Classroom activity" line, and "Make it a live game" is a message, not "can't be live".

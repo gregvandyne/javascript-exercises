@@ -21,6 +21,7 @@ import { KIT2_SHORT, KIT2_RULES, WORLD_IDS, CHARACTER_IDS, CREATURE_IDS, wantsKi
 export { KIT2_SHORT, KIT2_RULES, wantsKit2, kit2Note };
 import { ART2D_SHORT, ART2D_RULES, ART2D_CHARACTER_IDS, wantsArt2d, art2dNote, isArt2dGame } from './art2d.js';
 import { pickKit2 } from './kit2.js';
+import { columnTopic } from './plan.js';
 export { ART2D_SHORT, ART2D_RULES, wantsArt2d, art2dNote, pickKit2 };
 
 /** The kit rules with the pinned tags (the same bytes for everyone). */
@@ -546,6 +547,7 @@ export function languageBlock(code) {
 /** The separate, cached block that carries the current game source to the model. */
 export function sourceBlock(version, game) {
   if (!version) return 'CURRENT GAME: none yet. Nothing has been built for this game.';
+  if (version.draft && version.seeded) return `CURRENT GAME (the classroom activity starter on Oomba Canvas, already started for you with the setup's topic and help, not saved yet: do NOT call start_from_template; make it theirs with edit_game on its oc-activity block and the <title>, and that first save is version 1; title "${game.title}"). Edits must copy "find" text exactly from this:\n<current_game>\n${version.html}\n</current_game>`;
   if (version.draft) return `CURRENT GAME (the starter, not saved yet: your first save is version 1; title "${game.title}"). Edits must copy "find" text exactly from this:\n<current_game>\n${version.html}\n</current_game>`;
   return `CURRENT GAME (version ${version.number}, title "${game.title}"). Edits must copy "find" text exactly from this:\n<current_game>\n${version.html}\n</current_game>`;
 }
@@ -715,8 +717,11 @@ const fixedAsks = key => new Set(CODES.map(c => translate(c, key)).filter(Boolea
 let ASKS = null;
 const asks = () => (ASKS = ASKS || { toCanvas: fixedAsks('studio.canvasLine.toCanvasAsk'), toArcade: fixedAsks('studio.canvasLine.toArcadeAsk') });
 /** Is this turn a classroom activity build? (state.canvas remembers a plan's or the Studio message's choice.) */
-export function wantsCanvas(state, text, version) {
+export function wantsCanvas(state, text, version, { plan = null } = {}) {
   const said = String(text || '').trim();
+  // A new game asked for in words alone (no setup plan, nothing built yet) that practises column arithmetic: a class
+  // game on the canvas's column tool, as a plan for it is (plan.js columnGame). The arcade side off only.
+  if (state && !version && !plan && !config.arcade && !state.canvas && columnTopic({ words: said })) { state.canvas = true; state.classGame = true; }
   if (state && config.arcade && asks().toArcade.has(said)) { delete state.canvas; return !!(version && canvasVersion(version.html)); }
   if (state && asks().toCanvas.has(said)) state.canvas = true;
   return !!(state && state.canvas) || !!(version && canvasVersion(version.html));

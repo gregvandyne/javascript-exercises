@@ -1853,7 +1853,8 @@
       "toArcade": "Transformar em jogo arcade",
       "toArcadeAsk": "Transforme em jogo arcade: um quiz, jogo de corrida ou de pegar com os mesmos problemas.",
       "toCanvas": "Transformar em atividade de sala",
-      "toCanvasAsk": "Transforme em atividade de sala: uma tela de manipular com as mesmas perguntas, passos e dicas."
+      "toCanvasAsk": "Transforme em atividade de sala: uma tela de manipular com as mesmas perguntas, passos e dicas.",
+      "game": "Jogo de sala · os resultados vão para Progresso"
     },
     "activity": {
       "note": "Painel da atividade: {what}",
@@ -1869,7 +1870,8 @@
         "help": "ajuda alterada",
         "count": "{n} por série",
         "purpose": "uso alterado",
-        "more": "+{n} outros"
+        "more": "+{n} outros",
+        "kit": "levada ao kit mais novo"
       },
       "saved": "Salvo como versão {number}.",
       "savedJoined": "Salvo na versão {number}.",
@@ -3627,7 +3629,7 @@
       "versionN": "versão {n}",
       "close": "Fechar",
       "intro": "Mude a atividade você mesmo. Cada vez que salva, cria uma versão nova, verificada como qualquer outra. O Builder continua aqui para mudanças maiores.",
-      "upgradeNote": "Salvar aqui leva a atividade ao kit mais novo, que adiciona Mostrar resposta e Modo quadro para você.",
+      "upgradeNote": "Esta atividade usa um kit mais antigo. Salve-a para levá-la ao mais novo: retorno gentil em cada passo, dicas com os números do próprio problema, estrelas e som.",
       "problems": "Problemas",
       "inList": "{n} na lista",
       "sameList": "A mesma lista para todos",
@@ -3688,7 +3690,8 @@
         "gen": "Problemas novos para cada aluno",
         "help": "Ajuda alterada",
         "count": "{n} por série",
-        "purpose": "Uso alterado"
+        "purpose": "Uso alterado",
+        "kit": "Levada ao kit mais novo"
       },
       "needsFix": "Precisa de correção",
       "answerIs": "Resposta: {a}",
@@ -5414,7 +5417,7 @@
         "play": "Testando em um celular, um tablet e um notebook",
         "scan": "Verificação de segurança"
       },
-      "usually": "Geralmente 1-2 minutos. Você pode continuar conversando ou fechar esta página.",
+      "usually": "Isso leva alguns minutos. Você pode continuar conversando ou fechar esta página.",
       "vBuilding": "Construindo a versão {n}…",
       "vWorks": "A versão {n} continua funcionando enquanto você espera.",
       "tap": "Toque para jogar",
@@ -5491,7 +5494,10 @@
       "showingBigAbove": "Aparece em grande na pré-visualização acima",
       "versions": "Versões",
       "versionOf": "Versão {n} de {total}",
-      "olderShown": "Mostrando a versão {n}. A versão {newest} é a mais nova, e as mudanças vão para ela."
+      "olderShown": "Mostrando a versão {n}. A versão {newest} é a mais nova, e as mudanças vão para ela.",
+      "etaRange": "Geralmente {time}. Você pode continuar conversando ou fechar esta página.",
+      "etaGuess": "Cerca de {time}. Você pode continuar conversando ou fechar esta página.",
+      "etaUnder": "Geralmente menos de um minuto. Você pode continuar conversando ou fechar esta página."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palavra} other {# palavras}}",

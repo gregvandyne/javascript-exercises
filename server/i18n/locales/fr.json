@@ -1852,7 +1852,8 @@
       "toArcade": "En faire un jeu d’arcade",
       "toArcadeAsk": "Fais-en plutôt un jeu d’arcade : un quiz, un jeu de course ou d’attrape qui pose les mêmes problèmes.",
       "toCanvas": "En faire une activité de classe",
-      "toCanvasAsk": "Fais-en plutôt une activité de classe : un espace de manipulation avec les mêmes questions, étapes et indices."
+      "toCanvasAsk": "Fais-en plutôt une activité de classe : un espace de manipulation avec les mêmes questions, étapes et indices.",
+      "game": "Jeu de classe · les résultats vont dans Progrès"
     },
     "activity": {
       "note": "Panneau d'activité : {what}",
@@ -1868,7 +1869,8 @@
         "help": "aide modifiée",
         "count": "{n} par série",
         "purpose": "usage modifié",
-        "more": "+{n} de plus"
+        "more": "+{n} de plus",
+        "kit": "passée au kit le plus récent"
       },
       "saved": "Enregistré comme version {number}.",
       "savedJoined": "Enregistré dans la version {number}.",
@@ -3626,7 +3628,7 @@
       "versionN": "version {n}",
       "close": "Fermer",
       "intro": "Modifiez l'activité vous-même. Chaque enregistrement crée une nouvelle version, vérifiée comme les autres. Le Builder reste là pour les grands changements.",
-      "upgradeNote": "Enregistrer ici fait passer l'activité au kit le plus récent, qui vous ajoute Montrer la réponse et Mode tableau.",
+      "upgradeNote": "Cette activité utilise un kit plus ancien. Enregistrez-la pour la passer au plus récent : un retour bienveillant à chaque étape, des indices avec les nombres du problème, des étoiles et du son.",
       "problems": "Problèmes",
       "inList": "{n} dans la liste",
       "sameList": "La même liste pour tous",
@@ -3687,7 +3689,8 @@
         "gen": "De nouveaux problèmes pour chaque élève",
         "help": "Aide modifiée",
         "count": "{n} par série",
-        "purpose": "Usage modifié"
+        "purpose": "Usage modifié",
+        "kit": "Passée au kit le plus récent"
       },
       "needsFix": "À corriger",
       "answerIs": "Réponse : {a}",
@@ -5413,7 +5416,7 @@
         "play": "Test sur un téléphone, une tablette et un ordinateur portable",
         "scan": "Contrôle de sécurité"
       },
-      "usually": "En général 1 à 2 minutes. Tu peux continuer à discuter ou fermer cette page.",
+      "usually": "Cela prend quelques minutes. Tu peux continuer à discuter ou fermer cette page.",
       "vBuilding": "Version {n} en construction…",
       "vWorks": "La version {n} fonctionne toujours pendant que tu attends.",
       "tap": "Touche pour jouer",
@@ -5490,7 +5493,10 @@
       "showingBigAbove": "Affiché en grand dans l’aperçu au-dessus",
       "versions": "Versions",
       "versionOf": "Version {n} sur {total}",
-      "olderShown": "La version {n} est affichée. La version {newest} est la plus récente, et les changements vont sur elle."
+      "olderShown": "La version {n} est affichée. La version {newest} est la plus récente, et les changements vont sur elle.",
+      "etaRange": "En général {time}. Tu peux continuer à discuter ou fermer cette page.",
+      "etaGuess": "Environ {time}. Tu peux continuer à discuter ou fermer cette page.",
+      "etaUnder": "En général moins d'une minute. Tu peux continuer à discuter ou fermer cette page."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# mot} other {# mots}}",

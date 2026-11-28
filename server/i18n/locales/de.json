@@ -1853,7 +1853,8 @@
       "toArcade": "Zum Arcade-Spiel machen",
       "toArcadeAsk": "Mach lieber ein Arcade-Spiel daraus: ein Quiz-, Lauf- oder Fangspiel mit denselben Aufgaben.",
       "toCanvas": "Eine Klassenaktivität daraus machen",
-      "toCanvasAsk": "Mach lieber eine Klassenaktivität daraus: eine Arbeitsfläche mit denselben Fragen, Schritten und Tipps."
+      "toCanvasAsk": "Mach lieber eine Klassenaktivität daraus: eine Arbeitsfläche mit denselben Fragen, Schritten und Tipps.",
+      "game": "Klassenspiel · Ergebnisse gehen in den Fortschritt"
     },
     "activity": {
       "note": "Aktivitätsbereich: {what}",
@@ -1869,7 +1870,8 @@
         "help": "Hilfe geändert",
         "count": "{n} pro Runde",
         "purpose": "Zweck geändert",
-        "more": "+{n} weitere"
+        "more": "+{n} weitere",
+        "kit": "auf das neueste Kit umgestellt"
       },
       "saved": "Als Version {number} gespeichert.",
       "savedJoined": "In Version {number} gespeichert.",
@@ -3627,7 +3629,7 @@
       "versionN": "Version {n}",
       "close": "Schließen",
       "intro": "Ändern Sie die Aktivität selbst. Jedes Speichern erstellt eine neue Version, die wie jede andere geprüft wird. Für größere Änderungen ist der Builder weiter da.",
-      "upgradeNote": "Wenn Sie hier speichern, wechselt die Aktivität zum neuesten Kit. Damit erhalten Sie Antwort zeigen und den Tafelmodus.",
+      "upgradeNote": "Diese Aktivität nutzt ein älteres Kit. Speichern Sie sie, um sie auf das neueste umzustellen: freundliche Rückmeldung bei jedem Schritt, Hinweise mit den Zahlen der Aufgabe, Sterne und Ton.",
       "problems": "Aufgaben",
       "inList": "{n} in der Liste",
       "sameList": "Dieselbe Liste für alle",
@@ -3688,7 +3690,8 @@
         "gen": "Neue Aufgaben für jeden Schüler",
         "help": "Hilfe geändert",
         "count": "{n} pro Runde",
-        "purpose": "Zweck geändert"
+        "purpose": "Zweck geändert",
+        "kit": "Auf das neueste Kit umgestellt"
       },
       "needsFix": "Muss korrigiert werden",
       "answerIs": "Antwort: {a}",
@@ -5414,7 +5417,7 @@
         "play": "Test auf Handy, Tablet und Laptop",
         "scan": "Sicherheitsprüfung"
       },
-      "usually": "Meist 1-2 Minuten. Du kannst weiter chatten oder diese Seite schließen.",
+      "usually": "Das dauert ein paar Minuten. Du kannst weiter chatten oder diese Seite schließen.",
       "vBuilding": "Version {n} wird gebaut…",
       "vWorks": "Version {n} funktioniert weiter, solange du wartest.",
       "tap": "Zum Spielen tippen",
@@ -5491,7 +5494,10 @@
       "showingBigAbove": "Groß in der Vorschau oben zu sehen",
       "versions": "Versionen",
       "versionOf": "Version {n} von {total}",
-      "olderShown": "Version {n} wird gezeigt. Version {newest} ist die neueste, und Änderungen gehen an sie."
+      "olderShown": "Version {n} wird gezeigt. Version {newest} ist die neueste, und Änderungen gehen an sie.",
+      "etaRange": "Meist {time}. Du kannst weiter chatten oder diese Seite schließen.",
+      "etaGuess": "Etwa {time}. Du kannst weiter chatten oder diese Seite schließen.",
+      "etaUnder": "Meist weniger als eine Minute. Du kannst weiter chatten oder diese Seite schließen."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# Wort} other {# Wörter}}",
