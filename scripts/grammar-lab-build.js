@@ -2390,9 +2390,32 @@ export function sentenceFaults(text, { own = true, start = true, phrase = false,
  *  marks question its missing marks; a fragment the question asks about is not a sentence. A right answer or option
  *  that is a word or a phrase ("its", "a lot of rain") is read for its words only. -> problems. */
 const SENTENCE_END = /[.!?]['’"”)]*$/;
+/** The sentence a question shows again once it is answered ("look back", and the green confirmation's "after"): the
+ *  sentence it asked about for a tap or a sentence-or-fragment question, else its right answer. */
+export const replayOf = (topic, it) => ((it.format || topic.format) === 'tap' || it.label ? it.text : it.right);
+const FAULT_ASK = /\b(?:seems to|really describes|vague|redundant|unnecessary|wordy|weak(?:er)?|too close|too (?:in)?formal)\b/i;
+/** Does the question show a faulty sentence again once it is answered? A fragment or incomplete thought it labels, a
+ *  pronoun it reads as unclear, a modifier it reads in the wrong place, or the weak, wordy, vague, too-close or
+ *  wrong-register sentence it asks the student to pick. Such a question needs its sentence fixed (overrides.json
+ *  { after }): the page shows the fix once the question is answered, never the faulty sentence alone. */
+export function replaysFault(topic, it) {
+  const f = it.format || topic.format, ask = it.ask || topic.ask || '';
+  if (it.rule === 'antecedent') return /unclear/i.test(it.options[it.answer[0]]);
+  if (it.label) return /fragment|incomplete/i.test(it.label);
+  return FAULT_ASK.test(ask) && (f === 'tap' || ['judge', 'given', 'paraphrase'].includes(it.rule)) && SENTENCE_END.test(String(replayOf(topic, it) || '').trim());
+}
 export function checkQuizItems(topic, proper) {
   const problems = [], S = (...a) => new Set(a);
   for (const it of topic.items) {
+    // a faulty sentence shown again has its fix, and only such a question has one; the fix is a right sentence
+    const faulty = replaysFault(topic, it);
+    if (faulty && !it.after) problems.push(`${it.id}: shows the faulty sentence "${replayOf(topic, it)}" again once answered: give it the sentence fixed (overrides.json { after })`);
+    if (!faulty && it.after) problems.push(`${it.id}: has a fixed sentence (after), but its own sentence is not faulty`);
+    if (it.after) {
+      if (normTyped(it.after) === normTyped(replayOf(topic, it))) problems.push(`${it.id}: the fixed sentence is the sentence as it was`);
+      for (const [, why] of sentenceFaults(it.after, { proper })) problems.push(`${it.id}: the fixed sentence "${it.after}" ${why}`);
+      lint(it.after, problems, `${it.id} fixed sentence`);
+    }
     const f = it.format || topic.format, rule = it.rule || (topic.choices && topic.choices.kind);
     if (['title', 'italics'].includes(rule)) continue;   // a title, not a sentence (checked by the title rules)
     const read = (what, text, skip = S()) => {
@@ -2525,7 +2548,7 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     const card = sectioned ? parseSections(src.cardLines, problems, where, notes) : parseCard(src.cardLines, problems, where, def.format === 'items' ? 'choice' : def.format, def.choices && def.choices.pair);
     const items = (def.format === 'items' ? readItems(src.quizLines, problems, where, def, notes)
       : src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, { ...def, notes })).filter(Boolean))
-      .map(it => { const { n, ...rest } = it; return { id: `${id}-${n}`, ...rest }; });
+      .map(it => { const { n, ...rest } = it, after = (notes[String(n)] || {}).after; return { id: `${id}-${n}`, ...rest, ...(after ? { after } : {}) }; });
     const levels = Array.isArray(def.levels) && def.levels.length ? def.levels : [4, 4, 4];
     if (items.length < 12) problems.push(`${where}: ${items.length} quiz items, at least 12 needed`);
     for (const it of items) {

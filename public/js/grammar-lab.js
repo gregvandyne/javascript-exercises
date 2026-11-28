@@ -430,7 +430,7 @@ $('#gl-submit').addEventListener('click', async () => {
   // Right (or a missed question fixed): the green confirmation, then what comes next. The header and the question
   // change together, after it (the counter never runs ahead of the sentence on screen).
   showFixed();
-  await flash(r.kind === 'fixed');
+  await flash(r.kind === 'fixed', r.after || '');
   question = r.question;
   busy = false;
   if (r.mastered) return done(r.closing);
@@ -464,18 +464,22 @@ function signedOut() {
 }
 
 /** The full-screen green "Correct!" for a moment (a tap, or Enter, moves on sooner). fixed: a missed question answered
- *  right says "Fixed it!" and that first tries count toward the streak. */
-function flash(fixed = false) {
+ *  right says "Fixed it!" and that first tries count toward the streak. after: a question about a faulty sentence (a
+ *  fragment, a modifier in the wrong place, a wordy sentence) shows that sentence fixed, under a check, and stays a
+ *  little longer so it can be read; the server sends it only with a right answer. */
+function flash(fixed = false, after = '') {
   const f = $('#gl-correct');
   $('#gl-correct-t').textContent = fixed ? t('js.grammar-lab.fixed') : CORRECT;
   const note = $('#gl-correct-note');
   note.hidden = !fixed; note.textContent = fixed ? t('js.grammar-lab.fixedNote') : '';
+  const fix = $('#gl-correct-after');
+  if (fix) { fix.hidden = !after; $('#gl-correct-after-t').textContent = after || ''; }
   f.hidden = false;
   return new Promise(res => {
     let over = false;
     const end = () => { if (over) return; over = true; f.hidden = true; f.removeEventListener('click', end); document.removeEventListener('keydown', end); res(); };
     f.addEventListener('click', end); document.addEventListener('keydown', end);
-    setTimeout(end, 1000);
+    setTimeout(end, after ? 4000 : 1000);
   });
 }
 
