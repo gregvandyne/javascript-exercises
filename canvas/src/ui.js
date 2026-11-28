@@ -21,6 +21,13 @@
 // mistake, under one 💡 Hint label. Stars for each problem (3 first time, 2 after a Not yet or a hint, 1 after more)
 // and the stars on the end card, a sound switch (the site's own mute), carried digits shown over their column, and the
 // activity's theme (task.theme: an icon, cheers, an end line; a problem's story) on screen. No timer, no ranking.
+// 1.6.1: the owner's fifth audit (docs/decisions.md "Oomba Canvas 1.6.1: audit 5"). Lesson-step credit as each problem is
+// settled (BRB.setProgress, never in a preview or on the board), so a student who answers every problem and leaves
+// before the end card is done; each Hint press shows a hint not shown yet (after a mistake, the next one for its
+// column); a carry into a new leading column has its own step and every column that gets a carry its carry box; the
+// box chosen next follows the path the student is on (a step box, then its column's answer box, then the next step;
+// answer box after answer box when they skip the steps), and the box with the keyboard focus is the one typed into;
+// the ✓ ✗ ⭐ chips are named for screen readers and on hover ("Not yet. 2").
 import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText, themeOf } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
@@ -28,7 +35,7 @@ import { CSS } from './style.js';
 import { teachControls } from './teach.js';
 import { worksheets } from './sets.js';
 
-const VERSION = '1.6.0';
+const VERSION = '1.6.1';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -114,7 +121,7 @@ export function activity(input) {
         : (el.sup = h('span', { class: 'oc-chip oc-sup' }, T(support))),
       board ? h('span', { class: 'oc-chip' }, T('board')) : null,
       teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
-      el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.stars = h('span', { class: 'oc-chip oc-stars' }), el.left = h('span', { class: 'oc-chip oc-togo' })),
+      el.ok = h('span', { class: 'oc-chip oc-ok', role: 'img' }), el.no = h('span', { class: 'oc-chip oc-no', role: 'img' }), el.stars = h('span', { class: 'oc-chip oc-stars', role: 'img' }), el.left = h('span', { class: 'oc-chip oc-togo' })),
     // (Back and Next follow the reading direction: the strip is a row in the page's direction, the arrows point outward;
     // each arrow is set left to right so the browser never mirrors it a second time)
     teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, arrow(dir === 'rtl' ? '›' : '‹'), ' ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ', arrow(dir === 'rtl' ? '‹' : '›')))) : null,
@@ -143,7 +150,7 @@ export function activity(input) {
     h('div', { class: 'oc-steps-top' }, el.stepsH = h('h2', { id: 'oc-steps-h' }, h('span', { 'aria-hidden': 'true' }, '🪜 '), T('steps')),
       el.stepsToggle = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': support === 'own' ? 'false' : 'true', 'aria-controls': 'oc-steps-list', onclick: () => { S.stepsOpen = !S.stepsOpen; paintSteps(); } })),
     el.steps = h('ol', { id: 'oc-steps-list' }));
-  el.hint = h('div', { class: 'oc-hint', role: 'note', hidden: true });
+  el.hint = h('div', { class: 'oc-hint', role: 'note', 'aria-live': 'polite', hidden: true });
   el.fb = h('div', { class: 'oc-fb', role: 'status', 'aria-live': 'polite' });
   el.ask = h('p', { class: 'oc-ask', dir: 'auto' });
   el.check = h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: () => (S.phase === 'done' ? next() : doCheck()) });
@@ -181,6 +188,8 @@ export function activity(input) {
     // focus (the column the last mistake was in: the hints answer it), badCol (the answer box marked after a Check)
     stars: saved && Array.isArray(saved.stars) ? saved.stars.map(x => (Number.isInteger(x) && x >= 0 && x <= 3 ? x : 0)).slice(0, MAX_PROBLEMS) : [],
     notYet: saved && Number.isInteger(saved.ny) && saved.ny >= 0 ? saved.ny : 0, miss: 0, hinted: false, focus: null, badCol: null, stepBad: null,
+    // 1.6.1: the hints shown for the problem on screen (each press shows one not shown yet)
+    hintSeen: [],
   };
   function dealSet(resume) {
     S.set = S.ws && !S.ws.link ? deal({ ...A, problems: S.ws.items, gen: null, config: { ...cfg, fresh: false } }, { seed: S.seed }) : deal(A, { seed: S.seed, seen: S.seen });
@@ -197,7 +206,7 @@ export function activity(input) {
   function begin(resumeSt) {
     const p = P(), t = Tool();
     S.st = resumeSt && typeof resumeSt === 'object' ? resumeSt : t.start(p); S.tries = 0; S.phase = 'work'; S.hintN = 0; S.stuck = false; S.sel = null; S.idle = Date.now(); S.revealed = false; S.byTeacher = false;
-    S.miss = 0; S.hinted = false; S.focus = null; S.badCol = null; S.stepBad = null;
+    S.miss = 0; S.hinted = false; S.focus = null; S.badCol = null; S.stepBad = null; S.hintSeen = [];
     const steps = stepList(p); S.stepVal = steps.map(() => null); S.stepDone = steps.map(() => false);
     el.hint.hidden = true; el.fb.textContent = ''; el.fb.className = 'oc-fb';
     if (p.tool === 'figure.number') S.sel = 'fig';
@@ -220,6 +229,13 @@ export function activity(input) {
     stepList(p).forEach((s, i) => { if (Number.isInteger(s.col) && S.stepDone[i] && s.ans >= 10) out[s.col + 1] = Math.floor(s.ans / 10); });
     return out;
   }
+  /** 1.6.1: the columns that get a carry (the carry boxes over them), only with the kit's own steps (they fill them). */
+  function carryTo(p) {
+    const t = TOOLS[p.tool];
+    return t.carriesTo && !(Array.isArray(ownSteps[p.tool]) && ownSteps[p.tool].length) ? t.carriesTo(p) : null;
+  }
+  /** The element of the box chosen now (an answer box or a step box), or null. */
+  const selBox = () => (!S.sel ? null : S.sel.startsWith('col:') ? el.work.querySelector(`.oc-dbox[data-col="${S.sel.slice(4)}"]`) : S.sel.startsWith('step:') ? el.steps.querySelector(`.oc-box[data-step="${S.sel.slice(5)}"]`) : S.sel === 'fig' ? el.work.querySelector('.oc-figbox') : null);
   /** 1.6.0: the hints for the problem as it stands: the kit's use its own digits and the column of the last mistake
    *  (S.focus); the Builder's own lines come after the kit's line for that mistake, when there was one. */
   function hintList(p) {
@@ -243,10 +259,12 @@ export function activity(input) {
 
   function paint() {
     const p = P(), t = Tool(), total = S.set.length;
-    el.ok.textContent = `✓ ${S.right}`; el.ok.setAttribute('aria-label', `${T('right')} ${S.right}`);
-    el.no.textContent = `✗ ${S.notYet}`; el.no.setAttribute('aria-label', `${T('notYet')} ${S.notYet}`);
+    // (1.6.1: role="img", so the names are read: a name on a plain span is dropped, and the counts read "✓ 0 ✗ 0")
+    const chip = (e, text, name) => { e.textContent = text; e.setAttribute('aria-label', name); e.title = name; };
+    chip(el.ok, `✓ ${S.right}`, `${T('right')} ${S.right}`);
+    chip(el.no, `✗ ${S.notYet}`, `${T('notYet')} ${S.notYet}`);
     const stars = S.stars.reduce((a, x) => a + (x || 0), 0);
-    el.stars.textContent = `⭐ ${stars}`; el.stars.setAttribute('aria-label', T('starsN', { n: stars }));
+    chip(el.stars, `⭐ ${stars}`, T('starsN', { n: stars }));
     el.left.textContent = T('toGo', { n: total - S.i - (S.phase === 'done' ? 1 : 0) });
     el.n.textContent = T('problemOf', { n: S.i + 1, total });
     const tk = t.task(p); el.task.textContent = ''; el.task.append(line(tk));
@@ -258,10 +276,14 @@ export function activity(input) {
     el.hintBtn.textContent = ''; el.hintBtn.append('💡 ', T('hint'));
     el.hintBtn.classList.toggle('oc-lit', S.stuck && S.phase === 'work'); el.hintBtn.disabled = S.phase !== 'work' || S.watching;
     el.clear.disabled = S.phase !== 'work' || S.watching;
+    // 1.6.1: the keyboard focus was on a box (a click focuses it, Tab reaches it): it goes to the box chosen now, which
+    // this paint makes anew, so focus and the chosen box stay the same box and typing goes where the student looks
+    const ae = document.activeElement, hadFocus = !!ae && ae !== document.body && (el.work.contains(ae) || el.steps.contains(ae));
     el.work.dataset.tool = p.tool;
     el.work.textContent = '';
-    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel, bad: S.badCol, carry: carries(p) }));
+    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel, bad: S.badCol, carry: carries(p), carryTo: carryTo(p) }));
     paintSteps();
+    if (hadFocus) { const b = selBox(); if (b && !b.disabled) call(() => b.focus({ preventScroll: true })); }
     if (TC) {
       el.navAt.textContent = T('nOfN', { n: S.i + 1, total });
       TC.paint({ support, board: S.boardOn, shown: S.shown.includes(S.i), done: S.phase === 'done' });
@@ -299,7 +321,7 @@ export function activity(input) {
   /** A step's answer box: digits from the keypad or the keyboard (Guided, On my own), or ▲ ▼ (Count up). */
   function stepBox(i, s, done) {
     const v = S.stepVal[i], selected = S.sel === `step:${i}`;
-    const box = h('button', { type: 'button', class: `oc-box${selected ? ' oc-sel' : ''}${S.stepBad === i ? ' oc-bad' : ''}`, 'aria-label': `${T('box')} ${i + 1}${S.stepBad === i ? `: ${T('notYet')}` : ''}`, 'aria-pressed': String(selected), disabled: done || S.phase !== 'work' || S.watching, dir: 'ltr',
+    const box = h('button', { type: 'button', class: `oc-box${selected ? ' oc-sel' : ''}${S.stepBad === i ? ' oc-bad' : ''}`, 'data-step': i, 'aria-label': `${T('box')} ${i + 1}${S.stepBad === i ? `: ${T('notYet')}` : ''}`, 'aria-pressed': String(selected), disabled: done || S.phase !== 'work' || S.watching, dir: 'ltr',
       onclick: () => { S.sel = `step:${i}`; if (support !== 'count' && coarse()) keypad(true); paint(); } }, v === null ? '' : String(v));
     if (support !== 'count' || done) return h('span', { class: 'oc-ans' }, box);
     const bump = d => { S.stepVal[i] = Math.max(0, Math.min(999, (S.stepVal[i] || 0) + d)); sfx('click'); paintSteps(); };
@@ -315,9 +337,13 @@ export function activity(input) {
     if (S.stepVal[i] === s.ans) {
       S.stepDone[i] = true; S.stepBad = null; sfx('coin');
       const nx = steps.findIndex((x, j) => j > i && x.ans !== undefined && !S.stepDone[j]);
-      // (the last one done: a column sum's ones box, when it is still empty, so the answer can be typed straight away)
-      const ones = S.st && Array.isArray(S.st.ans) && (S.st.ans[0] === null || S.st.ans[0] === undefined) ? 'col:0' : null;
-      S.sel = support === 'count' ? null : nx >= 0 ? `step:${nx}` : ones;
+      // 1.6.1: the guided order on paper: a column's step, then that column's answer box when it is still empty ("Ones:
+      // 4 + 8 = 12", then write the 2), then the next step (it was the next step box straight away, so the ones digit
+      // typed next went into the Tens step). Else the next step box, else the first empty answer box, so the answer
+      // can be typed straight away.
+      const ans = S.st && Array.isArray(S.st.ans) ? S.st.ans : null, empty = c => !!ans && c >= 0 && c < ans.length && (ans[c] === null || ans[c] === undefined);
+      const own = Number.isInteger(s.col) && empty(s.col) ? `col:${s.col}` : null, first = ans ? ans.findIndex((x, c) => empty(c)) : -1;
+      S.sel = support === 'count' ? null : own || (nx >= 0 ? `step:${nx}` : first >= 0 ? `col:${first}` : null);
       if (S.focus === s.col) S.focus = null;
       if (S.fbStep) { S.fbStep = false; feedback('', ''); }
     } else {
@@ -353,7 +379,14 @@ export function activity(input) {
       // one digit a box; the next box to the left is chosen by itself (1.6.0: in the same paint, so no digit is lost)
       const c = +S.sel.slice(4), ans = S.st.ans.slice();
       ans[c] = d; if (S.badCol === c) S.badCol = null;
-      if (d !== null && c + 1 < ans.length) S.sel = `col:${c + 1}`;
+      // 1.6.1: the next box on the path the student is on. They did this column's step: the next column's step box,
+      // when it is not done yet (its line asks for the carry: "Tens: 6 + 5 + 1 carried = ?"). Else the next answer box
+      // to the left (the ones, then the tens, then the hundreds: never diverted into a step box).
+      if (d !== null) {
+        const steps = stepList(P()), done = steps.findIndex((x, j) => x.col === c && S.stepDone[j]);
+        const nx = done >= 0 && support !== 'count' && (support !== 'own' || S.stepsOpen) ? steps.findIndex((x, j) => x.col === c + 1 && x.ans !== undefined && !S.stepDone[j]) : -1;
+        if (nx >= 0) S.sel = `step:${nx}`; else if (c + 1 < ans.length) S.sel = `col:${c + 1}`;
+      }
       set({ ans });
     }
   }
@@ -371,13 +404,24 @@ export function activity(input) {
     if (content) el.fb.append(content);
     if (o.button) el.fb.append(' ', h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: o.button[1] }, o.button[0]));
   }
+  /** 1.6.1: every hint for the problem as it stands, in the order Hint shows them (a column sum: the column of the
+   *  last mistake first, then the others; the Builder's own lines after the kit's line for the mistake). */
+  function hintSeq(p) {
+    const t = TOOLS[p.tool], own = ownHints[p.tool];
+    if (!t.hintsAll || (Array.isArray(own) && own.length)) return hintList(p);
+    return t.hintsAll(p, S.st, S.focus);
+  }
+  /** Hint: 1.6.1, the first hint in that order not shown yet for this problem, so each press shows something new;
+   *  after a Check or a step box that was not right, the next one for the column of the mistake (its nudge, or its
+   *  worked line when the nudge was shown already). It used to count presses and start again at each mistake, so a
+   *  press after a Check showed the line already on screen. */
   function showHint() {
     if (S.phase !== 'work') return;
-    const list = hintList(P());
+    const list = hintSeq(P()), keyOf = x => JSON.stringify(x), x = list.find(y => !S.hintSeen.includes(keyOf(y)));
     el.hint.hidden = false; el.hint.textContent = '';
-    if (S.hintN >= list.length) { el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('p', {}, T('noMoreHints')))); return; }
-    const x = list[S.hintN++];
-    el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('b', {}, T('hintOf', { n: S.hintN, total: list.length })), h('p', {}, line(x))));
+    if (!x) { el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('p', {}, T('noMoreHints')))); return; }
+    S.hintSeen.push(keyOf(x)); S.hintN = S.hintSeen.length;
+    el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('b', {}, T('hintOf', { n: Math.min(S.hintN, list.length), total: list.length })), h('p', {}, line(x))));
     S.stuck = false; S.hinted = true; paint();
   }
   /** 1.6.0: the stars a right answer earns: 3 first time with no hint, 2 after one Not yet or a hint, 1 after more. */
@@ -415,8 +459,18 @@ export function activity(input) {
       feedback('shown', rich('shown'));
     }
     save({ i: S.phase === 'done' ? S.i + 1 : S.i });
+    if (S.phase === 'done') progress();
     paint();
     el.check.focus({ preventScroll: true });
+  }
+  /** 1.6.1: lesson-step credit as each problem is settled (right, or its worked answer shown): BRB.setProgress with
+   *  done of total and the score so far, as Arithmetic Lab does (docs/sdk.md). The page starts the step at the first one
+   *  and marks it done at the last, so a student who answers every problem and leaves before the end card (Back to the
+   *  lesson) is done with their score. Never in a preview (no play page) or on the board (no scores there). */
+  function progress() {
+    if (board || S.boardUsed || B().preview || !B().gameUrl || typeof B().setProgress !== 'function') return;
+    const total = S.set.length, done = Math.min(total, S.i + 1);
+    if (total >= 1 && total <= 500) call(() => B().setProgress({ done, total, score: S.right }));
   }
   /** The worked answer on screen: the manipulative solved, every step box filled, and a figure's own work lines. */
   function reveal(p) {
@@ -434,7 +488,7 @@ export function activity(input) {
       reveal(p);
       const f = document.createDocumentFragment(); f.append(h('span', { 'aria-hidden': 'true' }, '👀 '), T('shownByTeacher'));
       feedback('shown oc-tans', f);
-      save({ i: S.i + 1 });
+      save({ i: S.i + 1 }); progress();
     } else S.revealed = true;
     paint();
   }
@@ -572,12 +626,36 @@ export function activity(input) {
   const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
   // ---- keys: digits and Backspace for the selected box; Enter checks
+  // 1.6.1: the box with the keyboard focus (Tab, or a click) is the one typed into: a digit replaces what is in it, no
+  // click needed; ← and → move between the answer boxes
+  const focusedBox = () => {
+    const a = document.activeElement; if (!a || a.disabled || S.phase !== 'work' || S.watching) return null;
+    if (a.classList.contains('oc-dbox') && el.work.contains(a)) return `col:${a.dataset.col}`;
+    if (a.classList.contains('oc-box') && a.dataset.step !== undefined && el.steps.contains(a) && support !== 'count') return `step:${a.dataset.step}`;
+    if (a.classList.contains('oc-figbox')) return 'fig';
+    return null;
+  };
   addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const fb = (/^[0-9]$/.test(e.key) || e.key === 'Backspace' || e.key === 'Delete' || e.key === '.' || e.key === ',') ? focusedBox() : null;
+    if (fb && fb !== S.sel) S.sel = fb;
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && S.sel && S.sel.startsWith('col:') && S.phase === 'work' && !S.watching) {
+      const c = +S.sel.slice(4) + (e.key === 'ArrowLeft' ? 1 : -1), n = S.st && Array.isArray(S.st.ans) ? S.st.ans.length : 0;
+      if (c >= 0 && c < n) { e.preventDefault(); S.sel = `col:${c}`; const keep = document.activeElement; paint(); if (keep && keep !== document.body && !document.contains(keep)) { const b = selBox(); if (b) call(() => b.focus({ preventScroll: true })); } }
+      return;
+    }
+    // Enter on a box checks (a step box with digits in it: that step; else the answer), so the keyboard alone can play
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const at = focusedBox(); if (!at) return;
+      e.preventDefault();
+      const i = at.startsWith('step:') ? +at.slice(5) : -1;
+      if (i >= 0 && S.stepVal[i] !== null && !S.stepDone[i]) stepCheck(i); else doCheck();
+      return;
+    }
     if (/^[0-9]$/.test(e.key) && S.sel) { e.preventDefault(); typeDigit(+e.key); }
     else if ((e.key === '.' || e.key === ',') && S.sel === 'fig') { e.preventDefault(); typeDigit('.'); }
     else if (e.key === 'Escape' && PR.open) { printPanel(false); }
-    else if (e.key === 'Backspace' && S.sel) { e.preventDefault(); typeDigit(null); }
+    else if ((e.key === 'Backspace' || (e.key === 'Delete' && fb)) && S.sel) { e.preventDefault(); typeDigit(null); }
   });
   // "Stuck?" lights up after 45 s without a move, the same as the Big Divide
   setInterval(() => { if (S.phase === 'work' && !S.watching && !S.stuck && Date.now() - S.idle > IDLE_MS) { S.stuck = true; paint(); } }, 5000);
@@ -597,7 +675,7 @@ export function activity(input) {
   // 1.6.0: giveUp() is the platform's way through a set without knowing its answers (the layout check of the end card:
   // services/layout-check.js canvasToEnd): the worked answer of the problem on screen, as after a second wrong Check
   // (no stars, not right). An empty Check is no longer a try, so pressing Check twice no longer does it.
-  const giveUp = () => { if (S.phase !== 'work' || !el.end.hidden) return false; if (S.watching) { S.watching = false; } S.tries = 2; S.wrong++; S.notYet++; S.phase = 'done'; S.lastOk = false; S.stars[S.i] = 0; reveal(P()); feedback('shown', rich('shown')); save({ i: S.i + 1 }); paint(); return true; };
+  const giveUp = () => { if (S.phase !== 'work' || !el.end.hidden) return false; if (S.watching) { S.watching = false; } S.tries = 2; S.wrong++; S.notYet++; S.phase = 'done'; S.lastOk = false; S.stars[S.i] = 0; reveal(P()); feedback('shown', rich('shown')); save({ i: S.i + 1 }); progress(); paint(); return true; };
   call(() => { window.__brbTest = { state: api.state, start() {}, giveUp }; });
   return api;
 }
@@ -728,8 +806,14 @@ function colView(p, st, c, sign) {
     const i = cols - 1 - k, on = c.sel === `col:${i}`, bad = c.bad === i;
     return tapped(h('button', { type: 'button', class: `oc-cell oc-dbox${on ? ' oc-sel' : ''}${bad ? ' oc-bad' : ''}`, 'data-col': i, 'aria-pressed': String(on), 'aria-label': `${c.T('box')}: ${c.T(['ones', 'tens', 'hundreds', 'thousands', 'tenThousands'][i] || 'ones')}${bad ? `: ${c.T('notYet')}` : ''}`, disabled: c.locked }, ans[i] === null || ans[i] === undefined ? '' : String(ans[i])), () => { if (!on) c.select(`col:${i}`); });
   }));
-  // the carried digits, small over their columns (only once a step has carried them)
-  const carry = c.carry && Object.keys(c.carry).length ? h('div', { class: 'oc-crow oc-carry', 'aria-hidden': 'true' }, cell(''), ...Array.from({ length: cols }, (_, k) => cell(c.carry[cols - 1 - k] === undefined ? '' : String(c.carry[cols - 1 - k]), 'oc-cc'))) : null;
+  // the carried digits, small over their columns (only once a step has carried them). 1.6.1: with the guide on, every
+  // column that gets a carry has its carry box from the start (64 + 58: over the tens and over the hundreds), and the
+  // step that makes the carry fills it
+  const got = c.carry || {}, slots = c.guide && Array.isArray(c.carryTo) ? c.carryTo.filter(i => i < cols) : [];
+  const carry = Object.keys(got).length || slots.length ? h('div', { class: 'oc-crow oc-carry', 'aria-hidden': 'true' }, cell(''), ...Array.from({ length: cols }, (_, k) => {
+    const i = cols - 1 - k, v = got[i];
+    return slots.includes(i) ? h('span', { class: 'oc-cell oc-cc', 'data-carry': i }, h('span', { class: `oc-cbox${v === undefined ? '' : ' oc-cfull'}` }, v === undefined ? '' : String(v))) : cell(v === undefined ? '' : String(v), 'oc-cc');
+  })) : null;
   return h('div', { class: 'oc-stack oc-cols', dir: 'ltr' }, h('div', { class: 'oc-paper' }, carry, rowOf(A, ''), rowOf(Bd, sign), h('div', { class: 'oc-rule', 'aria-hidden': 'true' }), boxes));
 }
 

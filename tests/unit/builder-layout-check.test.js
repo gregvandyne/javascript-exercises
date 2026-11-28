@@ -99,11 +99,12 @@ test('Oomba Canvas end card at 390 px: 1.3.0\'s three buttons are flagged, 1.3.1
 });
 // 1.6.0 (the fourth audit): the stars chip and the sound switch in the strip, the theme's icon in the Now bar, a story
 // line, the carried digit over its column and the stars on the end card all fit at 390 and 1280
-test('Oomba Canvas 1.6.0 at 390 px and 1280: stars, the sound switch, the theme and a story fit, end card included', { skip }, async () => {
+// 1.6.1 (the fifth audit): the same, with the carry boxes over the columns (a new leading one too)
+for (const KV of ['1.6.0', '1.6.1']) test(`Oomba Canvas ${KV} at 390 px and 1280: stars, the sound switch, the theme and a story fit, end card included`, { skip }, async () => {
   const farm = { config: { lang: 'en', support: 'guided', supports: ['guided', 'own'], count: 2, fresh: true, purpose: ['screen', 'worksheet', 'generator'] },
     task: { title: 'Farm Sums: Carry the Ten', say: 'Help the farmer pack the eggs.', theme: { icon: '🐔', cheers: ['Egg-cellent!'], end: 'Every crate of eggs is packed. Well done, farmer!' } },
     problems: [], gen: { tool: 'digits.add', digits: 3, regroup: 'all', story: 'The hens laid {a} eggs on Monday and {b} on Tuesday. How many eggs?' }, steps: {}, hints: {}, skill: { regroup: 'all', digits: 3 } };
-  const page = canvasPage('1.6.0').replace(JSON.stringify(fractions), JSON.stringify(farm)).replace('print(){return {ok:true}}', 'print(){return {ok:true}},sfx:{muted:false,play(){},mute(o){this.muted=o===undefined?!this.muted:!!o;return this.muted}}');
+  const page = canvasPage(KV).replace(JSON.stringify(fractions), JSON.stringify(farm)).replace('print(){return {ok:true}}', 'print(){return {ok:true}},sfx:{muted:false,play(){},mute(o){this.muted=o===undefined?!this.muted:!!o;return this.muted}}');
   const work = async p => { await p.waitForSelector('.oc-band .oc-primary'); await p.click('.oc-steps .oc-box'); for (const d of String(await p.evaluate(() => { const s = document.querySelector('.oc-steps li p').textContent.match(/(\d+) \+ (\d+)/); return +s[1] + +s[2]; }))) await p.keyboard.press(d); await p.waitForSelector('.oc-carry'); };
   assert.deepEqual(await check(page, { before: work }), [], 'the activity at 390, a carried digit showing');
   assert.deepEqual(await check(page, { before: work, width: 1280, height: 800, minTap: 44 }), [], 'and at 1280');

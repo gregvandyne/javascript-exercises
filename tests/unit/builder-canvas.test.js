@@ -117,8 +117,8 @@ test('the CANVAS RULES tell the Builder that lesson activities keep worksheets b
   assert.match(r, /"Save as worksheet"/); assert.match(r, /"My worksheets"/); assert.match(r, /class code/);
   assert.match(r, /keep every question as data in the oc-activity block/);
   assert.match(r, /never build saving, class codes, links, a worksheet list or a print button of your own/);
-  assert.match(r, /New activities use Oomba Canvas 1\.6\.0/, 'the newest kit (the fourth audit)');
-  assert.ok(r.includes(canvasTag('1.6.0')), 'the pinned tag is the 1.6.0 one');
+  assert.match(r, /New activities use Oomba Canvas 1\.6\.1/, 'the newest kit (the fifth audit)');
+  assert.ok(r.includes(canvasTag('1.6.1')), 'the pinned tag is the 1.6.1 one');
   assert.match(fs.readFileSync(path.join(ROOT, 'docs/canvas-api.md'), 'utf8'), /<!-- builder:rules -->[\s\S]*Saved worksheets \(1\.4\.0\)[\s\S]*<!-- \/builder -->/, 'generated from the page');
   assert.doesNotMatch(prompt.SYSTEM_PROMPT, /Save as worksheet|My worksheets/, 'the arcade prompt is untouched');
 });
@@ -126,7 +126,7 @@ test('the CANVAS RULES tell the Builder that lesson activities keep worksheets b
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.6.0', 'new activities pin Oomba Canvas 1.6.0 (worksheets, the phone layout, the Crossword look and the fourth audit)');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.6.1', 'new activities pin Oomba Canvas 1.6.1 (worksheets, the phone layout, the Crossword look, the fourth and fifth audits)');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);

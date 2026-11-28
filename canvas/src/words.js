@@ -809,6 +809,16 @@ for (const [l, P] of Object.entries(HINT_PARTS)) {
   Object.assign(W, { hSub1: at(then(`{x} − {y}${P.J}`, P.subN)), hSubC1: at(then(P.subC, P.subN)), hSub10: at(then(P.sub10, P.write)), hSub0: at(then(P.sub0, P.write)), hSub2: at(then(`{x} − {y} = {s}${P.J}`, P.write)) });
   Object.assign(WORDS[l], W);
 }
+// 1.6.1: the step for a carry into a new leading column (64 + 58: "Hundreds: just the 1 carried = ?").
+const WORDS_161 = {
+  en: { colCarryOnly: '{place}: just the {c} carried = ?' }, es: { colCarryOnly: '{place}: solo el {c} que llevas = ?' },
+  fr: { colCarryOnly: '{place} : seulement la retenue {c} = ?' }, de: { colCarryOnly: '{place}: nur der Übertrag {c} = ?' },
+  it: { colCarryOnly: '{place}: solo il riporto {c} = ?' }, pt: { colCarryOnly: '{place}: só o {c} que vai = ?' },
+  nl: { colCarryOnly: '{place}: alleen de {c} die je onthield = ?' }, ru: { colCarryOnly: '{place}: только {c} в уме = ?' },
+  ja: { colCarryOnly: '{place}：くり上がりの {c} だけ = ?' }, 'zh-Hant': { colCarryOnly: '{place}：只有進位的 {c} = ?' },
+  ar: { colCarryOnly: '{place}: {c} المحمول فقط = ؟' }, he: { colCarryOnly: '{place}: רק ה־{c} שהעברנו = ?' },
+};
+for (const l of Object.keys(WORDS_161)) Object.assign(WORDS[l], WORDS_161[l]);
 export const WORD_LANGS = Object.keys(WORDS);
 /** The table for a site language: the language, its base ('en-GB' -> 'en'), then English, key by key. */
 export function wordsFor(lang) {

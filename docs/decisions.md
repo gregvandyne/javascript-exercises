@@ -17218,6 +17218,64 @@ is done with its score), `tests/unit/progress-set-progress.test.js`, and the pla
 kept once it changes; Guided's wrong digit). `tests/unit/_box-frame.js` finds a Chromium on the machine as the site's
 browser tests do, so the frame tests run here too.
 
+## Oomba Canvas 1.6.1: audit 5 (28 Nov 2026)
+
+The owner's fifth live audit played "Barnyard Add-Up" (a Builder classroom activity on Oomba Canvas 1.6.0, column
+addition, 8 problems, Guided) as a student, Jamie. The fixes are in the kit, shipped as Oomba Canvas 1.6.1 in new files
+(`public/vendor/oomba-canvas/1.6.1/`, locked in `CANVAS_VERSIONS` and `canvas/SHIPPED.json`; 1.0.0 to 1.6.0 stay byte
+for byte, with a lock test for 1.6.0's folder). No new data: every 1.6.0 field means what it did, and 1.6.0 data plays
+unchanged. `CANVAS_LATEST` and `PANEL_KIT` are 1.6.1, so new activities pin it and older ones move when saved from the
+Activity panel; the only Builder text that changed is the CANVAS RULES line naming the newest kit (regenerated).
+- **Credit without the end card.** Jamie answered all 8 correctly and left with "Back to the lesson" without pressing
+  "See my stars": the student page stayed "0 of 1 done, Started", the teacher's Progress "0/1" with no score. Cause:
+  the kit sent its result only from the end card (`BRB.gameOver`, after Next on the last problem), the gap the
+  "Arithmetic Lab: audit 4 fixes" entry named. 1.6.1 calls `BRB.setProgress({ done, total, score })` as each problem
+  is settled (right, or its worked answer shown after two Checks or by the teacher): the step is started at the first,
+  with the score so far ("1 of 8 answered"), and done with its score at the last, end card or not. The end card still
+  sends `gameOver` once, as before. Never in a preview (`BRB.preview`, or no play page: `BRB.gameUrl` null) and never
+  on the board (`config.board`, or a set run in board mode), which send no score either.
+- **Hints moved on.** Pressing Hint after a Check showed no new text. Cause: the kit counted presses and started the
+  count again at every mistake, for the mistake's column, so after a Check the next press showed the nudge already on
+  screen (and after three presses, "That was the last hint" for good). 1.6.1 keeps the hints shown for the problem and
+  shows the first not shown yet, in an order that starts with the column of the last mistake (else the first box not
+  right yet): its nudge, its worked line, then the other columns', then "check every box". So each press shows
+  something new, and after a mistake the next relevant one (the worked line when the nudge was seen). "Hint 2 of 5"
+  counts all of them. The Builder's own hints for a tool work as before.
+- **A carry into the hundreds had no box.** 64 + 58 and 93 + 19: the steps stopped at the tens, so the 1 carried into
+  the new hundreds column had no step and no box over it. 1.6.1: a carry out of the top column is a step of its own
+  ("Hundreds: just the 1 carried = ?", new word `colCarryOnly` in all 12 kit languages), for adding and multiplying,
+  and every column that gets a carry has a carry box over it from the start (dashed while empty; the step that makes
+  the carry fills it; only with the guide on and the kit's own steps, so On my own gives nothing away). The column's
+  sign cell no longer takes the compare buttons' 64 px, so the digits sit over their boxes (they were 8 px off, 18 on
+  a phone).
+- **Typing went to the wrong box.** Typing straight after the Ones step went into the Tens step box (the one asking
+  for the carry), and a digit could only be replaced after a click. Causes: a right step box always chose the next step
+  box; and the kit typed into the box it had chosen, never the one with the keyboard focus (each paint also made the
+  boxes anew, so the focus fell off). 1.6.1 follows the path the student is on. A right step box chooses its own
+  column's answer box when it is empty ("Ones: 4 + 8 = 12", then the 2); an answer box chooses the next column's step
+  when the student did this column's step (that step asks for the carry: "Tens: 6 + 5 + 1 carried = ?"), else the
+  next answer box to the left, so typing the ones then the tens answer is never diverted. The focus follows the chosen
+  box, the box with the focus is the one typed into (Tab to a filled box and type: the digit is replaced), ← and →
+  move between answer boxes, and Enter on a box checks it. Tested with the keyboard only.
+- **The Not yet counter stays (decided).** The audit saw only stars. #712 kept the ✗ chip on purpose and made it count
+  every Not yet in the set (docs/canvas-api.md, 1.6.0); it was on screen ("✗ 0"), but the chips' names were on plain
+  spans, which the accessibility tree drops, so a screen reader (and the audit's page reading) got "✓ 0 ✗ 0 ⭐ 0"
+  where older kits had read "Right! 0, Not yet. 0". Stars do not replace it: stars are earned per problem, ✗ is the
+  honest count of slips, and teachers read it on the board. 1.6.1 names the chips (role="img": "Right! 3", "Not yet.
+  1", "7 stars") and shows the same name on hover. Board mode still hides ✓ ✗ ⭐.
+- **Kept.** Stars, the sound switch, the theme and stories, the skill-matching generator, worksheets, printing and
+  the teacher's controls are 1.6.0's; `tests/unit/canvas-entry-browser.test.js` now runs every 1.6.0 test on both
+  1.6.0 and 1.6.1 (the two deliberate changes, the box chosen after a step and the hint order, are checked per
+  version).
+- **Not done here.** The server side of the same audit (the kit chosen as "latest version", the upgrade on re-save,
+  build speed) is another change; this one only registers 1.6.1 where versions are listed.
+Tests: `tests/unit/canvas-audit5-browser.test.js` (the game frame: progress messages, never in a preview or on the
+board; the hint sequence; carries for 64 + 58, 93 + 19, 957 + 868, 478 + 657 and 47 × 3; the keyboard-only paths; the
+named chips), `tests/unit/canvas-progress-site-browser.test.js` (on the site: a student answers every problem, leaves
+before the end card, the step is done with its score on the teacher's Progress page; it fails on 1.6.0), the 1.6.1
+parts of `tests/unit/canvas-kit.test.js`, `builder-layout-check` (1.6.1 at 390 and 1280), and the version lines in
+`builder-canvas`, `builder-activity-panel` and `builder-figures`.
+
 ## Arithmetic Lab and class Progress: audit 5 (28 Nov 2026)
 
 The owner's fifth live audit, two items:
