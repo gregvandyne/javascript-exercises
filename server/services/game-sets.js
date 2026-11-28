@@ -747,6 +747,9 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
+    // Arithmetic Lab keeps the teacher's own name for an activity beside its items (the set's title): it is what the
+    // lesson is called, and the label ("Long division, 16 problems, Guided") goes under it.
+    if (slug === 'arithmetic-lab' && s.title) return { kind: 'one', label: labelOf(slug, s.items), title: s.title };
     if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-zoo' || slug === 'flashcards') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }

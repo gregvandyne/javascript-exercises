@@ -1331,7 +1331,8 @@
       "fronts": "{title}: voorkanten",
       "backs": "{title}: achterkanten",
       "how": "Druk dubbelzijdig af (omslaan langs de lange kant) en knip langs de stippellijnen. Elke achterkant komt achter zijn voorkant."
-    }
+    },
+    "loading": "{title} wordt geladen…"
   },
   "friends": {
     "title": "Vrienden",
@@ -7147,7 +7148,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Veeg de tabel opzij om alle stappen te zien",
       "quizScore": "{right} van {total} goed ({pct}%)",
-      "helped": "Leraar liet een antwoord zien"
+      "helped": "Leraar liet een antwoord zien",
+      "stepFixes": "{count, plural, one {# stap verbeterd} other {# stappen verbeterd}}",
+      "sampleName": "Voorbeeldleerling",
+      "sampleNote": "Een voorbeeld: zo ziet de regel van elke leerling eruit zodra die begint. Rekenlab laat ook zien hoeveel stappen fout waren en onderweg zijn verbeterd."
     },
     "student": {
       "doneOf": "{done} van {total} klaar",

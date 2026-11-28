@@ -187,11 +187,16 @@ test('area model and partial products: place-value parts, a product for each pai
   assert.deepEqual(M.placeParts(9999), [9000, 900, 90, 9]);
   assert.deepEqual(M.areaCells(46, 23).map((r) => r.map((c) => c.value)), [[800, 120], [120, 18]]);
   assert.deepEqual(M.partialProducts(46, 23).map((p) => [p.bottom, p.top, p.value]), [[3, 6, 18], [3, 40, 120], [20, 6, 120], [20, 40, 800]]);
+  // a 0 digit keeps its line, marked zero, so no place is skipped without a word (610 × 9 starts with 9 × 0)
+  assert.deepEqual(M.partialProducts(610, 9).map((p) => [p.bottom, p.top, p.value, !!p.zero]), [[9, 0, 0, true], [9, 10, 90, false], [9, 600, 5400, false]]);
+  const w610 = M.buildWork('partial', 'multiply', [610, 9]);
+  assert.deepEqual(w610.fields.map((f) => f.id), ['pp0_1', 'pp0_2', 'sum'], 'the zero line is written by the page, not typed');
+  assert.equal(w610.fields[0].prompt, '9 × 0 is 0, so its line is written for you. What is 9 × 10?');
   const r = rng(11);
   for (let n = 0; n < 300; n++) {
     const top = 10 + Math.floor(r() * 9990), bottom = 2 + Math.floor(r() * Math.min(997, top));
     const cells = M.areaCells(top, bottom).flat();
-    const pp = M.partialProducts(top, bottom);
+    const pp = M.partialProducts(top, bottom).filter((p) => !p.zero);
     assert.equal(M.partsTotal(cells), top * bottom, `${top} × ${bottom}`);
     assert.equal(M.partsTotal(pp), top * bottom);
     assert.deepEqual(pp.map((p) => p.value).sort((a, b) => a - b), cells.map((c) => c.value).sort((a, b) => a - b), 'the same parts, listed');
@@ -314,10 +319,12 @@ for (const { item, keys } of RUNS)
 
 test('in Chromium: Guided marks a wrong digit at once and Stuck? lights up; a second wrong Check shows a worked answer', { skip, timeout: 60e3 }, async () => {
   const { page, ctx, errors } = await open({ k: 'divide', p: [[945, 7]], l: 'guided', m: 'ladder' }, true);
-  await type(page, ['200', '\n']);
-  assert.match(await page.locator('.prompt').innerText(), /1400, more than 945/);
+  // (a number of groups that can't take another digit goes on by itself: 20 here, as 200 × 7 is more than 945, so an
+  // impossible 200 can't be typed; 0 is the mistake to make)
+  await type(page, ['0', '\n']);
+  assert.match(await page.locator('.prompt').innerText(), /Take away at least one 7/);
   assert.equal(await page.locator('.num.wrong').count(), 1);
-  await type(page, ['300', '\n']);
+  await type(page, ['0', '\n']);
   assert.match(await page.getByRole('button', { name: /Stuck\?/ }).innerText(), /Stuck\? Hint/);
   await page.getByRole('button', { name: /Stuck\?/ }).click();
   assert.match(await page.locator('.hint-box').innerText(), /friendly number of 7s/);
@@ -373,6 +380,12 @@ async function solve(page, method, kind, p, guided, what) {
   for (let guard = 0; guard < 60; guard++) {
     const f = M.buildWork(method, kind, p, v).fields.find((x) => !v[x.id]);
     if (!f) break;
+    // the remainder is what's left on the last rung: the page writes it in, never typed twice
+    if (f.copyOf) {
+      v[f.id] = M.norm(v[f.copyOf]);
+      assert.equal(await page.locator(`input[data-field="${f.id}"]`).inputValue(), v[f.id], `${what}: the remainder written in`);
+      continue;
+    }
     if (guided) assert.equal(await page.locator('.prompt').innerText(), f.prompt, `${what}: the question for ${f.id}`);
     const val = f.role === 'choice' ? String(choiceOf(f)) : f.expect;
     await type(page, f.role === 'choice' && val.length < f.len ? [val, '\n'] : [val]);

@@ -57,10 +57,17 @@ async function work(page, sheet, guided, what) {
       const h = await page.waitForFunction(() => {
         const a = document.activeElement;
         if (a?.dataset?.box && a.value === '') return a.dataset.box;
+        // after a subtraction the page waits for Bring down (the button has the focus; Enter brings it down)
+        if (a?.textContent?.trim() === 'Bring down') return 'down';
         return a?.textContent?.trim() === 'Check' ? 'done' : null;
       }, null, { timeout: 5000 });
       const id = await h.jsonValue();
       if (id === 'done') break;
+      if (id === 'down') {
+        await page.keyboard.press('Enter');
+        await page.waitForTimeout(20);
+        continue;
+      }
       const st = sheet.steps[L.stepOfBox(sheet, id)];
       assert.ok(st, `${what}: box ${id} is on a step`);
       const asked = await page.locator('.prompt').innerText();
@@ -161,10 +168,16 @@ test('in Chromium: a fraction simplified is right, on the phone keypad; a decima
   // up to the point: by the keypad, as on a phone
   for (let guard = 0; guard < 60; guard++) {
     const id = await d.page.evaluate(() => document.activeElement?.dataset?.box ?? null);
+    // (after a subtraction: Bring down, as a phone taps it)
+    if (!id && (await d.page.getByRole('button', { name: 'Bring down' }).count())) {
+      await d.page.getByRole('button', { name: 'Bring down' }).click();
+      await d.page.waitForFunction(() => document.activeElement?.dataset?.box && document.activeElement.value === '');
+      continue;
+    }
     if (!id || L.boxOf(ds, id).digit === '.') break;
     await d.page.locator('.keypad').getByRole('button', { name: String(L.boxOf(ds, id).digit), exact: true }).click();
     await d.page.waitForTimeout(30);
-    await d.page.waitForFunction(() => document.activeElement?.dataset?.box && document.activeElement.value === '');
+    await d.page.waitForFunction(() => (document.activeElement?.dataset?.box && document.activeElement.value === '') || document.activeElement?.textContent?.trim() === 'Bring down');
   }
   assert.match(await d.page.locator('.prompt').innerText(), /Write a decimal point after 745, then a 0/);
   await d.page.getByRole('button', { name: 'Decimal point' }).click();
