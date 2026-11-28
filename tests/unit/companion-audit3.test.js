@@ -227,6 +227,10 @@ test('6. a Figures worksheet page carries the worksheet: its title and questions
 // ---------------------------------------------------------------- 7. the Builder hand-off
 test('7. startBuild: the card opens the Builder on Classroom game (&kind=classgame, a plain "&"); the brief is kept whole', async () => {
   const x = H.world();
+  // The hand-off card is what a teacher gets with building in the chat off (docs/decisions.md "Builder in the chat
+  // (phase 2)": with it on, startBuild makes the ask card instead).
+  const was = config.companionBuild; config.companionBuild = false;
+  try {
   const brief = 'A matching game: students match equivalent fractions (1/2 and 2/4) in rounds of six pairs, with a hint after two misses.';
   H.standIn((p, i) => (i === 0 ? H.toolUse('startBuild', { tool: 'builder', title: 'Fraction match', grade: '4', brief, practice: 'equivalent fractions' }) : 'I drafted a brief for Fraction match. Press Open the Builder to build it.'));
   await H.say(x, 'Make a game for equivalent fractions', { type: 'class', classId: x.A.id });
@@ -250,6 +254,7 @@ test('7. startBuild: the card opens the Builder on Classroom game (&kind=classga
   assert.match(bjs, /const withBrief = text => \[String\(text \|\| ''\)\.trim\(\), S\.brief\]/);
   assert.match(bjs, /if \(isEmpty\(plan\) && !told\) return direct\(btn\);/);
   assert.match(bjs, /\.\.\.\(told \? \{ text: told \} : \{\}\)/);
+  } finally { config.companionBuild = was; }
 });
 
 test('7. the runner: a game plan\'s told (the brief) is the first Builder message, intact', async () => {

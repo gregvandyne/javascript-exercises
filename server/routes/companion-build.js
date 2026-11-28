@@ -2,6 +2,8 @@
 //   POST /api/companion/build/act       a tap on a build card ({ turnId, act: 'buildPlan' (value: the picks as JSON) |
 //                                       'buildGo' (value: the words for the Builder, up to 2000 characters) |
 //                                       'buildRedo' }) -> { ok, chat }
+//   POST /api/companion/build/studio    with the chat docked in Studio: a Studio button's fixed Builder message ({ gameId,
+//                                       text }) into the chat and straight to that game's Builder -> { ok, chat }
 //   GET  /api/companion/build/:gameId   a game made in the chat, for its card: the Builder's live steps as five rows
 //                                       (while it builds), this viewer's own preview address (?v=<version id>: that
 //                                       version), the builds left today -> { ok, busy, rows, preview, left, title }
@@ -21,6 +23,13 @@ router.post('/api/companion/build/act', may, rateLimit('companion-act', 300, 360
   const b = body(req);
   const v = typeof b.value === 'string' ? b.value.slice(0, 2000) : '';
   const r = CB.act(req.user, String(b.turnId || ''), String(b.act || ''), v);
+  return r.ok ? res.json({ ok: true, chat: CO.dress(req.user, r.chat, req.t) }) : fail(req, res, r);
+});
+router.post('/api/companion/build/studio', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
+  const b = body(req);
+  if (!CB.pageGame(req.user, String(b.gameId || ''))) return fail(req, res, { code: 'notFound' });
+  CO.ensureChat(req.user);
+  const r = CB.studioSend(req.user, String(b.gameId || ''), typeof b.text === 'string' ? b.text.slice(0, 2000) : '', req.locale || 'en');
   return r.ok ? res.json({ ok: true, chat: CO.dress(req.user, r.chat, req.t) }) : fail(req, res, r);
 });
 router.get('/api/companion/build/:gameId', may, rateLimit('companion-build-view', 240, 60e3), (req, res) => {

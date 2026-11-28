@@ -432,8 +432,12 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // room"): its page asks for it (companion 'live'), the bubble sits at the bottom left there, clear of the room's
 // controls and the join code, and hides in full screen (public/js/companion.js). Its sub-pages (the teacher's phone
 // view) do not. Studio (/studio/<id>) has its own "Chat with the Builder" beside the game, so no Oomba bubble there:
-// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked").
-const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play|^\/studio(\/|$)/;
+// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked"). The one exception
+// (docs/decisions.md "Builder in the chat (phase 3): Oomba in Studio"): a teacher who builds in the chat, on a game
+// they own, gets the Oomba chat docked in place of Studio's Builder column; the Studio route checks that and asks for
+// it (companion 'studio'). Everyone else, and every other studio page, keeps no bubble there.
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play/;
+const STUDIO = /^\/studio(\/|$)/;
 const OWN_CHAT = [];
 /** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
 export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
@@ -441,6 +445,10 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   const p = req.path || '';
   if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
   if (!companionFor(req.user)) return null;
+  if (STUDIO.test(p)) {
+    const st = companion === 'studio' ? /^\/studio\/([A-Za-z0-9_-]{1,64})$/.exec(p) : null;
+    return st ? { type: 'game', gameId: st[1] } : null;
+  }
   const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
   if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
   if (/^\/manip/.test(p)) return { type: 'tools' };

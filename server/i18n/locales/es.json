@@ -1887,6 +1887,9 @@
         "selfTest": "No se guardó: la comprobación de la actividad encontró un problema.",
         "scan": "No se guardó: la revisión de seguridad falló."
       }
+    },
+    "dock": {
+      "label": "Chat de Oomba"
     }
   },
   "publish": {
@@ -3050,6 +3053,13 @@
         "anyway": "Publicar de todos modos",
         "confirm": "¿Publicar sin haberlo jugado hasta el final? Los jugadores podrían quedarse atascados.",
         "checking": "Primero jugamos tu juego hasta el final…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Estudio, versión {n}",
+        "hello": "Dime qué cambiar en este juego y se lo enviaré al Constructor. Cada versión nueva aparece en la vista previa grande.",
+        "versionOf": "Versión {n} de {total}",
+        "versionLabel": "Versión en la vista previa"
       }
     },
     "character": {
@@ -5438,7 +5448,8 @@
         "change": "Cambiar",
         "assign": "Asignar",
         "host": "Presentar en vivo",
-        "big": "Abrir en grande"
+        "big": "Abrir en grande",
+        "showBig": "Verla en grande"
       },
       "assignText": "Asigna «{title}» a mi clase.",
       "changeText": "En «{title}», ",
@@ -5465,7 +5476,9 @@
       "sent": "Enviado al Builder: lo está construyendo en la tarjeta de abajo.",
       "redone": "Cambiado: la tarjeta nueva está abajo.",
       "answered": "Elegido: {list}",
-      "retry": "Intentar de nuevo"
+      "retry": "Intentar de nuevo",
+      "showingBig": "Se ve en grande a la izquierda",
+      "showingBigAbove": "Se ve en grande en la vista previa de arriba"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palabra} other {# palabras}}",

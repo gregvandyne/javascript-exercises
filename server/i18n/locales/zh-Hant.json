@@ -1887,6 +1887,9 @@
         "selfTest": "未儲存：活動檢查發現了問題。",
         "scan": "未儲存：安全檢查沒有通過。"
       }
+    },
+    "dock": {
+      "label": "Oomba 聊天"
     }
   },
   "publish": {
@@ -3050,6 +3053,13 @@
         "anyway": "還是要發布",
         "confirm": "還沒從頭玩到尾就要發布嗎？玩家可能會卡住。",
         "checking": "先把你的遊戲從頭玩到尾…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "工作室，第 {n} 版",
+        "hello": "告訴我這個遊戲要改什麼，我會傳給小幫手。每個新版本都會顯示在大預覽中。",
+        "versionOf": "第 {n} 版，共 {total} 版",
+        "versionLabel": "預覽中的版本"
       }
     },
     "character": {
@@ -5438,7 +5448,8 @@
         "change": "修改",
         "assign": "指派",
         "host": "開始即時遊戲",
-        "big": "放大開啟"
+        "big": "放大開啟",
+        "showBig": "放大顯示"
       },
       "assignText": "把「{title}」指派給我的班級。",
       "changeText": "在「{title}」中，",
@@ -5465,7 +5476,9 @@
       "sent": "已交給 Builder：正在下方卡片中製作。",
       "redone": "已修改：新的卡片在下方。",
       "answered": "已選擇：{list}",
-      "retry": "再試一次"
+      "retry": "再試一次",
+      "showingBig": "在左側放大顯示",
+      "showingBigAbove": "在上方的預覽中放大顯示"
     },
     "storybook-setup": {
       "words": "{count} 個字",

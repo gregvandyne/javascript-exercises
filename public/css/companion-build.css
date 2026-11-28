@@ -58,3 +58,4 @@
 .ocb-changed{padding:8px 10px;border-radius:10px;background:var(--card-2);font-size:.85rem}
 .ocb-changed ul{margin:4px 0 0;padding-inline-start:18px;display:flex;flex-direction:column;gap:2px}
 .ocb-warn{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--warn,#C77700) 55%,var(--line))}
+.ocb-big{margin:0;display:flex;gap:6px;align-items:center;font-size:.85rem;font-weight:800;color:var(--text-2)}

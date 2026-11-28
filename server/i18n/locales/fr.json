@@ -1887,6 +1887,9 @@
         "selfTest": "Non enregistré : la vérification de l'activité a trouvé un problème.",
         "scan": "Non enregistré : le contrôle de sécurité a échoué."
       }
+    },
+    "dock": {
+      "label": "Discussion avec Oomba"
     }
   },
   "publish": {
@@ -3050,6 +3053,13 @@
         "anyway": "Publier quand même",
         "confirm": "Publier sans l’avoir joué jusqu’au bout ? Les joueurs risquent de rester bloqués.",
         "checking": "On joue d’abord ton jeu jusqu’au bout…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, version {n}",
+        "hello": "Dites-moi quoi changer dans ce jeu et je l’enverrai au Constructeur. Chaque nouvelle version s’affiche dans le grand aperçu.",
+        "versionOf": "Version {n} sur {total}",
+        "versionLabel": "Version dans l’aperçu"
       }
     },
     "character": {
@@ -5438,7 +5448,8 @@
         "change": "Modifier",
         "assign": "Assigner",
         "host": "Lancer en direct",
-        "big": "Ouvrir en grand"
+        "big": "Ouvrir en grand",
+        "showBig": "Afficher en grand"
       },
       "assignText": "Assigne « {title} » à ma classe.",
       "changeText": "Dans « {title} », ",
@@ -5465,7 +5476,9 @@
       "sent": "Envoyé au Builder : il le construit sur la carte ci-dessous.",
       "redone": "Modifié : la nouvelle carte est en dessous.",
       "answered": "Choisi : {list}",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "showingBig": "Affiché en grand à gauche",
+      "showingBigAbove": "Affiché en grand dans l’aperçu au-dessus"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# mot} other {# mots}}",

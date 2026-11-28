@@ -1888,6 +1888,9 @@
         "selfTest": "Not saved: the activity's check found a problem.",
         "scan": "Not saved: the safety check failed."
       }
+    },
+    "dock": {
+      "label": "Oomba chat"
     }
   },
   "publish": {
@@ -3138,6 +3141,13 @@
         "anyway": "Publish anyway",
         "confirm": "Publish without a full playthrough? Players may get stuck.",
         "checking": "Playing your game all the way through first…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, version {n}",
+        "hello": "Tell me what to change in this game and I will send it to the Builder. Each new version shows in the big preview.",
+        "versionOf": "Version {n} of {total}",
+        "versionLabel": "Version in the preview"
       }
     },
     "character": {
@@ -5897,7 +5907,8 @@
         "change": "Change",
         "assign": "Assign",
         "host": "Host live",
-        "big": "Open big"
+        "big": "Open big",
+        "showBig": "Show it big"
       },
       "assignText": "Assign “{title}” to my class.",
       "changeText": "In “{title}”, ",
@@ -5924,7 +5935,9 @@
       "sent": "Sent to the Builder: it is building on the card below.",
       "redone": "Changed: the new card is below.",
       "answered": "Picked: {list}",
-      "retry": "Try again"
+      "retry": "Try again",
+      "showingBig": "Showing big on the left",
+      "showingBigAbove": "Showing big in the preview above"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# word} other {# words}}",

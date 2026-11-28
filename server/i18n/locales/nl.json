@@ -1888,6 +1888,9 @@
         "selfTest": "Niet opgeslagen: de controle van de activiteit vond een probleem.",
         "scan": "Niet opgeslagen: de veiligheidscontrole is mislukt."
       }
+    },
+    "dock": {
+      "label": "Chat met Oomba"
     }
   },
   "publish": {
@@ -3051,6 +3054,13 @@
         "anyway": "Toch publiceren",
         "confirm": "Publiceren terwijl het niet helemaal is uitgespeeld? Spelers kunnen vast komen te zitten.",
         "checking": "Je spel wordt eerst helemaal uitgespeeld…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, versie {n}",
+        "hello": "Vertel me wat ik in dit spel moet veranderen en ik stuur het naar de Bouwer. Elke nieuwe versie verschijnt in de grote voorvertoning.",
+        "versionOf": "Versie {n} van {total}",
+        "versionLabel": "Versie in de voorvertoning"
       }
     },
     "character": {
@@ -5439,7 +5449,8 @@
         "change": "Wijzigen",
         "assign": "Toewijzen",
         "host": "Live starten",
-        "big": "Groot openen"
+        "big": "Groot openen",
+        "showBig": "Groot tonen"
       },
       "assignText": "Wijs ‘{title}’ toe aan mijn klas.",
       "changeText": "In ‘{title}’: ",
@@ -5466,7 +5477,9 @@
       "sent": "Naar de Builder gestuurd: die bouwt het op de kaart hieronder.",
       "redone": "Gewijzigd: de nieuwe kaart staat hieronder.",
       "answered": "Gekozen: {list}",
-      "retry": "Opnieuw proberen"
+      "retry": "Opnieuw proberen",
+      "showingBig": "Groot te zien aan de linkerkant",
+      "showingBigAbove": "Groot te zien in de voorvertoning hierboven"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# woord} other {# woorden}}",

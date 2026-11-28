@@ -63,6 +63,7 @@ import { LIVE_NOT, LIVE_NOT_ENGINE, LIVE_NOT_PLAIN } from '../builder/plan.js';
 import { kitVersion } from '../services/kit.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady, checkHtml as checkLiveHtml } from '../services/classlive-check.js';
+import * as CB from '../services/companion-build.js';
 
 export const router = Router();
 
@@ -279,6 +280,10 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
   const g = loadEditable(req, res, { api: false }); if (!g) return;
   if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
   const state = studioState(req.user, g.id, t, req);
+  // A teacher who builds in the Oomba chat, on their own game: the chat docks in place of the Builder column (one chat
+  // per page; docs/decisions.md "Builder in the chat (phase 3): Oomba in Studio"). Kids and everyone else: unchanged.
+  const dock = CB.docksIn(req.user, g);
+  if (dock) state.dock = true;
   // Pro quality for everyone (a student included): "for teachers" only when they are one.
   const proKey = isSchoolStaff(req.user) || !isTrustedOnlyAsAll(req.user) ? 'studio.chat.proIncluded' : 'studio.chat.proIncludedAll';
   // Opened from a lesson's build step: a strip back to that lesson (where Hand in is).
@@ -304,7 +309,8 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
     <div class="st-live" id="st-live" aria-live="polite"></div>
     <p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"></p>
     <div class="st-main">
-      <section class="st-chat" aria-label="${t('studio.chat.label')}">
+      ${dock ? html`<section class="st-dock" id="st-dock" aria-label="${t('studio.dock.label')}"></section>` : ''}
+      <section class="st-chat" aria-label="${t('studio.chat.label')}"${dock ? raw(' hidden') : ''}>
         <div class="st-chat-head">
           <span class="st-bot" aria-hidden="true">${ico('🤖', { size: 24 })}</span><b>${t('studio.chat.builder')}</b>
           <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
@@ -344,7 +350,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
     </div>
   </div>
   ${jsonData('page-data', { ...state, icons: ICONS, categories: games.CATEGORIES.map(([k, i]) => [k, i, categoryLabel(k, t)]), covers: games.COVERS })}`;
-  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: 'studio-page', head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/activity-panel.css">'), scripts: ['/js/studio.js'], i18n: ['js.activityPanel', ...(state.loud ? ['js.loudness'] : [])] });
+  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: dock ? 'studio-page studio-docked' : 'studio-page', ...(dock ? { companion: 'studio' } : {}), head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/activity-panel.css">'), scripts: ['/js/studio.js'], i18n: ['js.activityPanel', ...(state.loud ? ['js.loudness'] : [])] });
 });
 
 // ---------------------------------------------------------------- APIs

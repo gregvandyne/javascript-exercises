@@ -254,25 +254,72 @@ export function chatGames(u, row = chatRow(u)) {
   }
   return out.slice(0, 8);
 }
+// ---------------------------------------------------------------- Studio (phase 3: Oomba in Studio)
+/** The game a teacher has open in Studio, when the chat docks there (docs/decisions.md "Builder in the chat (phase 3):
+ *  Oomba in Studio"): only their own, not deleted, and only while they may build in the chat. -> { gameId, title,
+ *  version, versions, currentId } | null. Used by the page check (companion.js pageOf), the Studio route and changeGame. */
+export function pageGame(u, gameId) {
+  if (!on(u)) return null;
+  const g = games.getGame(String(gameId || ''));
+  if (!g || g.owner_id !== u.id || g.status === 'deleted') return null;
+  const cur = g.current_version_id ? games.getVersion(g.current_version_id) : null;
+  return { gameId: g.id, title: g.title, version: (cur && cur.number) || 0, versions: turns.newestVersion(g.id) || 0, currentId: g.current_version_id || null };
+}
+/** Does Studio show the docked Oomba chat instead of its own Builder column, for this viewer and game? */
+export const docksIn = (u, g) => !!(u && g && g.owner_id === u.id && pageGame(u, g.id));
+/** A change job for one game: the teacher's words as they are (the Builder screens them). */
+function changeJob(g, words, lang) {
+  const card = J.cardOf(uid(14), 'game', g.title);
+  const cur = games.getGame(g.gameId);
+  const base = turns.newestVersion(g.gameId) || 0;
+  return { ...card, gameId: g.gameId, mode: 'change', base, baseId: cur.current_version_id || null, input: { gameId: g.gameId, text: words, lang: lang || 'en', mode: 'change', base, cid: uid(16) } };
+}
 /** changeGame: the teacher's message, exactly as they wrote it (after the chat's own scrubber), to that game's
- *  Builder. No tap, no rewrite; the Builder screens it like any message. A job follows it (the card above). */
+ *  Builder. No tap, no rewrite; the Builder screens it like any message. A job follows it (the card above).
+ *  In Studio (page 'game', checked by pageOf) the message goes to the game on screen, unless the AI named another
+ *  game made in this chat by its exact title. */
 export function changeTool(i, ctx) {
   const u = ctx.user, t = tFor(ctx.lang);
   if (!on(u)) return { result: { error: 'Building in the chat is off for this account. Nothing was sent.' }, step: { k: 'briefNo' } };
   const list = chatGames(u);
-  if (!list.length) return { result: { error: 'No game was made in this chat yet: offer to make one with startBuild. Nothing was sent.' }, step: { k: 'briefNo' } };
+  const here = ctx.page && ctx.page.type === 'game' && ctx.page.gameId ? pageGame(u, ctx.page.gameId) : null;
+  if (!list.length && !here) return { result: { error: 'No game was made in this chat yet: offer to make one with startBuild. Nothing was sent.' }, step: { k: 'briefNo' } };
   const want = fold(i.game);
-  const g = (want && want !== 'last' && (list.find(x => fold(x.title) === want) || list.find(x => fold(x.title).includes(want) || want.includes(fold(x.title))))) || list[0];
+  const named = want && want !== 'last' ? list.find(x => fold(x.title) === want) : null;
+  const g = here ? (named && named.gameId !== here.gameId ? named : here)
+    : (want && want !== 'last' && (named || list.find(x => fold(x.title).includes(want) || want.includes(fold(x.title))))) || list[0];
   const words = clip(String(ctx.text || ''), 2000).trim();
   if (!words) return { result: { error: 'Nothing to send.' }, step: { k: 'briefNo' } };
   const jobs = (ctx.out.jobs ||= []);
   if (jobs.some(j => j.kind === 'game' && j.gameId === g.gameId)) return { result: { error: 'This message already went to that game.' }, step: { k: 'briefNo' } };
   if (jobs.length >= J.LIMITS.PER_ANSWER || J.liveCount(u.id) + jobs.length >= J.LIMITS.QUEUE_MAX) return { result: { error: 'The teacher already has many things being made: ask them to send this again once some cards are done. Nothing was sent.' }, step: { k: 'briefNo' } };
-  const card = J.cardOf(uid(14), 'game', g.title);
-  const cur = games.getGame(g.gameId);
-  jobs.push({ ...card, gameId: g.gameId, mode: 'change', base: g.version, baseId: cur.current_version_id || null, input: { gameId: g.gameId, text: words, lang: ctx.lang || 'en', mode: 'change', base: g.version, cid: uid(16) } });
-  ctx.out.buildReply = t('js.companion-build.reply.change', { n: g.version + 1, prev: g.version || 1 });
+  const job = changeJob(g, words, ctx.lang);
+  jobs.push(job);
+  ctx.out.buildReply = t('js.companion-build.reply.change', { n: job.base + 1, prev: job.base || 1 });
   return { result: { sent: true, game: g.title, note: 'The teacher\'s words went to that game\'s Builder exactly as written. A new version is being built; the card shows it. Say it in one short sentence, never that it is done.' }, step: { k: 'job', q: clip(g.title, 40) } };
+}
+/**
+ * A Studio button's fixed Builder message (Fix it, Make it a live game, Make it a classroom activity, Carry on
+ * building), with the chat docked in Studio: it goes into the one chat as the teacher's message and straight to this
+ * game's Builder as a change job, without the AI in between (the same words Studio sends; the Builder screens them).
+ * -> the conversation | fail.
+ */
+export function studioSend(u, gameId, text, lang = 'en') {
+  const g = pageGame(u, gameId); if (!g) return { ok: false, code: 'notFound' };
+  const row = chatRow(u);   // made by the route first (companion.js ensureChat)
+  if (!row) return { ok: false, code: 'notFound' };
+  if (busyChat(row)) return { ok: false, code: 'chatBusy' };
+  if (J.liveCount(u.id) >= J.LIMITS.QUEUE_MAX) return { ok: false, code: 'cap' };
+  const words = clip(scrub(String(text || '').replace(/\r\n/g, '\n'), studentNames(u)).text, 2000).trim();
+  if (!words) return { ok: false, code: 'notFound' };
+  const t = tFor(lang);
+  const job = changeJob(g, words, lang);
+  const { input, ...shown } = job;
+  return C.addTurn(u, SURFACE, KEY, {
+    me: { text: words, meta: { page: { type: 'game', gameId: g.gameId, version: g.version }, lang } },
+    text: t('js.companion-build.reply.change', { n: job.base + 1, prev: job.base || 1 }),
+    apply: () => { J.enqueue(u.id, row.id, null, [job]); audit(u.id, 'companion.build.studio', g.gameId, {}); return { note: { jobs: [shown] } }; },
+  });
 }
 
 // ---------------------------------------------------------------- the 'game' job
@@ -424,12 +471,14 @@ export const CHANGE_TOOL = Object.freeze({
 /** The tools for this teacher: the chat's startBuild and changeGame instead of the hand-off. */
 export const toolsFor = (u, list) => (on(u) ? [...list.map(x => (x.name === 'startBuild' ? START_TOOL : x)), CHANGE_TOOL] : list);
 /** Lines for Oomba's system prompt (after the companion's own): the build rule and the games made in this chat. */
-export function systemExtra(u) {
+export function systemExtra(u, page = null) {
   if (!on(u)) return '';
   const list = chatGames(u);
+  const here = page && page.type === 'game' && page.gameId ? pageGame(u, page.gameId) : null;
   return [
     '',
     'Building in the chat (this overrides the hand-off rule above): a game or classroom activity is built right here. For a new one call startBuild: the card asks a few quick taps, then shows a plan, and nothing is built until the teacher taps Build it. Never say "Open the Builder". Call a teacher\'s playable thing a game here, a lesson with steps a lesson plan, and a printable one a worksheet.',
+    here ? `Studio: the teacher has their game "${scrub(here.title, studentNames(u)).text}" (id ${here.gameId}, version ${here.version}) open in Studio, its big preview beside this chat. A message that asks to change this game (its rules, look, questions, levels, sounds, a fix) goes to changeGame, which sends it to this game's Builder exactly as written: never startBuild for it, and never rewrite it. To assign it, call assign with kind "game" and its id.` : '',
     list.length ? `Games made in this chat (newest first): ${list.map(x => `"${x.title}" (id ${x.gameId}, version ${x.version})`).join('; ')}. A message that asks to change one of them goes to changeGame; to assign one, call assign with kind "game" and its id.` : '',
   ].filter(x => x !== null).join('\n');
 }

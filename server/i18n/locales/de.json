@@ -1888,6 +1888,9 @@
         "selfTest": "Nicht gespeichert: Die Prüfung der Aktivität hat ein Problem gefunden.",
         "scan": "Nicht gespeichert: Die Sicherheitsprüfung ist fehlgeschlagen."
       }
+    },
+    "dock": {
+      "label": "Oomba-Chat"
     }
   },
   "publish": {
@@ -3051,6 +3054,13 @@
         "anyway": "Trotzdem freigeben",
         "confirm": "Freigeben, ohne dass es ganz durchgespielt wurde? Spieler könnten hängen bleiben.",
         "checking": "Dein Spiel wird erst einmal ganz durchgespielt …"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, Version {n}",
+        "hello": "Sag mir, was ich an diesem Spiel ändern soll, und ich schicke es an den Baumeister. Jede neue Version erscheint in der großen Vorschau.",
+        "versionOf": "Version {n} von {total}",
+        "versionLabel": "Version in der Vorschau"
       }
     },
     "character": {
@@ -5439,7 +5449,8 @@
         "change": "Ändern",
         "assign": "Zuweisen",
         "host": "Live starten",
-        "big": "Groß öffnen"
+        "big": "Groß öffnen",
+        "showBig": "Groß zeigen"
       },
       "assignText": "Weise „{title}“ meiner Klasse zu.",
       "changeText": "In „{title}“: ",
@@ -5466,7 +5477,9 @@
       "sent": "An den Builder geschickt: Er baut es auf der Karte unten.",
       "redone": "Geändert: Die neue Karte ist unten.",
       "answered": "Gewählt: {list}",
-      "retry": "Noch einmal versuchen"
+      "retry": "Noch einmal versuchen",
+      "showingBig": "Groß links zu sehen",
+      "showingBigAbove": "Groß in der Vorschau oben zu sehen"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# Wort} other {# Wörter}}",

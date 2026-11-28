@@ -153,7 +153,10 @@ const wordsProblem = text => (hasProfanity(String(text || '')) ? 'words' : null)
 // figures-sheet: a Figures worksheet, test or lesson set (sheetId); manip: a host's Manipulatives board (tool, boardId);
 // manip-live: the live room's teacher view (tool). These pages have their own workflow (services/figures-chat.js,
 // services/manip-chat.js): the companion offers it there, and only there.
-export const PAGES = Object.freeze(['class', 'homeroom', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'book', 'school', 'live', 'other']);
+// game: Studio (/studio/:id) with the chat docked in its Builder column (docs/decisions.md "Builder in the chat (phase
+// 3): Oomba in Studio"): only a game this teacher owns and may build in the chat (companion-build.js pageGame); the
+// version is read here, never taken from the page.
+export const PAGES = Object.freeze(['class', 'homeroom', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'book', 'school', 'live', 'game', 'other']);
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 /** The page context as the browser sent it, checked: only a class this teacher teaches, only their own layout. */
 export function pageOf(u, raw) {
@@ -185,6 +188,10 @@ export function pageOf(u, raw) {
     const tl = M.canHost(u) ? toolOf(p.tool) : null;
     if (tl) { out.tool = tl.slug; if (type === 'manip' && typeof p.boardId === 'string' && ID.test(p.boardId) && M.ownBoard(u, p.boardId)) out.boardId = p.boardId; }
     else out.type = 'tools';
+  }
+  if (type === 'game') {
+    const g = typeof p.gameId === 'string' && ID.test(p.gameId) ? CB.pageGame(u, p.gameId) : null;
+    if (g) { out.gameId = g.gameId; out.version = g.version; } else out.type = 'build';
   }
   return out;
 }
@@ -341,6 +348,10 @@ const widgetName = (t, type) => t(`dash.w.${type}.name`);
 export function pageContext(u, page, { lang = 'en', names = studentNames(u) } = {}) {
   const t = tFor(lang);
   const out = { page: page.type };
+  if (page.type === 'game' && page.gameId) {
+    const g = CB.pageGame(u, page.gameId);
+    if (g) out.game = { id: g.gameId, title: cleanText(u, g.title, names), version: g.version, versions: g.versions, note: 'Studio: the game\'s big preview is beside this chat. A change to this game goes to changeGame.' };
+  }
   if (page.classId) {
     const c = S.getClass(page.classId);
     const students = S.roster(c.id).filter(r => r.role === 'student').length;
@@ -1872,7 +1883,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const t0 = Date.now();
   // Where the time goes (the owner's audit: 5 to 60 seconds): model calls and their time, tool time, prompt sizes.
   const perf = { calls: 0, modelMs: 0, toolMs: 0, sys: 0, tools: 0 };
-  const sys = system(user, lang, page, settings) + CB.systemExtra(user);
+  const sys = system(user, lang, page, settings) + CB.systemExtra(user, page);
   perf.sys = sys.length; perf.tools = JSON.stringify(tools()).length;
   let res = null, cutOff = false, cutShort = false;
   try {

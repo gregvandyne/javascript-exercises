@@ -10,8 +10,13 @@
 //     live, Open big. A change by message shows the version before it, with "Version 2 building…" over it.
 import { t, api, esc } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
+import * as BUS from '/js/oomba-bus.js';
 
 const L = (k, v) => t(`js.companion-build.${k}`, v);
+/** Studio with Oomba (docs/decisions.md "Builder in the chat (phase 3)"): the game open in Studio, whose big preview is
+ *  beside the chat ({ id, shown: the version on screen }), or null on any other page. Its cards are compact there. */
+const studio = () => { const a = BUS.page(); const g = a && typeof a.game === 'function' ? a.game() : null; return g && g.id ? g : null; };
+const inStudio = gameId => { const g = studio(); return !!g && g.id === gameId; };
 const ic = (e, size = 18) => iconHtml(e, { size });
 const ICON = { game: '🎮', lesson: '📋', devices: '💻', board: '🖥️', show: '👀', hints: '💡', own: '🎯' };
 const OPTIONS = { kind: ['game', 'lesson'], use: ['devices', 'board'], help: ['show', 'hints', 'own'] };
@@ -93,7 +98,7 @@ export function jobHtml(x, j) {
   const live = S.live.get(j.gameId);
   const rows = (live && live.rows) || defaultRows(j);
   const base = Number(j.base) || 0;
-  const pv = j.mode === 'change' && j.baseId ? previewHtml(j.gameId, j.baseId, j.title, { over: `${L('vBuilding', { n: base + 1 })}\n${L('vWorks', { n: base || 1 })}`, playable: false, slot: `busy-${j.id}` }) : '';
+  const pv = j.mode === 'change' && j.baseId && !inStudio(j.gameId) ? previewHtml(j.gameId, j.baseId, j.title, { over: `${L('vBuilding', { n: base + 1 })}\n${L('vWorks', { n: base || 1 })}`, playable: false, slot: `busy-${j.id}` }) : '';
   return `<div class="oc-made oc-job ocb-game" aria-busy="true" data-ocb-job="${esc(j.id)}">${head}${pv}<div data-ocb-steps="${esc(j.id)}">${stepsHtml(rows)}</div><p class="ocb-usually">${esc(L('usually'))}</p></div>`;
 }
 function lineOf(g) {
@@ -105,6 +110,7 @@ function lineOf(g) {
 }
 function doneHtml(x, j, head) {
   const g = j.game;
+  if (g.versionId && inStudio(j.gameId)) return compactHtml(x, j, head);
   const say = `<p class="ocb-say" dir="auto">${esc(g.say || '')}</p>`;
   const big = `<a class="btn btn-sm" href="/studio/${encodeURIComponent(j.gameId)}">${ic('↗️', 16)} ${esc(L('btn.big'))}</a>`;
   const change = `<button type="button" class="btn btn-sm" data-c="act" data-act="buildChange" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('✏️', 16)} ${esc(L('btn.change'))}</button>`;
@@ -114,11 +120,24 @@ function doneHtml(x, j, head) {
   return `<div class="oc-made ocb-game ocb-done${g.ok ? '' : ' ocb-warn'}" data-ocb-done="${esc(j.id)}">${say}${head}${previewHtml(j.gameId, g.versionId, j.title)}<p class="ocb-line">${g.ok ? ic('✓', 14) : ic('⚠️', 14)} ${esc(lineOf(g))}</p>${changed}${acts}</div>`;
 }
 
+/** The done card in Studio: no preview (the big one is beside the chat), "Showing big on the left" for the version on
+ *  screen (Show it big for another), the checks' line, what changed, and Change, Assign and Host live. */
+function compactHtml(x, j, head) {
+  const g = j.game, st = studio();
+  const shown = st && st.shown === g.versionId;
+  const where = shown ? `<p class="ocb-big">${ic('🖥️', 16)} ${esc(L(window.matchMedia('(min-width: 961px)').matches ? 'showingBig' : 'showingBigAbove'))}</p>` : `<div class="oc-acts"><button type="button" class="btn btn-sm" data-c="act" data-act="buildShow" data-turn="${esc(x.id)}" data-v="${esc(g.versionId)}">${ic('🖥️', 16)} ${esc(L('btn.showBig'))}</button></div>`;
+  const changed = (g.changed || []).length ? `<div class="ocb-changed"><b>${esc(L('changed'))}</b><ul>${g.changed.map(c => `<li dir="auto">${esc(c)}</li>`).join('')}</ul></div>` : '';
+  const change = `<button type="button" class="btn btn-sm" data-c="act" data-act="buildChange" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('✏️', 16)} ${esc(L('btn.change'))}</button>`;
+  const acts = `<div class="oc-acts">${g.ok ? `<button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="buildAssign" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('🎒', 16)} ${esc(L('btn.assign'))}</button><a class="btn btn-sm" href="/live?game=${encodeURIComponent(j.gameId)}">${ic('📡', 16)} ${esc(L('btn.host'))}</a>` : ''}${change}</div>`;
+  return `<div class="oc-made ocb-game ocb-done ocb-compact${g.ok ? '' : ' ocb-warn'}" data-ocb-done="${esc(j.id)}">${`<p class="ocb-say" dir="auto">${esc(g.say || '')}</p>`}${head}${where}<p class="ocb-line">${g.ok ? ic('✓', 14) : ic('⚠️', 14)} ${esc(lineOf(g))}</p>${changed}${acts}</div>`;
+}
+
 // ---------------------------------------------------------------- taps
 /** A tap on a build card. -> what companion.js's onAct returns (a result with chat, or null when handled here). */
 export async function onAct(act, turn, btn) {
   const chat = S.chat; if (!chat) return null;
   if (act === 'buildPlay') { const key = btn && btn.dataset.v; if (key) play(key, true); return null; }
+  if (act === 'buildShow') { const a = BUS.page(); if (a && a.show && btn && btn.dataset.v) a.show(btn.dataset.v); return null; }
   if (!turn) return null;
   if (act === 'buildPick') {
     const [k, o] = String((btn && btn.dataset.v) || '').split(':');
@@ -206,6 +225,7 @@ function ensureLayer() {
     if (panel) new MutationObserver(() => sync()).observe(panel, { attributes: true, subtree: true, attributeFilter: ['hidden', 'class', 'style', 'aria-expanded'] });
   }
   window.addEventListener('resize', () => sync());
+  window.addEventListener('scroll', () => sync(), { passive: true });   // the chat docked in a page (Studio) scrolls with it
   document.addEventListener('fullscreenchange', () => sync());
   return layer;
 }

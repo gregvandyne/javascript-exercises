@@ -46,6 +46,10 @@ function start() {
   // in the dashboard's footer) and follows the view on screen (the dashboard, or the class).
   const views = !!document.getElementById('cv');
   let dash = PAGE.type === 'dashboard';
+  // Studio with Oomba: the column the chat docks in (routes/studio.js), and the widths where it does (Studio's two columns).
+  const dockEl = PAGE.type === 'game' ? document.getElementById('st-dock') : null;
+  const dockMq = window.matchMedia('(min-width: 961px)');
+  const docked = () => !!dockEl && dockMq.matches;
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
   const actDrafts = new Map();   // an action card's typed box, by turn (below)
   const label = () => {
@@ -75,7 +79,7 @@ function start() {
   const via = (k, ...a) => { const x = P(); return x && typeof x[k] === 'function' ? x[k](...a) : undefined; };
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
-    start: () => via('start') || 'closed',
+    start: () => via('start') || (docked() ? 'open' : 'closed'),
     // The dashboard: at the end of its layout bar. The live host room: at the end of its top bar, so it never covers
     // the room's controls or the join code (the owner's live audit, 27 Nov 2026); it hides in full screen (below).
     bubbleHost: dash && !views ? document.getElementById('dash-foot') : PAGE.type === 'live' ? document.querySelector('.lv-host > .lv-bar') : null,
@@ -118,14 +122,34 @@ function start() {
       via('onUndo', r);
     },
     onQuote: q => via('onQuote', q),
-    onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
+    onMode: m => { if (m !== 'open') stopMic(); if (m !== 'open' && docked()) setTimeout(() => chat.setMode('open', { focus: false, user: false }), 0); via('onMode', m); },
     onSync: c => { if (S.sent) { S.sent = false; setFile(null); } drawBookMode(c); autoCheck(c); via('onSync', c); },
   });
   ref.chat = chat;
   CBD.setChat(chat);   // the Builder in the chat (public/js/companion-build.js)
   BUS.setChat(chat);
-  BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
+  // The header: "Sees: <the page>", and a page's own title (Studio: "Oomba · <game title>").
+  const titleEl = document.getElementById('oc-title'), titleAs = titleEl ? titleEl.textContent : '';
+  const heads = () => {
+    const b = document.getElementById('oc-sees'); if (b) b.textContent = label();
+    const a = BUS.page(), tt = a && a.title ? a.title() : '';
+    if (titleEl) titleEl.textContent = tt ? String(tt).slice(0, 80) : titleAs;
+  };
+  BUS.onPage(() => { heads(); chat.render(); });
+  BUS.onRefresh(() => { heads(); chat.render(); });
+  heads();
   const root = chat.root;
+  // Studio (docs/decisions.md "Builder in the chat (phase 3): Oomba in Studio"): on a wide screen the panel sits in
+  // Studio's Builder column (#st-dock), always open; on a phone it is the usual bubble and sheet.
+  function placeDock() {
+    if (!dockEl) return;
+    const on = docked();
+    document.body.classList.toggle('oc-docked', on);
+    const home = on ? dockEl : document.body;
+    if (root.parentElement !== home) home.appendChild(root);
+    if (on && chat.state().mode !== 'open') chat.setMode('open', { focus: false, user: false });
+  }
+  if (dockEl) { placeDock(); dockMq.addEventListener('change', placeDock); }
   // What the teacher typed in an action card's box, kept while the panel redraws (never stored, never sent until Do it).
   root.addEventListener('input', e => { const el = e.target.closest && e.target.closest('[id^="oc-act-"]'); if (el) actDrafts.set(el.id.slice(7), el.value); });
   const $ = id => document.getElementById(id);

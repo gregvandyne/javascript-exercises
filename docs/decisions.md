@@ -16776,6 +16776,52 @@ Oomba companion chat; kids keep Studio and /build/new unchanged; the companion s
   survives a redraw and version 2 loads fresh); oomba-jobs.test.js lists `game` as
   a make kind (it makes a new version of the teacher's own game and never changes a class).
 
+## Builder in the chat (phase 3): Oomba in Studio (28 Nov 2026)
+
+The owner's phase 3 of "the Builder lives in the global chat": one chat per page. For a teacher who builds in the chat
+(companion-build.js `on`: the companion, their Builder on, COMPANION_BUILD on) on a game they own, Studio (/studio/:id)
+shows the Oomba companion chat where "Chat with the Builder" was. Kids, and everyone else, keep Studio exactly as it was.
+
+- **Layout**: the big preview, Publish, Save/Versions/Settings/Share and the safety line under the preview stay. The
+  preview moves to the start side and the chat is docked in the column on the end side (`#st-dock`; on a wide screen,
+  961 px and up, the panel is moved there, always open, no Minimize or Close, and the page does not narrow for it). On
+  a phone the column goes and Oomba is the usual bubble and sheet. The header reads "Oomba · <game title>" and "Sees:
+  Studio, version N" (N: the version in the big preview); it is the same conversation as on every other page.
+- **Who**: routes/studio.js asks the layout for the chat (`companion: 'studio'`) only when `CB.docksIn(user, game)`;
+  the layout's NO_COMPANION no longer lists /studio, but any studio page that does not ask (another viewer, a kid, a
+  teacher with building in the chat off, /build/new) still gets no bubble. Studio's own Builder column is still in the
+  page, hidden, so its live stream and the preview's progress pill work as before.
+- **The page adapter** (public/js/studio.js, "Studio with Oomba"): page type `game` with `gameId` and `version`.
+  services/companion.js pageOf re-checks it with `CB.pageGame` (the teacher's own, not deleted game, building in the
+  chat on); the version is read on the server, never taken from the page; anything else becomes the `build` page.
+  pageContext adds the game (title scrubbed of names, version), and the system prompt says which game is open and that a
+  change to it goes to changeGame.
+- **Change by message**: on the game page, `changeGame` sends the teacher's message VERBATIM to THIS game's Builder
+  (even one not made in the chat), unless the AI names another game made in the chat by its exact title. No tap, no
+  rewrite; the Builder's screening, scanner, playtest and publish rules all run as before.
+- **Studio's own buttons** (Fix it, Make it a live game, Make it a classroom activity, Fix live) send their fixed words
+  through the chat: POST /api/companion/build/studio puts them in as the teacher's message, with a change job for this
+  game, without the AI in between (scrubbed of names like any message). (Deviation: Carry on building, which needs the
+  stopped build's id, still goes straight to the Builder; its progress shows on the preview's pill.)
+- **The big preview loads once**: a new version loads when it lands, from the live stream's version event (as before);
+  the chat's done card loads it only if the stream missed it, and the resync after a build never loads the same version
+  again. Nothing else reloads it.
+- **Compact done card** (only for the game open in Studio): no preview in the card, "Showing big on the left" (on the
+  right in Arabic and Hebrew, where the page is mirrored; "Showing big in the preview above" on a phone) for the version
+  on screen, "Show it big" for another version,
+  the checks' line, What changed, and Assign, Host live and Change. A change being built shows the step rows only.
+- **Version picker**: "Version 2 of 2" (a select) replaces the "Editing: version 2" tag for these teachers; picking a
+  version shows it in the big preview (this viewer's own preview address, GET /api/companion/build/:gameId?v=). The
+  Builder still changes the newest version; Versions' "Bring back" is unchanged.
+- **Privacy and safety unchanged**: no student names to any AI (the chat's scrubber, and the Studio route's own scrub);
+  every build goes through runner.submit.
+- Strings: `studio.dock.label`, `js.studio.dock.*`, `js.companion-build.showingBig`, `js.companion-build.btn.showBig`,
+  in the 12 full locales.
+- Tests: tests/unit/companion-studio.test.js (4: the page check, another teacher's game refused; a change on Studio goes
+  to that game verbatim; Studio's buttons through the chat; the teacher's docked Studio and the kid's unchanged one),
+  tests/unit/companion-studio-browser.test.js (2: the docked chat, a change loads the big preview once and the compact
+  card, laptop and phone, light and dark, `STUDIO_SHOTS=<dir>` saves pictures; a student's Studio unchanged).
+
 ## Grammar Lab listed everywhere (27 Nov 2026)
 
 Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.
