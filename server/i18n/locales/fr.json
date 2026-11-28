@@ -52,11 +52,11 @@
     },
     "build": {
       "ready": "Ton jeu « {title} » est prêt ! <a href=\"{href}\">Ouvre-le</a>",
-      "readyForTeachers": "Votre leçon « {title} » est prête ! <a href=\"{href}\">L’ouvrir</a>",
+      "readyForTeachers": "Votre jeu « {title} » est prêt ! <a href=\"{href}\">L’ouvrir</a>",
       "question": "Le Constructeur a une question sur « {title} ». <a href=\"{href}\">Ouvre-le</a>",
       "stopped": "« {title} » s’est arrêté avant la fin. <a href=\"{href}\">Ouvre-le pour continuer</a>",
       "many": "Certains de tes jeux ont des nouvelles du Constructeur. <a href=\"{href}\">Voir Mes jeux</a>",
-      "manyForTeachers": "Le Constructeur a des nouvelles de certaines de vos leçons. <a href=\"{href}\">Voir le Dossier de leçons</a>"
+      "manyForTeachers": "Le Constructeur a des nouvelles de certains de vos jeux. <a href=\"{href}\">Voir le Dossier de leçons</a>"
     },
     "shortPasswordGrownup": "Votre mot de passe fait moins de {min} caractères. Merci d’<a href=\"{href}\">en choisir un plus long</a>."
   },
@@ -1848,12 +1848,13 @@
     "canvasLine": {
       "activity": "Activité de classe · les résultats vont dans Progrès",
       "board": "Activité de classe · au tableau",
+      "game": "Jeu · les résultats vont dans Progrès",
+      "gameBoard": "Jeu · au tableau",
       "arcade": "Jeu d’arcade · fait pour ta classe",
       "toArcade": "En faire un jeu d’arcade",
       "toArcadeAsk": "Fais-en plutôt un jeu d’arcade : un quiz, un jeu de course ou d’attrape qui pose les mêmes problèmes.",
       "toCanvas": "En faire une activité de classe",
-      "toCanvasAsk": "Fais-en plutôt une activité de classe : un espace de manipulation avec les mêmes questions, étapes et indices.",
-      "game": "Jeu de classe · les résultats vont dans Progrès"
+      "toCanvasAsk": "Fais-en plutôt une activité de classe : un espace de manipulation avec les mêmes questions, étapes et indices."
     },
     "activity": {
       "note": "Panneau d'activité : {what}",
@@ -3045,6 +3046,7 @@
       "animal2dUse": "Fais de cet animal le héros : {name}.",
       "sparks": "{n, plural, one {# message de Packs Étincelle} other {# messages de Packs Étincelle}}",
       "activityEdit": "Modifier la leçon",
+      "activityEditGame": "Modifier le jeu",
       "asStudent": "Comme un élève",
       "activitySaveFirst": "Enregistrez ou annulez d'abord vos changements dans le panneau d'activité.",
       "play": {
@@ -7308,7 +7310,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Score du quiz : {pct} % de bonnes réponses",
       "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %",
-      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture."
+      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture.",
+      "sampleCap": "Un exemple : voici ce que vous verrez",
+      "sampleLesson": "Plan de cours exemple",
+      "sampleGame": "Jeu exemple"
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",
@@ -11972,7 +11977,8 @@
       "submit": "Assigner",
       "note": "Votre classe reçoit un plan de cours d’une étape qui lance cette leçon. Vous pourrez le modifier plus tard dans la bibliothèque de plans de cours.",
       "none": "Vous n’avez pas encore de classe. Créez-en une d’abord dans Ma classe.",
-      "liveOnly": "C’est une leçon en direct pour la classe : animez-la sur le grand écran au lieu de l’assigner."
+      "liveOnly": "C’est une leçon en direct pour la classe : animez-la sur le grand écran au lieu de l’assigner.",
+      "shareFirst": "Il n’est encore partagé avec aucune classe. Assigner le partage seulement avec la classe que vous choisissez (jamais avec tout le monde), puis l’assigne."
     },
     "home": {
       "hello": "Bonjour, {name}",

@@ -32,7 +32,7 @@ export function gamePlayer(opts) {
     el.innerHTML = `<div class="hr-playtop"><button type="button" class="btn hr-chunk hr-playback" data-hrplayer="close" aria-label="${esc(opts.back)}"><span class="flip" aria-hidden="true">←</span> <span class="hr-playbackt">${esc(opts.back)}</span></button>
       <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span>${x.badge ? `<span class="hr-playbadge">${iconHtml('👀', { size: 16 })} <span>${esc(x.badge)}</span></span>` : ''}${opts.note ? `<span class="hr-playnote">${iconHtml('👀', { size: 16 })} <span>${esc(opts.note)}</span></span>` : ''}<span class="hr-playslot"></span></div>
       <iframe class="hr-playframe" src="${esc(src(x.href))}" title="${esc(x.title || '')}" allow="fullscreen; autoplay; microphone" allowfullscreen></iframe>`;
-    el.querySelector('[data-hrplayer]').addEventListener('click', close);
+    el.querySelector('[data-hrplayer]').addEventListener('click', () => askThen(close));
     opts.host.appendChild(el);
     cur = id;
     if (opts.onOpen) opts.onOpen(id);
@@ -59,25 +59,43 @@ export function gamePlayer(opts) {
     hide();
     if (hashId()) history.replaceState(history.state, '', plain());
   }
+  // A game with something under way (play.js window.oombaGuarded: Arithmetic Lab's set started) asks first whenever the
+  // player closes the layer (its bar, Escape, the game page's own Escape, Back); the page's own closes (the teacher brings
+  // everyone back, the lock) do not ask.
+  const playWin = () => { const f = el && el.querySelector('iframe'); try { return f && f.contentWindow; } catch { return null; } };
+  const guarded = () => { try { const w = playWin(); return !!(w && typeof w.oombaGuarded === 'function' && w.oombaGuarded()); } catch { return false; } };
+  function askThen(fn) {
+    if (!guarded()) return fn();
+    let ask = null; try { ask = playWin().oombaAskLeave; } catch { ask = null; }
+    if (typeof ask !== 'function') return fn();
+    Promise.resolve(ask()).then(ok => { if (ok) fn(); }, () => fn());
+  }
+  let letGo = false;
   /** The address says which game is open (a reload, Back, Forward). */
   function sync() {
     if (!onPage()) return;
     const id = hashId();
     if (id && id !== cur) { if (!show(id)) history.replaceState(history.state, '', plain()); }
-    else if (!id && cur) hide();
+    else if (!id && cur) {
+      if (letGo || !guarded()) { letGo = false; hide(); return; }
+      // Back with a set under way: the layer stays, and the game asks
+      const was = cur;
+      history.pushState({ ...(history.state || {}), hrplay: was }, '', `${plain()}#play=${encodeURIComponent(was)}`);
+      askThen(() => { if (cur !== was) return; letGo = true; close(); if (!cur) letGo = false; });
+    }
   }
   addEventListener('popstate', sync);
   addEventListener('message', e => {
     const f = el && el.querySelector('iframe');
     if (!f || e.source !== f.contentWindow || e.origin !== location.origin || !e.data) return;
-    if (e.data.type === 'hr:close') close();
+    if (e.data.type === 'hr:close') askThen(close);
     // a game's door asked to host its live version (Atlas Quest's Host live, play.js brb:hostlive): this layer closes and
     // the page opens its live layer (opts.hostLive)
     else if (e.data.type === 'hr:hostlive' && opts.hostLive && /^[a-z-]{1,20}$/.test(String(e.data.mode || ''))) { const mode = e.data.mode; close(); opts.hostLive(mode); }
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape' || !cur || (opts.away && opts.away()) || document.querySelector('.sheet-bg, dialog[open]')) return;
-    e.preventDefault(); e.stopImmediatePropagation(); close();
+    e.preventDefault(); e.stopImmediatePropagation(); askThen(close);
   }, true);
   return { open, close, sync, current: () => cur, slot: () => (el ? el.querySelector('.hr-playslot') : null) };
 }

@@ -155,15 +155,22 @@ function assignHere(req, ctx, g, folderId) {
       <button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button><p class="form-err err" role="alert"></p></form></details>`;
 }
 
+/** The classes this teacher may share their own game with (read once per page). */
+const shareClasses = (ctx, u) => (ctx.shareable ||= S.shareableClasses(u.id));
 /** One game: cover, title, what it is, Edit (one's own, on Build), Play, Assign, and ⋯ (Remove from folder, Save to
  *  another folder, and on Build Rename and Delete for one's own). */
 function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}) {
   const t = req.t, u = req.user, g = g0.source === 'seed' ? games.localizeGame(g0) : g0;
   const mineGame = g.owner_id === u.id && g.source !== 'seed', play = playHref(g);
   const kind = g.source === 'seed' ? `🦉 ${t('folders.oombaGame')}` : mineGame ? `🛠️ ${t('folders.myGame')}` : '';
+  // A teacher's own draft on Build with a saved version (docs/decisions.md "Builder in the chat and Studio: audit 5
+  // fixes"): Play (its own page, which plays the newest version for its owner) and Assign, whose page shares it with the
+  // class picked only (publish.js 'class', never public: routes/game-folders.js, services/companion-build.js needsShare)
+  // and then assigns it. Before, only Edit and More, so a game made in the chat could be assigned only from the chat.
+  const draftOk = ctx.kind === 'build' && ctx.staff && mineGame && !g.published_version_id && !!g.current_version_id && shareClasses(ctx, u).length > 0;
   const assign = !ctx.staff ? ''
     : ctx.kind === 'class' ? assignHere(req, ctx, g0, folder && folder.id)
-      : folder || g.source === 'seed' || g.published_version_id ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">${ico('📌', { size: 18 })} ${t('folders.assign')}</a>` : '';
+      : folder || g.source === 'seed' || g.published_version_id || draftOk ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">${ico('📌', { size: 18 })} ${t('folders.assign')}</a>` : '';
   const more = [
     folder && own ? html`<form data-api="/api/game-folders/${folder.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>` : '',
     html`<a class="btn" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
@@ -178,7 +185,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
       ${mineGame && ctx.status ? ctx.status(g0) : ''}</div>
     <div class="mg-actions"><div class="mg-row">
       ${mineGame && ctx.kind === 'build' ? html`<a class="btn" href="/studio/${g.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a>` : ''}
-      ${!mineGame || ctx.kind !== 'build' || g.published_version_id ? html`<a class="btn" href="${play}">${PLAY} ${t('game.play')}</a>` : ''}
+      ${!mineGame || ctx.kind !== 'build' || g.published_version_id ? html`<a class="btn" href="${play}">${PLAY} ${t('game.play')}</a>` : draftOk ? html`<a class="btn" href="/g/${g.slug}">${PLAY} ${t('game.play')}</a>` : ''}
       ${assign}
       ${menu(t('folders.more', { name: g.title }), more)}
     </div></div></li>`;

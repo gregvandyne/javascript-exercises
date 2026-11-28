@@ -444,8 +444,11 @@ export function addVersion(gameId, html, { notes = '', createdBy = null, safetyS
 }
 /** The Studio's Activity panel (routes/activity-panel.js) only: a save within a minute of the same person's last one joins
  *  that version, while it is the version being edited and is neither live nor waiting for a check (the route checks). */
-export function replaceVersion(versionId, html, { notes = '', safetyStatus = 'unchecked', safetyReport = {} } = {}) {
+/** replay: the Builder's own save in a chat build (builder/tools.js buildVersion): the playthrough of the earlier page no
+ *  longer applies, so it is played again when it is needed. */
+export function replaceVersion(versionId, html, { notes = '', safetyStatus = 'unchecked', safetyReport = {}, replay = false } = {}) {
   q.run('UPDATE game_versions SET html=?, notes=?, safety_status=?, safety_report=?, created_at=? WHERE id=?', html, String(notes).slice(0, 500), safetyStatus, JSON.stringify(safetyReport), now(), versionId);
+  if (replay) q.run("UPDATE game_versions SET playthrough_status='', playthrough_report='' WHERE id=?", versionId);
   q.run('UPDATE games SET updated_at=? WHERE id=(SELECT game_id FROM game_versions WHERE id=?)', now(), versionId);
   if (safetyStatus !== 'fail') queueShot(versionId);
   return getVersion(versionId);

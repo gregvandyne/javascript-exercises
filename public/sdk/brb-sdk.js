@@ -286,6 +286,21 @@
     };
     matchApi.leave = function () { try { matchPort.postMessage({ t: 'leave' }); } catch (e) { /* ignore */ } };
   }
+  // ---- Leaving part way (BRB.leaveGuard): the page asks the game before it leaves ------------------------------------
+  // A game with something under way (a set of problems started) gives a function that asks the player, in the game's
+  // own words, whether to leave (docs/sdk.md). While one is set, the play page asks it before any way out of the page:
+  // its Back links, the browser's Back, Homeroom's layer (its bar, Escape). The page waits for the answer only when the
+  // game says at once that it is asking (brb:leave-asking), so a game that stopped answering never keeps anyone there.
+  var leaveFn = null;
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (e.source !== parentWin || !m || m.brb !== 1 || m.type !== 'brb:leave-ask' || typeof m.id !== 'number') return;
+    var id = m.id, fn = leaveFn;
+    if (!fn) { send('brb:leave-answer', { id: id, ok: true }); return; }
+    send('brb:leave-asking', { id: id });
+    var answer = function (ok) { send('brb:leave-answer', { id: id, ok: ok !== false }); };
+    try { Promise.resolve(fn()).then(answer, function () { answer(true); }); } catch (err) { answer(true); }
+  });
   // ---- Polls (BRB.poll): asked of the page with postMessage, answered by the page (public/js/play.js) ----------------
   var pollWait = {}, pollN = 0;
   window.addEventListener('message', function (e) {
@@ -1571,6 +1586,9 @@
       send('brb:progress', { done: d, total: n, score: s, label: typeof p.label === 'string' ? p.label.slice(0, 40) : '' });
       return true;
     },
+    // While a set is under way: fn() -> boolean | Promise<boolean> (true: the player may leave), asked before the page
+    // leaves; null once there is nothing to lose. -> true.
+    leaveGuard: function (fn) { var on = typeof fn === 'function', was = !!leaveFn; leaveFn = on ? fn : null; if (on !== was) send('brb:guard', { on: on }); return true; },
     score: { submit: function (score, label) { var n = Math.floor(+score); if (!isFinite(n) || n < 0) return; send('brb:score', { score: n, label: String(label || '').slice(0, 40) }); } },
     // helped (optional, Oomba Canvas 1.3.0): the teacher showed an answer in this set (those problems are not in the score).
     // r.label (optional, at most 40 characters): a few words that go with the score, as BRB.score.submit's label does.

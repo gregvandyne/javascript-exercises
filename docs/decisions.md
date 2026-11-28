@@ -16873,6 +16873,52 @@ its cause and the fix (tests: tests/unit/companion-build-audit4.test.js, compani
 - Strings: `js.companion-build.asg.*`, `say.nothingSaid`, `versions`, `versionOf`, `olderShown`, `say.nothing` (now
   names Try again) and `js.studio.dock.showFailed`, in the 12 full locales.
 
+## Builder in the chat and Studio: audit 5 fixes (28 Nov 2026)
+
+The owner's live audit after #713 ("Builder in the chat: audit 4 fixes") found five things still wrong. #713 had been
+checked only with the stand-in Builder (it saves once); these were traced on the real path (builder/claude.js against a
+fake Messages API, the arcade side off as on the live site) and the production logs of the two builds (12:42 to 12:46
+and 12:48 to 12:54 UTC, two new games, both `mode: new`, no other save request in between). Tests:
+tests/unit/companion-build-audit5.test.js (fails on the code before this change) and
+companion-build-audit5-browser.test.js.
+
+- **"Version 2 of 2" for a first build, "3 of 3" for the next.** Not the empty game Build it makes (createGame saves no
+  version), not a title, cover or screening save (only builder/tools.js saveVersion adds a Builder version), and the
+  starter draft of #713 worked (`chat: true` survives normalisePlan). The real Builder saves more than once in ONE
+  build: its edit (version 1), then the automatic playtest's fix rounds (claude.js autoCheck; a teacher, a trusted
+  maker, gets up to 3), each a saveVersion, so a build made 2, 3 or 4 versions. Now a build from the chat (every
+  'game' job: Build it, a change by message, Studio's buttons docked, Try again; `runner.submit({ one: true })`, kept
+  on the row as `request.one`, so a restart and a carried-on build keep it) makes ONE version: its first save adds it,
+  every later save of the same build replaces it (tools.js `buildVersion`, games.replaceVersion with `replay`: the
+  earlier page's playthrough is dropped, so it is played again). A version that is published, waiting for a check or
+  reviewed is never replaced. Studio's own builds (no chat) keep a version per save.
+- **"Your lesson “Farm Carry Stars” is ready!"** The layout's Builder notice had a teacher variant
+  (`layout.build.readyForTeachers`, from "Teachers say lessons") that said lesson; a Builder build is always a game, and
+  the chat says game. The variant now says game in the teacher's register (Ihr Spiel, Votre jeu, Ваша игра), and
+  `manyForTeachers` says games; lesson stays for lesson plans only. 12 locales.
+- **/build draft cards had only Edit and More.** Play and Assign showed only for a published game. Now a school staff
+  member's own draft with a saved version (and a class they can share with) has Play (its own page `/g/<slug>`, which
+  plays the newest version for its owner) and Assign. Its page (/teach/assign) says "It isn't shared with a class yet.
+  Assign shares it only with the class you pick (never with everyone), then assigns it." and lists those classes; its
+  POST shares it first with the #713 path (companion-build.js `needsShare` / `shareForAssign` with `anyTeacher: true`:
+  publish.js `publish(user, game, 'class', { classIds: [that class] })`, every check Studio's Publish runs), then
+  assigns. A refused or held publish says why (400) and assigns nothing. Kids never get Assign.
+- **"Make it a live game" said "Live play is not available for classroom games yet."** With the arcade side off a plain
+  classroom game has no live client (see "Classroom focus: the Builder without the kit": Oomba Live needs the kit's live
+  pack), so live play is impossible for these games (routes/live.js hosts only a published version that passes the live
+  check, services/classlive-check.js gameReady, which needs the pack). Studio no longer offers what it can only refuse:
+  `liveClass.offer` is false wherever the line is off for a reason (a plain classroom game while the arcade side is off,
+  a ready-made 3D world, a tool for the board, the survey), and public/js/studio.js draws no live button and no "can't"
+  line then. Where a game can be live the button is as before.
+- **Studio said "Classroom activity"** for an Oomba Canvas game (On the board). While the arcade side is off there is no
+  arcade game to tell it apart from, so the line says "Game · on the board" / "Game · results go to Progress"
+  (`studio.canvasLine.game`, `gameBoard`), and so does a game made in the chat docked in Studio with the arcade on; the
+  Activity panel's button says "Edit game" (`js.studio.activityEditGame`), not "Edit lesson". Kids' Studio with the
+  arcade on keeps "Classroom activity" next to its "Make it an arcade game" switch. The Activity panel's own words are
+  the Canvas kit's (separate work).
+- Strings: `layout.build.readyForTeachers`, `manyForTeachers` (changed), `teach.assign.shareFirst`,
+  `studio.canvasLine.game`, `gameBoard`, `js.studio.activityEditGame`, in the 12 full locales (no en-GB override needed).
+
 ## Grammar Lab listed everywhere (27 Nov 2026)
 
 Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.
@@ -17284,3 +17330,88 @@ live behaviour), and the devices part of `companion-build-audit4.test.js` update
   done: fewer fix rounds or a shorter playtest (they find real problems, and shorter random play on an activity could
   raise false findings that cost a round), and running the playtest and the playthrough side by side (the browser runs
   one game at a time).
+
+## Oomba Canvas 1.6.1: audit 5 (28 Nov 2026)
+
+The owner's fifth live audit played "Barnyard Add-Up" (a Builder classroom activity on Oomba Canvas 1.6.0, column
+addition, 8 problems, Guided) as a student, Jamie. The fixes are in the kit, shipped as Oomba Canvas 1.6.1 in new files
+(`public/vendor/oomba-canvas/1.6.1/`, locked in `CANVAS_VERSIONS` and `canvas/SHIPPED.json`; 1.0.0 to 1.6.0 stay byte
+for byte, with a lock test for 1.6.0's folder). No new data: every 1.6.0 field means what it did, and 1.6.0 data plays
+unchanged. `CANVAS_LATEST` and `PANEL_KIT` are 1.6.1, so new activities pin it and older ones move when saved from the
+Activity panel; the only Builder text that changed is the CANVAS RULES line naming the newest kit (regenerated).
+- **Credit without the end card.** Jamie answered all 8 correctly and left with "Back to the lesson" without pressing
+  "See my stars": the student page stayed "0 of 1 done, Started", the teacher's Progress "0/1" with no score. Cause:
+  the kit sent its result only from the end card (`BRB.gameOver`, after Next on the last problem), the gap the
+  "Arithmetic Lab: audit 4 fixes" entry named. 1.6.1 calls `BRB.setProgress({ done, total, score })` as each problem
+  is settled (right, or its worked answer shown after two Checks or by the teacher): the step is started at the first,
+  with the score so far ("1 of 8 answered"), and done with its score at the last, end card or not. The end card still
+  sends `gameOver` once, as before. Never in a preview (`BRB.preview`, or no play page: `BRB.gameUrl` null) and never
+  on the board (`config.board`, or a set run in board mode), which send no score either.
+- **Hints moved on.** Pressing Hint after a Check showed no new text. Cause: the kit counted presses and started the
+  count again at every mistake, for the mistake's column, so after a Check the next press showed the nudge already on
+  screen (and after three presses, "That was the last hint" for good). 1.6.1 keeps the hints shown for the problem and
+  shows the first not shown yet, in an order that starts with the column of the last mistake (else the first box not
+  right yet): its nudge, its worked line, then the other columns', then "check every box". So each press shows
+  something new, and after a mistake the next relevant one (the worked line when the nudge was seen). "Hint 2 of 5"
+  counts all of them. The Builder's own hints for a tool work as before.
+- **A carry into the hundreds had no box.** 64 + 58 and 93 + 19: the steps stopped at the tens, so the 1 carried into
+  the new hundreds column had no step and no box over it. 1.6.1: a carry out of the top column is a step of its own
+  ("Hundreds: just the 1 carried = ?", new word `colCarryOnly` in all 12 kit languages), for adding and multiplying,
+  and every column that gets a carry has a carry box over it from the start (dashed while empty; the step that makes
+  the carry fills it; only with the guide on and the kit's own steps, so On my own gives nothing away). The column's
+  sign cell no longer takes the compare buttons' 64 px, so the digits sit over their boxes (they were 8 px off, 18 on
+  a phone).
+- **Typing went to the wrong box.** Typing straight after the Ones step went into the Tens step box (the one asking
+  for the carry), and a digit could only be replaced after a click. Causes: a right step box always chose the next step
+  box; and the kit typed into the box it had chosen, never the one with the keyboard focus (each paint also made the
+  boxes anew, so the focus fell off). 1.6.1 follows the path the student is on. A right step box chooses its own
+  column's answer box when it is empty ("Ones: 4 + 8 = 12", then the 2); an answer box chooses the next column's step
+  when the student did this column's step (that step asks for the carry: "Tens: 6 + 5 + 1 carried = ?"), else the
+  next answer box to the left, so typing the ones then the tens answer is never diverted. The focus follows the chosen
+  box, the box with the focus is the one typed into (Tab to a filled box and type: the digit is replaced), ← and →
+  move between answer boxes, and Enter on a box checks it. Tested with the keyboard only.
+- **The Not yet counter stays (decided).** The audit saw only stars. #712 kept the ✗ chip on purpose and made it count
+  every Not yet in the set (docs/canvas-api.md, 1.6.0); it was on screen ("✗ 0"), but the chips' names were on plain
+  spans, which the accessibility tree drops, so a screen reader (and the audit's page reading) got "✓ 0 ✗ 0 ⭐ 0"
+  where older kits had read "Right! 0, Not yet. 0". Stars do not replace it: stars are earned per problem, ✗ is the
+  honest count of slips, and teachers read it on the board. 1.6.1 names the chips (role="img": "Right! 3", "Not yet.
+  1", "7 stars") and shows the same name on hover. Board mode still hides ✓ ✗ ⭐.
+- **Kept.** Stars, the sound switch, the theme and stories, the skill-matching generator, worksheets, printing and
+  the teacher's controls are 1.6.0's; `tests/unit/canvas-entry-browser.test.js` now runs every 1.6.0 test on both
+  1.6.0 and 1.6.1 (the two deliberate changes, the box chosen after a step and the hint order, are checked per
+  version).
+- **Not done here.** The server side of the same audit (the kit chosen as "latest version", the upgrade on re-save,
+  build speed) is another change; this one only registers 1.6.1 where versions are listed.
+Tests: `tests/unit/canvas-audit5-browser.test.js` (the game frame: progress messages, never in a preview or on the
+board; the hint sequence; carries for 64 + 58, 93 + 19, 957 + 868, 478 + 657 and 47 × 3; the keyboard-only paths; the
+named chips), `tests/unit/canvas-progress-site-browser.test.js` (on the site: a student answers every problem, leaves
+before the end card, the step is done with its score on the teacher's Progress page; it fails on 1.6.0), the 1.6.1
+parts of `tests/unit/canvas-kit.test.js`, `builder-layout-check` (1.6.1 at 390 and 1280), and the version lines in
+`builder-canvas`, `builder-activity-panel` and `builder-figures`.
+
+## Arithmetic Lab and class Progress: audit 5 (28 Nov 2026)
+
+The owner's fifth live audit, two items:
+- **Every way out of a set under way asks first.** Mid-problem, the play page's "Back to Arithmetic Lab" link left with
+  no "Leave this set?" (audit 4 made the game's own buttons ask, but the page's links, outside the sandboxed frame, never
+  knew a set was under way). Now the game tells the page (SDK `BRB.leaveGuard(fn | null)`, docs/sdk.md: `brb:guard`;
+  Arithmetic Lab sets it while a set is started, both players, never in a preview, and clears it on the start and end
+  screens), and while it is on the page asks the game (`brb:leave-ask`), which asks the player in its own dialog ("Leave
+  this set?", Keep going / Leave the set) and answers. It covers every way out of the play page: its Back link, the full
+  screen Back and any other link on it (public/js/play.js, a click listener), the browser's Back (an extra history entry
+  while the guard is on, taken away again when it goes off, so Back is never pressed twice), and inside Homeroom's
+  layer its bar ("Back to my desk"), Escape (on the layer, and on the game's page in it) and Back
+  (public/js/homeroom-player.js asks the page's `window.oombaAskLeave`; the page's own closes, as the teacher bringing
+  everyone back, never ask). A reload or a closed tab gets the browser's own "Leave site?". A game that does not say at
+  once that it is asking (`brb:leave-asking`, within a second) is left as before, so a stuck frame never keeps anyone on
+  the page. The game's dialog no longer lets a close event left over from the last question answer a new one asked at
+  once (ConfirmDialog).
+- **8.12: the empty class Progress page has a sample row.** A class with nothing assigned, or no students, showed only
+  the empty state and "Once something is assigned...". It now shows a faded sample row as a lesson's progress page does
+  (the `gb-sample` row and styles, "Sample student"), under "A sample: this is what you'll see": the class's own
+  assignments as columns (two sample ones, "Sample lesson plan" and "Sample game", when nothing is assigned), steps done
+  with a bar and an answer to read, Work done and Score. It is its own table, not the gradebook (`#gb-lessons`), with
+  no links: never counted, filtered or sorted, and the CSV is built from the class's data, never from the page.
+Tests: `tests/unit/arithmetic-lab-audit5-browser.test.js` (the game answering the page in the production frame, both
+players; on the real play page the Back link, the full screen Back, the browser's Back and closing the tab; Homeroom's
+layer's bar, Escape and Back; the sample row light and dark at 390 and 1280).

@@ -1,4 +1,4 @@
-# Oomba Canvas API (1.6.0)
+# Oomba Canvas API (1.6.1)
 
 Oomba Canvas is the kit for **classroom activities**: a hands-on canvas where each student drags, builds and checks,
 one problem at a time, with steps and hints. It is separate from the Oomba Kit (`kit/`, arcade games) and Kit 2
@@ -20,7 +20,7 @@ An activity is one small page: the kit's pinned tag, an `oc-app` element, the ac
 
 ```html
 <title>Equivalent fractions</title>
-<script src="/vendor/oomba-canvas/1.6.0/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-canvas/1.6.1/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <div id="oc-app"></div>
 <script type="application/json" id="oc-activity">
 { "config": { "lang": "en", "support": "count", "supports": ["count", "guided"], "count": 5, "fresh": true, "board": false },
@@ -37,7 +37,9 @@ The data is JSON so the platform can read it: the Builder's self-test runs on it
 
 - A top strip: the title, the support chip (Watch, Count up, Guided, On my own), ✓ right, ✗ not yet (1.6.0: every Not
   yet in the set, a wrong Check or a wrong step box), ⭐ stars (1.6.0), "n to go", a 🔊 sound switch (1.6.0: the site's
-  own mute, `BRB.sfx.mute`, kept for every game) and a Keypad button. With more than one mode in `config.supports` (1.1.0), the chip is a small switcher of those modes:
+  own mute, `BRB.sfx.mute`, kept for every game) and a Keypad button. 1.6.1: the ✓, ✗ and ⭐ chips are named for
+  screen readers and on hover ("Right! 3", "Not yet. 1", "7 stars"); ✗ stays beside the stars (they count different
+  things: stars are earned, ✗ is every Not yet). With more than one mode in `config.supports` (1.1.0), the chip is a small switcher of those modes:
   a student (or the teacher on the board) moves between them, and the problem on screen starts again in that mode
   (the set, the score and their place stay).
 - A task card: "Problem 3 of 5" and the problem's line (the kit writes it from the problem, in the player's language;
@@ -57,6 +59,14 @@ The data is JSON so the platform can read it: the Builder's self-test runs on it
   not right yet): a nudge ("Ones: Add 6 + 8. Is it 10 or more?"), the worked line ("Ones: 6 + 8 = 14. Write 4 and
   carry 1 to the next column (Tens)."), then the next column's. A digit carried shows small over its column once its
   step is done.
+- 1.6.1, column sums: each Hint press shows a hint not shown yet for the problem (after a mistake, the next one for
+  that column: its worked line when its nudge was shown already), then "That was the last hint"; "Hint 2 of 5" counts
+  them all. Every column that gets a carry has a carry box over it (dashed until the step that makes the carry fills
+  it), and a carry into a new leading column is a step of its own ("Hundreds: just the 1 carried = ?"), for adding
+  and multiplying. The box chosen next follows the student's path: a right step box chooses its column's answer box
+  (when empty), and an answer box the next column's step box when the student did this column's step, else the next
+  answer box to the left (ones, tens, hundreds). The box with the keyboard focus is the one typed into (a digit
+  replaces its digit, no click); ← and → move between answer boxes; Enter on a box checks.
 - 1.6.0, stars: a right answer earns 3 stars first time with no hint, 2 after one Not yet or a hint, 1 after more; a
   worked answer the kit showed earns none. Stars are the student's own, on their device: never a ranking.
 - The end card: "4 of 5 right", (1.6.0) a row of the stars and "12 of 15 stars", the theme's icon and end line,
@@ -73,6 +83,10 @@ The data is JSON so the platform can read it: the Builder's self-test runs on it
 - **Results.** At the end of a set the kit calls `BRB.gameOver({ won: right === total, score: right })`, once per set,
   exactly as Arithmetic Lab does: the lesson's game step is done and the Classroom completion grade is posted.
   `config.board: true` (played on the board together) sends no score.
+  1.6.1: as each problem is settled (right, or its worked answer shown) the kit also calls
+  `BRB.setProgress({ done, total, score })` (docs/sdk.md), so a lesson step is started at the first problem and done,
+  with its score, at the last, whether or not the student goes on to the end card. Never in a preview (`BRB.preview`,
+  or no play page) or on the board.
 - **The activity's theme (1.6.0).** `task.theme`: { icon: one emoji, cheers: up to 4 short lines shown after a right
   answer in turn, end: the end card's line }, written by the Builder in the builder's language; a column problem (or
   the generator) may carry a `story` with {a} and {b} where its numbers go. The self-test refuses a theme that is not
@@ -94,7 +108,7 @@ CANVAS RULES (Oomba Canvas: this build is a classroom activity, or the builder a
 - The skill: every problem must practise exactly what the builder asked for. "Regrouping", "carrying", "exchanging" or "borrowing": every column problem regroups (gen "regroup": "some"; "in both columns" or "every column": "all"; "without regrouping": "none"); fixed problems the same, checked one by one (for addition, the ones digits add up to 10 or more). Keep the number of digits they asked for (gen "digits"); "bigger numbers" or "harder" means larger numbers with the same number of digits (raise gen "lo" and "hi" inside that size, e.g. digits 2, lo 50, hi 99), never more digits unless they ask ("three-digit", "into the hundreds"). Say what was asked in a top-level "skill" block: { "regroup": "some" | "all" | "none", "digits": 2 }. The platform checks every problem against their words and that block, and lists each one that does not fit: fix the data, then finish.
 - Start: start_from_template "canvas" (the classroom activity starter; it is allowed even though the tool list names only the arcade starters). Then make it theirs with edit_game on the oc-activity JSON block only: it must stay valid JSON (double quotes, no comments, no trailing commas). Change the <title> to match task.title.
 - Phones and desktops: it works at 390px phone and 1280px desktop. The kit lays itself out for both; never add fixed widths for buttons (or any CSS that sizes the kit's own parts).
-- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.6.0, the starter's tag: keep that tag exactly as it is.
+- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.6.1, the starter's tag: keep that tag exactly as it is.
 - The data: config { lang: the language the builder writes in, supports: the help modes the activity offers, a list of "watch" | "count" | "guided" | "own" in that order (exactly the ones the builder chose; with more than one, students switch between them), support: where it starts (the first of supports), count: problems in a set (1 to 12), fresh: true (a new set per student from gen), board: true only when it is played on the board together, purpose: what it is for, exactly the setup's choice, a list of "screen" (practice on screen) | "worksheet" (a printable worksheet) | "generator" (a question generator) (leave it out for practice on screen only) }; task { title (short), say (one short sentence read aloud) }; problems: a list, or gen: one generator for a fresh set per student (use gen whenever the topic suits one); steps / hints: only to replace the kit's own lines for a tool, { "<tool>": ["line", ...] } (up to 6 steps, 1 to 3 hints, short, in the builder's language). The kit writes each problem's own line, question, steps and hints in every language: leave steps and hints empty unless they asked for something special.
 - Tools (values: whole numbers, or fractions as [n, d]):
   fractions.equiv { from: [n, d], to: D } make n/d out of 1/D pieces (D must be a multiple of d); tray: [other piece sizes] optional. gen { dens: [2, 3, 4], mult: [2, 3] }
@@ -193,6 +207,12 @@ a version that could be shared or published, and the automatic playtest (`server
   card, a sound switch, the theme (`task.theme`, a problem's `story`). The column generator's `regroup`, `lo` and
   `hi`. The same data works as before (every field is new and optional). 1.0.0 to 1.5.0 stay byte for byte as they
   shipped; the scanner admits all eight tags. An activity moves to 1.6.0 when it is saved from the Activity panel.
+- **1.6.1**: the owner's fifth audit (docs/decisions.md "Oomba Canvas 1.6.1: audit 5"): lesson-step credit with
+  `BRB.setProgress` after each settled problem; each Hint press a new hint; a carry box over every column that gets a
+  carry and a step for a carry into a new leading column; the next box along the student's path, the focused box typed
+  into, ← → and Enter; the chips named; a column sum's digits lined up with their boxes. No new data: 1.6.0 data works
+  unchanged. 1.0.0 to 1.6.0 stay byte for byte; the scanner admits all nine tags. An activity moves to 1.6.1 when it is
+  saved from the Activity panel.
 - Read-aloud speaks the fixed `task.say` line only.
 
 ## Teacher controls (1.3.0)

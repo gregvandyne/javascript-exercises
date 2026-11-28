@@ -53,11 +53,11 @@
     },
     "build": {
       "ready": "Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
-      "readyForTeachers": "Sua aula “{title}” está pronta! <a href=\"{href}\">Abrir</a>",
+      "readyForTeachers": "Seu jogo “{title}” está pronto! <a href=\"{href}\">Abrir</a>",
       "question": "O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
       "stopped": "“{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
       "many": "Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>",
-      "manyForTeachers": "O Construtor tem novidades sobre algumas das suas aulas. <a href=\"{href}\">Ver a Pasta de aulas</a>"
+      "manyForTeachers": "O Construtor tem novidades sobre alguns dos seus jogos. <a href=\"{href}\">Ver a Pasta de aulas</a>"
     },
     "shortPasswordGrownup": "A senha tem menos de {min} caracteres. Por favor, <a href=\"{href}\">escolha uma senha mais longa</a>."
   },
@@ -1849,12 +1849,13 @@
     "canvasLine": {
       "activity": "Atividade de sala · os resultados vão para Progresso",
       "board": "Atividade de sala · na lousa",
+      "game": "Jogo · os resultados vão para Progresso",
+      "gameBoard": "Jogo · na lousa",
       "arcade": "Jogo arcade · feito para a sua turma",
       "toArcade": "Transformar em jogo arcade",
       "toArcadeAsk": "Transforme em jogo arcade: um quiz, jogo de corrida ou de pegar com os mesmos problemas.",
       "toCanvas": "Transformar em atividade de sala",
-      "toCanvasAsk": "Transforme em atividade de sala: uma tela de manipular com as mesmas perguntas, passos e dicas.",
-      "game": "Jogo de sala · os resultados vão para Progresso"
+      "toCanvasAsk": "Transforme em atividade de sala: uma tela de manipular com as mesmas perguntas, passos e dicas."
     },
     "activity": {
       "note": "Painel da atividade: {what}",
@@ -3046,6 +3047,7 @@
       "animal2dUse": "Faça deste animal o herói: {name}.",
       "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}",
       "activityEdit": "Editar aula",
+      "activityEditGame": "Editar jogo",
       "asStudent": "Como aluno",
       "activitySaveFirst": "Primeiro salve ou desfaça as mudanças do painel da atividade.",
       "play": {
@@ -7310,7 +7312,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Nota do quiz: {pct}% de acertos",
       "quizOverall": "Pontuação dos questionários em todos os planos de aula: {pct}%",
-      "emptyWhat": "Quando você atribuir algo e os alunos entrarem na turma, cada aluno terá uma linha aqui: quantos passos de cada tarefa fez, suas pontuações e as respostas esperando sua leitura."
+      "emptyWhat": "Quando você atribuir algo e os alunos entrarem na turma, cada aluno terá uma linha aqui: quantos passos de cada tarefa fez, suas pontuações e as respostas esperando sua leitura.",
+      "sampleCap": "Um exemplo: é isto que você vai ver",
+      "sampleLesson": "Plano de aula de exemplo",
+      "sampleGame": "Jogo de exemplo"
     },
     "lesson": {
       "finished": "{done} de {total} alunos concluíram",
@@ -11974,7 +11979,8 @@
       "submit": "Passar",
       "note": "Sua turma recebe um plano de aula de um passo que abre esta aula. Você pode mudar depois na Biblioteca de planos de aula.",
       "none": "Você ainda não tem turmas. Crie uma primeiro em Minha sala.",
-      "liveOnly": "Esta é uma aula ao vivo para a turma: conduza na tela grande em vez de passar como atividade."
+      "liveOnly": "Esta é uma aula ao vivo para a turma: conduza na tela grande em vez de passar como atividade.",
+      "shareFirst": "Ainda não está compartilhado com nenhuma turma. Atribuir compartilha só com a turma que você escolher (nunca com todo mundo) e depois atribui."
     },
     "home": {
       "hello": "Olá, {name}",

@@ -371,14 +371,12 @@ for (const [label, opts] of VIEWS) {
       assert.notEqual(off.bg, YELLOW);
       assert.equal(await page.$$eval('#st-acts', b => b[0].textContent.includes('Not a live game')), false, 'no "Not a live game" chip any more');
       if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-off-${who}-${label}.png` });
-      // "Make it a live game" where it cannot be: says why, sends nothing
-      await line(G.kit2.id);
-      let sent = 0; page.on('request', r => { if (/\/chat$/.test(r.url()) && r.method() === 'POST') sent++; });
-      await page.click('#st-livebtn[data-act="make-live"]');
-      assert.equal(await page.isVisible('#st-live-why'), true);
-      assert.equal(await page.textContent('#st-live-why'), "The ready-made 3D worlds can't be played live yet.");
-      assert.equal(await page.getAttribute('#st-livebtn', 'aria-expanded'), 'true');
-      await page.waitForTimeout(200); assert.equal(sent, 0, 'nothing is sent to the Builder');
+      // Where it cannot be live (a ready-made 3D world): no "Make it a live game" at all, never an offer that only says
+      // why not (docs/decisions.md "Builder in the chat and Studio: audit 5 fixes"); before, the button said why.
+      await page.goto(`${BASE}/studio/${G.kit2.id}`); await page.waitForSelector('#st-frame');
+      await page.waitForFunction(() => document.getElementById('st-safety').textContent.trim().length > 0, null, { timeout: 15000 }); await page.waitForTimeout(400);
+      assert.equal(await page.$('#st-livebtn'), null, 'no live button');
+      assert.equal(await page.$('#st-live-why'), null, 'no "can\'t be live" line either');
       if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-off-kit2-${who}-${label}.png` });
       assert.deepEqual(errors, [], who); await ctx.close();
     }

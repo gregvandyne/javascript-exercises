@@ -7,6 +7,8 @@
 // board (--paper, --dots), the problem line is the dark "Now" bar (--current, --on-current, the site's own tokens), and
 // Check is Crossword's green Go pill (--green, --on-green; flat, no raised edge); the band's other buttons and the end
 // card's take an ink outline. Everything else is as in 1.4.1.
+// 1.6.1: the carry boxes over the columns that get a carry (.oc-cbox: dashed while empty), and a column sum's sign cell
+// as wide as the others (it took the compare buttons' 64 px, so the digits sat 8 px right of their boxes, 18 on phones).
 const LIGHT = '--bg:#F4F1E6;--card:#FFFDF2;--card-2:#F9F6EB;--line:#E2DDCB;--edge:#8A8573;--text:#141414;--text-2:#3B3A35;--muted:#5B584F;--accent:#66C792;--accent-press:#1F9D63;--accent-soft:#E1F1E1;--accent-ink:#0F5A37;--spark:#FFD23F;--spark-soft:#FFF3C4;--warn-bg:#FFF0B8;--warn-ink:#6B4C00;--bad-bg:#F9E3DC;--bad-ink:#A12A20;--focus:#141414;--paper:#E1F1E1;--dots:#66C792;--current:#141414;--on-current:#FFFDF2;--green:#1F9D63;--on-green:#fff;--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);color-scheme:light';
 const DARK = '--bg:#141414;--card:#1E1E1B;--card-2:#262622;--line:#36352F;--edge:#7E796C;--text:#FFFDF2;--text-2:#E3DED0;--muted:#B8B3A1;--accent-soft:#1E3326;--accent-ink:#9EDDBA;--spark-soft:#352E14;--warn-bg:#3A3113;--warn-ink:#FFD23F;--bad-bg:#3B201C;--bad-ink:#FFA294;--focus:#FFD23F;--paper:#141414;--dots:#2E5A41;--current:#66C792;--on-current:#141414;--green:#66C792;--on-green:#10261A;--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark';
 export const TOKENS = { light: LIGHT, dark: DARK };
@@ -304,5 +306,10 @@ button.oc-part:hover:not(:disabled):not(.oc-on){background:var(--card-2)}
 .oc-endstars .oc-starrow{font-size:1.4rem;white-space:normal}
 .oc-boardmode .oc-stars,.oc-boardmode .oc-snd{display:none!important}
 @media (max-width:560px){.oc-ticon{font-size:1.7rem}.oc-carry .oc-cc{height:22px}}
+.oc-cols .oc-cell.oc-sign{min-width:0;min-height:0;border-radius:0}
+.oc-carry .oc-cc:has(.oc-cbox){height:34px;align-items:center}
+.oc-cbox{display:grid;place-items:center;width:30px;height:28px;border-radius:6px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,var(--card));background:var(--card);font:800 1rem var(--font);color:var(--accent-ink)}
+.oc-cbox:not(.oc-cfull){box-shadow:none;outline:2px dashed color-mix(in srgb,var(--accent) 55%,var(--card));outline-offset:-2px}
+@media (max-width:560px){.oc-carry .oc-cc:has(.oc-cbox){height:30px}.oc-cbox{width:26px;height:24px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 `;

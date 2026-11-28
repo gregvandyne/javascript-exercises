@@ -50,6 +50,12 @@ export const CANVAS_VERSIONS = Object.freeze({
   // (task.theme, a problem's story) on screen; the column generator's regroup and lo / hi. Older activities move to it
   // when saved from the Activity panel.
   '1.6.0': 'sha384-ioxwXH9v6wHfH9G0kKO56xJDq6Zd497VMi9MlJSGPhrQ/0ldSmHadAGIYQEyKhrs',
+  // 1.6.1: the owner's fifth audit (docs/decisions.md "Oomba Canvas 1.6.1: audit 5"): lesson-step credit as each problem
+  // is settled (BRB.setProgress), each Hint press a new hint, a carry box and step for every column that gets a carry
+  // (a new leading column too), the next box chosen along the student's own path and typing into the focused box, the
+  // ✓ ✗ ⭐ chips named. Same data as 1.6.0 (nothing new to write). Older activities move to it when saved from the
+  // Activity panel.
+  '1.6.1': 'sha384-avTlb7CXYHwa6k4Ti5bPx0Wm5b9gTK9+55IWQ58Xs3w2jHnD3QUn8XdZa08mZ+fq',
 });
 /** The newest version in CANVAS_VERSIONS (by number, never by the order the lines are in). Every new activity starts on it
  *  (canvasTag(), the CANVAS RULES), and an older one moves to it when it is saved again (activity-data.js upgradeCanvas):
