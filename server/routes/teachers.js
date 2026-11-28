@@ -810,7 +810,9 @@ export function learnPage(req, res, { landing = false } = {}) {
   // The games by topic (routes/discover.js focusSections), each narrowed to the grade chosen (a game without grades fits
   // every grade). Live class games come first for a student in a class (their teacher starts them).
   const gradeFits = g => !f.grade || !SHELF_INFO[g.slug] || fits({ ...SHELF_INFO[g.slug], subject: '' }, { grade: f.grade });
-  const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(gradeFits) })).filter(sec => sec.games.length);
+  // A game already shown as a course card above (Typing Zoo) is not listed again in a topic row.
+  const inCourses = new Set(learnCourses.some(c => c.id === 'typing') ? [TYPING_SLUG] : []);
+  const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(g => gradeFits(g) && !inCourses.has(g.slug)) })).filter(sec => sec.games.length);
   if (liveFirst) topicSecs.sort((a, b) => (b.id === 'live') - (a.id === 'live'));
   // My favorites: the games this player tapped Favorite on (students too), that they may still open. No section until there is one.
   const favs = gridView || out ? [] : games.favorites(u, u.id, 16).filter(g => !courseOwned(g));
