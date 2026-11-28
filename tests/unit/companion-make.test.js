@@ -95,12 +95,23 @@ test('the guard: no reply says something was made without a made id; a Builder h
   assert.match(bot.text, /Nothing has been made yet\./);
   assert.equal(bot.note.made, undefined);
   assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=?", x.teacher.id).n, 0);
-  standIn((p, i) => (i === 0 ? toolUse('startBuild', { tool: 'builder', title: 'Adjective Hunt', brief: 'A classroom activity where students find the adjectives in sentences.' }) : 'I built Adjective Hunt for you. Open the card and press the final button.'));
+  // The Builder hand-off (COMPANION_BUILD=0): "I drafted ... Press Open the Builder".
+  config.companionBuild = false;
+  try {
+    standIn((p, i) => (i === 0 ? toolUse('startBuild', { tool: 'builder', title: 'Adjective Hunt', brief: 'A classroom activity where students find the adjectives in sentences.' }) : 'I built Adjective Hunt for you. Open the card and press the final button.'));
+    await say(x, 'Make a game where students find adjectives');
+    bot = await lastBot(x.tc);
+    assert.doesNotMatch(bot.text, /I built/);
+    assert.match(bot.text, /I drafted Adjective Hunt\. Press Open the Builder to create it\./);
+    assert.ok(bot.note.handoff, 'the hand-off card is there');
+  } finally { config.companionBuild = true; }
+  // Building in the chat (the default): the ask card, and the app's own words say nothing is built.
+  standIn((p, i) => (i === 0 ? toolUse('startBuild', { title: 'Adjective Hunt' }) : 'I built Adjective Hunt for you.'));
   await say(x, 'Make a game where students find adjectives');
   bot = await lastBot(x.tc);
   assert.doesNotMatch(bot.text, /I built/);
-  assert.match(bot.text, /I drafted Adjective Hunt\. Press Open the Builder to create it\./);
-  assert.ok(bot.note.handoff, 'the hand-off card is there');
+  assert.match(bot.text, /Nothing is built until you say so\./);
+  assert.ok(bot.note.build && !bot.note.handoff, 'the ask card, no hand-off');
   // A worksheet or a board is never a hand-off any more.
   const calls = standIn((p, i) => (i === 0 ? toolUse('startBuild', { tool: 'manipulatives', brief: 'A base ten board that shows 245 for the class.' }) : 'Ok.'));
   await say(x, 'Board for 245 please');
@@ -269,7 +280,7 @@ test('"Build a lesson" asks (no AI, nothing guessed); "Assign it" asks in plain 
   assert.match(bot.text, /What topic is it on, and for which grade\?/);
   await say(x, 'Assign it');
   bot = await lastBot(x.tc);
-  assert.match(bot.text, /Which lesson should I assign\? Tell me its name/);
+  assert.match(bot.text, /Which game, lesson plan or worksheet should I assign\? Tell me its name/);
   assert.equal(bot.note.ask, undefined, 'no buttons made from old searches');
   // A guessed topic (not in the teacher's words): refused, nothing made.
   const c2 = standIn((p, i) => (i === 0 ? toolUse('makeLesson', { topic: 'Identifying Adjectives', grade: '4' }) : 'What topic would you like?'));

@@ -8,6 +8,7 @@ import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, 
 import { INTL } from '/js/i18n.js';
 import { fullScreen } from '/js/fullscreen.js';
 import { iconHtml, hasIcon } from '/js/icons.js';
+import * as BUS from '/js/oomba-bus.js';
 /** A Fluent icon for an emoji (decorative; public/js/icons.js). */
 const ico = (e, size = 18) => iconHtml(e, { size });
 /** The same icon as an element: a hidden <span> holding the <img> (or the emoji itself when there is no icon). */
@@ -17,6 +18,9 @@ const iconText = (el, e, text) => { el.textContent = ''; el.append(icoEl(e), ' '
 
 let S = pageData();
 const ID = S.game.id;
+/** A teacher who builds in the Oomba chat, on their own game (routes/studio.js CB.docksIn): the Oomba chat is docked in
+ *  the Builder column's place (public/js/companion.js), the one chat on this page; "Studio with Oomba" below. */
+const DOCK = !!S.dock;
 /** The live stream and the build this page shows (section "live stream"). turnId: the running build drawn now;
  *  pendingCid: a message this tab sent that hasn't shown up as a build yet; check: a send whose answer never came. */
 const LIVE = { ctrl: null, tries: 0, retry: 0, turnId: null, replaying: false, replayVersion: null, stopped: null, restart: false, hidden: false, pendingCid: null, posting: false, check: null, lastErr: null, carry: null };
@@ -158,7 +162,7 @@ async function askGrownup(btn) {
 }
 function renderLive() {
   const box = $('#st-live'); const parts = [];
-  const cur = S.current ? `${ico('✏️')} ${E('js.studio.live.editing', { number: S.current.number })}` : `${ico('✏️')} ${E('js.studio.live.nothingYet')}`;
+  const cur = DOCK && S.current && (S.versions || []).length ? versionPicker() : S.current ? `${ico('✏️')} ${E('js.studio.live.editing', { number: S.current.number })}` : `${ico('✏️')} ${E('js.studio.live.nothingYet')}`;
   if (S.game.hidden_reason) parts.push(`<p class="note">${ico('⚠️')} ${E('js.studio.live.hidden')}</p>`);
   if (S.live) {
     // A class game: the classes it reaches right now (a class it was shared with stops counting when the builder leaves
@@ -190,6 +194,7 @@ function renderLive() {
   }
   if (S.game.review_note) parts.push(`<p class="note">${ico('💬')} ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
+  if (DOCK) dockShown();   // the chat's "Sees: Studio, version N" and its cards follow the versions just read
 }
 // ---- "Share with my classes": S.classShare comes from the server (server/routes/studio.js classShare):
 // classes: the builder's classes now [{ id, name, school, chosen, removed }] (removed: a teacher took this game off that
@@ -290,7 +295,12 @@ function makeLive(btn) {
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
 async function refreshLiveLine() {
-  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; S.activity = st.activity; S.versions = st.versions; renderActs(); syncPanel(); } catch { /* the next resync redraws it */ }
+  let st = null;
+  try { st = await api(`/api/studio/${ID}`, { background: true }); } catch { return; /* the next resync redraws it */ }
+  // The header too (chat audit 3: "Nothing built yet" after the first version landed): the version being edited, the
+  // game's status and what is live or waiting, read back with the rest.
+  for (const k of ['liveClass', 'canvasLine', 'activity', 'versions', 'current', 'status', 'live', 'pending', 'game']) if (k in st) S[k] = st[k];
+  renderTop(); renderLive(); renderSafety(); syncPanel();
 }
 function renderSafety() {
   renderActs();
@@ -363,8 +373,9 @@ function setPreview(url, vid = null) {
   S.preview = url; $('#st-empty').hidden = true; shownVersion = vid;
   const picker = $('.st-themes'); if (picker) picker.hidden = false;   // the world picker appears once there is a game
   stopLoud(); frame.src = url;
+  if (DOCK) dockShown();
 }
-const reloadPreview = () => { stopLoud(); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
+const reloadPreview = () => { const url = DOCK && S.shownUrl && S.current && shownVersion !== S.current.id ? S.shownUrl : S.preview; stopLoud(); frame.src = 'about:blank'; setTimeout(() => (frame.src = url), 30); };
 $('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); reloadPreview(); });
 // "Try again" in a game (brb:retry): reload the preview from here, with a fresh link (a reload the frame starts itself
 // has no sign-in cookie, so the server refuses it).
@@ -1468,6 +1479,7 @@ const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypt
 /** Send a message to the Builder. The server answers at once (the build runs on its own); the live stream shows it.
  *  continueOf: the id of the build that stopped early ("Carry on building"). */
 async function send(text, { continueOf = null } = {}) {
+  if (DOCK && !continueOf) return dockSend(text);   // the one chat: Studio's own buttons send their words there
   if (input.readOnly) return;   // the mic is still writing the words (speaking instead of typing)
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
@@ -2073,7 +2085,69 @@ document.addEventListener('visibilitychange', () => {
 addEventListener('online', () => { if (!LIVE.ctrl && !LIVE.stopped && !LIVE.hidden) { LIVE.tries = 0; openLive(); } });
 // Opened from a lesson ("build a game about..."): the idea is ready in the box; the builder presses Send.
 const ask = new URLSearchParams(location.search).get('ask');
-if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
+if (ask && DOCK) { BUS.whenChat(c => { const box = c.root.querySelector('#oc-in'); if (box && !box.value) { box.value = ask.slice(0, 600); box.dispatchEvent(new Event('input')); } }); history.replaceState(null, '', location.pathname); }
+else if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
+
+// ---------------------------------------------------------------- Studio with Oomba (docs/decisions.md "Builder in the
+// chat (phase 3): Oomba in Studio")
+// For a teacher who builds in the chat, on their own game, the Oomba chat sits where "Chat with the Builder" was (the
+// Builder column is in the page, hidden, so the live stream and the preview pill work as before). This page tells the
+// chat what it is (the page 'game': the server checks the game is the teacher's own and reads its version), and:
+//   - a change typed in the chat goes to this game's Builder (changeGame), and Studio's own buttons (Fix it, Make it a
+//     live game...) send their fixed words through the chat too (POST /api/companion/build/studio), so every build
+//     shows in the one chat;
+//   - the big preview loads a new version once, when it lands (the live stream's version event, or, if the stream
+//     missed it, the chat's done card); the chat's cards for this game are compact ("Showing big on the left");
+//   - "Version 2 of 2" picks which version the big preview shows (the Builder still changes the newest).
+function versionPicker() {
+  const list = [...(S.versions || [])].sort((a, b) => b.number - a.number), total = list.length;
+  const on = shownVersion || (S.current && S.current.id);
+  const opts = list.map(v => `<option value="${esc(v.id)}"${v.id === on ? ' selected' : ''}>${E('js.studio.dock.versionOf', { n: v.number, total: list[0].number })}</option>`).join('');
+  return `<label class="sr-only" for="st-vsel">${E('js.studio.dock.versionLabel')}</label><select class="st-vsel" id="st-vsel" data-total="${total}">${opts}</select>`;
+}
+const numberOf = vid => { const v = (S.versions || []).find(x => x.id === vid); return v ? v.number : S.current ? S.current.number : 0; };
+/** Show one version big (the picker, or Show it big on an older card): its preview address is this viewer's own. */
+async function dockShow(vid) {
+  if (!vid || vid === shownVersion) return;
+  if (S.current && vid === S.current.id && S.preview) { setPreview(S.preview, vid); renderLive(); return; }
+  try {
+    const r = await api(`/api/companion/build/${encodeURIComponent(ID)}?v=${encodeURIComponent(vid)}`, { background: true });
+    if (r.preview && r.preview.url) { asStudent(false); stopLoud(); S.shownUrl = r.preview.url; $('#st-empty').hidden = true; shownVersion = vid; frame.src = r.preview.url; dockShown(); renderLive(); }
+  } catch (e) { toast(e.message, { bad: true }); }
+}
+function dockShown() { BUS.refresh(); }
+/** A Studio button's fixed words, into the one chat and on to this game's Builder (no AI in between). */
+async function dockSend(text) {
+  text = String(text || '').trim(); if (!text) return;
+  if (panel && panel.dirty()) { toast(t('js.studio.activitySaveFirst'), { bad: true }); return; }
+  try {
+    const r = await api('/api/companion/build/studio', { method: 'POST', body: { gameId: ID, text } });
+    BUS.whenChat(c => { c.took(r.chat); c.setMode('open', { focus: false }); });
+  } catch (e) { if (e.signedOut) return failed(e); toast(e.message, { bad: true }); }
+}
+if (DOCK) {
+  let seen = null;   // the done cards of this game already seen (the first copy of the chat: all of them)
+  /** A version landed in the chat: the big preview shows it, unless the live stream already did (then nothing reloads). */
+  const landed = c => {
+    const now = (c.turns || []).flatMap(x => ((x.note && x.note.jobs) || []).filter(j => j.kind === 'game' && j.gameId === ID && j.state === 'done' && j.game && j.game.versionId).map(j => j.game.versionId));
+    if (!seen) { seen = new Set(now); return; }
+    const fresh = now.filter(v => !seen.has(v)); fresh.forEach(v => seen.add(v));
+    if (!fresh.length) return;
+    if (fresh.includes(shownVersion)) { refreshLiveLine(); return; }
+    resync();   // reads the state again: the newest version goes in the preview (applyResync), once
+  };
+  BUS.setPage({
+    page: () => ({ type: 'game', gameId: ID, version: S.current ? S.current.number : 0 }),
+    title: () => t('js.studio.dock.title', { title: S.game.title }),
+    label: () => t('js.studio.dock.sees', { n: numberOf(shownVersion) }),
+    hello: () => t('js.studio.dock.hello'),
+    start: () => (matchMedia('(min-width: 961px)').matches ? 'open' : undefined),
+    game: () => ({ id: ID, shown: shownVersion }),
+    show: vid => dockShow(vid),
+    onSync: c => landed(c),
+  });
+  document.addEventListener('change', e => { if (e.target && e.target.id === 'st-vsel') dockShow(e.target.value); });
+}
 
 // The picker over the message box (routes/studio.js themePicker): three tabs of chips. A tap puts a sentence into the
 // message: "Make it a 3D game in the Castle Quest world." (a 3D world), "Use the 3D hero Skelly." (a 3D hero) or "Use

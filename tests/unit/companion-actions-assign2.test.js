@@ -58,7 +58,7 @@ test('assignLesson: one of the teacher\'s own lessons to one student, due on a d
   const done = await H.doIt(x, bot);
   const cl = lessonIn(x.A.id, les.id);
   assert.ok(cl); assert.deepEqual(L.studentsOfLesson(cl.id), [x.maya.id]); assert.equal(day(cl.due_at), '2026-12-10');
-  assert.match(done.change.lines[0], /Assigned the lesson “My Fractions Lesson” to Room 12 Owls/);
+  assert.match(done.change.lines[0], /Assigned the lesson plan “My Fractions Lesson” to Room 12 Owls/);
   assert.ok(done.change.links.some(l => l.href === `/class/${x.A.id}/progress/${cl.id}`));
   // Already in the class: refused before any card.
   await H.refused(x, 'assignLesson', { lesson: 'My Fractions Lesson' }, /already has/);
@@ -223,7 +223,7 @@ test('made: rename and delete a worksheet; rename, copy and delete a board; copy
   assert.ok(L.assign(x.teacher, x.A.id, les.id).ok);
   await H.refused(x, 'deleteLesson', { lesson: 'Their lesson' }, /None of the teacher's lessons/);
   c = await H.ask(x, 'deleteLesson', { lesson: 'water cycle' });
-  assert.match(c.card.warn, /deletes the lesson for good/); assert.equal(c.card.undoable, false);
+  assert.match(c.card.warn, /deletes the lesson plan for good/); assert.equal(c.card.undoable, false);
   assert.ok(c.card.lines.includes('It is assigned to 1 class.'), JSON.stringify(c.card.lines));
   assert.match(c.r.what, /assigned to 1 classes/);
   assert.ok(L.getLesson(les.id), 'nothing before the tap');

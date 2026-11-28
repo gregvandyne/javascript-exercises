@@ -1239,6 +1239,10 @@ ol.steps li{margin-bottom:var(--s2)}
 .course-rail.has-more::after{content:"";position:absolute;top:0;bottom:0;inset-inline-end:-16px;width:56px;pointer-events:none;z-index:2;background:linear-gradient(to right,transparent,var(--bg))}
 [dir="rtl"] .course-rail.has-more::after{background:linear-gradient(to left,transparent,var(--bg))}
 .course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:12px;align-content:start}
+/* Learn's Courses rail: every course card the same height, its button along the bottom (a longer title or a progress line no longer makes one card shorter than its neighbour). */
+.learn-courses-track{align-items:stretch}
+.learn-course{display:flex;flex-direction:column}
+.learn-course>.course-foot{margin-top:auto}
 .course-head{display:flex;gap:12px;align-items:center}
 /* Learn's compact course card: the whole head opens the course (a full tap target), the units fold behind a tap. */
 a.course-head{min-height:48px;color:inherit;text-decoration:none;border-radius:14px}

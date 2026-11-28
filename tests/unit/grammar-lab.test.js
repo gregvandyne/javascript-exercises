@@ -209,7 +209,7 @@ test('the quiz lint: a sentence a question shows as right is right; a sentence s
   assert.deepEqual(quiz([{ id: 'q-5', format: 'gaps', text: 'We ate rice beans and corn.', answer: [2, 3], right: 'We ate rice, beans, and corn.' }]), []);
   assert.ok(quiz([{ id: 'q-6', format: 'capfix', text: 'we met sam.', answer: [0, 2], right: 'We met sam.' }]).some(p => /q-6: the right answer/.test(p)));
   // a fragment the question asks about, and a word answered on its own, are not sentences
-  assert.deepEqual(quiz([{ id: 'q-7', format: 'choice', plain: true, text: 'When the dog barked.', label: 'Fragment', options: ['Sentence', 'Fragment'], answer: [1], right: 'When the dog barked.' }, { id: 'q-8', format: 'choice', text: '___ raining.', options: ["It's", 'Its'], answer: [0], right: "It's raining." }]), []);
+  assert.deepEqual(quiz([{ id: 'q-7', format: 'choice', plain: true, text: 'When the dog barked.', label: 'Fragment', options: ['Sentence', 'Fragment'], answer: [1], right: 'When the dog barked.', after: 'When the dog barked, the cat ran.' }, { id: 'q-8', format: 'choice', text: '___ raining.', options: ["It's", 'Its'], answer: [0], right: "It's raining." }]), []);
 });
 
 // ------------------------------------------------------------------------------------------------- mastery math

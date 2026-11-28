@@ -52,7 +52,7 @@ export const STATUSES = { yes: '✅', partial: '🟡', no: '➖', notStated: '' 
 export const ROWS = [
   { id: 'games' }, { id: 'build' }, { id: 'dashboard' }, { id: 'routines' }, { id: 'eyes' },
   { id: 'manip', gated: true }, { id: 'room', gated: true }, { id: 'regroup', gated: true }, { id: 'figures', gated: true },
-  { id: 'aiDraft', gated: true }, { id: 'companion', gated: true }, { id: 'videos' },
+  { id: 'aiDraft', gated: true }, { id: 'companion', gated: true }, { id: 'grammar' }, { id: 'videos' },
   { id: 'grades' }, { id: 'languages' }, { id: 'devices' }, { id: 'privacy' }, { id: 'free' },
 ];
 
@@ -138,7 +138,7 @@ export const GRAMMAR_CHECKED = '2026-11-27';
  *  seed-lessons/grammar-lab/topics.json). Grammar Lab's No rows say what it does not do, by design or not yet. */
 export const GRAMMAR_ROWS = [
   { id: 'practice', us: 'yes' }, { id: 'mastery', us: 'yes' }, { id: 'grades', us: 'yes' }, { id: 'readAloud', us: 'yes' },
-  { id: 'proofread', us: 'yes' }, { id: 'essays', us: 'no' }, { id: 'feedback', us: 'no' }, { id: 'classes', us: 'no' },
+  { id: 'proofread', us: 'yes' }, { id: 'essays', us: 'no' }, { id: 'feedback', us: 'no' }, { id: 'classes', us: 'yes' },
   { id: 'free', us: 'yes' },
 ];
 
@@ -250,7 +250,8 @@ router.get(PATH, (req, res) => {
   const gate = 'compare.gate.plan';
   const plans = familiesOn(req);
   const vars = { count: availableLocales().length, plans: '/plans' };
-  const rows = ROWS.filter(r => r.id !== 'videos' || readyVideos().length);
+  // Grammar Lab's row only while it is open to every visitor (grammarCompareOn), as its own section below.
+  const rows = ROWS.filter(r => (r.id !== 'videos' || readyVideos().length) && (r.id !== 'grammar' || grammarCompareOn()));
   const notes = footnotes(CELLS, rows);
   const dayOf = d => fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${d}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' });
   const need = r => t(`compare.rows.${r.id}.need`);

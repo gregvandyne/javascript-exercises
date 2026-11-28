@@ -205,7 +205,10 @@ function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
     title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: 'tools', head: CHAT_CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, crumb)}
-      ${jsonData('fg-sheet', { id: w ? w.id : null, purpose, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
+      ${jsonData('fg-sheet', { id: w ? w.id : null, purpose,
+        // The worksheet itself, so the first paint shows its real title and questions (chat audit 3: a blank "Untitled
+        // worksheet / No questions yet" showed while it loaded).
+        worksheet: w ? view(req, w.id) : null, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
         classes: lesson ? [] : FS.classesFor(u).map(c => ({ id: c.id, name: c.name, school: c.school_name || '' })) })}
       <div id="fg-sheet-app" class="fg-sheet"><p class="muted">${t('figures.loading')}</p></div>`,
   });

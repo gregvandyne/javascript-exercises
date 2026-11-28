@@ -328,6 +328,8 @@ router.get('/build/new', requireBuilder, (req, res) => {
       <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><button type="button" class="btn btn-hot su-open" id="su-open">${t('buildSetup.plan.open')}</button></div>
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>
+    ${'' /* A brief from Oomba's chat (public/js/companion.js fills it): the first message's own words (chat audit 3). */}
+    <textarea id="su-brief" hidden maxlength="${MAX_INPUT}" aria-hidden="true" tabindex="-1"></textarea>
   </div>
   ${jsonData('page-data', setupData(t, { teacher, forClass, kind }))}`;
   page(req, res, { title: t('buildSetup.title'), active: 'build', back: forClass ? `/class/${forClass.id}` : '/build', backLabel: forClass ? forClass.name : t('nav.build'), body, mid: true, bodyClass: 'setup-page',

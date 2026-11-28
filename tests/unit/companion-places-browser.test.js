@@ -132,7 +132,7 @@ test('"Assign it" sends with the Send button (never greyed out, no false warning
       await page.fill('#oc-in', 'Assign it');
       assert.equal(await page.$eval('#oc-send', b => b.disabled), false, 'Send is never greyed out');
       await page.click('#oc-send');
-      await page.waitForFunction(() => /Which lesson should I assign/.test(document.querySelector('#oc-log').textContent), null, { timeout: 15000 });
+      await page.waitForFunction(() => /Which game, lesson plan or worksheet should I assign/.test(document.querySelector('#oc-log').textContent), null, { timeout: 15000 });
       assert.equal(await page.$eval('#oc-err', e => e.hidden || !e.textContent.trim()), true, 'no "Write a few words" warning');
       // A board Oomba makes: the card, then Open the board opens that exact board.
       CO.hooks.create = async p => {

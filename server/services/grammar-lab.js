@@ -346,12 +346,17 @@ export function answerRun(user, t, marked) {
     if (isGuestUser(user)) { stashPendingFact(user, COURSE, { key: t.id }, 'win'); win = 'pending'; }
     else { markMastered(user, t.id); win = 'mastered'; }
   }
+  // after: a question that asked about a faulty sentence (a fragment, a modifier in the wrong place, a wordy or weak
+  // sentence) shows its sentence fixed once it is answered right; it is sent only now, never with the question
   return { result, kind: out.kind, levelDone: out.levelDone, mastered: out.mastered, summary: M.summary(s), question: questionFor(t, s),
-    hint: out.kind === 'wrong' || out.kind === 'again' ? item.hint : null, win };
+    hint: out.kind === 'wrong' || out.kind === 'again' ? item.hint : null, ...(result === 'right' && item.after ? { after: item.after } : {}), win };
 }
-/** One item as "look back" shows it: the right sentence and the words to mark in it ({ i, role }). */
+/** One item as "look back" shows it: the right sentence and the words to mark in it ({ i, role }). A question about a
+ *  faulty sentence (it.after, scripts/grammar-lab-build.js replaysFault) shows that sentence as a before, struck
+ *  through with its label, and the sentence fixed as the after: { text: the fix, before, note? }. */
 export function rightOf(t, it) {
   const f = formatOf(t, it);
+  if (it.after) return { text: it.after, marks: [], before: f === 'tap' || it.label ? it.text : it.right, ...(it.label ? { note: it.label } : {}) };
   if (f === 'tap' && it.format) return { text: it.text, marks: it.answer.map(i => ({ i, role: 'key' })) };
   if (f === 'marks') return { text: it.right, marks: [...it.want, ...it.optional].filter(([, m]) => m === ',').map(([i]) => ({ i, role: 'comma' })).sort((a, b) => a.i - b.i) };
   if (f === 'tap') {

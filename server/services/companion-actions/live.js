@@ -50,7 +50,7 @@ export default [
       const { mode, subject, level } = QL.quickPlan(u, w.c, { mode: p.game, subject: p.topic, level: p.level });
       return {
         data: { classId: w.c.id, pick: { mode, subject, level }, lang: ctx.lang || 'en' },
-        ai: `Open a quick live game for ${clean(ctx, w.c.name)}: ${mode}, ${subject}, level ${level}, ${QL.QUICK_COUNT} questions. The class's students join from their class page.`,
+        ai: `Open a quick live game for ${clean(ctx, w.c.name)}: ${mode}, ${subject}, level ${level}, ${QL.QUICK_COUNT} questions. The class's students join from their class page. Say "hosting a live game" (never a lesson): its results reach the class's Progress page only once it is played and ended, so never say they are saved or there now.`,
       };
     },
     check: (u, d) => hostWhy(u, d.classId),
@@ -63,7 +63,9 @@ export default [
       const back = LS.get(r.session.id);
       return { ok: true, landed: !!back && back.phase !== 'ended' && back.classId === c.id, done: { classId: c.id, sid: r.session.id }, undo: { sid: r.session.id } };
     },
-    doneView: (u, d, t) => ({ lines: [t('js.companion.act.live.host.done', { class: className(d.classId) })], links: [hostLink(d.sid, t)] }),
+    // Chat audit 3: the Progress page said "No live games" after this; a room's results are saved when it is played and
+    // ended (classlive-results.js save), and the page shows an open room meanwhile. The card says so.
+    doneView: (u, d, t) => ({ lines: [t('js.companion.act.live.host.done', { class: className(d.classId) }), t('js.companion.act.live.host.results')], links: [hostLink(d.sid, t), { href: `/class/${encodeURIComponent(d.classId)}/progress#live-games`, label: t('js.companion.act.live.host.progress') }] }),
     // Only a room nobody has started yet: a game being played is ended on the host page.
     undo(u, d) {
       const s = LS.get(d.sid);
@@ -97,6 +99,6 @@ export default [
       const back = LS.get(s.id);
       return { ok: true, landed: !back || back.phase === 'ended', done: { sid: s.id, title, played } };
     },
-    doneView: (u, d, t) => ({ lines: [t('js.companion.act.live.end.done', { title: d.title || '' })], links: d.played ? [{ href: `/live/results/${encodeURIComponent(d.sid)}`, label: t('js.companion.act.live.end.results') }] : [] }),
+    doneView: (u, d, t) => ({ lines: [t('js.companion.act.live.end.done', { title: d.title || '' }), ...(d.played ? [] : [t('js.companion.act.live.end.notPlayed')])], links: d.played ? [{ href: `/live/results/${encodeURIComponent(d.sid)}`, label: t('js.companion.act.live.end.results') }] : [] }),
   },
 ];
