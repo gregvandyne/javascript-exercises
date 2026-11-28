@@ -53,11 +53,11 @@
     },
     "build": {
       "ready": "Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
-      "readyForTeachers": "Je les “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
+      "readyForTeachers": "Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
       "question": "De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
       "stopped": "“{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
       "many": "De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>",
-      "manyForTeachers": "De Bouwer heeft nieuws over een paar van je lessen. <a href=\"{href}\">Bekijk de Lessenmap</a>"
+      "manyForTeachers": "De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk de Lessenmap</a>"
     },
     "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
@@ -1849,6 +1849,8 @@
     "canvasLine": {
       "activity": "Klasactiviteit · resultaten gaan naar Voortgang",
       "board": "Klasactiviteit · op het bord",
+      "game": "Game · resultaten gaan naar Voortgang",
+      "gameBoard": "Game · op het bord",
       "arcade": "Arcadespel · gemaakt voor je klas",
       "toArcade": "Maak er een arcadespel van",
       "toArcadeAsk": "Maak er toch een arcadespel van: een quiz-, ren- of vangspel met dezelfde opgaven.",
@@ -3044,6 +3046,7 @@
       "animal2dUse": "Maak dit dier de held: {name}.",
       "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}",
       "activityEdit": "Les bewerken",
+      "activityEditGame": "Game bewerken",
       "asStudent": "Als leerling",
       "activitySaveFirst": "Sla eerst je wijzigingen in het activiteitenpaneel op of maak ze ongedaan.",
       "play": {
@@ -11970,7 +11973,8 @@
       "submit": "Toewijzen",
       "note": "Je klas krijgt een lesplan van één stap dat deze les opent. Je kunt het later aanpassen in de bibliotheek met lesplannen.",
       "none": "Je hebt nog geen klassen. Maak er eerst een in Klaslokaal.",
-      "liveOnly": "Dit is een liveles voor de klas: leid hem op het grote scherm in plaats van hem toe te wijzen."
+      "liveOnly": "Dit is een liveles voor de klas: leid hem op het grote scherm in plaats van hem toe te wijzen.",
+      "shareFirst": "Het is nog met geen enkele klas gedeeld. Toewijzen deelt het alleen met de klas die je kiest (nooit met iedereen) en wijst het daarna toe."
     },
     "home": {
       "hello": "Hallo, {name}",

@@ -16873,6 +16873,52 @@ its cause and the fix (tests: tests/unit/companion-build-audit4.test.js, compani
 - Strings: `js.companion-build.asg.*`, `say.nothingSaid`, `versions`, `versionOf`, `olderShown`, `say.nothing` (now
   names Try again) and `js.studio.dock.showFailed`, in the 12 full locales.
 
+## Builder in the chat and Studio: audit 5 fixes (28 Nov 2026)
+
+The owner's live audit after #713 ("Builder in the chat: audit 4 fixes") found five things still wrong. #713 had been
+checked only with the stand-in Builder (it saves once); these were traced on the real path (builder/claude.js against a
+fake Messages API, the arcade side off as on the live site) and the production logs of the two builds (12:42 to 12:46
+and 12:48 to 12:54 UTC, two new games, both `mode: new`, no other save request in between). Tests:
+tests/unit/companion-build-audit5.test.js (fails on the code before this change) and
+companion-build-audit5-browser.test.js.
+
+- **"Version 2 of 2" for a first build, "3 of 3" for the next.** Not the empty game Build it makes (createGame saves no
+  version), not a title, cover or screening save (only builder/tools.js saveVersion adds a Builder version), and the
+  starter draft of #713 worked (`chat: true` survives normalisePlan). The real Builder saves more than once in ONE
+  build: its edit (version 1), then the automatic playtest's fix rounds (claude.js autoCheck; a teacher, a trusted
+  maker, gets up to 3), each a saveVersion, so a build made 2, 3 or 4 versions. Now a build from the chat (every
+  'game' job: Build it, a change by message, Studio's buttons docked, Try again; `runner.submit({ one: true })`, kept
+  on the row as `request.one`, so a restart and a carried-on build keep it) makes ONE version: its first save adds it,
+  every later save of the same build replaces it (tools.js `buildVersion`, games.replaceVersion with `replay`: the
+  earlier page's playthrough is dropped, so it is played again). A version that is published, waiting for a check or
+  reviewed is never replaced. Studio's own builds (no chat) keep a version per save.
+- **"Your lesson “Farm Carry Stars” is ready!"** The layout's Builder notice had a teacher variant
+  (`layout.build.readyForTeachers`, from "Teachers say lessons") that said lesson; a Builder build is always a game, and
+  the chat says game. The variant now says game in the teacher's register (Ihr Spiel, Votre jeu, Ваша игра), and
+  `manyForTeachers` says games; lesson stays for lesson plans only. 12 locales.
+- **/build draft cards had only Edit and More.** Play and Assign showed only for a published game. Now a school staff
+  member's own draft with a saved version (and a class they can share with) has Play (its own page `/g/<slug>`, which
+  plays the newest version for its owner) and Assign. Its page (/teach/assign) says "It isn't shared with a class yet.
+  Assign shares it only with the class you pick (never with everyone), then assigns it." and lists those classes; its
+  POST shares it first with the #713 path (companion-build.js `needsShare` / `shareForAssign` with `anyTeacher: true`:
+  publish.js `publish(user, game, 'class', { classIds: [that class] })`, every check Studio's Publish runs), then
+  assigns. A refused or held publish says why (400) and assigns nothing. Kids never get Assign.
+- **"Make it a live game" said "Live play is not available for classroom games yet."** With the arcade side off a plain
+  classroom game has no live client (see "Classroom focus: the Builder without the kit": Oomba Live needs the kit's live
+  pack), so live play is impossible for these games (routes/live.js hosts only a published version that passes the live
+  check, services/classlive-check.js gameReady, which needs the pack). Studio no longer offers what it can only refuse:
+  `liveClass.offer` is false wherever the line is off for a reason (a plain classroom game while the arcade side is off,
+  a ready-made 3D world, a tool for the board, the survey), and public/js/studio.js draws no live button and no "can't"
+  line then. Where a game can be live the button is as before.
+- **Studio said "Classroom activity"** for an Oomba Canvas game (On the board). While the arcade side is off there is no
+  arcade game to tell it apart from, so the line says "Game · on the board" / "Game · results go to Progress"
+  (`studio.canvasLine.game`, `gameBoard`), and so does a game made in the chat docked in Studio with the arcade on; the
+  Activity panel's button says "Edit game" (`js.studio.activityEditGame`), not "Edit lesson". Kids' Studio with the
+  arcade on keeps "Classroom activity" next to its "Make it an arcade game" switch. The Activity panel's own words are
+  the Canvas kit's (separate work).
+- Strings: `layout.build.readyForTeachers`, `manyForTeachers` (changed), `teach.assign.shareFirst`,
+  `studio.canvasLine.game`, `gameBoard`, `js.studio.activityEditGame`, in the 12 full locales (no en-GB override needed).
+
 ## Grammar Lab listed everywhere (27 Nov 2026)
 
 Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.

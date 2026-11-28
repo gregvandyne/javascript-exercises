@@ -53,11 +53,11 @@
     },
     "build": {
       "ready": "Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
-      "readyForTeachers": "Your lesson “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "readyForTeachers": "Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
       "question": "The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
       "stopped": "“{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
       "many": "Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>",
-      "manyForTeachers": "Some of your lessons have news from the Builder. <a href=\"{href}\">See your Lesson Folder</a>"
+      "manyForTeachers": "Some of your games have news from the Builder. <a href=\"{href}\">See your Lesson Folder</a>"
     },
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
@@ -1849,6 +1849,8 @@
     "canvasLine": {
       "activity": "Classroom activity · results go to Progress",
       "board": "Classroom activity · on the board",
+      "game": "Game · results go to Progress",
+      "gameBoard": "Game · on the board",
       "arcade": "Arcade game · made for your class",
       "toArcade": "Make it an arcade game",
       "toArcadeAsk": "Make it an arcade game instead: a quiz, running or catching game that asks the same problems.",
@@ -3131,6 +3133,7 @@
       "animal2dUse": "Make the hero this animal: {name}.",
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}",
       "activityEdit": "Edit lesson",
+      "activityEditGame": "Edit game",
       "asStudent": "As a student",
       "activitySaveFirst": "Save or undo your Activity panel changes first.",
       "play": {
@@ -12640,7 +12643,8 @@
       "set": "{count, plural, one {your question set (# question)} other {your question set (# questions)}}",
       "pickFirst": "Make and save what your class will open in the lesson first (a problem, a question set or an activity). Then press Assign to a class there, so your students open it straight away.",
       "openGame": "Open the lesson",
-      "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there."
+      "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there.",
+      "shareFirst": "It isn't shared with a class yet. Assign shares it only with the class you pick (never with everyone), then assigns it."
     },
     "home": {
       "hello": "Hello, {name}",

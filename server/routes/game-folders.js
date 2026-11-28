@@ -26,6 +26,7 @@ import * as TY from '../services/typing.js';
 import { setGameOf, setAssign } from '../services/set-assign.js';
 import { zoneNote, assignToField, studentsFrom } from './lessons.js';
 import { gameHidden, mayOpenHidden } from '../services/game-focus.js';
+import * as CB from '../services/companion-build.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/studio.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -134,15 +135,20 @@ router.get('/teach/assign', requireUser, (req, res) => {
   // Mistake Hunt (services/proof-steps.js): the teacher's own passage set is either handed in for a grade or played as practice
   // in the game (the game step below); the teacher picks one, nothing is picked for them.
   const proofSet = g0.slug === PS.SLUG && sa && sa.what ? PS.ownSet(u, parseParams(sa.opts).chapter) : null;
-  const practiceForm = classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
-      <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
+  // The teacher's own draft with a saved version (Assign on a /build card; docs/decisions.md "Builder in the chat and
+  // Studio: audit 5 fixes"): the classes it can be shared with first, then assigned (POST below: publish.js 'class' for
+  // the class picked only, never public). None: the old "publish it first" note.
+  const shareFirst = draft && g0.owner_id === u.id ? classes.filter(c => CB.needsShare(u, g0.id, c.id, { anyTeacher: true })) : [];
+  const pick = shareFirst.length ? shareFirst : classes;
+  const practiceForm = pick.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
+      <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${pick.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
       ${g0.slug === TY.SLUG && g0.source === 'seed' && !(sa && sa.opts) ? html`<div class="field"><label for="ag-o">${t('progress.typing.assignPick')}</label><select class="input" id="ag-o" name="opts"><option value="">${t('progress.typing.assignFree')}</option>${TY.assignChoices(t).map(o => html`<option value="${o.value}">${o.label}</option>`)}</select></div>` : ''}
       ${g0.slug === TY.SLUG && g0.source === 'seed' ? html`<fieldset class="field wide ty-pass"><legend>${t('progress.typing.passH')}</legend>
         <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="passAcc" min="${TY.PASS.acc[0]}" max="${TY.PASS.acc[1]}" inputmode="numeric" placeholder="90"></label>
         <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="passWpm" min="${TY.PASS.wpm[0]}" max="${TY.PASS.wpm[1]}" inputmode="numeric" placeholder="20"></label>
         <span class="small muted">${t('progress.typing.passHint')}</span></fieldset>` : ''}
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
-      ${assignToField(t, classes, { idp: 'ag-w', shown: pre })}
+      ${assignToField(t, pick, { idp: 'ag-w', shown: pre })}
       ${gc}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
       <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">${ico('🎓', { size: 18 })} ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>` : '';
@@ -172,6 +178,7 @@ router.get('/teach/assign', requireUser, (req, res) => {
     ${proofSet ? proofForm : sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.name || sa.label })}</p>${sa.name ? html`<p class="small muted assign-sub" dir="auto">${sa.label}</p>` : ''}` : ''}
     ${proofSet ? '' : sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
       : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a></p>` : ''}`
+      : draft && shareFirst.length ? html`<p class="notice" id="ag-share">${ico('🔒', { size: 18 })} ${t('teach.assign.shareFirst')}</p>${practiceForm}`
       : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a></p>`
       : classes.length ? practiceForm
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
@@ -196,6 +203,13 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   if (pass) extra = { options: `${extra.options ? `${extra.options}&` : ''}mode=${pass.mode}`, title: `${extra.title || g.title} (${TY.passLabel(req.t, pass)})`.slice(0, 100) };
   // Assign to: the whole class or some students (routes/lessons.js assignToField).
   const who = studentsFrom(req, res); if (!who) return;
+  // The teacher's own draft (or private game), from a /build card: shared with that class only first, with every check
+  // Studio's Publish runs (services/companion-build.js shareForAssign), then assigned. Refused or waiting for a check:
+  // the plain reason, nothing assigned.
+  if (g && CB.needsShare(u, g.id, classId, { anyTeacher: true })) {
+    const sh = await CB.shareForAssign(u, { itemId: g.id, classId: String(classId || ''), lang: req.locale || 'en' }, { anyTeacher: true });
+    if (!sh.ok) return res.status(400).json({ error: sh.message, code: 'notShared' });
+  }
   const r = F.assignGame(u, classId, g && g.id, { dueAt, ...extra, students: who.students || [] });
   if (!r.ok) return fail(req, res, r);
   const also = await gcAfterAssign(req, r.classLesson);

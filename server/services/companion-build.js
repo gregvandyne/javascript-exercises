@@ -267,11 +267,14 @@ function doneJob(u, turn, jobId) {
   return g && g.owner_id === u.id && g.status !== 'deleted' ? { j, g } : null;
 }
 /** Would assigning this game to this class share it with the class first? A draft (or a private game) of the teacher's
- *  own, built while they may build in the chat. A game already shared at any other level is never changed here. */
-export function needsShare(u, gameId, classId) {
-  if (!on(u)) return false;
+ *  own, built while they may build in the chat. A game already shared at any other level is never changed here.
+ *  anyTeacher: the /build page's Assign (routes/game-shelf.js, /teach/assign; docs/decisions.md "Builder in the chat and
+ *  Studio: audit 5 fixes"): any school staff member's own game with a saved version, chat or not. */
+export const mayShare = (u, { anyTeacher = false } = {}) => (anyTeacher ? !!u && !u.banned && S.isSchoolStaff(u) : on(u));
+export function needsShare(u, gameId, classId, { anyTeacher = false } = {}) {
+  if (!mayShare(u, { anyTeacher })) return false;
   const g = games.getGame(String(gameId || '')), c = S.getClass(String(classId || ''));
-  if (!g || !c || g.owner_id !== u.id || g.status === 'deleted' || g.source === 'seed') return false;
+  if (!g || !c || g.owner_id !== u.id || g.status === 'deleted' || g.source === 'seed' || !g.current_version_id) return false;
   if (g.status === 'published' && g.visibility !== 'private') return false;
   return S.shareableClasses(u.id).some(x => x.id === c.id) && GF.assignable(u, g, c).code === 'publishFirst';
 }
@@ -311,9 +314,9 @@ function classPicked(u, turn, card, classId) {
  * for that class (publish.js, with every check it runs), then the assignment. -> { ok } | { ok: false, message } (the
  * plain reason, in the teacher's language: the scan, the playthrough, a person's look, a class that cannot be picked).
  */
-export async function shareForAssign(u, p) {
+export async function shareForAssign(u, p, { anyTeacher = false } = {}) {
   const t = tFor(p.lang || u.lang || 'en');
-  if (!needsShare(u, p.itemId, p.classId)) return { ok: true };
+  if (!needsShare(u, p.itemId, p.classId, { anyTeacher })) return { ok: true };
   let r;
   try { r = await publish(u, p.itemId, 'class', { t, classIds: [p.classId] }); } catch (e) { log('error', 'companion share failed', { game: p.itemId, error: e.message }); r = { ok: false, message: t('js.companion-build.err.other') }; }
   const g = games.getGame(p.itemId);
@@ -505,7 +508,9 @@ J.defineKind('game', {
     const base = turns.newestVersion(g.id) || 0;
     let r;
     try {
-      r = await runner.submit({ user, game: g, text: input.text, plan: input.mode === 'new' ? input.plan : null, t, cid: input.cid, ...(hooks.provider ? { provider: hooks.provider } : {}) });
+      // one: every save of this build is one version (builder/tools.js buildVersion): a first build is Version 1, each
+      // change adds exactly one (docs/decisions.md "Builder in the chat and Studio: audit 5 fixes").
+      r = await runner.submit({ user, game: g, text: input.text, plan: input.mode === 'new' ? input.plan : null, t, cid: input.cid, one: true, ...(hooks.provider ? { provider: hooks.provider } : {}) });
     } catch (e) { log('error', 'companion build could not start', { game: g.id, error: e.message }); return { failed: 'error' }; }
     if (!r.job && !(r.body && (r.body.followUp || r.body.refused))) return { failed: ['limit', 'resting', 'tooMany', 'disabled', 'restarting'].includes(r.code) ? r.code : 'error' };
     if (r.body && r.body.refused) {
