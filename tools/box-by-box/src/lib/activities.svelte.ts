@@ -38,6 +38,10 @@ export type Activity = {
 	shared?: string;
 	/** The teacher's own words for the top of the printed worksheet (plain text, at most PRINT_NOTE_MAX). */
 	printNote?: string;
+	/** Just made with New activity, nothing changed yet: kept here (the editor and its Try it find it) but not saved
+	 *  and not in Your activities, so opening the editor and leaving makes no blank card. The first real change saves
+	 *  it (touch, a share, a print note). */
+	draft?: true;
 };
 
 export const PRINT_NOTE_MAX = 300;
@@ -91,11 +95,16 @@ export function loadList() {
 	list.loaded = true;
 }
 function persist() {
-	store(KEY, $state.snapshot(list.items));
+	store(KEY, ($state.snapshot(list.items) as Activity[]).filter((a) => !a.draft));
+}
+/** A draft the teacher changed: it is an activity now (saved, and in the list). */
+function kept(a: Activity) {
+	if (a.draft) delete a.draft;
 }
 
 export const find = (id: string) => list.items.find((a) => a.id === id);
-export const sorted = () => [...list.items].sort((a, b) => b.savedAt - a.savedAt);
+/** Your activities, newest first (not a draft nobody changed). */
+export const sorted = () => list.items.filter((a) => !a.draft).sort((a, b) => b.savedAt - a.savedAt);
 
 export function create(kind: Kind): Activity {
 	const k = kindInfo(kind);
@@ -106,16 +115,18 @@ export function create(kind: Kind): Activity {
 		kind,
 		problems: k.makeSet(Math.random, k.setSize),
 		settings: freshSettings(),
-		plan: k.settings.fresh()
+		plan: k.settings.fresh(),
+		draft: true
 	};
-	list.items = [a, ...list.items];
-	persist();
+	// (a draft before this one, never changed, goes: only the one being edited is kept)
+	list.items = [a, ...list.items.filter((x) => !x.draft)];
 	return list.items[0];
 }
-/** Something about this activity changed: it is saved at once. */
+/** Something about this activity changed: it is saved at once (a draft becomes an activity). */
 export function touch(id: string) {
 	const a = find(id);
 	if (!a) return;
+	kept(a);
 	a.savedAt = Date.now();
 	persist();
 }
@@ -130,6 +141,7 @@ export const isShared = (a: Activity) => !!a.setId && a.shared === JSON.stringif
 export function markShared(id: string, setId: string, item: Item) {
 	const a = find(id);
 	if (!a) return;
+	kept(a);
 	a.setId = setId;
 	a.shared = JSON.stringify(item);
 	persist();
@@ -139,6 +151,8 @@ export function setPrintNote(id: string, text: string) {
 	const a = find(id);
 	if (!a) return;
 	const v = cleanPrintNote(text);
+	if (v === (a.printNote ?? '')) return;
+	kept(a);
 	if (v) a.printNote = v;
 	else delete a.printNote;
 	persist();

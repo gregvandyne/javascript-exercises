@@ -24,6 +24,7 @@ type Brb = {
 	gameUrl?: string | null;
 	copy?: (what: string | Blob) => Promise<boolean> | null;
 	gameOver?: (o: { won: boolean; score?: number; label?: string }) => void;
+	setProgress?: (o: { done: number; total: number; score: number; label?: string }) => boolean;
 	params?: { mode?: string };
 	aiVoiceCheck?: (lines: string[], o?: { lang?: string }) => Promise<boolean> | null;
 	speak?: (text: string, o: Record<string, unknown>) => boolean;
@@ -145,6 +146,18 @@ export const assignFirst = () => {
 		return false;
 	}
 };
+/** Opened from an Assign button: whether Your activities opens with the New activity menu open. Only the first time
+ *  (kept in the game save): coming back to the list, a reload, or Back from the Assign page leave it closed (audit 4:
+ *  it opened by itself again on every reload). */
+let assignMenuAsked = false;
+export function firstAssignMenu(): boolean {
+	if (assignMenuAsked || !assignFirst()) return false;
+	assignMenuAsked = true;
+	if (load(ASSIGN_MENU_KEY) === true) return false;
+	store(ASSIGN_MENU_KEY, true);
+	return true;
+}
+const ASSIGN_MENU_KEY = 'box-by-box-assign-menu-v1';
 export function assign(setId: string): boolean {
 	try {
 		return brb()?.assign?.(`chapter=${setId}&lock=1`) === true;
@@ -257,6 +270,17 @@ export function wrong(el?: Element | null) {
 	}
 }
 export const tap = () => sound('pop');
+const fixesLabel = (fixes: number) => (fixes > 0 ? { label: `fixes:${Math.min(fixes, 9999)}` } : {});
+/** A problem settled (right, or its answer shown): done of total so far, the score so far, for a lesson step
+ *  (BRB.setProgress: the class's progress page shows it, started from the first one, and the step is done once every
+ *  problem is, See the score pressed or not). Outside a lesson the page keeps nothing. */
+export function progress(done: number, total: number, score: number, fixes = 0) {
+	try {
+		brb()?.setProgress?.({ done, total, score, ...fixesLabel(fixes) });
+	} catch {
+		/* an older page */
+	}
+}
 /** The end of a run through the set: the cheer and the confetti, and the finish for a lesson step (once per run).
  *  fixes: the steps the student got wrong and put right on the way (Guided marks a wrong digit at once, Count up a
  *  wrong count): they don't change the score, so they go with it as its label ("fixes:2"; the class's progress page
@@ -269,7 +293,7 @@ export function finished(score: number, fixes = 0) {
 		/* fine */
 	}
 	try {
-		brb()?.gameOver?.({ won: true, score, ...(fixes > 0 ? { label: `fixes:${Math.min(fixes, 9999)}` } : {}) });
+		brb()?.gameOver?.({ won: true, score, ...fixesLabel(fixes) });
 	} catch {
 		/* no page */
 	}

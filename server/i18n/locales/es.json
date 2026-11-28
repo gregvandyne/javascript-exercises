@@ -7289,7 +7289,8 @@
       "toReviewList": "Respuestas por revisar:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Nota del quiz: {pct} % de aciertos",
-      "quizOverall": "Puntuación de cuestionarios en todos los planes de clase: {pct} %"
+      "quizOverall": "Puntuación de cuestionarios en todos los planes de clase: {pct} %",
+      "emptyWhat": "Cuando asignes algo y los alumnos se unan a la clase, cada alumno tendrá aquí una fila: cuántos pasos de cada tarea ha hecho, sus puntuaciones y las respuestas que esperan a que las leas."
     },
     "lesson": {
       "finished": "{done} de {total} estudiantes terminaron",
@@ -7315,7 +7316,8 @@
       "helped": "El docente mostró una respuesta",
       "stepFixes": "{count, plural, one {# paso corregido} other {# pasos corregidos}}",
       "sampleName": "Alumno de ejemplo",
-      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino."
+      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino.",
+      "partDone": "{done} de {total} respondidas"
     },
     "student": {
       "doneOf": "{done} de {total} hechos",

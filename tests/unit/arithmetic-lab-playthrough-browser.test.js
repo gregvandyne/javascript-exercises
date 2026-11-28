@@ -165,11 +165,12 @@ test('steps fixed on the way are counted: the end screen says so, and the score 
   await type(g, ['5', '\n']);
   assert.match(await g.frame.locator('.feedback').innerText(), /Correct!/);
   await g.frame.locator('.feedback .btn-primary').click();
-  assert.match(await g.frame.locator('.final').innerText(), /You got 1 right and 0 wrong\./);
+  // (the wrong digit was this problem's wrong try: Guided counts it in Wrong, audit 4)
+  assert.match(await g.frame.locator('.final').innerText(), /You got 0 right and 1 wrong\./);
   assert.equal(await g.frame.locator('.fixes').innerText(), 'You fixed 1 step along the way.');
   await g.page.waitForFunction(() => window.__msgs.some((m) => m.type === 'brb:score'));
-  assert.deepEqual((await g.msgs('brb:score')).map((m) => [m.score, m.label]), [[1, 'fixes:1']], 'the label the progress page reads as "1 step fix"');
-  assert.deepEqual((await g.msgs('brb:gameover')).map((m) => m.score), [1]);
+  assert.deepEqual((await g.msgs('brb:score')).map((m) => [m.score, m.label]), [[0, 'fixes:1']], 'the label the progress page reads as "1 step fix"');
+  assert.deepEqual((await g.msgs('brb:gameover')).map((m) => m.score), [0]);
   await g.ctx.close();
 });
 
@@ -349,6 +350,8 @@ for (const [width, height] of [[390, 844], [320, 568]])
           await g.page.waitForTimeout(200);
           assert.deepEqual(await overflow(g), [], `the New activity menu${dark ? ' dark' : ''}`);
           await g.frame.getByRole('menuitem').first().click();
+          // (a new activity is kept once something about it changes: audit 4)
+          await g.frame.getByRole('textbox', { name: /title/i }).fill('Long division test');
           await g.frame.locator('.back-list').click();
           await g.frame.getByRole('button', { name: /^More/ }).first().click();
           await g.frame.getByRole('menuitem', { name: 'Open' }).click();

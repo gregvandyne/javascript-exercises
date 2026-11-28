@@ -638,6 +638,8 @@
 "ui.ed.shared":"共有ずみ",
 "ui.ed.share":"共有",
 "ui.ed.save":"保存",
+"ui.ed.widened":"{x}：{a}から{b}までに広げました。入力した問題が入ります。新しい問題もこの範囲で作ります。",
+"ui.ed.atLimit":"{x}：{n}けたまで（{max}まで）です。",
 "ui.ed.saveHint":"Oombaに保存します。生徒に渡すには「共有」を開きます。",
 "ui.ed.savedHint":"Oombaに保存しました。生徒に渡すには「共有」を開きます。",
 "ui.ed.settings":"設定",

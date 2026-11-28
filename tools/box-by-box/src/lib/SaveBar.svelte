@@ -1,8 +1,9 @@
 <script lang="ts">
 	// Save on the activity's own form: the same save as Share's (the problems and support on Oomba, for a link and a class
 	// code), so a teacher doesn't have to open Share to save. Share then shows the link. School staff can assign it to a
-	// class from here once it is saved; opened from an Assign button (assignFirst), Save is "Save and assign". An
-	// activity students may already have asks first (saveMindful: for everyone, or as a copy).
+	// class from here once it is saved; opened from an Assign button (assignFirst), "Save and assign" comes first, with a
+	// plain Save beside it (audit 4: a fresh editor had no way to save without assigning). An activity students may
+	// already have asks first (saveMindful: for everyone, or as a copy).
 	import { t } from './i18n';
 	import { Check, GraduationCap, Save } from '@lucide/svelte';
 	import { isShared, saveMindful, type Activity } from './activities.svelte';
@@ -20,7 +21,7 @@
 	const staff = canAssign();
 	const andAssign = staff && assignFirst();
 
-	async function save() {
+	async function save(thenAssign = andAssign) {
 		if (saving || saved) return;
 		saving = true;
 		problem = '';
@@ -32,7 +33,7 @@
 			show({ name: 'home' });
 			go({ name: 'edit', id: r.copy.id });
 		}
-		if (!r.error && id && andAssign) toClass(id);
+		if (!r.error && id && thenAssign) toClass(id);
 	}
 	function toClass(id = activity.setId) {
 		if (id && !assign(id)) problem = t('ui.assign.tapAgain');
@@ -43,9 +44,14 @@
 	{#if noSave}
 		<p class="note">{noSave}</p>
 	{:else}
-		<button type="button" class="btn-primary" disabled={saving || saved} onclick={save}>
+		<button type="button" class="btn-primary" disabled={saving || saved} onclick={() => save()}>
 			{#if saved}<Check size={16} aria-hidden="true" /> {t('ui.share.saved')}{:else if saving}{t('ui.saving')}{:else}<Save size={16} aria-hidden="true" /> {andAssign ? t('ui.ed.saveAssign') : activity.setId ? t('ui.share.saveChanges') : t('ui.ed.save')}{/if}
 		</button>
+		{#if andAssign && !saved}
+			<button type="button" class="btn-ghost save-only" disabled={saving} onclick={() => save(false)}
+				><Save size={16} aria-hidden="true" /> {activity.setId ? t('ui.share.saveChanges') : t('ui.ed.save')}</button
+			>
+		{/if}
 		{#if staff && saved}
 			<button type="button" class="btn-ghost" onclick={() => toClass()}><GraduationCap size={16} aria-hidden="true" /> {t('ui.share.assign')}</button>
 		{/if}

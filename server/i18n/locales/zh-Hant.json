@@ -7289,7 +7289,8 @@
       "toReviewList": "待批閱的答案：",
       "reviewLink": "{title}（{count}）",
       "quizTitle": "測驗成績：答對 {pct}%",
-      "quizOverall": "所有教案的測驗得分：{pct}%"
+      "quizOverall": "所有教案的測驗得分：{pct}%",
+      "emptyWhat": "指派了作業、學生加入班級後，每位學生在這裡都會有一列：每項作業完成了幾個步驟、分數，以及等你閱讀的答案。"
     },
     "lesson": {
       "finished": "{total} 位學生中有 {done} 位完成",
@@ -7315,7 +7316,8 @@
       "helped": "老師顯示了答案",
       "stepFixes": "{count, plural, other {改正了 # 個步驟}}",
       "sampleName": "範例學生",
-      "sampleNote": "範例：學生開始後，每位學生的那一列會像這樣。算術實驗室還會顯示過程中做錯又改正的步驟數。"
+      "sampleNote": "範例：學生開始後，每位學生的那一列會像這樣。算術實驗室還會顯示過程中做錯又改正的步驟數。",
+      "partDone": "已作答 {done} / {total}"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",

@@ -679,6 +679,8 @@
 "ui.ed.shared":"Condivisa",
 "ui.ed.share":"Condividi",
 "ui.ed.save":"Salva",
+"ui.ed.widened":"{x}: ora da {a} a {b}, così il tuo problema ci sta. Anche i nuovi problemi usano questo intervallo.",
+"ui.ed.atLimit":"{x}: al massimo {n} cifre (fino a {max}).",
 "ui.ed.saveHint":"Salva la tua attività su Oomba. Apri Condividi per darla agli studenti.",
 "ui.ed.savedHint":"Salvata su Oomba. Apri Condividi per darla agli studenti.",
 "ui.ed.settings":"Impostazioni",

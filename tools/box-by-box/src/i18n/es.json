@@ -679,6 +679,8 @@
 "ui.ed.shared":"Compartida",
 "ui.ed.share":"Compartir",
 "ui.ed.save":"Guardar",
+"ui.ed.widened":"{x}: ahora de {a} a {b}, para que tu problema quepa. Los problemas nuevos también usan este rango.",
+"ui.ed.atLimit":"{x}: como máximo {n} cifras (hasta {max}).",
 "ui.ed.saveHint":"Guarda tu actividad en Oomba. Abre Compartir para dársela a tus alumnos.",
 "ui.ed.savedHint":"Guardada en Oomba. Abre Compartir para dársela a tus alumnos.",
 "ui.ed.settings":"Ajustes",

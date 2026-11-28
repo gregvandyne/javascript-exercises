@@ -7290,7 +7290,8 @@
       "toReviewList": "Antworten zu prüfen:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz-Ergebnis: {pct} % richtig",
-      "quizOverall": "Quiz-Punkte über alle Unterrichtspläne: {pct} %"
+      "quizOverall": "Quiz-Punkte über alle Unterrichtspläne: {pct} %",
+      "emptyWhat": "Sobald etwas zugewiesen ist und Schüler der Klasse beitreten, bekommt jeder Schüler hier eine Zeile: wie viele Schritte jeder Aufgabe er geschafft hat, seine Punkte und Antworten, die du noch lesen musst."
     },
     "lesson": {
       "finished": "{done} von {total} Schülern fertig",
@@ -7316,7 +7317,8 @@
       "helped": "Lehrkraft hat eine Antwort gezeigt",
       "stepFixes": "{count, plural, one {# Schritt verbessert} other {# Schritte verbessert}}",
       "sampleName": "Beispielschüler",
-      "sampleNote": "Ein Beispiel: So sieht die Zeile jedes Schülers aus, sobald er anfängt. Das Rechenlabor zeigt dazu, wie viele Schritte falsch waren und unterwegs verbessert wurden."
+      "sampleNote": "Ein Beispiel: So sieht die Zeile jedes Schülers aus, sobald er anfängt. Das Rechenlabor zeigt dazu, wie viele Schritte falsch waren und unterwegs verbessert wurden.",
+      "partDone": "{done} von {total} beantwortet"
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",
