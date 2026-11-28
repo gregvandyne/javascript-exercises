@@ -10617,6 +10617,10 @@
         "need": "A teaching companion (AI chat)",
         "oomba": "One chat across the app that knows the page you are on, Figures and the Manipulatives included. It finds games by grade, standard and time, and books by reading level, reads your lesson plans and pictures, and searches the web with its sources shown. It changes your dashboard only when you confirm, with Undo. Voice input shows your words as you speak, and the audio is not kept. Your school can set its limits."
       },
+      "grammar": {
+        "need": "Grammar and writing practice",
+        "oomba": "Grammar Lab: grammar, punctuation and writing skills from kindergarten to grade 12, one topic at a time, with mastery levels, assigned to a class and followed on a class report. Free."
+      },
       "videos": {
         "need": "Short videos of each tool",
         "oomba": "One-minute videos with captions, recorded in the real app."
@@ -10697,7 +10701,7 @@
         },
         "classes": {
           "need": "Assign to a class, with class reports",
-          "oomba": "Not yet. Each student sees their own progress in every unit and can look back at a mastered topic's questions."
+          "oomba": "Yes. Assign a unit, a topic or its proofreading room to a class, a group or one student, with a due day. The class report shows each student's topics mastered (counts, never a ranking), and you can set where each student starts."
         },
         "free": {
           "need": "A free option",

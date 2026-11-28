@@ -44,7 +44,7 @@ async function withGrammarLab(on, users, fn) {
 const PRICE = /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\bper (?:month|year|seat|student)\b|\/(?:month|mo|year|yr)\b|\bpric(?:e|es|ing)\b/i;
 const en = flatten(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/i18n/locales/en.json'), 'utf8')));
 const compareKeys = Object.keys(en).filter(k => k.startsWith('compare.'));
-const rows = () => C.ROWS.filter(r => r.id !== 'videos' || readyVideos().length);
+const rows = () => C.ROWS.filter(r => (r.id !== 'videos' || readyVideos().length) && (r.id !== 'grammar' || C.grammarCompareOn()));
 
 test('/compare: 200, indexable, one H1, canonical, breadcrumbs under Teachers, in the sitemap, every language at its own address', async () => {
   const r = await get('/compare');
@@ -251,6 +251,8 @@ test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedI
       const page = (await get('/compare')).text; const h = main(page);
       const sec = /<section class="lp-sec" id="grammar"[\s\S]*?<\/section>/.exec(h);
       assert.ok(sec, 'the grammar section');
+      // The main table has Grammar Lab's own row too (only while it is open to every visitor).
+      assert.ok(text(h.slice(0, sec.index)).includes('Grammar and writing practice'), 'the main table\'s grammar row');
       const heads = [...sec[0].matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
       assert.deepEqual(heads, ['Classroom need', 'Grammar Lab', 'NoRedInk']);
       assert.ok(text(sec[0]).includes(`Grammar Lab is Oomba's grammar course for grades K-2, 3-5, 6-8 and 9-12: ${facts.topics} topics in ${facts.units} units.`));

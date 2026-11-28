@@ -9205,6 +9205,10 @@
         "need": "Un compagno per insegnare (chat con IA)",
         "oomba": "Una sola chat in tutta l’app che sa in quale pagina si trova, anche in Figure e nei materiali manipolativi. Trova giochi per classe, standard e durata, e libri per livello di lettura, legge i suoi piani di lezione e le immagini, e cerca sul web mostrando le fonti. Cambia la sua bacheca solo quando lei conferma, con Annulla. Con l’input vocale le parole compaiono mentre parla, e l’audio non viene conservato. La sua scuola può fissare i limiti."
       },
+      "grammar": {
+        "need": "Esercitarsi in grammatica e scrittura",
+        "oomba": "Grammar Lab: grammatica, punteggiatura e abilità di scrittura dalla scuola dell’infanzia alla quinta superiore, un argomento alla volta, con livelli di padronanza, assegnato a una classe e seguito in un report di classe. Gratis."
+      },
       "videos": {
         "need": "Brevi video di ogni strumento",
         "oomba": "Video di un minuto con sottotitoli, registrati nell’app vera."
@@ -9285,7 +9289,7 @@
         },
         "classes": {
           "need": "Assegnare a una classe, con report di classe",
-          "oomba": "Non ancora. Ogni studente vede i propri progressi in ogni unità e può rivedere le domande di un argomento padroneggiato."
+          "oomba": "Sì. Assegna un’unità, un argomento o la sua stanza di correzione a una classe, un gruppo o uno studente, con un giorno di consegna. Il report di classe mostra gli argomenti padroneggiati da ogni studente (numeri, mai una classifica), e puoi scegliere da dove parte ogni studente."
         },
         "free": {
           "need": "Un'opzione gratuita",

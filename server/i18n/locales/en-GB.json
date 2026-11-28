@@ -622,7 +622,7 @@
         },
         "classes": {
           "need": "Assign to a class, with class reports",
-          "oomba": "Not yet. Each student sees their own progress in every unit and can look back at a mastered topic's questions."
+          "oomba": "Yes. Assign a unit, a topic or its proofreading room to a class, a group or one student, with a due day. The class report shows each student's topics mastered (counts, never a ranking), and you can set where each student starts."
         },
         "free": {
           "need": "A free option",

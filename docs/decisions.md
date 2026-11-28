@@ -16770,3 +16770,17 @@ display only (the data, the popularity sorts and the admin tables stay):
   with it, so they go too.
 Unused keys dropped: cards.plays, cards.new, cards.noRatings, cards.starsLabel, game.stats.ratings, noRatings, plays,
 likes, js.game.rated. Tests: tests/unit/no-counts.test.js.
+
+## Grammar Lab live, and in the main comparison (28 Nov 2026)
+
+Owner: "Go live with the grammar lab and add it to the comparisons." On the live site GRAMMAR_LAB=1 with
+GRAMMAR_LAB_USERS='*' (every visitor), so `grammarCompareOn()` is true and the NoRedInk section shows on /compare and
+"/" already.
+
+- **/compare's main table** (Oomba beside Kahoot!, Classroomscreen, Brainingcamp) gets a row, "Grammar and writing
+  practice" (`ROWS` id `grammar`), shown only while `grammarCompareOn()`. The others' cells are Not stated (no claim
+  about them); Oomba's detail describes Grammar Lab.
+- **The NoRedInk section's "Assign to a class, with class reports"** is now Yes for Grammar Lab: since #677 a teacher
+  assigns a unit, a topic or its proofreading room to a class, a group or one student with a due day, the class report
+  shows topics mastered (counts, never a ranking), and placement sets where each student starts.
+- Strings in all 13 languages; tests/unit/compare.test.js checks the row appears with Grammar Lab open.
