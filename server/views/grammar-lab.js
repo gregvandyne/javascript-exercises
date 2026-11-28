@@ -278,7 +278,7 @@ export function practicePage({ t, p, tp, data, guest, listen = false }) {
       <p class="gl-flag"><button type="button" class="linkish" id="gl-flag">${t('grammarLab.practice.flag')}</button></p>
     </section>
 
-    <div class="gl-flash" id="gl-correct" hidden role="status"><div><span class="gl-check" aria-hidden="true">✓</span><p id="gl-correct-t">${t('grammarLab.practice.correct')}</p><p class="gl-flash-note" id="gl-correct-note" hidden></p></div></div>
+    <div class="gl-flash" id="gl-correct" hidden role="status"><div><span class="gl-check" aria-hidden="true">✓</span><p id="gl-correct-t">${t('grammarLab.practice.correct')}</p><p class="gl-flash-note" id="gl-correct-note" hidden></p><p class="gl-flash-after gl-ex-fix" id="gl-correct-after" hidden${en}><span class="gl-ba gl-ba-after"><span class="gl-ba-sign" aria-hidden="true">✓</span><span class="sr-only">${t('grammarLab.card.after')}</span> <span class="gl-ex-text" id="gl-correct-after-t"></span></span></p></div></div>
 
     <div class="gl-overlay" id="gl-level" hidden role="dialog" aria-modal="true" aria-labelledby="gl-level-h">
       <div class="gl-overlay-card">
@@ -363,7 +363,10 @@ export function reviewPage({ t, p, tp, list }) {
     <p class="gl-crumb"><a href="${unitHref(p)}"${en}>${p.title}</a></p>
     <h1>${t('grammarLab.review.heading')}</h1><p class="muted"${en}>${tp.title}</p>
     ${list.length ? html`<ol class="gl-review">${list.map(r => html`<li class="${r.ok ? 'gl-ok' : 'gl-fixed'}">
-      <p class="gl-ex-text"${en}>${r.italic ? italicIn(r.text, r.italic) : marked(r.text, r.marks, t)}${r.note ? html` <span class="gl-badge"${en}>${r.note}</span>` : ''}</p>
+      ${r.before
+        // a question about a faulty sentence: that sentence struck through with its label, then the sentence fixed
+        ? html`<p class="gl-ex gl-ex-fix gl-review-fix"${en}><span class="gl-ba gl-ba-before"><span class="gl-ba-sign" aria-hidden="true">✗</span><span class="sr-only">${t('grammarLab.card.before')}</span> <span class="gl-ba-text">${r.before}</span></span>${r.note ? html` <span class="gl-badge">${r.note}</span>` : ''}<span class="gl-ba gl-ba-after"><span class="gl-ba-sign" aria-hidden="true">✓</span><span class="sr-only">${t('grammarLab.card.after')}</span> <span class="gl-ex-text">${r.text}</span></span></p>`
+        : html`<p class="gl-ex-text"${en}>${r.italic ? italicIn(r.text, r.italic) : marked(r.text, r.marks, t)}${r.note ? html` <span class="gl-badge"${en}>${r.note}</span>` : ''}</p>`}
       <p class="gl-review-s">${t(r.ok ? 'grammarLab.review.firstTry' : 'grammarLab.review.fixed')}</p></li>`)}</ol>`
       : html`<p>${t('grammarLab.review.none')}</p>`}
   </div>`;
