@@ -5316,6 +5316,149 @@
       "line1": "Waar werken we aan?",
       "line2": "Waar beginnen we?"
     },
+    "companion-build": {
+      "reply": {
+        "ask": "Drie snelle tikken en ik laat je een plan zien. Er wordt niets gebouwd tot jij het zegt.",
+        "plan": "Hier is het plan. Het is nog niet gebouwd: tik op Bouw het als het klopt.",
+        "building": "Ik bouw het nu. De kaart hieronder laat elke stap zien zodra die gebeurt.",
+        "change": "Ik heb je woorden precies zo naar de Builder gestuurd als je ze schreef. Versie {n} wordt gebouwd op de kaart hieronder, en versie {prev} werkt nog terwijl je wacht.",
+        "lesson": "Ik maak nu het lesplan. De kaart hieronder vult zich zodra het klaar is.",
+        "noSchool": "Een lesplan wordt bewaard bij de lessen van een school, en dit account heeft nog geen school op Oomba, dus er is niets gemaakt."
+      },
+      "q": {
+        "kind": "Wat zal ik maken?",
+        "use": "Waar spelen ze?",
+        "help": "Hoeveel hulp?"
+      },
+      "opt": {
+        "game": {
+          "label": "Een spel voor je leerlingen.",
+          "text": "Elke leerling speelt op een apparaat en krijgt meteen feedback. Goed om te oefenen."
+        },
+        "lesson": {
+          "label": "Een lesplan voor jou.",
+          "text": "Stappen om de les te geven: een opwarmer, uitleg, oefenen en een exitticket."
+        },
+        "devices": {
+          "label": "Op hun eigen apparaat.",
+          "text": "Elke leerling speelt in zijn eigen tempo."
+        },
+        "board": {
+          "label": "Op het bord.",
+          "text": "De hele klas speelt samen op één scherm."
+        },
+        "show": {
+          "label": "Eerst voordoen.",
+          "text": "Een uitgewerkt voorbeeld, daarna proberen ze het zelf."
+        },
+        "hints": {
+          "label": "Hints als ze vastzitten.",
+          "text": "Een tip na een foute poging, nooit het antwoord."
+        },
+        "own": {
+          "label": "Helemaal zelf.",
+          "text": "Geen hints, zoals een korte toets."
+        }
+      },
+      "showPlan": "Laat het plan zien",
+      "planKind": "Spelplan",
+      "grade": "Groep {g}",
+      "gradeK": "Kleuters",
+      "short": {
+        "devices": "Op hun apparaten",
+        "board": "Op het bord",
+        "show": "Eerst voordoen",
+        "hints": "Hints als ze vastzitten",
+        "own": "Helemaal zelf"
+      },
+      "does": {
+        "devices": "Elke leerling speelt op zijn eigen apparaat, in zijn eigen tempo.",
+        "board": "De hele klas speelt samen op het bord.",
+        "topic": "Ze oefenen {topic}.",
+        "show": "Ze zien eerst een uitgewerkt voorbeeld en proberen er dan zelf een.",
+        "hints": "Na een foute poging krijgen ze een tip, nooit het antwoord.",
+        "own": "Geen hints: het werkt als een korte toets.",
+        "feedback": "Elk antwoord krijgt meteen feedback.",
+        "boardRun": "Jij leidt elke ronde vanaf het bord.",
+        "fresh": "Elke keer dat het gespeeld wordt nieuwe opgaven."
+      },
+      "tell": "Wat ik de Builder vertel",
+      "build": "Bouw het",
+      "change": "Wijzigen",
+      "uses": "Gebruikt 1 van de bouwbeurten van vandaag (nog {left})",
+      "noneLeft": "Geen bouwbeurten meer vandaag. Morgen krijg je nieuwe.",
+      "steps": {
+        "safe": "Je bericht op veiligheid gecontroleerd",
+        "plan": "Het spel gepland",
+        "write": "Het spel wordt geschreven",
+        "play": "Testen op een telefoon, een tablet en een laptop",
+        "scan": "Veiligheidscontrole"
+      },
+      "usually": "Meestal 1-2 minuten. Je kunt verder chatten of deze pagina sluiten.",
+      "vBuilding": "Versie {n} wordt gebouwd…",
+      "vWorks": "Versie {n} werkt nog terwijl je wacht.",
+      "tap": "Tik om te spelen",
+      "previewOf": "Voorbeeld van {title}",
+      "line": {
+        "version": "Versie {n}",
+        "sizes": "{count, plural, one {getest op # schermgrootte} other {getest op # schermgroottes}}",
+        "played": "tot het einde gespeeld",
+        "playFail": "de test vond een probleem",
+        "noPlay": "nog niet getest",
+        "scanPass": "veiligheidscontrole geslaagd",
+        "scanFail": "de veiligheidscontrole vond iets om te verbeteren"
+      },
+      "say": {
+        "devices": "Ik heb het gespeeld op {devices}, elke ronde werkte en de veiligheidscontrole is geslaagd.",
+        "played": "Ik heb het tot het einde gespeeld, elke ronde werkte en de veiligheidscontrole is geslaagd.",
+        "students": "Leerlingen zien het pas als je het toewijst of live start.",
+        "playFail": "Ik heb het gespeeld en {why}, dus het is nog niet klaar voor je leerlingen. Vertel me wat ik moet veranderen, of tik op Wijzigen.",
+        "noEnd": "het kwam niet tot het einde",
+        "scanFail": "De veiligheidscontrole vond iets om te verbeteren, dus het is nog niet klaar voor je leerlingen. Vertel me wat ik moet veranderen, of tik op Wijzigen.",
+        "noPlay": "De veiligheidscontrole is geslaagd, maar deze server kon het niet testen, dus ik heb het nog niet gespeeld.",
+        "refused": "De veiligheidscontrole van de Builder heeft dat bericht tegengehouden, dus er is niets gebouwd. {why}",
+        "nothing": "De Builder heeft deze keer geen nieuwe versie bewaard, dus er is niets veranderd. Probeer het op een andere manier te zeggen."
+      },
+      "dev": {
+        "phone": "een telefoon",
+        "tablet": "een tablet",
+        "laptop": "een laptop"
+      },
+      "changed": "Wat er veranderd is",
+      "btn": {
+        "play": "Spelen",
+        "change": "Wijzigen",
+        "assign": "Toewijzen",
+        "host": "Live starten",
+        "big": "Groot openen"
+      },
+      "assignText": "Wijs ‘{title}’ toe aan mijn klas.",
+      "changeText": "In ‘{title}’: ",
+      "fail": {
+        "limit": "Geen bouwbeurten meer vandaag, dus er is niets gebouwd. Morgen krijg je nieuwe.",
+        "resting": "De Builder rust nu, dus er is niets gebouwd. Probeer het later nog eens.",
+        "tooMany": "Er lopen al twee bouwbeurten. Probeer het opnieuw als er een klaar is.",
+        "disabled": "Bouwen staat uit voor dit account, dus er is niets gebouwd.",
+        "restarting": "Oomba werd opnieuw gestart, dus er is niets gebouwd. Probeer het over een minuut nog eens.",
+        "gone": "Dat spel is er niet meer, dus er is niets gebouwd.",
+        "notAllowed": "Dit account kan nu niet bouwen in de chat, dus er is niets gebouwd.",
+        "restart": "Oomba werd opnieuw gestart tijdens het bouwen. Probeer het nog eens.",
+        "error": "Er ging iets mis tijdens het bouwen, dus er is niets nieuws bewaard."
+      },
+      "err": {
+        "chatBusy": "Oomba is nog aan het antwoorden. Probeer het zo nog eens.",
+        "cap": "Er wordt nu veel gemaakt. Probeer het opnieuw als een paar kaarten klaar zijn.",
+        "noBuilds": "Geen bouwbeurten meer vandaag. Morgen krijg je nieuwe.",
+        "needPick": "Kies bij elke vraag een antwoord.",
+        "buildOff": "Bouwen in de chat staat uit voor dit account.",
+        "notFound": "Die kaart is er niet meer.",
+        "other": "Dat lukte niet. Probeer het nog eens."
+      },
+      "sent": "Naar de Builder gestuurd: die bouwt het op de kaart hieronder.",
+      "redone": "Gewijzigd: de nieuwe kaart staat hieronder.",
+      "answered": "Gekozen: {list}",
+      "retry": "Opnieuw proberen"
+    },
     "storybook-setup": {
       "words": "{count, plural, one {# woord} other {# woorden}}",
       "remove": "Weghalen",

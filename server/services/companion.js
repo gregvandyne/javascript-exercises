@@ -76,6 +76,7 @@ import * as CM from './companion-make.js';
 import * as LD from './lesson-draft.js';
 import * as AC from './companion-actions/index.js';
 import * as J from './oomba-jobs.js';
+import * as CB from './companion-build.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -1005,7 +1006,9 @@ export function latestWeek(u, classId, row = chatRow(u)) {
 export function toolsFor(page, u = null) {
   const base = page.type === 'homeroom' ? [...TOOLS, ...PLAN_TOOLS] : PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS];
   // The book maker's tools: teachers only (storybook.canMake), checked again when each one runs.
-  return u && SB.canMake(u) ? [...base, ...BOOK_TOOLS()] : base;
+  const all = u && SB.canMake(u) ? [...base, ...BOOK_TOOLS()] : base;
+  // The Builder in the chat (companion-build.js): startBuild builds here, and changeGame changes a game made here.
+  return u ? CB.toolsFor(u, all) : all;
 }
 /** The book tools (companion-book.js), built when asked for. */
 export const BOOK_TOOL_NAMES = Object.freeze(['makeBook', 'findMyBooks', 'changeBook', 'redrawPicture', 'renameBook', 'duplicateBook', 'deleteBook', 'repaintBook']);
@@ -1086,6 +1089,7 @@ export function runTool(name, input, ctx) {
       return { result: { proposalId: r.proposal.id, waitingForTeacher: true, changes: r.proposal.lines.map(l => ({ op: l.op, type: l.type, settings: l.settings })), notes: r.notes }, step: { k: 'propose', n: r.proposal.ops.length } };
     }
     case 'startBuild': {
+      if (CB.on(u)) return CB.startTool(i, ctx);
       const r = handoffOf(u, ctx.page, i);
       if (r.error) return { result: { error: r.error }, step: { k: 'briefNo' } };
       ctx.out.handoff = r.handoff;
@@ -1407,6 +1411,7 @@ export function runTool(name, input, ctx) {
       return { result: { made: true, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} The worksheet is made with your answer and the card under it opens it. Say what is on it from landed, and each reason under tellTeacher in one line.` }, step: { k: 'sheetMade', n: r.v.landed.filter(x => x.now).length } };
     }
     case 'makeLesson': return lessonTool(i, ctx);
+    case 'changeGame': return CB.changeTool(i, ctx);
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
 }
@@ -1858,7 +1863,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const t0 = Date.now();
   // Where the time goes (the owner's audit: 5 to 60 seconds): model calls and their time, tool time, prompt sizes.
   const perf = { calls: 0, modelMs: 0, toolMs: 0, sys: 0, tools: 0 };
-  const sys = system(user, lang, page, settings);
+  const sys = system(user, lang, page, settings) + CB.systemExtra(user);
   perf.sys = sys.length; perf.tools = JSON.stringify(tools()).length;
   let res = null, cutOff = false, cutShort = false;
   try {
@@ -1895,7 +1900,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       const runOne = async tu => {
         try {
           if (hooks.tool) await hooks.tool(tu.name, tu.input);
-          return TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? await runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
+          return TOOL_NAMES.includes(tu.name) || CB.TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? await runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
         } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); return { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
       };
       // Read-only calls next to each other run side by side; a tool that writes or makes a card runs alone, in order.
@@ -1930,14 +1935,16 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
   let reply = guardReply(cleanText(user, fin.text, names), ctx);
+  // A build card or a change sent to a game's Builder: the app's own words say what happens (nothing is built yet).
+  if (ctx.out.buildReply) reply = ctx.out.buildReply;
   // A reply cut off twice may stop mid-sentence while earlier steps did land: the app's own words say where the truth is.
   if (cutShort) reply = `${reply.trim()}${reply.trim() ? '\n\n' : ''}My answer was cut short. The cards below show exactly what was done; anything not on them was not done.`;
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.action && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made && !(ctx.out.jobs || []).length) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.action && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made && !ctx.out.build && !(ctx.out.jobs || []).length) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, perf, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.assign ? { assign: ctx.out.assign } : {}), ...(ctx.out.action ? { action: ctx.out.action } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
-    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}), ...(ctx.out.who ? { who: ctx.out.who } : {}) };
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}), ...(ctx.out.who ? { who: ctx.out.who } : {}), ...(ctx.out.build ? { build: ctx.out.build } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type, calls: perf.calls, modelMs: perf.modelMs, toolMs: perf.toolMs, sys: perf.sys, tools: perf.tools });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;

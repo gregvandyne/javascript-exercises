@@ -28,6 +28,7 @@ import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
 import { greeting } from '/js/companion-greet.js';
 import { formatText, copyText } from '/js/oomba-text.js';
+import * as CBD from '/js/companion-build.js';
 
 const raw = document.body.dataset.oc;
 const PAGE = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
@@ -121,6 +122,7 @@ function start() {
     onSync: c => { if (S.sent) { S.sent = false; setFile(null); } drawBookMode(c); autoCheck(c); via('onSync', c); },
   });
   ref.chat = chat;
+  CBD.setChat(chat);   // the Builder in the chat (public/js/companion-build.js)
   BUS.setChat(chat);
   BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
   const root = chat.root;
@@ -389,6 +391,7 @@ function start() {
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
     if (n.made) parts.push(madeHtml(n.made));
     if (n.jobs && n.jobs.length) parts.push(jobsHtml(x, n.jobs));
+    if (n.build) parts.push(CBD.cardHtml(x, n.build));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
@@ -438,6 +441,7 @@ function start() {
   const JOB_FAILS = ['budgetDay', 'budgetMonth', 'ai', 'gone', 'restart', 'notAllowed'];
   function jobsHtml(x, list) {
     return `<div class="oc-jobs">${list.map(j => {
+      if (j.kind === 'game') return CBD.jobHtml(x, j);
       if (j.state === 'done' && j.made) return madeHtml(j.made);
       const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[j.kind] || '✨';
       const head = `<h4>${ic(ico, 18)} <span dir="auto">${esc(j.title || L(`job.kind.${j.kind}`))}</span></h4>`;
@@ -653,6 +657,7 @@ function start() {
     catch { go.disabled = false; }
   });
   async function onAct(act, turn, btn) {
+    if (/^build[A-Z]/.test(act)) return CBD.onAct(act, turn, btn);
     if (!turn) return null;
     if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
     if (act === 'bookOther') {

@@ -5316,6 +5316,149 @@
       "line1": "Woran arbeiten wir?",
       "line2": "Womit fangen wir an?"
     },
+    "companion-build": {
+      "reply": {
+        "ask": "Drei kurze Antworten, dann zeige ich dir einen Plan. Gebaut wird erst, wenn du es sagst.",
+        "plan": "Hier ist der Plan. Noch ist nichts gebaut: Tippe auf Bauen, wenn er passt.",
+        "building": "Ich baue es jetzt. Die Karte unten zeigt jeden Schritt, sobald er passiert.",
+        "change": "Ich habe deine Worte genau so an den Builder geschickt, wie du sie geschrieben hast. Version {n} entsteht auf der Karte unten, und Version {prev} funktioniert weiter, solange du wartest.",
+        "lesson": "Ich erstelle jetzt den Unterrichtsplan. Die Karte unten füllt sich, sobald er fertig ist.",
+        "noSchool": "Ein Unterrichtsplan wird bei den Stunden einer Schule gespeichert, und dieses Konto hat noch keine Schule auf Oomba. Deshalb wurde nichts erstellt."
+      },
+      "q": {
+        "kind": "Was soll ich erstellen?",
+        "use": "Wo wird gespielt?",
+        "help": "Wie viel Hilfe?"
+      },
+      "opt": {
+        "game": {
+          "label": "Ein Spiel für die Klasse.",
+          "text": "Alle spielen auf einem Gerät und bekommen sofort Rückmeldung. Gut zum Üben."
+        },
+        "lesson": {
+          "label": "Ein Unterrichtsplan für dich.",
+          "text": "Schritte für deine Stunde: ein Einstieg, die Erklärung, Übung und ein Abschlussticket."
+        },
+        "devices": {
+          "label": "Auf eigenen Geräten.",
+          "text": "Alle spielen in ihrem eigenen Tempo."
+        },
+        "board": {
+          "label": "An der Tafel.",
+          "text": "Die ganze Klasse spielt zusammen an einem Bildschirm."
+        },
+        "show": {
+          "label": "Erst zeigen.",
+          "text": "Ein vorgerechnetes Beispiel, dann probieren sie selbst."
+        },
+        "hints": {
+          "label": "Tipps bei Bedarf.",
+          "text": "Ein Tipp nach einem falschen Versuch, nie die Lösung."
+        },
+        "own": {
+          "label": "Ganz allein.",
+          "text": "Keine Tipps, wie eine kurze Lernkontrolle."
+        }
+      },
+      "showPlan": "Zeig mir den Plan",
+      "planKind": "Spielplan",
+      "grade": "Klasse {g}",
+      "gradeK": "Vorschule",
+      "short": {
+        "devices": "Auf ihren Geräten",
+        "board": "An der Tafel",
+        "show": "Erst zeigen",
+        "hints": "Tipps bei Bedarf",
+        "own": "Ganz allein"
+      },
+      "does": {
+        "devices": "Alle spielen auf ihrem eigenen Gerät, in ihrem eigenen Tempo.",
+        "board": "Die ganze Klasse spielt zusammen an der Tafel.",
+        "topic": "Sie üben {topic}.",
+        "show": "Sie sehen zuerst ein vorgerechnetes Beispiel und probieren dann selbst eins.",
+        "hints": "Nach einem falschen Versuch bekommen sie einen Tipp, nie die Lösung.",
+        "own": "Keine Tipps: Es funktioniert wie eine kurze Lernkontrolle.",
+        "feedback": "Jede Antwort bekommt sofort Rückmeldung.",
+        "boardRun": "Du leitest jede Runde an der Tafel.",
+        "fresh": "Bei jedem Spiel gibt es neue Aufgaben."
+      },
+      "tell": "Was ich dem Builder sage",
+      "build": "Bauen",
+      "change": "Ändern",
+      "uses": "Verbraucht 1 der heutigen Bauvorgänge (noch {left})",
+      "noneLeft": "Heute sind keine Bauvorgänge mehr übrig. Morgen gibt es neue.",
+      "steps": {
+        "safe": "Deine Nachricht auf Sicherheit geprüft",
+        "plan": "Das Spiel geplant",
+        "write": "Das Spiel wird geschrieben",
+        "play": "Test auf Handy, Tablet und Laptop",
+        "scan": "Sicherheitsprüfung"
+      },
+      "usually": "Meist 1-2 Minuten. Du kannst weiter chatten oder diese Seite schließen.",
+      "vBuilding": "Version {n} wird gebaut…",
+      "vWorks": "Version {n} funktioniert weiter, solange du wartest.",
+      "tap": "Zum Spielen tippen",
+      "previewOf": "Vorschau von {title}",
+      "line": {
+        "version": "Version {n}",
+        "sizes": "{count, plural, one {auf # Bildschirmgröße getestet} other {auf # Bildschirmgrößen getestet}}",
+        "played": "bis zum Ende gespielt",
+        "playFail": "der Test hat ein Problem gefunden",
+        "noPlay": "noch nicht getestet",
+        "scanPass": "Sicherheitsprüfung bestanden",
+        "scanFail": "die Sicherheitsprüfung hat etwas zum Beheben gefunden"
+      },
+      "say": {
+        "devices": "Ich habe es auf {devices} gespielt, jede Runde hat funktioniert, und die Sicherheitsprüfung ist bestanden.",
+        "played": "Ich habe es bis zum Ende gespielt, jede Runde hat funktioniert, und die Sicherheitsprüfung ist bestanden.",
+        "students": "Deine Schülerinnen und Schüler sehen es erst, wenn du es zuweist oder live startest.",
+        "playFail": "Ich habe es gespielt, aber {why}. Deshalb ist es noch nicht bereit für die Klasse. Sag mir, was ich ändern soll, oder tippe auf Ändern.",
+        "noEnd": "es kam nicht bis zum Ende",
+        "scanFail": "Die Sicherheitsprüfung hat etwas zum Beheben gefunden, deshalb ist es noch nicht bereit für die Klasse. Sag mir, was ich ändern soll, oder tippe auf Ändern.",
+        "noPlay": "Die Sicherheitsprüfung ist bestanden, aber dieser Server konnte es nicht testen. Ich habe es also noch nicht gespielt.",
+        "refused": "Die Sicherheitsprüfung des Builders hat diese Nachricht gestoppt, deshalb wurde nichts gebaut. {why}",
+        "nothing": "Der Builder hat diesmal keine neue Version gespeichert, also hat sich nichts geändert. Versuch es mit anderen Worten."
+      },
+      "dev": {
+        "phone": "einem Handy",
+        "tablet": "einem Tablet",
+        "laptop": "einem Laptop"
+      },
+      "changed": "Was sich geändert hat",
+      "btn": {
+        "play": "Spielen",
+        "change": "Ändern",
+        "assign": "Zuweisen",
+        "host": "Live starten",
+        "big": "Groß öffnen"
+      },
+      "assignText": "Weise „{title}“ meiner Klasse zu.",
+      "changeText": "In „{title}“: ",
+      "fail": {
+        "limit": "Heute sind keine Bauvorgänge mehr übrig, deshalb wurde nichts gebaut. Morgen gibt es neue.",
+        "resting": "Der Builder ruht gerade, deshalb wurde nichts gebaut. Versuch es später noch einmal.",
+        "tooMany": "Es laufen schon zwei Bauvorgänge. Versuch es wieder, wenn einer fertig ist.",
+        "disabled": "Bauen ist für dieses Konto ausgeschaltet, deshalb wurde nichts gebaut.",
+        "restarting": "Oomba wurde gerade neu gestartet, deshalb wurde nichts gebaut. Versuch es in einer Minute noch einmal.",
+        "gone": "Dieses Spiel gibt es nicht mehr, deshalb wurde nichts gebaut.",
+        "notAllowed": "Dieses Konto kann gerade nicht im Chat bauen, deshalb wurde nichts gebaut.",
+        "restart": "Oomba wurde beim Bauen neu gestartet. Versuch es noch einmal.",
+        "error": "Beim Bauen ist etwas schiefgegangen, deshalb wurde nichts Neues gespeichert."
+      },
+      "err": {
+        "chatBusy": "Oomba antwortet noch. Versuch es gleich noch einmal.",
+        "cap": "Gerade wird viel erstellt. Versuch es wieder, wenn einige Karten fertig sind.",
+        "noBuilds": "Heute sind keine Bauvorgänge mehr übrig. Morgen gibt es neue.",
+        "needPick": "Wähle bei jeder Frage eine Antwort.",
+        "buildOff": "Bauen im Chat ist für dieses Konto ausgeschaltet.",
+        "notFound": "Diese Karte gibt es nicht mehr.",
+        "other": "Das hat nicht geklappt. Versuch es noch einmal."
+      },
+      "sent": "An den Builder geschickt: Er baut es auf der Karte unten.",
+      "redone": "Geändert: Die neue Karte ist unten.",
+      "answered": "Gewählt: {list}",
+      "retry": "Noch einmal versuchen"
+    },
     "storybook-setup": {
       "words": "{count, plural, one {# Wort} other {# Wörter}}",
       "remove": "Entfernen",

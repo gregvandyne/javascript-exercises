@@ -1,0 +1,55 @@
+/* The Builder in the Oomba chat (public/js/companion-build.js; docs/decisions.md "Builder in the chat (phase 2)"): the
+   ask card's choice cards, the plan card (the .oc-hand look), the game's card while it builds (the .oc-made.oc-job look,
+   the Builder's real steps and a thin bar) and when it is done (the game's own preview, 16:10). Every card stacks at
+   390 px; the preview keeps the game's own colours in dark mode (nothing is tinted or filtered over it). */
+.ocb-ask{gap:10px}
+.ocb-q{margin:0;padding:0;border:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ocb-q legend{padding:0;margin:0 0 6px;font-weight:800;font-size:.95rem}
+.ocb-opts{display:flex;flex-direction:column;gap:6px}
+.ocb-opt{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:8px 10px;border:0;border-radius:12px;background:var(--card-2);color:var(--text);text-align:start;font:inherit;cursor:pointer;box-shadow:inset 0 0 0 2px transparent}
+.ocb-opt:hover{box-shadow:inset 0 0 0 2px var(--line)}
+.ocb-opt:focus-visible{outline:3px solid var(--accent-line);outline-offset:2px}
+.ocb-opt.on{background:color-mix(in srgb,var(--accent-line) 14%,var(--card));box-shadow:inset 0 0 0 2px var(--accent-line)}
+.ocb-oi{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--card)}
+.ocb-ot{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ocb-ot b{font-size:.92rem}
+.ocb-ot span{font-size:.82rem;color:var(--text-2);line-height:1.35;overflow-wrap:anywhere}
+.ocb-ck{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line);color:#fff}
+.ocb-opt.on .ocb-ck{background:var(--accent-line);box-shadow:none}
+.ocb-ask .btn[aria-disabled="true"]{opacity:.6}
+
+.ocb-plan .ocb-does{margin:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:3px;font-size:.86rem;line-height:1.4}
+.ocb-tl{font-weight:800;font-size:.84rem;margin:4px 0 0}
+.ocb-told{width:100%;box-sizing:border-box;min-height:64px;resize:vertical;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--card-2);color:var(--text);font:inherit;font-size:.86rem;line-height:1.4}
+.ocb-told:focus{outline:none;border-color:var(--accent-line)}
+.ocb-uses{margin:0;font-size:.78rem;color:var(--muted);font-weight:700}
+.ocb-plan.done{box-shadow:inset 0 0 0 2px var(--line)}
+
+.ocb-game{gap:8px}
+.ocb-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:.86rem}
+.ocb-s{display:flex;align-items:flex-start;gap:8px;color:var(--muted)}
+.ocb-s.done{color:var(--text)}
+.ocb-s.now{color:var(--text);font-weight:800}
+.ocb-sd{flex:none;width:18px;text-align:center;font-weight:900}
+.ocb-s.done .ocb-sd{color:var(--good,#1F9D63)}
+.ocb-s.now .ocb-sd{color:var(--accent-line);animation:ocpulse 1.4s ease-in-out infinite}
+.ocb-bar{height:4px;border-radius:999px;background:var(--card-2);overflow:hidden;margin-top:2px}
+.ocb-bar i{display:block;height:100%;border-radius:999px;background:var(--accent-line);transition:width .4s ease}
+.ocb-usually{margin:0;font-size:.78rem;color:var(--muted);font-weight:600}
+@media (prefers-reduced-motion:reduce){.ocb-s.now .ocb-sd{animation:none}.ocb-bar i{transition:none}}
+
+.ocb-say{margin:0;font-size:.9rem;line-height:1.45}
+.ocb-pv{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#fff;color-scheme:light;box-shadow:inset 0 0 0 1px var(--line)}
+.ocb-pv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;color-scheme:normal}
+.ocb-pv:not(.playing) iframe{pointer-events:none}
+.ocb-pv:fullscreen{border-radius:0;aspect-ratio:auto}
+.ocb-tap{position:absolute;inset:auto auto 12px 50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 16px;border:0;border-radius:999px;background:rgba(20,24,40,.82);color:#fff;font:inherit;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+[dir="rtl"] .ocb-tap{transform:translateX(50%);inset:auto 50% 12px auto}
+.ocb-tap:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.ocb-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px;text-align:center;background:rgba(20,24,40,.62);color:#fff}
+.ocb-over b{font-size:1rem}
+.ocb-over span{font-size:.82rem;opacity:.92}
+.ocb-line{margin:0;display:flex;gap:6px;align-items:flex-start;font-size:.8rem;color:var(--muted);font-weight:700}
+.ocb-changed{padding:8px 10px;border-radius:10px;background:var(--card-2);font-size:.85rem}
+.ocb-changed ul{margin:4px 0 0;padding-inline-start:18px;display:flex;flex-direction:column;gap:2px}
+.ocb-warn{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--warn,#C77700) 55%,var(--line))}

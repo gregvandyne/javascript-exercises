@@ -378,7 +378,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
   // The greeting uses the name the site already shows this teacher (their own, from the header): the first word.
   if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
-  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
+  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet', 'js.companion-build']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion-build.css?v=${VERSION}">`; }
   // Scripts a feature adds to every page for some people (onEveryPage: Homeroom's "Your class is in Homeroom" prompt).
   if (u && !u.is_guest && !chromeless) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];

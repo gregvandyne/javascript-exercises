@@ -282,7 +282,8 @@ test('nothing that changes a class is ever a job: an assign in the same answer s
   assert.deepEqual(bot.note.jobs.map(j => [j.kind, j.state]), [['sheet', 'done'], ['board', 'done']], 'only the makes are jobs');
   assert.ok(bot.note.assign, 'the assign is a confirm card');
   assert.equal(open(), before, 'nothing assigned before the tap');
-  assert.deepEqual(J.kindIds().sort(), ['board', 'lesson', 'sheet'], 'the only job kinds are makes');
+  // (game: a build in the chat, services/companion-build.js: it makes a new version of the teacher's own game, never changes a class)
+  assert.deepEqual(J.kindIds().sort(), ['board', 'game', 'lesson', 'sheet'], 'the only job kinds are makes');
   assert.throws(() => J.enqueue(x.teacher.id, 'x', null, [{ id: 'j1', kind: 'assign', input: {} }]), /unknown job kind/);
   assert.ok(jobRows(x.teacher).every(r => ['sheet', 'board', 'lesson'].includes(r.kind)));
   await C.allSettled(); CO.reset(x.teacher);
