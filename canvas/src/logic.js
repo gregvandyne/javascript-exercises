@@ -253,25 +253,35 @@ const colTool = tool => {
     solve(p) { const want = digitsOf(op(p.a, p.b)), ans = Array(t.cols(p)).fill(null); want.forEach((d, i) => { ans[i] = d; }); return { ans }; },
     steps(p) {
       const A = digitsOf(p.a), B = digitsOf(p.b), out = [];
+      // 1.6.1: a carry out of the last column (64 + 58: the tens carry 1 into the hundreds) is a step of its own, with
+      // its box, for the new leading column ("Hundreds: just the 1 carried = ?"), as every other column that gets a carry
+      const lead = (n, c) => { if (c > 0 && out.length === n) out.push({ k: 'colCarryOnly', v: { place: PLACE[n] || 'ones', c }, ans: c, col: n }); };
       if (tool === 'digits.add') {
-        let c = 0;
-        for (let i = 0; i < Math.max(A.length, B.length) && out.length < 4; i++) { const x = A[i] || 0, y = B[i] || 0, s = x + y + c; out.push({ k: c ? 'colAddC' : 'colAdd', v: { place: PLACE[i], x, y, c }, ans: s, col: i }); c = s >= 10 ? 1 : 0; }
+        let c = 0; const n = Math.max(A.length, B.length);
+        for (let i = 0; i < n && out.length < 4; i++) { const x = A[i] || 0, y = B[i] || 0, s = x + y + c; out.push({ k: c ? 'colAddC' : 'colAdd', v: { place: PLACE[i], x, y, c }, ans: s, col: i }); c = s >= 10 ? 1 : 0; }
+        lead(n, c);
       } else if (tool === 'digits.sub') {
         let borrow = 0;
         for (let i = 0; i < A.length && out.length < 4; i++) { let x = A[i] - borrow; const y = B[i] || 0; borrow = 0; if (x < y) { out.push({ k: 'colBorrow', v: { place: PLACE[i], x, y } }); x += 10; borrow = 1; } out.push({ k: 'colSub', v: { place: PLACE[i], x, y }, ans: x - y, col: i }); }
+        out.splice(4);
       } else {
         let c = 0;
         for (let i = 0; i < A.length && out.length < 4; i++) { const x = A[i], s = x * p.b + c; out.push({ k: c ? 'colMulC' : 'colMul', v: { place: PLACE[i], x, y: p.b, c }, ans: s, col: i }); c = Math.floor(s / 10); }
+        lead(A.length, c);
       }
-      return [...out.slice(0, 4), { k: 'colWrite', v: {} }, PRESS];
+      return [...out, { k: 'colWrite', v: {} }, PRESS];
+    },
+    /** The column the hints are about: focus (the last mistake) when it is one, else the first box not right yet. */
+    hintCol(p, st, focus) {
+      const cols = columnsOf(tool, p.a, p.b), want = digitsOf(op(p.a, p.b)), ans = Array.isArray(st && st.ans) ? st.ans : [];
+      const at = Number.isInteger(focus) && focus >= 0 && focus < cols.length ? focus : cols.findIndex((c, i) => ans[i] !== want[i]);
+      return at < 0 ? 0 : at;
     },
     /** 1.6.0: three hints with this problem's own digits, for one column: by default the first whose answer box is not
      *  right yet; focus (a column index) when the last answer or step box was wrong there. [a nudge for that column,
      *  its worked line ("Ones: 6 + 8 = 14. Write 4 and carry 1 to the tens."), the next column's worked line]. */
     hints(p, st, focus) {
-      const cols = columnsOf(tool, p.a, p.b), want = digitsOf(op(p.a, p.b)), ans = Array.isArray(st && st.ans) ? st.ans : [];
-      let at = Number.isInteger(focus) && focus >= 0 && focus < cols.length ? focus : cols.findIndex((c, i) => ans[i] !== want[i]);
-      if (at < 0) at = 0;
+      const cols = columnsOf(tool, p.a, p.b), at = t.hintCol(p, st, focus);
       const line = (c, worked) => {
         const v = { place: PLACE[c.i] || 'ones', x: c.x, y: c.y, c: c.c, s: c.s, d: c.s % 10, next: PLACE[c.i + 1] || 'tens' }, top = c.i === cols.length - 1, C = c.c ? 'C' : '';
         if (tool === 'digits.sub') {
@@ -286,6 +296,16 @@ const colTool = tool => {
       };
       return [line(cols[at], false), line(cols[at], true), at + 1 < cols.length ? line(cols[at + 1], true) : { k: 'hLast', v: {} }];
     },
+    /** 1.6.1: every hint of the problem, in the order Hint shows them: the column of the last mistake (else the first
+     *  box not right yet) first, its nudge then its worked line, then the columns after it, then those before it, then
+     *  "check every box". The page shows the first one not shown yet, so each press says something new. */
+    hintsAll(p, st, focus) {
+      const n = columnsOf(tool, p.a, p.b).length, at = t.hintCol(p, st, focus), out = [];
+      for (let k = 0; k < n; k++) { const h2 = t.hints(p, st, (at + k) % n); out.push(h2[0], h2[1]); }
+      return [...out, { k: 'hLast', v: {} }];
+    },
+    /** 1.6.1: the columns that get a carry (adding and multiplying), the new leading column too: 64 + 58 -> [1, 2]. */
+    carriesTo: p => (tool === 'digits.sub' ? [] : columnsOf(tool, p.a, p.b).filter(c => c.out > 0).map(c => c.i + 1)),
     task: p => (p.story ? { text: p.story.replace(/\{a\}/g, String(p.a)).replace(/\{b\}/g, String(p.b)) } : { k: tool === 'digits.add' ? 'addTask' : tool === 'digits.sub' ? 'subTask' : 'mulTask', v: { a: p.a, b: p.b } }),
     ask: () => ({ k: 'digQ', v: {} }),
     gen(rnd, o) {
