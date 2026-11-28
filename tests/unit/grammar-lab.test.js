@@ -190,6 +190,26 @@ test('the card lint: a wrong sentence is never shown as a model; a before with i
   const sec = rest => B.parseSections([{ text: `Section 1, Hooks. Guiding question: Is it strong? Worked passage: ${rest}`, line: 1 }, { text: 'Section 2, Two. Guiding question: Two? Worked passage: "Two." Fine.', line: 2 }, { text: 'Section 3, Three. Guiding question: Three? Worked passage: "Three." Fine.', line: 3 }], [], 'x', { card: { sections: [{ highlight: [0] }, { highlight: [0] }, { highlight: [0] }] } });
   assert.ok(B.checkCardExamples({ id: 'x', items: [], card: sec('"This essay is about homework." This is a weak hook.') }, new Set()).some(p => /no label/.test(p)));
   assert.deepEqual(B.checkCardExamples({ id: 'x', items: [], card: sec('Weak hook: "This essay is about homework." This is a weak hook.') }, new Set()), []);
+  // two complete sentences joined with no comma; a later sentence with a small letter
+  fails(ok, '"The cat slept and the dog played." And joins them.', /two complete sentences with "and"/);
+  fails(ok, '"It rained. however, the game went on." However shows a contrast.', /small letter of "however"/);
+  for (const s of ['Sam and Ana played tag.', 'Both the dog and the cat slept.', 'We stayed home so we could rest.', 'Marked lanes and signs would keep riders safe.', '"Can we go?" asked Ana.', 'Mia stepped forward and faced the dog.'])
+    assert.deepEqual(B.sentenceFaults(s), [], s);
+});
+
+test('the quiz lint: a sentence a question shows as right is right; a sentence shown wrong is wrong only in its own way', () => {
+  const quiz = items => B.checkQuizItems({ id: 'q', format: 'tap', items }, new Set(['sam']));
+  // a tap question's sentence is right as shown, apart from nothing
+  assert.ok(quiz([{ id: 'q-1', text: 'The cat slept and the dog played.', answer: [2] }]).some(p => /q-1: the sentence .* two complete sentences/.test(p)));
+  assert.ok(quiz([{ id: 'q-2', text: 'Yesterday sam ran home.', answer: [0] }]).some(p => /name "sam"/.test(p)));
+  // the right answer of a choice (what "look back" shows) is read in full
+  assert.ok(quiz([{ id: 'q-3', format: 'choice', text: 'It rained. ___, we played.', options: ['however', 'so'], answer: [0], right: 'It rained. however, we played.' }]).some(p => /small letter of "however"/.test(p)));
+  // a capitalization fix keeps its small letters, a comma question its missing commas; their right answers are checked
+  assert.deepEqual(quiz([{ id: 'q-4', format: 'capfix', text: 'we met sam on monday.', answer: [0, 2, 4], right: 'We met Sam on Monday.' }]), []);
+  assert.deepEqual(quiz([{ id: 'q-5', format: 'gaps', text: 'We ate rice beans and corn.', answer: [2, 3], right: 'We ate rice, beans, and corn.' }]), []);
+  assert.ok(quiz([{ id: 'q-6', format: 'capfix', text: 'we met sam.', answer: [0, 2], right: 'We met sam.' }]).some(p => /q-6: the right answer/.test(p)));
+  // a fragment the question asks about, and a word answered on its own, are not sentences
+  assert.deepEqual(quiz([{ id: 'q-7', format: 'choice', plain: true, text: 'When the dog barked.', label: 'Fragment', options: ['Sentence', 'Fragment'], answer: [1], right: 'When the dog barked.' }, { id: 'q-8', format: 'choice', text: '___ raining.', options: ["It's", 'Its'], answer: [0], right: "It's raining." }]), []);
 });
 
 // ------------------------------------------------------------------------------------------------- mastery math

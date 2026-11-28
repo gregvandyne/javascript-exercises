@@ -1026,9 +1026,11 @@ const READERS = [
     if (!m) return null;
     const [, lead, text, list] = m;
     const given = list.split(/,? or |, /).map(s => s.trim());
-    const start = !text.split('___')[0].trim();
+    // a blank that starts the sentence (or a sentence after the first: "It rained. ___, the game went on.") takes
+    // its words with a capital
+    const start = !text.split('___')[0].trim() || /[.!?]['"\u201D]?\s+$/.test(text.split('___')[0]);
     const options = given.map(w => (start ? capFirst(w) : w));
-    const k = options.findIndex(o => o === unq(r.a).replace(/\.$/, ''));
+    const k = options.findIndex(o => o === (start ? capFirst : x => x)(unq(r.a).replace(/\.$/, '')));
     if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${options.join(' / ')} as the sentence needs it`); return false; }
     if (hintLeaks(r.hint, options[k], options.filter((_, i) => i !== k))) problems.push(`${at}: the hint names the answer "${options[k]}" and not the other choices`);
     const [before, after] = text.split('___');
@@ -2249,7 +2251,8 @@ const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && 
 // behind a label that names it (a writing card's "Redundant:", "Weak hook:"). checkCardExamples reads every sentence a
 // card shows as right: a worked example, its more examples, the tip box items, the "after" of every fix, and a writing
 // card's passage sentences. Befores are skipped; afters are checked like any model. It fails the build on:
-//   start     a sentence that starts with a small letter (a quote that continues the card's own sentence is not one)
+//   start     a sentence that starts with a small letter (a quote that continues the card's own sentence is not one),
+//             or a later sentence of the same text that does ("It rained. however, ...")
 //   i         the word I written as a small i
 //   end       a sentence standing on its own with no end mark (a title or phrase the note goes on about is not one)
 //   date      a day of the week or a month in small letters (not may, march or august, which are everyday words too)
@@ -2263,6 +2266,8 @@ const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && 
 //             preposition and a comma): a model that opens with a preposition and has no comma
 //   series    on a topic that teaches commas in a series (most of its right answers hold "x, y, and z"): a model with
 //             "and" or "or" and no comma
+//   compound  two complete sentences joined by and, but, or or yet with no comma before it, which the FANBOYS cards
+//             teach (compoundWithoutComma: both parts need their own subject and verb; "so" is left out)
 //   quiz      a model that the topic's own quiz calls wrong: one of its wrong options, an item's sentence as written
 //             when the item fixes it, or a right answer with its capitals or commas changed
 //   note      a note that calls the example wrong (a fragment, a run-on, a splice, incomplete, spelled wrong, missing,
@@ -2271,6 +2276,9 @@ const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && 
 //             line of dialogue is exempt ("'Where did you go?' 'To the store.'": short replies are fine in speech)
 //   label     a writing card section whose note calls a sentence weak, redundant, unnecessary, wordy, vague or too
 //             close, with no label on its passage to say which sentence that is
+// checkQuizItems reads the quiz with the same sentence rules (sentenceFaults): every right answer and accepted fix, a
+// tap question's sentence, a passage's sentences, a sentence shown with sentence-or-fragment pills, a join question's
+// two thoughts. A sentence a question shows wrong on purpose is read with the rules of its own error left out.
 const EVERYDAY_MONTHS = new Set(['may', 'march', 'august']);
 const DATE_WORDS = new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'january', 'february', 'march',
   'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'].filter(w => !EVERYDAY_MONTHS.has(w)));
@@ -2288,25 +2296,117 @@ const OPENING_QUOTE = /(?:^|\s)['‘"“][\p{Lu}\p{Ll}]/u;
 function wordsWithStarts(text) {
   return tokenize(text).map((w, i, all) => ({ ...w, start: i === 0 || /[.!?]['’"”]*$/.test(all[i - 1].post) || /['‘"“]/.test(w.pre) }));
 }
-/** Proper nouns: words the right answers of every topic write only with a capital, away from a sentence's start. */
+/** Proper nouns: words the right answers of every topic write only with a capital, away from a sentence's start. A
+ *  title's words and the words of a name of two or more (Riverside Theater) are not counted: theater is an everyday
+ *  word, while Sam, Denver and Monday are names on their own. */
 export function properNouns(topics) {
-  const caps = new Map(), low = new Set();
+  const caps = new Set(), low = new Set();
+  const capital = w => !!w && /^\p{Lu}/u.test(w.t);
   for (const tp of Object.values(topics)) {
     if (tp.italic || (tp.choices && tp.choices.kind === 'title')) continue;
-    const rights = tp.items.flatMap(it => [it.right, ...(it.accept || []), ...(tp.format === 'tap' ? [it.text] : [])]).filter(x => typeof x === 'string');
-    for (const r of rights) for (const w of wordsWithStarts(r)) {
-      if (!/^\p{L}+$/u.test(w.t) || w.t === 'I') continue;
-      if (/^\p{Ll}/u.test(w.t)) low.add(w.t);
-      else if (!w.start && /['‘"“]/.test(w.pre) === false) caps.set(w.t.toLowerCase(), (caps.get(w.t.toLowerCase()) || 0) + 1);
+    const rights = tp.items.filter(it => !['title', 'italics', 'longshort'].includes(it.rule))
+      .flatMap(it => [it.right, ...(it.accept || []), ...(tp.format === 'tap' ? [it.text] : [])]).filter(x => typeof x === 'string');
+    for (const r of rights) {
+      const ws = wordsWithStarts(r);
+      ws.forEach((w, i) => {
+        if (!/^\p{L}+$/u.test(w.t) || w.t === 'I') return;
+        if (/^\p{Ll}/u.test(w.t)) low.add(w.t);
+        else if (!w.start && !/['‘"“]/.test(w.pre) && !(capital(ws[i - 1]) && !ws[i - 1].start) && !capital(ws[i + 1])) caps.add(w.t.toLowerCase());
+      });
     }
   }
-  return new Set([...caps.keys()].filter(k => !low.has(k)));
+  return new Set([...caps].filter(k => !low.has(k)));
 }
 /** A sentence as compared for the quiz check: quotation marks and apostrophes all one mark; same(): and with capitals
  *  and commas let go. */
 const plainQuotes = s => normTyped(s).replace(/"/g, "'");
 const looseKey = s => plainQuotes(s).toLowerCase().replace(/,/g, '').replace(/\s+/g, ' ');
 const share = (items, test) => items.length > 0 && items.filter(test).length * 2 >= items.length;
+const DETERMINERS = new Set(['the', 'my', 'his', 'her', 'our', 'their', 'your', 'a', 'an']);
+/** Words that can be a sentence's verb right after its subject: the be and have forms, the helpers, the irregular
+ *  pasts, and any word ending in ed. */
+const CLAUSE_HELPERS = new Set([...HELPERS, 'could', 'would', 'should']);
+const verbish = w => !!w && (CLAUSE_HELPERS.has(norm(w.t)) || Object.values(IRREGULAR_PAST).includes(norm(w.t)) || /^\p{Ll}+ed$/u.test(w.t));
+/** Two complete sentences joined by and, but, or or yet with no comma before it ("The cat slept and the dog
+ *  played."): the joining word, or null. It counts only when both parts have their own subject and verb: the second
+ *  opens with a subject pronoun and a word, or a noun (after a, the, my, ...) and a verb; the first has a verb, or four
+ *  words or more ("Marked lanes and signs would" is one subject). So is left out ("so students can" is often "so that"),
+ *  and "both ... and", "either ... or", "whether ... or" pairs, and words inside a title in quotation marks. */
+function compoundWithoutComma(words) {
+  const low = words.map(w => norm(w.t));
+  if (low.some(w => ['both', 'either', 'neither', 'whether'].includes(w))) return null;
+  let quoted = false;
+  for (let i = 0; i < words.length - 2; i++) {
+    if (/["\u201C]/.test(words[i].pre)) quoted = true;
+    const inQuote = quoted;
+    if (/["\u201D]/.test(words[i].post)) quoted = false;
+    if (i < 2 || inQuote || !['and', 'but', 'or', 'yet'].includes(low[i]) || /[,;:]$/.test(words[i - 1].post)) continue;
+    if (!(i >= 4 || words.slice(0, i).some(verbish))) continue;
+    const a = words[i + 1], b = words[i + 2], c = words[i + 3];
+    if (SUBJECT_PRONOUNS.has(low[i + 1]) && b && /^\p{Ll}/u.test(b.t) && !/^(?:and|or)$/.test(norm(b.t))) return low[i];
+    if (DETERMINERS.has(low[i + 1]) && b && /^\p{Ll}/u.test(b.t) && verbish(c)) return low[i];
+    if (/^\p{Ll}+s$/u.test(a.t) && verbish(b)) return low[i];
+  }
+  return null;
+}
+/** The rules a sentence shown as right breaks (the list above, but the quiz ones): -> [[rule, why]]. own: it stands as
+ *  its own sentence (not a quote a note's sentence goes on about); start: its first word starts a sentence; phrase,
+ *  series: the topic teaches that comma; skip: rules a quiz sentence breaks on purpose (the error its task is about). */
+export function sentenceFaults(text, { own = true, start = true, phrase = false, series = false, proper = new Set(), skip = new Set() } = {}) {
+  const out = [], s = String(text).trim(), bare = s.replace(/^['‘"“]+/, '');
+  const bad = (rule, why) => { if (!skip.has(rule)) out.push([rule, why]); };
+  if (start && /^\p{Ll}/u.test(bare)) bad('start', 'starts with a small letter');
+  if (/(?:^|[\s'‘"“(])i(?=$|[\s.,!?;:'’"”])/.test(s)) bad('i', 'writes the word I as a small i');
+  if (own && !/[.!?]['’"”)]*$/.test(s)) bad('end', 'has no end mark');
+  const words = wordsWithStarts(s);
+  // a later sentence of the same text starts with a small letter ("It rained. however, ..."; a quote's own end mark,
+  // "Can we go?" asked Ana, does not end the sentence)
+  const late = words.find((w, i) => i > 0 && /[.!?]$/.test(words[i - 1].post) && !/\b(?:Dr|Mr|Mrs|Ms|St|p)$/.test(words[i - 1].t) && /^\p{Ll}/u.test(w.t));
+  if (late) bad('start', `starts a sentence with the small letter of "${late.t}"`);
+  for (const w of words) {
+    if (DATE_WORDS.has(w.t)) bad('date', `writes the day or month "${w.t}" with a small letter`);
+    else if (/^\p{Ll}+$/u.test(w.t) && proper.has(w.t)) bad('name', `writes the name "${w.t}" with a small letter (the quiz always capitalizes it)`);
+    if (MADE_UP_PASTS.has(norm(w.t))) bad('spelling', `uses "${w.t}", which is not a real past form`);
+  }
+  if (NEVER_RIGHT.test(s)) bad('spelling', `uses "${NEVER_RIGHT.exec(s)[0]}", which is never right`);
+  if (OPENING_QUOTE.test(s) && /\p{L}['’"”][.,]/u.test(s.replace(/\p{L}s'(?=[\s.,])/gu, 's'))) bad('quote', 'puts an end mark or comma outside the closing quotation mark');
+  if (start && own && SUBORDINATORS.includes(norm(words[0] && words[0].t)) && !s.includes(',') && !/\?['’"”]*$/.test(s)) bad('opener', 'opens with a subordinating word and has no comma: a fragment, or a missing comma');
+  if (start && own && phrase && words[0] && PREPOSITIONS.has(norm(words[0].t)) && !s.includes(',')) bad('phrase', 'opens with a starting phrase and has no comma after it');
+  if (series && /\s(?:and|or)\s/.test(s) && !s.includes(',')) bad('series', 'lists things with no commas between them');
+  const joined = compoundWithoutComma(words);
+  if (joined) bad('compound', `joins two complete sentences with "${joined}" and no comma before it (the FANBOYS cards teach the comma)`);
+  return out;
+}
+/** The quiz, read the same way: every sentence a question shows as right breaks none of the sentence rules above. That is
+ *  the right answer (the "look back" sentence), each accepted fix, the sentence of a tap question (its task is a word's
+ *  job, so the sentence around it is right), a passage's sentences, a sentence shown with sentence-or-fragment pills
+ *  when it is a sentence, and the two thoughts a join question starts from. A sentence a question shows wrong on
+ *  purpose is read with the rules of its own error left out: a capitalization fix keeps its small letters, a comma or
+ *  marks question its missing marks; a fragment the question asks about is not a sentence. A right answer or option
+ *  that is a word or a phrase ("its", "a lot of rain") is read for its words only. -> problems. */
+const SENTENCE_END = /[.!?]['’"”)]*$/;
+export function checkQuizItems(topic, proper) {
+  const problems = [], S = (...a) => new Set(a);
+  for (const it of topic.items) {
+    const f = it.format || topic.format, rule = it.rule || (topic.choices && topic.choices.kind);
+    if (['title', 'italics'].includes(rule)) continue;   // a title, not a sentence (checked by the title rules)
+    const read = (what, text, skip = S()) => {
+      const sk = new Set(skip);
+      if (!SENTENCE_END.test(String(text).trim())) for (const r of ['start', 'end', 'opener', 'phrase']) sk.add(r);
+      for (const [, why] of sentenceFaults(text, { proper, skip: sk })) problems.push(`${it.id}: the ${what} "${text}" ${why}`);
+    };
+    const fragment = it.label && /fragment|incomplete/i.test(it.label);
+    if (typeof it.right === 'string' && !fragment) read('right answer', it.right);
+    for (const a of it.accept || []) read('accepted fix', a);
+    if (f === 'tap') read('sentence', it.text, /fragment/.test(topic.id) ? S('opener') : S());
+    else if (f === 'capfix') read('sentence', it.text, S('start', 'i', 'date', 'name'));
+    else if (f === 'gaps' || f === 'marks') read('sentence', it.text, S('opener', 'phrase', 'series', 'quote', 'end', 'compound'));
+    else if (f === 'passage') for (const o of it.options) read('passage sentence', o, S('opener'));
+    else if (f === 'choice' && it.plain && !fragment) read('sentence', it.text);
+    if (it.prompt && SENTENCE_END.test(it.prompt.trim()) && rule !== 'depfrag') for (const x of sentencesOf(it.prompt)) read('starting sentence', x, S('opener'));
+  }
+  return problems;
+}
 /** Every card example that reads as a model and breaks a rule above. -> problems. */
 export function checkCardExamples(topic, proper) {
   const problems = [], at = `${topic.id} card`;
@@ -2319,25 +2419,12 @@ export function checkCardExamples(topic, proper) {
     if (MECHANICS_RULES.has(rule)) (it.options || []).forEach((o, i) => { if (!it.answer.includes(i) && /\s/.test(o)) wrongs.add(plainQuotes(o)); });
     if (typeof it.right === 'string' && it.text && !it.text.includes('___') && plainQuotes(it.text) !== plainQuotes(it.right)) asWritten.add(plainQuotes(it.text));
   }
-  /** One sentence a card shows as right. own: it stands as its own sentence (not a quote the note's sentence goes on
-   *  about); start: its first word starts a sentence. */
+  /** One sentence a card shows as right. */
   const check = (text, where, { own = true, start = true } = {}) => {
-    const s = String(text).trim(), bare = s.replace(/^['‘"“]+/, '');
+    const s = String(text).trim();
     const bad = why => problems.push(`${at}: ${where} "${s}" ${why}`);
-    if (start && /^\p{Ll}/u.test(bare)) bad('starts with a small letter');
-    if (/(?:^|[\s'‘"“(])i(?=$|[\s.,!?;:'’"”])/.test(s)) bad('writes the word I as a small i');
-    if (own && !/[.!?]['’"”)]*$/.test(s)) bad('has no end mark');
-    const words = wordsWithStarts(s);
-    for (const w of words) {
-      if (DATE_WORDS.has(w.t)) bad(`writes the day or month "${w.t}" with a small letter`);
-      else if (/^\p{Ll}+$/u.test(w.t) && proper.has(w.t)) bad(`writes the name "${w.t}" with a small letter (the quiz always capitalizes it)`);
-      if (MADE_UP_PASTS.has(norm(w.t))) bad(`uses "${w.t}", which is not a real past form`);
-    }
-    if (NEVER_RIGHT.test(s)) bad(`uses "${NEVER_RIGHT.exec(s)[0]}", which is never right`);
-    if (OPENING_QUOTE.test(s) && /\p{L}['’"”][.,]/u.test(s.replace(/\p{L}s'(?=[\s.,])/gu, 's'))) bad('puts an end mark or comma outside the closing quotation mark');
-    if (start && own && SUBORDINATORS.includes(norm(words[0] && words[0].t)) && !s.includes(',') && !/\?['’"”]*$/.test(s)) bad('opens with a subordinating word and has no comma: a fragment, or a missing comma');
-    if (start && own && phrase && words[0] && PREPOSITIONS.has(norm(words[0].t)) && !s.includes(',')) bad('opens with a starting phrase and has no comma after it');
-    if (series && /\s(?:and|or)\s/.test(s) && !s.includes(',')) bad('lists things with no commas between them');
+    for (const [, why] of sentenceFaults(s, { own, start, phrase, series, proper })) bad(why);
+    const words = tokenize(s);
     const n = plainQuotes(s);
     if (wrongs.has(n)) bad('is one of the quiz\'s wrong options');
     else if (asWritten.has(n)) bad('is a quiz sentence as written, before its fix');
@@ -2454,7 +2541,7 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     if (def.room) { const r = buildRoom(topic, def, problems); if (r) { rooms[id] = r; topic.room = true; } }
   }
   const proper = properNouns(topics);
-  for (const topic of Object.values(topics)) problems.push(...checkCardExamples(topic, proper));
+  for (const topic of Object.values(topics)) problems.push(...checkCardExamples(topic, proper), ...checkQuizItems(topic, proper));
   for (const b of plan.bands) for (const p of b.pathways) {
     if (!plan.pathways[p]) { problems.push(`band ${b.id}: no pathway "${p}"`); continue; }
     lint(plan.pathways[p].title, problems, `pathway ${p}`);

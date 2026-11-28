@@ -4502,7 +4502,7 @@
    "items": [
     {
      "id": "coordinating-conjunctions-1",
-     "text": "The cat slept and the dog played.",
+     "text": "The cat slept, and the dog played.",
      "answer": [
       3
      ],
@@ -4510,7 +4510,7 @@
     },
     {
      "id": "coordinating-conjunctions-2",
-     "text": "We can swim or we can hike.",
+     "text": "We can swim, or we can hike.",
      "answer": [
       3
      ],
@@ -6664,13 +6664,13 @@
      "text": "Which sentence shows that Mia is surprised?",
      "ask": "Which sentence shows that Mia is surprised?",
      "options": [
-      "Mia's eyes went wide and her mouth fell open.",
+      "Mia's eyes went wide, and her mouth fell open.",
       "Mia was surprised."
      ],
      "answer": [
       0
      ],
-     "right": "Mia's eyes went wide and her mouth fell open.",
+     "right": "Mia's eyes went wide, and her mouth fell open.",
      "hint": "Look for the sentence that shows surprise on Mia's face.",
      "whole": true
     },
@@ -11514,12 +11514,12 @@
     {
      "id": "claims-evidence-reasoning-4",
      "format": "passage",
-     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class.",
+     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class.",
      "ask": "Which sentence is the claim?",
      "options": [
       "Every student should learn to cook a simple meal.",
       "Cooking teaches planning and measuring.",
-      "A school cooking club met once a week and members cooked lunch for their class."
+      "A school cooking club met once a week, and members cooked lunch for their class."
      ],
      "answer": [
       0
@@ -11531,17 +11531,17 @@
     {
      "id": "claims-evidence-reasoning-5",
      "format": "passage",
-     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class.",
+     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class.",
      "ask": "Which sentence is evidence?",
      "options": [
       "Every student should learn to cook a simple meal.",
       "Cooking teaches planning and measuring.",
-      "A school cooking club met once a week and members cooked lunch for their class."
+      "A school cooking club met once a week, and members cooked lunch for their class."
      ],
      "answer": [
       2
      ],
-     "right": "A school cooking club met once a week and members cooked lunch for their class.",
+     "right": "A school cooking club met once a week, and members cooked lunch for their class.",
      "rule": "judge",
      "hint": "Evidence is something that actually happened, a fact that supports the claim."
     },
@@ -12903,7 +12903,7 @@
      "id": "in-text-citations-5",
      "format": "choice",
      "text": "The first school opened in 1910 (Rivera 33).",
-     "prompt": "The first school opened in 1910 The source is Rivera, page 33.",
+     "prompt": "The first school opened in 1910. The source is Rivera, page 33.",
      "ask": "Choose the sentence with the citation written the right way.",
      "options": [
       "The first school opened in 1910 (Rivera 33).",
@@ -13146,13 +13146,13 @@
      "text": "The garden grew tomatoes. ___, it grew peppers.",
      "ask": "Which transition adds an idea?",
      "options": [
-      "however",
-      "in addition"
+      "However",
+      "In addition"
      ],
      "answer": [
       1
      ],
-     "right": "The garden grew tomatoes. in addition, it grew peppers.",
+     "right": "The garden grew tomatoes. In addition, it grew peppers.",
      "rule": "given",
      "hint": "Ask whether the peppers add to the tomatoes or contrast with them."
     },
@@ -13162,13 +13162,13 @@
      "text": "The rain was heavy. ___, the game went on.",
      "ask": "Which transition shows contrast?",
      "options": [
-      "however",
-      "therefore"
+      "However",
+      "Therefore"
      ],
      "answer": [
       0
      ],
-     "right": "The rain was heavy. however, the game went on.",
+     "right": "The rain was heavy. However, the game went on.",
      "rule": "given",
      "hint": "Ask whether the game going on fits with the heavy rain or goes against it."
     },
@@ -13178,13 +13178,13 @@
      "text": "The bus was late. ___, we missed the first class.",
      "ask": "Which transition shows cause and effect?",
      "options": [
-      "on the other hand",
-      "as a result"
+      "On the other hand",
+      "As a result"
      ],
      "answer": [
       1
      ],
-     "right": "The bus was late. as a result, we missed the first class.",
+     "right": "The bus was late. As a result, we missed the first class.",
      "rule": "given",
      "hint": "Ask whether missing class happened because of the late bus or in contrast to it."
     },
@@ -13215,13 +13215,13 @@
      "text": "The movie was long. ___, it was exciting.",
      "ask": "Which transition fits?",
      "options": [
-      "however",
-      "furthermore"
+      "However",
+      "Furthermore"
      ],
      "answer": [
       0
      ],
-     "right": "The movie was long. however, it was exciting.",
+     "right": "The movie was long. However, it was exciting.",
      "rule": "given",
      "hint": "Ask whether exciting goes along with long or goes against it."
     },
@@ -13231,13 +13231,13 @@
      "text": "The library is quiet. ___, it has many books.",
      "ask": "Which transition fits?",
      "options": [
-      "furthermore",
-      "although"
+      "Furthermore",
+      "Although"
      ],
      "answer": [
       0
      ],
-     "right": "The library is quiet. furthermore, it has many books.",
+     "right": "The library is quiet. Furthermore, it has many books.",
      "rule": "given",
      "hint": "Ask whether having many books adds to being quiet or contrasts with it."
     },
@@ -13247,13 +13247,13 @@
      "text": "She studied hard. ___, she passed the test.",
      "ask": "Which transition fits?",
      "options": [
-      "on the other hand",
-      "therefore"
+      "On the other hand",
+      "Therefore"
      ],
      "answer": [
       1
      ],
-     "right": "She studied hard. therefore, she passed the test.",
+     "right": "She studied hard. Therefore, she passed the test.",
      "rule": "given",
      "hint": "Ask whether passing happened because of studying or in contrast to it."
     },
@@ -13282,13 +13282,13 @@
      "text": "We packed our bags. ___, we left for camp.",
      "ask": "Which transition shows time order?",
      "options": [
-      "then",
-      "however"
+      "Then",
+      "However"
      ],
      "answer": [
       0
      ],
-     "right": "We packed our bags. then, we left for camp.",
+     "right": "We packed our bags. Then, we left for camp.",
      "rule": "given",
      "hint": "Ask whether leaving came after packing or went against it."
     },
@@ -13298,13 +13298,13 @@
      "text": "The soup was hot. ___, it was delicious.",
      "ask": "Which transition fits?",
      "options": [
-      "although",
-      "in addition"
+      "Although",
+      "In addition"
      ],
      "answer": [
       1
      ],
-     "right": "The soup was hot. in addition, it was delicious.",
+     "right": "The soup was hot. In addition, it was delicious.",
      "rule": "given",
      "hint": "Ask whether being delicious adds to being hot or goes against it."
     },
@@ -18700,7 +18700,7 @@
     {
      "id": "choosing-fanboys-12",
      "format": "choice",
-     "text": "The room was dark, ___ the lamp was on.",
+     "text": "The lamp was on, ___ the room was still dark.",
      "options": [
       "so",
       "but"
@@ -18708,10 +18708,10 @@
      "answer": [
       1
      ],
-     "right": "The room was dark, but the lamp was on.",
+     "right": "The lamp was on, but the room was still dark.",
      "rule": "given",
      "cycle": true,
-     "hint": "Ask whether the lamp being on is a result of the dark room or a contrast with it."
+     "hint": "Ask whether the room staying dark is a result of the lamp being on or a contrast with it."
     }
    ]
   },
@@ -34780,11 +34780,11 @@
     {
      "id": "vague-words-11",
      "format": "passage",
-     "text": "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home.",
+     "text": "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home.",
      "ask": "Which sentence has a vague word?",
      "options": [
       "It was a bad day.",
-      "The bus was late and my lunch spilled.",
+      "The bus was late, and my lunch spilled.",
       "I lost my homework on the way home."
      ],
      "answer": [
@@ -34797,17 +34797,17 @@
     {
      "id": "vague-words-12",
      "format": "passage",
-     "text": "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home.",
+     "text": "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home.",
      "ask": "Which sentence is the most exact?",
      "options": [
       "It was a bad day.",
-      "The bus was late and my lunch spilled.",
+      "The bus was late, and my lunch spilled.",
       "I lost my homework on the way home."
      ],
      "answer": [
       1
      ],
-     "right": "The bus was late and my lunch spilled.",
+     "right": "The bus was late, and my lunch spilled.",
      "rule": "judge",
      "hint": "Exact words give details about what happened."
     }
@@ -46888,7 +46888,7 @@
     {
      "id": "agree-parts-whole-11",
      "format": "choice",
-     "text": "Two thirds of the pizza ___ eaten.",
+     "text": "Two-thirds of the pizza ___ eaten.",
      "options": [
       "was",
       "were"
@@ -46896,7 +46896,7 @@
      "answer": [
       0
      ],
-     "right": "Two thirds of the pizza was eaten.",
+     "right": "Two-thirds of the pizza was eaten.",
      "rule": "given",
      "cycle": true,
      "hint": "Find the noun after of and decide whether it is singular or plural."
@@ -46904,7 +46904,7 @@
     {
      "id": "agree-parts-whole-12",
      "format": "choice",
-     "text": "Two thirds of the students ___ present.",
+     "text": "Two-thirds of the students ___ present.",
      "options": [
       "was",
       "were"
@@ -46912,7 +46912,7 @@
      "answer": [
       1
      ],
-     "right": "Two thirds of the students were present.",
+     "right": "Two-thirds of the students were present.",
      "rule": "given",
      "cycle": true,
      "hint": "Find the noun after of and decide whether it is singular or plural."
@@ -47053,15 +47053,15 @@
     {
      "id": "agree-amounts-6",
      "format": "choice",
-     "text": "Ten minutes ___ quickly.",
+     "text": "Ten minutes ___ plenty of time.",
      "options": [
-      "passes",
-      "pass"
+      "is",
+      "are"
      ],
      "answer": [
       0
      ],
-     "right": "Ten minutes passes quickly.",
+     "right": "Ten minutes is plenty of time.",
      "rule": "given",
      "cycle": true,
      "hint": "A span of time is one unit, so the verb is singular."
@@ -47101,15 +47101,15 @@
     {
      "id": "agree-amounts-9",
      "format": "choice",
-     "text": "Four gallons ___ the tank.",
+     "text": "Four gallons ___ enough to fill the tank.",
      "options": [
-      "fills",
-      "fill"
+      "is",
+      "are"
      ],
      "answer": [
       0
      ],
-     "right": "Four gallons fills the tank.",
+     "right": "Four gallons is enough to fill the tank.",
      "rule": "given",
      "cycle": true,
      "hint": "A volume is one unit, so the verb is singular."

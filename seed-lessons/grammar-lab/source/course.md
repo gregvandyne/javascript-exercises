@@ -496,8 +496,8 @@ Teaching card:
 - Tip box: "Sam likes apples and oranges." And joins two things. "We can walk or ride." Or joins a choice.
 
 Quiz (tap the coordinating conjunction):
-1. "The cat slept and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did with what the dog did.
-2. "We can swim or we can hike." Answer: or. Hint: Look for the small word that gives a choice.
+1. "The cat slept, and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did with what the dog did.
+2. "We can swim, or we can hike." Answer: or. Hint: Look for the small word that gives a choice.
 3. "It was late, so we went home." Answer: so. Hint: Look for the small word that joins a cause with what happened next.
 4. "Leo likes soccer, but he does not like tennis." Answer: but. Hint: Look for the small word that joins two different thoughts.
 5. "The soup was hot, yet Sam ate it all." Answer: yet. Hint: Look for the small word that joins two thoughts that seem to disagree.
@@ -766,7 +766,7 @@ Quiz (which sentence shows instead of telling?):
 8. "A) Tom was excited. B) Tom bounced on his toes and clapped." Which sentence shows that Tom is excited? Answer: B. Hint: Look for the sentence with actions that show excitement.
 9. "A) Kai was nervous. B) Kai tapped his pencil and kept looking at the clock." Which sentence shows that Kai is nervous? Answer: B. Hint: Look for the sentence with actions that show nerves.
 10. "A) Leo's stomach growled as he stared at the cookies. B) Leo was hungry." Which sentence shows that Leo is hungry? Answer: A. Hint: Look for the sentence that shows hunger with things you can see and hear.
-11. "A) Mia's eyes went wide and her mouth fell open. B) Mia was surprised." Which sentence shows that Mia is surprised? Answer: A. Hint: Look for the sentence that shows surprise on Mia's face.
+11. "A) Mia's eyes went wide, and her mouth fell open. B) Mia was surprised." Which sentence shows that Mia is surprised? Answer: A. Hint: Look for the sentence that shows surprise on Mia's face.
 12. "A) Sam was happy. B) Sam laughed and danced around the room." Which sentence shows that Sam is happy? Answer: B. Hint: Look for the sentence with actions that show happiness.
 
 ---
@@ -1271,7 +1271,7 @@ See 2.5 Forming Superlative Adjectives above.
 1. Passage: "The town library should stay open on Sundays. A survey found that many families can visit the library only on weekends. Opening on Sundays would let those families use the library when they are free." Which sentence is the claim? Answer: the first sentence. Hint: The claim is the opinion the writer wants to prove.
 2. Same passage. Which sentence is evidence for the claim? Answer: the second sentence. Hint: Evidence is a fact that backs up the claim.
 3. Passage: "Recess should be longer. Children who play outside every day concentrate better in class. A longer break gives them time to run, play, and return ready to learn." Which sentence is the reasoning? Answer: the third sentence. Hint: Reasoning explains how the evidence connects to the claim.
-4. Passage: "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class." Which sentence is the claim? Answer: the first sentence. Hint: The claim states what the writer thinks should happen.
+4. Passage: "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class." Which sentence is the claim? Answer: the first sentence. Hint: The claim states what the writer thinks should happen.
 5. Same passage. Which sentence is evidence? Answer: the third sentence. Hint: Evidence is something that actually happened, a fact that supports the claim.
 6. Passage: "The class trip to the river taught us more than any textbook. We measured the water, counted the fish, and wrote down what we saw. Doing the work ourselves made the science stick." Which sentence is the reasoning? Answer: the third sentence. Hint: Reasoning says why the evidence matters for the claim.
 7. Passage: "The school should plant a vegetable garden. At one school, students who worked in a garden ate twice as many vegetables at lunch. When students grow food, they care more about what they eat, so a garden builds healthy habits." Which sentence is the claim? Answer: the first sentence. Hint: The claim is the opinion the paragraph will prove.
@@ -1379,7 +1379,7 @@ See 2.5 Forming Superlative Adjectives above.
 2. Which sentence formats the citation correctly: "The river is the longest in the state (Lopez, 41)." or "The river is the longest in the state (Lopez 41)."? Answer: "The river is the longest in the state (Lopez 41)." Hint: Check what sits between the name and the page number.
 3. Which sentence formats the citation correctly: "Bees visit hundreds of flowers in one day (Patel 12)." or "Bees visit hundreds of flowers in one day (Patel p. 12)."? Answer: "Bees visit hundreds of flowers in one day (Patel 12)." Hint: Look closely at what comes before the page number.
 4. Which sentence formats the citation correctly: "The moon reflects sunlight (Kim 8)." or "The moon reflects sunlight (Kim, page 8)."? Answer: "The moon reflects sunlight (Kim 8)." Hint: Look closely at what goes inside the parentheses.
-5. Where does the citation go in this sentence: "The first school opened in 1910"? The source is Rivera, page 33. Answer: "The first school opened in 1910 (Rivera 33)." Hint: Find the end of the fact, then check where the period belongs.
+5. Add the citation to this sentence: "The first school opened in 1910." The source is Rivera, page 33. Answer: "The first school opened in 1910 (Rivera 33)." Hint: Find the end of the fact, then check where the period belongs.
 6. What goes inside the parentheses for a book source? Answer: The author's last name and the page number. Hint: Look back at the worked examples and see what each set of parentheses holds.
 7. Which sentence formats the citation correctly: "The trail is safe for families (Lopez 15)." or "The trail is safe for families (Lopez 15.)"? Answer: "The trail is safe for families (Lopez 15)." Hint: Look at which side of the closing parenthesis the period is on.
 8. Which sentence formats the citation correctly: "Rain fills the rivers (Patel 19) ." or "Rain fills the rivers (Patel 19)."? Answer: "Rain fills the rivers (Patel 19)." Hint: Look closely at the space before the period.
@@ -1713,7 +1713,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 9. Fill in the blank: "She was tired, ___ she finished the race." Choose so or yet. Answer: yet. Hint: Ask whether finishing is what you would expect from someone who was tired.
 10. Fill in the blank: "We packed lunch, ___ we ate at the park." Choose so or but. Answer: so. Hint: Ask whether eating at the park is a result of packing lunch or a contrast with it.
 11. Fill in the blank: "Maya likes apples ___ oranges." Choose and or or. Answer: and. Hint: Ask whether Maya likes both fruits or must choose one.
-12. Fill in the blank: "The room was dark, ___ the lamp was on." Choose so or but. Answer: but. Hint: Ask whether the lamp being on is a result of the dark room or a contrast with it.
+12. Fill in the blank: "The lamp was on, ___ the room was still dark." Choose so or but. Answer: but. Hint: Ask whether the room staying dark is a result of the lamp being on or a contrast with it.
 
 ### 10.5 Matching Correlative Conjunctions
 
@@ -4754,8 +4754,8 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 8. Choose the correct verb: "All of the chairs (was / were) taken." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
 9. Choose the correct verb: "None of the pie (remains / remain)." Answer: remains. Hint: Find the noun after of and decide whether it is singular or plural.
 10. Choose the correct verb: "Most of the pies (is / are) still in the oven." Answer: are. Hint: Find the noun after of and decide whether it is singular or plural.
-11. Choose the correct verb: "Two thirds of the pizza (was / were) eaten." Answer: was. Hint: Find the noun after of and decide whether it is singular or plural.
-12. Choose the correct verb: "Two thirds of the students (was / were) present." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
+11. Choose the correct verb: "Two-thirds of the pizza (was / were) eaten." Answer: was. Hint: Find the noun after of and decide whether it is singular or plural.
+12. Choose the correct verb: "Two-thirds of the students (was / were) present." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
 
 ### Topic: Agreement with Math, Money, and Time
 
@@ -4771,10 +4771,10 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 3. Choose the correct verb: "Three hours (is / are) a long time to wait." Answer: is. Hint: A span of time is one unit, so the verb is singular.
 4. Choose the correct verb: "Two plus two (equals / equal) four." Answer: equals. Hint: A math result is one answer, so the verb is singular.
 5. Choose the correct verb: "Fifty cents (buy / buys) one pencil." Answer: buys. Hint: An amount of money is one unit, so the verb is singular.
-6. Choose the correct verb: "Ten minutes (passes / pass) quickly." Answer: passes. Hint: A span of time is one unit, so the verb is singular.
+6. Choose the correct verb: "Ten minutes (is / are) plenty of time." Answer: is. Hint: A span of time is one unit, so the verb is singular.
 7. Choose the correct verb: "Eight pounds (are / is) a lot to carry." Answer: is. Hint: A weight is one unit, so the verb is singular.
 8. Choose the correct verb: "Six weeks (is / are) a long break." Answer: is. Hint: A span of time is one unit, so the verb is singular.
-9. Choose the correct verb: "Four gallons (fills / fill) the tank." Answer: fills. Hint: A volume is one unit, so the verb is singular.
+9. Choose the correct verb: "Four gallons (is / are) enough to fill the tank." Answer: is. Hint: A volume is one unit, so the verb is singular.
 10. Choose the correct verb: "Twenty dollars (were / was) in the wallet." Answer: was. Hint: An amount of money is one unit, so the verb is singular.
 11. Choose the correct verb: "Nine times three (equals / equal) twenty-seven." Answer: equals. Hint: A math result is one answer, so the verb is singular.
 12. Choose the correct verb: "Two years (are / is) a long time to wait for a trip." Answer: is. Hint: A span of time is one unit, so the verb is singular.
@@ -4864,8 +4864,8 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 8. Passage: "They did things at the museum. They watched a film about volcanoes. They built a model of an erupting mountain." Ask: Which sentence is the most exact? Answer: the third sentence. Hint: Exact words give a clear picture of what they did.
 9. Passage: "The hero climbed a cliff in the rain. The ending surprised everyone in the theater. The movie was awesome." Ask: Which sentence has a vague word? Answer: the third sentence. Hint: Look for a word that does not say what was good about the movie.
 10. Passage: "The hero climbed a cliff in the rain. The ending surprised everyone in the theater. The movie was awesome." Ask: Which sentence is the most exact? Answer: the first sentence. Hint: Exact words give a clear picture of what happened.
-11. Passage: "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home." Ask: Which sentence has a vague word? Answer: the first sentence. Hint: Look for a word that does not say what went wrong.
-12. Passage: "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home." Ask: Which sentence is the most exact? Answer: the second sentence. Hint: Exact words give details about what happened.
+11. Passage: "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home." Ask: Which sentence has a vague word? Answer: the first sentence. Hint: Look for a word that does not say what went wrong.
+12. Passage: "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home." Ask: Which sentence is the most exact? Answer: the second sentence. Hint: Exact words give details about what happened.
 
 ### Topic: Recognizing Redundant, Unnecessary, and Wordy Phrases
 
