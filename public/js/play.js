@@ -30,6 +30,7 @@ const frameSrc = frame.dataset.src;
 let frameSettled = false, framePins = 0, pinnedAt = [], stopped = false;
 frame.addEventListener('load', () => {
   stopLoud();   // a (re)loaded game starts with the microphone off
+  setGuard(false);   // and with nothing under way
   if (stopped) return;
   if (framePins > 0) { framePins--; return; }   // a reload we triggered below
   if (!frameSettled) { frameSettled = true; loaded(); focusOnLoad(); return; }   // the game's own first load
@@ -115,6 +116,9 @@ addEventListener('pagehide', () => { navigator.sendBeacon(`/api/games/${d.gameId
 // ---- message validation ----
 const TYPES = {
   'brb:ready': m => true,
+  'brb:guard': m => typeof m.on === 'boolean',
+  'brb:leave-asking': m => Number.isInteger(m.id) && m.id > 0,
+  'brb:leave-answer': m => Number.isInteger(m.id) && m.id > 0 && typeof m.ok === 'boolean',
   'brb:save': m => m.data && typeof m.data === 'object' && !Array.isArray(m.data) && Object.values(m.data).every(v => typeof v === 'string') && JSON.stringify(m.data).length < 500000,
   'brb:score': m => Number.isFinite(m.score) && m.score >= 0 && m.score <= 1e9 && (m.label === undefined || typeof m.label === 'string'),
   'brb:progress': m => Number.isInteger(m.done) && Number.isInteger(m.total) && m.total >= 1 && m.total <= 500 && m.done >= 0 && m.done <= m.total
@@ -211,9 +215,75 @@ async function flushSave() {
 addEventListener('online', () => { if (pendingSave && saveRetry) { clearTimeout(saveTimer); saveTimer = null; flushSave(); } });
 // An online match (?match=<id>): the frame hands its private port over with brb:ready; public/js/match.js relays.
 const relay = d.match ? startRelay(d, stage) : null;
+
+// ---- leaving part way (BRB.leaveGuard; docs/decisions.md "Arithmetic Lab and class Progress: audit 5") ----
+// While the game says something is under way (Arithmetic Lab: a set started), every way off this page asks the game
+// first, and the game asks the player in its own dialog ("Leave this set?"): this page's Back links (the bar's, the full
+// screen one, the course link), the browser's Back (an extra history entry while the guard is on), and, inside Homeroom's
+// layer, the layer's bar, Escape and Back (homeroom-player.js calls window.oombaAskLeave). A reload or closing the tab
+// gets the browser's own "Leave site?". The game says at once that it is asking (brb:leave-asking): without that within
+// a second (an older game, a frame that stopped), the page goes as it always did.
+let guard = false, leaveN = 0, leaveWait = null, popSkip = 0;
+const HIST = { oombaLeave: 1 };
+const onGuardEntry = () => !!(history.state && history.state.oombaLeave);
+function setGuard(on) {
+  if (on === guard) return;
+  guard = on;
+  if (d.embed) return;   // Homeroom's layer owns the history there
+  if (on && !onGuardEntry()) history.pushState({ ...(history.state || {}), ...HIST }, '', location.href);
+  else if (!on && onGuardEntry()) { popSkip++; history.back(); }
+}
+/** -> Promise<boolean>: may the player leave? (asks the game when its guard is on) */
+function askLeave() {
+  if (!guard) return Promise.resolve(true);
+  if (leaveWait) return leaveWait.p;
+  const id = ++leaveN; let done;
+  const p = new Promise(r => { done = ok => { if (leaveWait && leaveWait.id === id) leaveWait = null; r(ok); }; });
+  leaveWait = { id, p, done, asking: false };
+  setTimeout(() => { if (leaveWait && leaveWait.id === id && !leaveWait.asking) done(true); }, 1000);
+  toFrame({ type: 'brb:leave-ask', id });
+  return p;
+}
+window.oombaAskLeave = askLeave;
+window.oombaGuarded = () => guard;
+function leaveAnswer(m) {
+  if (!leaveWait || leaveWait.id !== m.id) return;
+  if (m.type === 'brb:leave-asking') { leaveWait.asking = true; return; }
+  // (a yes: the guard is off, so nothing asks twice on the way out; its history entry goes with the page)
+  if (m.ok) guard = false;
+  leaveWait.done(m.ok);
+}
+// this page's links out (the bar's Back, the full screen Back, the course link, the course bar)
+document.addEventListener('click', e => {
+  if (!guard || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest && e.target.closest('a[href]');
+  if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return;
+  const href = a.href; if (!href || href.split('#')[0] === location.href.split('#')[0]) return;
+  e.preventDefault();
+  askLeave().then(ok => { if (ok) location.href = href; else refocusGame(); });
+}, true);
+// the browser's Back: it takes the guard's own entry away; put it back, ask, and go back for real on a yes
+addEventListener('popstate', () => {
+  if (d.embed) return;
+  if (popSkip) { popSkip--; if (guard && !onGuardEntry()) history.pushState({ ...(history.state || {}), ...HIST }, '', location.href); return; }
+  if (!guard || onGuardEntry()) return;
+  history.pushState({ ...(history.state || {}), ...HIST }, '', location.href);
+  askLeave().then(ok => {
+    if (!ok) { refocusGame(); return; }
+    const here = location.href;
+    history.go(-2);
+    // (opened with nothing before it: there is no page to go back to, so the game's own page)
+    setTimeout(() => { if (location.href === here && document.visibilityState === 'visible') location.href = d.backHref || `/g/${d.slug}`; }, 700);
+  });
+});
+// a reload, closing the tab, typing another address: the browser's own question
+addEventListener('beforeunload', e => { if (guard) { e.preventDefault(); e.returnValue = ''; } });
+
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
+    case 'brb:guard': setGuard(m.on); break;
+    case 'brb:leave-asking': case 'brb:leave-answer': leaveAnswer(m); break;
     case 'brb:ready': loaded(); hideCourseBar(); if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
     // A poll (BRB.poll, official games on the list): count the choice, hand the totals back to the frame.
     case 'brb:poll': {
