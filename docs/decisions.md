@@ -17058,3 +17058,55 @@ future activity gets it.
 Tests: `tests/unit/canvas-entry-browser.test.js` (Chromium), `tests/unit/builder-skill.test.js`, the 1.6.0 parts of
 `tests/unit/canvas-kit.test.js`, `builder-canvas` (the save's skill note), `builder-layout-check` (1.6.0 at 390 and
 1280), and the version lines in `builder-activity-panel` and `builder-figures`.
+
+## Arithmetic Lab: audit 4 fixes (28 Nov 2026)
+
+The owner's fourth live audit, the Arithmetic Lab items and lesson-step credit (the game in `tools/box-by-box`, rebuilt
+into `seed-games/arithmetic-lab.html`):
+- **8.13 (blocker): saved activities open again.** The editor's Mode tabs were worked out with a tab named `t`, which
+  hid the words' `t()`: every activity worked by another method than the standard one (the ladder, an area model,
+  partial products) threw as its editor opened, so its card (click, Enter, Space, More then Open) did nothing, and its
+  preview's Back to the editor and See the score did nothing either (the game's updates stopped with the error). The
+  tab is `tb` now; a test opens ladder, area and partial products activities every way, after a reload too.
+- **No blank activity by opening the editor.** New activity makes a draft (`Activity.draft`): the editor and its Try it
+  find it, but it is not saved and not in Your activities until something about it changes (`touch`: the title, a
+  problem, a setting; a save or share; a print note). A draft left unchanged goes when the next one is made.
+- **The Assign button's New activity menu opens once** (`firstAssignMenu`, kept in the game save as
+  `box-by-box-assign-menu-v1`): coming back to the list, a reload or Back from the Assign page leave it closed; the
+  line "Choose an activity to assign, or make a new one" still shows.
+- **A plain Save.** Opened from an Assign button, the editor's save bar has Save beside Save and assign (it saves
+  without assigning; Save changes once saved). Saving an activity students may have still asks first (Save for
+  everyone, Save as a copy): tested from a fresh editor.
+- **8.3: problems take any number within the activity's limits.** A problem's field was cut at the settings' range
+  (a top range of 10 to 99 cut 610 to 61); it takes the activity's own limit now (Multiplication: top up to 9999,
+  bottom up to 999), and goes on to the next field only once no more digits fit (Enter, a space or x go on sooner). A
+  typed problem outside the range widens it to numbers of its size (610: 10 to 999; a 9 below 10: from 2), and a line
+  under the problems says so ("Top number now goes from 10 to 999, so your problem fits. New problems use this range
+  too."); a full field says why it takes no more ("Top number can have at most 4 digits (up to 9999).").
+- **8.6: leaving a started set always asks.** "Leave this set? You've done 0 of 5..." came only once something was
+  typed in (never in Watch, a count, or a ladder not yet typed in); it now comes whenever the set is under way (both
+  players).
+- **8.4: Guided counts a wrong digit.** Guided marks a wrong digit at once, so Check never failed and Wrong stayed 0. A
+  wrong digit is now the problem's wrong try: Wrong goes up once for that problem and it is not counted Right (so the
+  score the teacher sees is the problems done without a slip), as a failed Check is in the other modes. The feedback
+  is as before (the digit is marked, the student puts it right, Check says Correct!), and step fixes still count each
+  wrong digit.
+- **Credit without the end screen (Job 4).** A new SDK call, `BRB.setProgress({ done, total, score, label })`
+  (docs/sdk.md), says how far the player is after each question; the play page passes it on to a lesson step (event
+  `progress`, `services/progress.js gameProgress`). The first one starts the step with the score so far (label
+  `part:3/5`, read on the progress page as "3 of 5 answered", with its step fixes); the best score so far is kept; the
+  last one (done = total) ends the run as `gameScore` does, so the step is done with its score whether or not the
+  student presses See the score (the end's own label then replaces the part-way one). Arithmetic Lab reports each
+  settled problem (right, or its answer shown; Watch: each problem shown to the end), never in a preview. The generic
+  rule (a score or the end of a game, or 2 minutes) is unchanged: other games still finish their step at their end
+  screen. Oomba Canvas classroom activities have the same gap (the end comes after Next on the last question); a later
+  Canvas version can call `BRB.setProgress` too.
+- **8.12: an empty class Progress page says what will show.** The faded sample row stays on a lesson's progress page
+  with no students (decided with the playthrough); the class's Progress page with nothing assigned, or no students,
+  adds "Once something is assigned and students join the class, each student gets a row here: how many steps of each
+  assignment they've done, their scores, and answers waiting for you to read."
+Tests: `tests/unit/arithmetic-lab-audit4-browser.test.js` (the game in the production frame), the new Job 4 test in
+`tests/unit/arithmetic-lab-teacher-browser.test.js` (on the site: a student answers both problems and leaves, the step
+is done with its score), `tests/unit/progress-set-progress.test.js`, and the playthrough tests updated (a new activity
+kept once it changes; Guided's wrong digit). `tests/unit/_box-frame.js` finds a Chromium on the machine as the site's
+browser tests do, so the frame tests run here too.

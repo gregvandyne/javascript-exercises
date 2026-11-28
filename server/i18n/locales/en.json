@@ -8421,7 +8421,8 @@
       "toReviewList": "Answers to review:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz score: {pct}% right",
-      "quizOverall": "Quiz score across lesson plans: {pct}%"
+      "quizOverall": "Quiz score across lesson plans: {pct}%",
+      "emptyWhat": "Once something is assigned and students join the class, each student gets a row here: how many steps of each assignment they’ve done, their scores, and answers waiting for you to read."
     },
     "lesson": {
       "finished": "{done} of {total} students done",
@@ -8447,7 +8448,8 @@
       "helped": "Teacher showed an answer",
       "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
       "sampleName": "Sample student",
-      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
+      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way.",
+      "partDone": "{done} of {total} answered"
     },
     "student": {
       "doneOf": "{done} of {total} done",

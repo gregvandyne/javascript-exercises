@@ -679,6 +679,8 @@
 "ui.ed.shared":"Compartilhada",
 "ui.ed.share":"Compartilhar",
 "ui.ed.save":"Salvar",
+"ui.ed.widened":"{x}: agora de {a} a {b}, para o seu problema caber. Os problemas novos também usam esse intervalo.",
+"ui.ed.atLimit":"{x}: no máximo {n} algarismos (até {max}).",
 "ui.ed.saveHint":"Salva sua atividade no Oomba. Abra Compartilhar para enviá-la aos alunos.",
 "ui.ed.savedHint":"Salva no Oomba. Abra Compartilhar para enviá-la aos alunos.",
 "ui.ed.settings":"Configurações",

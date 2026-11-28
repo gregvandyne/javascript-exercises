@@ -7289,7 +7289,8 @@
       "toReviewList": "未確認の回答：",
       "reviewLink": "{title}（{count}）",
       "quizTitle": "クイズの成績：正答率{pct}%",
-      "quizOverall": "授業プラン全体のクイズのスコア：{pct}%"
+      "quizOverall": "授業プラン全体のクイズのスコア：{pct}%",
+      "emptyWhat": "課題を出して生徒がクラスに参加すると、ここに生徒ごとの行ができます。各課題で終えたステップの数、スコア、あなたが読むのを待っている答えが表示されます。"
     },
     "lesson": {
       "finished": "{total}人中{done}人が完了",
@@ -7315,7 +7316,8 @@
       "helped": "先生が答えを見せました",
       "stepFixes": "{count, plural, other {# か所なおした}}",
       "sampleName": "生徒の例",
-      "sampleNote": "例：生徒が始めると、一人ひとりの行がこのように表示されます。算数ラボでは、とちゅうでまちがえて直したステップの数も表示されます。"
+      "sampleNote": "例：生徒が始めると、一人ひとりの行がこのように表示されます。算数ラボでは、とちゅうでまちがえて直したステップの数も表示されます。",
+      "partDone": "{total}問中{done}問に答えました"
     },
     "student": {
       "doneOf": "{done}/{total} できた",

@@ -300,6 +300,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .gb-sample{opacity:.62}
 .gb-sample th,.gb-sample td{border-style:dashed}
 .gb-sample-note{margin:var(--s2) 0 0}
+.gb-empty-what{max-width:40rem;margin:var(--s2) auto 0;text-align:center}
 .st-helped{margin-inline-start:3px;font-size:.85em}
 .gradebook td>.small{display:block;margin-top:2px}
 

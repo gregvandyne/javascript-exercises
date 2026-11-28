@@ -117,6 +117,8 @@ const TYPES = {
   'brb:ready': m => true,
   'brb:save': m => m.data && typeof m.data === 'object' && !Array.isArray(m.data) && Object.values(m.data).every(v => typeof v === 'string') && JSON.stringify(m.data).length < 500000,
   'brb:score': m => Number.isFinite(m.score) && m.score >= 0 && m.score <= 1e9 && (m.label === undefined || typeof m.label === 'string'),
+  'brb:progress': m => Number.isInteger(m.done) && Number.isInteger(m.total) && m.total >= 1 && m.total <= 500 && m.done >= 0 && m.done <= m.total
+    && Number.isInteger(m.score) && m.score >= 0 && m.score <= 1e9 && (m.label === undefined || (typeof m.label === 'string' && m.label.length <= 40)),
   'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)) && (m.helped === undefined || m.helped === true),
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
@@ -234,6 +236,9 @@ addEventListener('message', e => {
       lessonEvent({ event: 'score', score: m.score, label: m.label || '', ...(helped ? { helped: true } : {}) });
       break;
     }
+    // BRB.setProgress: a set game's questions answered so far (Arithmetic Lab after each problem). Only a lesson step
+    // keeps it (started with the score so far; done once every question is answered, end screen or not).
+    case 'brb:progress': lessonEvent({ event: 'progress', done: m.done, total: m.total, score: m.score, label: m.label || '' }); break;
     case 'brb:gameover': {
       lessonEvent({ event: 'end', score: m.score, ...(m.won === true ? { won: true } : {}), ...(m.helped === true ? { helped: true } : {}) });
       helpedScore = m.helped === true;   // the SDK sends this set's score next: it goes with the same mark

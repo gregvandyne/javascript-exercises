@@ -1274,6 +1274,9 @@
       "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
       "sampleName": "Sample pupil",
       "sampleNote": "A sample: each pupil’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
+    },
+    "gradebook": {
+      "emptyWhat": "Once something is assigned and pupils join the class, each pupil gets a row here: how many steps of each assignment they’ve done, their scores, and answers waiting for you to read."
     }
   }
 }

@@ -1562,6 +1562,15 @@
       set: function (k, v) { local.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); },
       remove: function (k) { local.removeItem(k); }
     },
+    // How far the player is through a set of questions (docs/sdk.md): { done, total, score, label? } after each one is
+    // answered. Opened from a student's lesson step, the page counts the step as started with the score so far, and as
+    // done once done reaches total (the end screen need not be reached). Anywhere else nothing is kept. -> true when sent.
+    setProgress: function (p) {
+      p = p || {}; var d = Math.floor(+p.done), n = Math.floor(+p.total), s = Math.floor(+p.score);
+      if (!(n >= 1 && n <= 500 && d >= 0 && d <= n && s >= 0 && s <= 1e9)) return false;
+      send('brb:progress', { done: d, total: n, score: s, label: typeof p.label === 'string' ? p.label.slice(0, 40) : '' });
+      return true;
+    },
     score: { submit: function (score, label) { var n = Math.floor(+score); if (!isFinite(n) || n < 0) return; send('brb:score', { score: n, label: String(label || '').slice(0, 40) }); } },
     // helped (optional, Oomba Canvas 1.3.0): the teacher showed an answer in this set (those problems are not in the score).
     // r.label (optional, at most 40 characters): a few words that go with the score, as BRB.score.submit's label does.

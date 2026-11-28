@@ -32,7 +32,7 @@
 		type Step,
 		type Values
 	} from '$lib/logic';
-	import { finished, load, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
+	import { finished, load, progress, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
 	import { hintsFor } from '$lib/hints';
 	import Speaker from '$lib/Speaker.svelte';
 	import { LANG, m, segments, t, tn, tx, type Msg } from '$lib/i18n';
@@ -75,6 +75,9 @@
 	/** Steps got wrong and put right on the way, this run (they don't change the score; the teacher sees them). */
 	let fixes = $state(0);
 	let firstTry = $state(true);
+	/** Guided (wrong digits marked as they're typed, so Check never fails): a wrong digit on this problem was its wrong
+	 *  try. It counts once in Wrong (and the problem isn't counted Right), as a failed Check does in the other modes. */
+	let missed = $state(false);
 	let leaveDialog = $state<ConfirmDialog>();
 	/** Long division, typing with the page bringing down: after a subtraction, the bring-down step waiting for the
 	 *  student to press Bring down (or Enter), so they see it happen and know what's next. */
@@ -518,6 +521,7 @@
 		values = {};
 		before = {};
 		firstTry = true;
+		missed = false;
 		sticky = false;
 		setNudge(null);
 		count = null;
@@ -591,6 +595,7 @@
 			if (flags.markNow && (isWrong(sh, values, id) || isWrong(sh, values, l.tens))) {
 				misses += 1;
 				fixes += 1;
+				wrongTry();
 				inputs[id]?.select();
 				return;
 			}
@@ -602,6 +607,7 @@
 		if (flags.markNow && isWrong(sh, values, id)) {
 			misses += 1;
 			fixes += 1;
+			wrongTry();
 			el?.select();
 			return;
 		}
@@ -803,6 +809,7 @@
 			watchShown = false;
 			at++;
 			furthest = Math.min(Math.max(furthest, at), steps.length - 1);
+			if (at >= steps.length) settledOne();
 		} else {
 			const i = at;
 			await busyDo(async () => {
@@ -847,11 +854,22 @@
 
 	// --- Check, and on ---
 
+	/** A wrong digit Guided marked: this problem's wrong try (counted once), the feedback as friendly as ever. */
+	function wrongTry() {
+		if (way !== 'type' || !scored || missed) return;
+		missed = true;
+		wrongCount++;
+	}
+	/** A problem settled (right, or its answer shown): the lesson step hears how far the student is, so leaving before
+	 *  See the score still counts (the last one finishes the step). */
+	function settledOne() {
+		if (!preview) progress(index + 1, sheets.length, rightCount, fixes);
+	}
 	async function check() {
 		if (!sheet || !canCheck) return;
 		if (allRight(sheet, values)) {
 			fb = 'right';
-			if (scored) rightCount++;
+			if (scored && !missed) rightCount++;
 		} else if (firstTry) {
 			fb = 'again';
 			fails += 1;
@@ -860,11 +878,13 @@
 		} else {
 			fb = 'reveal';
 			fails += 1;
-			if (scored) wrongCount++;
+			if (scored && !missed) wrongCount++;
+			missed = true;
 			before = { ...values };
 			values = correctValues(sheet);
 		}
 		phase = 'feedback';
+		if (fb !== 'again') settledOne();
 		current = null;
 		await tick();
 		if (fb === 'right') soundRight(feedbackEl);
@@ -876,16 +896,19 @@
 		if (!sheet || phase !== 'feedback' || fb !== 'again') return;
 		fb = 'reveal';
 		sticky = false;
-		if (scored) wrongCount++;
+		if (scored && !missed) wrongCount++;
+		missed = true;
 		before = { ...values };
 		values = correctValues(sheet);
+		settledOne();
 		await tick();
 		soundWrong(feedbackEl);
 		feedbackBtn?.focus();
 	}
 	/** Leaving in the middle of a set (Practice, Back) asks first, in the page's own dialog: the set isn't kept. */
 	async function leave(go: () => void) {
-		const begun = phase === 'feedback' || (phase === 'working' && (index > 0 || Object.values(values).some(Boolean)));
+		// once the set is started, every time (audit 4: a problem not typed in yet, a count or Watch left without a word)
+		const begun = phase === 'feedback' || phase === 'working';
 		if (!begun || preview || !leaveDialog) return go();
 		const done = index + +settled;
 		const yes = await leaveDialog.ask(t('ui.leave.title'), tn('ui.leave.text', sheets.length, { done }), [
