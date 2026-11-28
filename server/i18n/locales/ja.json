@@ -1330,7 +1330,8 @@
       "fronts": "{title}：表",
       "backs": "{title}：裏",
       "how": "両面印刷（長辺とじ）して、点線に沿って切ってください。裏はそれぞれの表の後ろにきます。"
-    }
+    },
+    "loading": "{title}を読み込んでいます…"
   },
   "friends": {
     "title": "フレンド",
@@ -7146,7 +7147,10 @@
       "minutes": "{count, plural, other {#分}}",
       "swipe": "表を横にスワイプすると、すべてのステップが見られます",
       "quizScore": "{total}問中{right}問正解（{pct}%）",
-      "helped": "先生が答えを見せました"
+      "helped": "先生が答えを見せました",
+      "stepFixes": "{count, plural, other {# か所なおした}}",
+      "sampleName": "生徒の例",
+      "sampleNote": "例：生徒が始めると、一人ひとりの行がこのように表示されます。算数ラボでは、とちゅうでまちがえて直したステップの数も表示されます。"
     },
     "student": {
       "doneOf": "{done}/{total} できた",

@@ -304,12 +304,14 @@ test('Arithmetic Lab: My worksheets lists the saved activities; open one in the 
     await page.locator('input.title').fill('Week 3 long division');
     await page.locator('button.remove').nth(2).click();
     await page.getByRole('button', { name: /Save changes/ }).first().click();
+    // students may already have it: the page's own dialog asks first (docs/decisions.md "Arithmetic Lab: the owner's playthrough")
+    await page.locator('dialog.confirm[open]').getByRole('button', { name: 'Save for everyone' }).click();
     await page.waitForFunction(() => window.__log.some(x => x.op === 'save'));
     const sv = (await g.log('save')).at(-1);
     assert.equal(sv.id, A, 'saved again under the same code'); assert.equal(sv.title, 'Week 3 long division');
     assert.deepEqual(sv.items[0].p, [[84, 4], [96, 3]]);
     // back to Your activities (the opened one is there now), then My worksheets again
-    await page.locator('button.back:visible, button.back-icon:visible').first().click();
+    await page.locator('button.back:visible, button.back-list:visible').first().click();
     await page.locator('.card', { hasText: 'Week 3 long division' }).waitFor();
     await page.locator('#bb-ws').click();
     await page.locator(`[data-set="${A}"]`).waitFor();

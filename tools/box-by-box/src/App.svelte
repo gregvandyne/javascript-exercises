@@ -5,7 +5,7 @@
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
 	// practicing alone.
 	import { nav, go, goBack, show } from '$lib/nav.svelte';
-	import { openedSet } from '$lib/oomba';
+	import { assignFirst, openedSet } from '$lib/oomba';
 	import { parseItem, kindInfo } from '$lib/logic';
 	import { adopt } from '$lib/activities.svelte';
 	import Home from './pages/Home.svelte';
@@ -25,7 +25,7 @@
 		nav.view = p
 			? { name: 'play', activity: p, title: kindInfo(p.kind).title, from: 'link', setId: opened.id, mine: opened.mine, item: opened.item }
 			: { name: 'invalid' };
-	}
+	} else if (assignFirst()) nav.view = { name: 'home' };
 
 	function editOwn() {
 		const v = nav.view;

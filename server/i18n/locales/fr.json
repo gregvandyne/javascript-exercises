@@ -1330,7 +1330,8 @@
       "fronts": "{title} : recto",
       "backs": "{title} : verso",
       "how": "Imprime en recto verso (retournement sur le bord long), puis découpe le long des pointillés. Chaque verso tombe derrière son recto."
-    }
+    },
+    "loading": "Chargement de {title}…"
   },
   "friends": {
     "title": "Amis",
@@ -7146,7 +7147,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Fais glisser le tableau sur le côté pour voir toutes les étapes",
       "quizScore": "{right} sur {total} justes ({pct} %)",
-      "helped": "L'enseignant a montré une réponse"
+      "helped": "L'enseignant a montré une réponse",
+      "stepFixes": "{count, plural, one {# étape corrigée} other {# étapes corrigées}}",
+      "sampleName": "Élève exemple",
+      "sampleNote": "Un exemple : la ligne de chaque élève ressemblera à ceci dès qu’il commence. Labo d’arithmétique ajoute combien d’étapes il a ratées puis corrigées en chemin."
     },
     "student": {
       "doneOf": "{done} sur {total} terminées",

@@ -32,7 +32,7 @@ frame.addEventListener('load', () => {
   stopLoud();   // a (re)loaded game starts with the microphone off
   if (stopped) return;
   if (framePins > 0) { framePins--; return; }   // a reload we triggered below
-  if (!frameSettled) { frameSettled = true; focusOnLoad(); return; }   // the game's own first load
+  if (!frameSettled) { frameSettled = true; loaded(); focusOnLoad(); return; }   // the game's own first load
   // A game that keeps reloading itself with no tap from the player: after two pins in 30 s, stop instead of looping.
   if (!(ua && ua.isActive)) {
     const now = Date.now(); pinnedAt = pinnedAt.filter(at => now - at < 30e3);
@@ -56,8 +56,11 @@ function focusOnLoad() {
 // whole game to reach the way out. Both are absolutely positioned; the visual stack is unchanged.
 const fsb = stage.querySelector('.fsback');
 if (fsb) fsb.after(frame); else stage.prepend(frame);
+// "Loading <game>…" over the stage from the first paint (the frame is blank until the game's page has loaded, several
+// seconds for a big one on a school network): gone once the game's own page has loaded, or the game said it is ready.
+function loaded() { const l = document.getElementById('stage-load'); if (l) l.remove(); }
 function stopGame() {
-  stopped = true; stopLoud(); frame.src = 'about:blank';
+  stopped = true; stopLoud(); loaded(); frame.src = 'about:blank';
   const box = document.createElement('div'); box.className = 'game-stopped'; box.setAttribute('role', 'alert'); box.dir = document.documentElement.dir || 'ltr';
   box.innerHTML = `<div><p>${esc(t('js.play.stopped'))}</p><button class="btn btn-primary" type="button">${esc(t('js.play.restart'))}</button></div>`;
   box.querySelector('button').addEventListener('click', () => location.reload());
@@ -209,7 +212,7 @@ const relay = d.match ? startRelay(d, stage) : null;
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
-    case 'brb:ready': hideCourseBar(); if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
+    case 'brb:ready': loaded(); hideCourseBar(); if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
     // A poll (BRB.poll, official games on the list): count the choice, hand the totals back to the frame.
     case 'brb:poll': {
       const answer = r => { try { frame.contentWindow.postMessage({ brb: 1, type: 'brb:pollResult', n: m.n, ...(r ? { a: r.a, b: r.b, total: r.total, min: r.min } : { off: true }) }, '*'); } catch { /* frame gone */ } };

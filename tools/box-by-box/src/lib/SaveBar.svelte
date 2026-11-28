@@ -1,25 +1,41 @@
 <script lang="ts">
 	// Save on the activity's own form: the same save as Share's (the problems and support on Oomba, for a link and a class
-	// code), so a teacher doesn't have to open Share to save. Share then shows the link.
+	// code), so a teacher doesn't have to open Share to save. Share then shows the link. School staff can assign it to a
+	// class from here once it is saved; opened from an Assign button (assignFirst), Save is "Save and assign". An
+	// activity students may already have asks first (saveMindful: for everyone, or as a copy).
 	import { t } from './i18n';
-	import { Check, Save } from '@lucide/svelte';
-	import { isShared, shareActivity, type Activity } from './activities.svelte';
-	import { isGuest, isPreview } from './oomba';
+	import { Check, GraduationCap, Save } from '@lucide/svelte';
+	import { isShared, saveMindful, type Activity } from './activities.svelte';
+	import { assign, assignFirst, canAssign, isGuest, isPreview } from './oomba';
+	import { go, show } from './nav.svelte';
+	import ConfirmDialog from './ConfirmDialog.svelte';
 
 	let { activity }: { activity: Activity } = $props();
 
 	let saving = $state(false);
 	let problem = $state('');
+	let dialog = $state<ConfirmDialog>();
 	const saved = $derived(isShared(activity));
 	const noSave = isPreview() ? t('ui.save.preview') : isGuest() ? t('ui.save.guest') : '';
+	const staff = canAssign();
+	const andAssign = staff && assignFirst();
 
 	async function save() {
 		if (saving || saved) return;
 		saving = true;
 		problem = '';
-		const r = await shareActivity(activity);
+		const r = await saveMindful(activity, dialog ? (a, b, c) => dialog!.ask(a, b, c) : undefined);
 		saving = false;
 		if (r.error) problem = r.error;
+		const id = r.copy ? r.copy.setId : r.id;
+		if (r.copy) {
+			show({ name: 'home' });
+			go({ name: 'edit', id: r.copy.id });
+		}
+		if (!r.error && id && andAssign) toClass(id);
+	}
+	function toClass(id = activity.setId) {
+		if (id && !assign(id)) problem = t('ui.assign.tapAgain');
 	}
 </script>
 
@@ -28,12 +44,16 @@
 		<p class="note">{noSave}</p>
 	{:else}
 		<button type="button" class="btn-primary" disabled={saving || saved} onclick={save}>
-			{#if saved}<Check size={16} aria-hidden="true" /> {t('ui.share.saved')}{:else if saving}{t('ui.saving')}{:else}<Save size={16} aria-hidden="true" /> {activity.setId ? t('ui.share.saveChanges') : t('ui.ed.save')}{/if}
+			{#if saved}<Check size={16} aria-hidden="true" /> {t('ui.share.saved')}{:else if saving}{t('ui.saving')}{:else}<Save size={16} aria-hidden="true" /> {andAssign ? t('ui.ed.saveAssign') : activity.setId ? t('ui.share.saveChanges') : t('ui.ed.save')}{/if}
 		</button>
-		<p class="note" aria-live="polite">{saved ? t('ui.ed.savedHint') : t('ui.ed.saveHint')}</p>
+		{#if staff && saved}
+			<button type="button" class="btn-ghost" onclick={() => toClass()}><GraduationCap size={16} aria-hidden="true" /> {t('ui.share.assign')}</button>
+		{/if}
+		<p class="note" aria-live="polite">{saved ? t(staff ? 'ui.ed.savedHintStaff' : 'ui.ed.savedHint') : t(andAssign ? 'ui.ed.saveAssignHint' : 'ui.ed.saveHint')}</p>
 		{#if problem}<p class="note bad" role="alert">{problem}</p>{/if}
 	{/if}
 </div>
+<ConfirmDialog bind:this={dialog} />
 
 <style>
 	.save-bar {

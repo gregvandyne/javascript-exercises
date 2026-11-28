@@ -3,7 +3,9 @@
 	// Sharing an activity: saved on Oomba (its problems and support, not its title) for a student link and a QR code.
 	// Saving again after a change keeps the same link.
 	import { Check, Copy, GraduationCap, KeyRound, Printer, QrCode } from '@lucide/svelte';
-	import { PRINT_NOTE_MAX, cleanPrintNote, isShared, setPrintNote, shareActivity, type Activity } from './activities.svelte';
+	import { PRINT_NOTE_MAX, cleanPrintNote, isShared, saveMindful, setPrintNote, type Activity } from './activities.svelte';
+	import ConfirmDialog from './ConfirmDialog.svelte';
+	import { go, show } from './nav.svelte';
 	import { assign, canAssign, canPrint, classCode, copy, isGuest, isPreview, printSheet, setLink } from './oomba';
 	import { toItem } from './logic';
 	import { makeQr, qrExtent, qrPath, qrPng } from './qr';
@@ -17,13 +19,18 @@
 	const qr = $derived(link ? makeQr(link) : null);
 	const noSave = isPreview() ? t('ui.save.preview') : isGuest() ? t('ui.save.guest') : '';
 
+	let dialog = $state<ConfirmDialog>();
 	async function save() {
 		if (saving || saved) return;
 		saving = true;
 		problem = '';
-		const r = await shareActivity(activity);
+		const r = await saveMindful(activity, dialog ? (a, b, c) => dialog!.ask(a, b, c) : undefined);
 		saving = false;
 		if (r.error) problem = r.error;
+		if (r.copy) {
+			show({ name: 'home' });
+			go({ name: 'edit', id: r.copy.id });
+		}
 	}
 
 	// --- a worksheet to print: the activity's problems (a fresh set for each student: the ones it has now), as numbers
@@ -133,6 +140,8 @@
 		{/if}
 	</div>
 </div>
+
+<ConfirmDialog bind:this={dialog} />
 
 <style>
 	.share {

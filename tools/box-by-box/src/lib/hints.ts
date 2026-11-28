@@ -12,7 +12,10 @@ export function hintsFor(sheet: Sheet, i: number, v: Values): string[] {
 	const st = sheet.steps[i];
 	if (!st) return [];
 	if (st.hints) return st.hints(v);
-	const digits = st.boxes.filter((id) => !id.includes('c') || id.startsWith('s')).map((id) => boxOf(sheet, id).digit).join('');
+	// (a product whose tens digit goes on into the box on its left is read tens first)
+	const lift = st.liftCarry;
+	const order = lift && !lift.tens.includes('c') ? [lift.tens, lift.ones, ...st.boxes.filter((b) => b !== lift.tens && b !== lift.ones)] : st.boxes;
+	const digits = order.filter((id) => !id.includes('c') || id.startsWith('s')).map((id) => boxOf(sheet, id).digit).join('');
 	const asked = st.prompt(v);
 	switch (st.kind) {
 		case 'divide': {

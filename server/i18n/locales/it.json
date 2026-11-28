@@ -1331,7 +1331,8 @@
       "fronts": "{title}: fronti",
       "backs": "{title}: retri",
       "how": "Stampa fronte e retro (girando sul lato lungo), poi ritaglia lungo le linee tratteggiate. Ogni retro capita dietro il suo fronte."
-    }
+    },
+    "loading": "Caricamento di {title}…"
   },
   "friends": {
     "title": "Amici",
@@ -7147,7 +7148,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Scorri la tabella di lato per vedere tutti i passaggi",
       "quizScore": "{right} su {total} giuste ({pct}%)",
-      "helped": "L'insegnante ha mostrato una risposta"
+      "helped": "L'insegnante ha mostrato una risposta",
+      "stepFixes": "{count, plural, one {# passaggio corretto} other {# passaggi corretti}}",
+      "sampleName": "Studente di esempio",
+      "sampleNote": "Un esempio: la riga di ogni studente sarà così appena inizia. Il Laboratorio di aritmetica aggiunge quanti passaggi ha sbagliato e corretto strada facendo."
     },
     "student": {
       "doneOf": "{done} su {total} fatti",

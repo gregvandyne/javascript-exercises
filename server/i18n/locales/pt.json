@@ -1331,7 +1331,8 @@
       "fronts": "{title}: frentes",
       "backs": "{title}: versos",
       "how": "Imprima frente e verso (virando pela borda longa) e recorte nas linhas tracejadas. Cada verso fica atrás da sua frente."
-    }
+    },
+    "loading": "Carregando {title}…"
   },
   "friends": {
     "title": "Amigos",
@@ -7148,7 +7149,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Deslize a tabela para o lado para ver todas as etapas",
       "quizScore": "{right} de {total} certas ({pct}%)",
-      "helped": "O professor mostrou uma resposta"
+      "helped": "O professor mostrou uma resposta",
+      "stepFixes": "{count, plural, one {# passo corrigido} other {# passos corrigidos}}",
+      "sampleName": "Aluno de exemplo",
+      "sampleNote": "Um exemplo: a linha de cada aluno fica assim quando ele começa. O Laboratório de Aritmética mostra também quantos passos ele errou e corrigiu no caminho."
     },
     "student": {
       "doneOf": "{done} de {total} feitas",

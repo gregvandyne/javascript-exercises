@@ -16770,3 +16770,57 @@ display only (the data, the popularity sorts and the admin tables stay):
   with it, so they go too.
 Unused keys dropped: cards.plays, cards.new, cards.noRatings, cards.starsLabel, game.stats.ratings, noRatings, plays,
 likes, js.game.rated. Tests: tests/unit/no-counts.test.js.
+
+## Arithmetic Lab: the owner's playthrough (28 Nov 2026)
+
+The owner played Arithmetic Lab end to end on oomba.ai, as a student and as a teacher, and listed 17 things to fix; the
+phone layout was checked too (390 x 844 and 320 x 568, light and dark). In the game (`tools/box-by-box`, rebuilt into
+`seed-games/arithmetic-lab.html`):
+- **Bring down.** Long division typed with the page bringing down (Guided): after a subtraction the band asks "Now bring
+  down the next digit, 2. Press Bring down (or Enter)." with a Bring down button in place of Check, which has the focus.
+  It slides the digit down, then the focus goes to the answer's next digit on top, which pulses, and the question says
+  "The answer's next digit goes on top." Count up and Watch bring down by themselves, as before.
+- **The ladder and the area model.** A number of groups goes on by itself once no more digits could fit (20 groups of 7
+  from 945: 200 × 7 is more than 945), so the next digits never land in it; one that could still grow (10) says "Press
+  Enter when that's your number." Tab follows the work (groups, product, what's left), skips what the page writes, and
+  never reaches the quotient before the ladder ends (those fields are out of the tab order until then).
+- **One remainder.** The remainder (as R) is what's left on the last rung: the page writes it in (`Field.copyOf`), never
+  typed twice. A fraction's top is still typed (it may be simplified).
+- **One rule for products.** Multiplication's every product is typed whole in its column's box: the last one of a row
+  too (13 in the tens box; its 1 moves into the box on the left, as a carry moves up). Before, the last one started in
+  the box on the left.
+- **Accessible names.** A part's field is named by its product ("Box for 40 × 20", "Line for 9 × 10"), not "Box" or
+  "Product, step NaN"; a decimal point is a valid value in its box (the digit boxes' pattern made "." invalid).
+- **Partial products keep a 0 digit's line.** 610 × 9 lists 9 × 0 = 0 as a written line, and the next question says
+  "9 × 0 is 0, so its line is written for you."
+- **Step fixes count.** Each wrong digit Guided marks, and each wrong count in Count up, is a step fix: the end screen
+  says "You fixed 2 steps along the way", and the score goes with the label `fixes:2` (`BRB.gameOver` now takes a
+  `label`, passed on with the score), which the class's progress page (and the game page's best score) reads as
+  "2 step fixes" in the reader's language (`services/progress.js scoreLabel`).
+- **Leaving a set** half done (← Practice, Back) asks first in the page's own dialog (`lib/ConfirmDialog.svelte`):
+  "Leave this set? You've done 2 of 5 problems..." Keep going / Leave the set. Never confirm() or alert().
+- **Give up? Show the answer** after a Check that didn't pass, in every method (it counts as wrong, as a second try does).
+- **Decimals.** The area model's start screen for decimals says "2.3 is 2 + 0.3, and 1.4 is 1 + 0.4"; the standard
+  multiplication of decimals adds where the point goes. MethodPlayer's "N to go" is translated, as the other player's.
+- **Teachers.** The editor's way back is a labeled "← Your activities" button (an arrow alone, under the play page's own
+  Back arrow, was taken for it and left the game; on a phone the title goes on its own line). Save on an activity saved
+  before (students may have it: its class code, its link, a class it is assigned to) asks first: Save for everyone, or
+  Save as a copy (a new activity with its own link; this one goes back to what students have). A saved activity shows
+  Assign to a class next to Save for school staff.
+On the site:
+- **Assign** (the game page, the Assign page, a class's shelf): Arithmetic Lab with nothing made yet goes straight into the
+  game (`/play/arithmetic-lab?mode=assign`, BRB.params.mode), at Your activities with "Choose an activity to assign, or
+  make a new one" and New activity open; Save and assign saves it and opens the Assign page for it.
+- **The teacher's own title.** A set's title (`game_sets.title`) is the lesson's title when it has one (`describe` gives
+  it; `F.assignGame` takes a `summary`), with the label under it as the lesson's summary: on the Assign page ("Students
+  open: 4b math - Long division test", "Long division, 16 problems, Guided" under it), the class page's assigned rows
+  (wide and phone) and the progress page's heading. Lessons assigned before keep their names.
+- **No students yet:** the lesson's progress page shows a faded sample row under "No students yet" (each step done, a
+  game's score, Arithmetic Lab's step fixes) and says what it is.
+- **Loading.** The play page shows "Loading Arithmetic Lab…" with a spinner over the stage, in the play page's ink in
+  both themes, from the first paint until the game's page has loaded (or says it is ready): every game gets it.
+- **The About text** was cut at 600 characters by the seed import's update (`games.updateMeta`, a builder's limit);
+  `scripts/import-game.js` now keeps the team's own description whole. The translations were never cut.
+Tests: `tests/unit/arithmetic-lab-playthrough-browser.test.js` (the game on 390 and 320 wide phones),
+`tests/unit/arithmetic-lab-teacher-browser.test.js` (the site), `tests/unit/box-by-box.test.js` (the title, the summary,
+step fixes), and the existing Arithmetic Lab tests updated (Bring down, the remainder, the zero line).
