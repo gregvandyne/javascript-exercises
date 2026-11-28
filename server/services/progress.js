@@ -3,7 +3,9 @@
 // A step is "done" when:
 //   read      the student marks it done
 //   question  the student sends an answer (they can change it; a changed answer goes back to the teacher to review)
-//   game      the game reports a score or the end of a game, the student has played for 2 minutes, or marks it done
+//   game      the game reports a score or the end of a game, the student has played for 2 minutes, or marks it done;
+//             a set game (BRB.setProgress: Arithmetic Lab) also once every question of the set is answered, whether or
+//             not the student goes on to the end screen (gameProgress)
 //   build     the student hands in the game they made (it is shared with their school so the teacher can play it)
 //   quiz      every question is answered (checked here, once each)
 //   figures   the student hands in their answers to a Figures worksheet (marked here: services/figures-steps.js)
@@ -261,9 +263,33 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   const won = s === null && label === 'won' && !(old && (old.label || old.score !== null)) ? { label: 'won' } : {};
   // The game's own words for the same score come after the end of the run (BRB.gameOver sends the end, then the score
   // with its label: Arithmetic Lab's "fixes:2"): they take the place of a bare 'won' or no label.
-  const words = !better && s !== null && old && s === old.score && label && label !== 'won' && (!old.label || old.label === 'won') ? { label: String(label).slice(0, 40) } : {};
+  // A run's end after its progress part way (gameProgress's "part:4/5") with the same score: the end's own words (or
+  // none) replace the part-way label.
+  const words = !better && s !== null && old && s === old.score && label !== 'won' && (isPart(old.label) || (label && (!old.label || old.label === 'won'))) ? { label: String(label || '').slice(0, 40) } : {};
   return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...words, ...h, ...won, ...done(old) }) });
 }
+/** A set game's progress (BRB.setProgress, after each question: Arithmetic Lab's problems): done of total answered, and
+ *  the score so far. The first one starts the step (a student who answers and leaves is never "not started"); the score
+ *  so far is kept while it is the best, labelled "part:3/5" (with the game's own words after it: "part:3/5 fixes:2"),
+ *  which the progress page reads as "3 of 5 answered"; the last one (done = total) is the end of the run, as gameScore
+ *  (the step is done, with the game's own label), so leaving before the end screen still counts. A finished run's
+ *  score is never replaced by an equal one that is only part way. -> { ok, row } */
+export function gameProgress(u, clId, stepId, { done: n, total, score, label = '' } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== 'game' || hostedLive(c.step)) return fail('notFound');
+  const d = Math.floor(+n), all = Math.floor(+total), s = Math.floor(+score);
+  if (!(all >= 1 && all <= 500 && d >= 0 && d <= all && s >= 0 && s <= 1e9)) return fail('badRequest');
+  const words = String(label || '').slice(0, 40);
+  if (d >= all) return gameScore(u, clId, stepId, s, words);
+  const old = get(clId, stepId, u.id);
+  if (d === 0 || TY.passOfStep(c.step)) return ok({ row: old || upsert(clId, stepId, u.id, {}) });
+  const part = `part:${d}/${all}${words && /^fixes:\d{1,4}$/.test(words) ? ` ${words}` : ''}`.slice(0, 40);
+  const better = !old || old.score === null || s > old.score || (s === old.score && isPart(old.label) && partDone(old.label) <= d);
+  return ok({ row: upsert(clId, stepId, u.id, better ? { score: s, label: part, ...(old && old.helped ? { helped: 0 } : {}) } : {}) });
+}
+const PART = /^part:(\d{1,3})\/(\d{1,3})(?: fixes:(\d{1,4}))?$/;
+const isPart = label => PART.test(String(label || ''));
+const partDone = label => +(PART.exec(String(label || '')) || [0, 0])[1];
 /** A build step: the game the student is making (made once, then reopened). */
 export function buildGame(u, clId, stepId, gameId) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
@@ -576,5 +602,10 @@ export function manipAnswer(u, clId, stepId, i, action, work) {
 export function scoreLabel(t, label) {
   const m = /^fixes:(\d{1,4})$/.exec(String(label || ''));
   if (m) return t('progress.lesson.stepFixes', { count: +m[1] });
+  // part way through a set (gameProgress): "3 of 5 answered", and its step fixes so far
+  const p = PART.exec(String(label || ''));
+  if (p) return [t('progress.lesson.partDone', { done: +p[1], total: +p[2] }), ...(p[3] ? [t('progress.lesson.stepFixes', { count: +p[3] })] : [])].join(' · ');
   return String(label || '');
 }
+/** A label the site words itself (scoreLabel), not a game's own words shown as they are. */
+export const codedLabel = label => /^fixes:\d{1,4}$/.test(String(label || '')) || isPart(label);

@@ -66,8 +66,34 @@
 		const ok = rows.filter(valid).map((r) => [Number(r.first), Number(r.second)] as [number, number]);
 		if (ok.length) {
 			activity.problems = ok;
+			if (numbers !== 'decimal') widen(ok);
 			save();
 		}
+	}
+	/** The most digits a field takes: the activity's own limit (Multiplication's top number up to 9999), never the
+	 *  range's (a range of 10 to 99 cut 610 to 61: audit 4). */
+	const limitDigits = (f: 0 | 1) => String(s.ranges[f].limits[1]).length;
+	/** A word under the problems: a range made wider for a typed problem, or a field at its limit. */
+	let fieldNote = $state<string | null>(null);
+	/** A typed problem outside the settings' range (whole numbers): the range grows to take in numbers of its size (610
+	 *  in a top range of 10 to 99: 10 to 999; a 9 below 10: from 2, the smallest there is), and says so (New problems
+	 *  and fresh problems for each student use it too). Within the activity's limits, which the problem's own check
+	 *  keeps to. */
+	function widen(ps: [number, number][]) {
+		if (!activity) return;
+		const said: string[] = [];
+		s.ranges.forEach((r, f) => {
+			const [lo, hi] = planRange(r.key);
+			const vs = ps.map((p) => p[f]);
+			const small = Math.min(...vs);
+			const big = Math.max(...vs);
+			const a = small < lo ? Math.max(r.limits[0], Math.min(small, 10 ** (String(small).length - 1))) : lo;
+			const b = big > hi ? Math.min(r.limits[1], Math.max(big, 10 ** String(big).length - 1)) : hi;
+			if (a === lo && b === hi) return;
+			(activity!.plan as Record<string, unknown>)[r.key] = [a, b];
+			said.push(t('ui.ed.widened', { x: r.name, a, b }));
+		});
+		if (said.length) fieldNote = said.join(' ');
 	}
 
 	// --- moving between the tiles' fields ---
@@ -122,21 +148,18 @@
 		focusSpot(move(at, dir, columns(), rows.length, layout) ?? (dir === 'next' ? addRow() : null));
 	}
 	const key = (f: 0 | 1) => (f === 0 ? 'first' : 'second') as 'first' | 'second';
+	const atLimit = (f: 0 | 1) => t('ui.ed.atLimit', { x: s.ranges[f].name, n: limitDigits(f), max: s.ranges[f].limits[1] });
 	function typed(i: number, f: 0 | 1, e: Event) {
 		const el = e.currentTarget as HTMLInputElement;
 		// decimals: digits and one point (a comma is taken as the point), and no jumping on: a point may come next
-		const v =
-			numbers === 'decimal'
-				? el.value
-						.replace(/,/g, '.')
-						.replace(/[^\d.]/g, '')
-						.replace(/(\..*)\./g, '$1')
-						.slice(0, fieldMax(f) + 3)
-				: el.value.replace(/\D/g, '').slice(0, fieldMax(f));
+		const raw = numbers === 'decimal' ? el.value.replace(/,/g, '.').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1') : el.value.replace(/\D/g, '');
+		const v = raw.slice(0, limitDigits(f) + (numbers === 'decimal' ? 3 : 0));
+		fieldNote = v.length < raw.length ? atLimit(f) : null;
 		el.value = v;
 		rows[i][key(f)] = v;
 		commitRows();
-		if (numbers !== 'decimal' && v.length >= fieldMax(f)) {
+		// on to the next field once no more digits fit (the activity's limit; Enter, a space or × go on sooner)
+		if (numbers !== 'decimal' && v.length >= limitDigits(f)) {
 			const n = move({ index: i, field: f }, 'next', columns(), rows.length, layout);
 			if (n) focusSpot(n);
 		}
@@ -165,6 +188,10 @@
 		} else if (e.key === 'Backspace' && n === 0) {
 			e.preventDefault();
 			go2(at, 'previous');
+		} else if (numbers !== 'decimal' && /^\d$/.test(e.key) && a === b && n >= limitDigits(f)) {
+			// full: say so, rather than leave the digit out without a word
+			e.preventDefault();
+			fieldNote = atLimit(f);
 		} else if (e.key.length === 1 && !/\d/.test(e.key) && !(numbers === 'decimal' && (e.key === '.' || e.key === ','))) {
 			e.preventDefault();
 			if (jumpChar(e.key)) go2(at, 'next');
@@ -312,22 +339,24 @@
 		{ name: 'onMyOwn', title: t('ui.level.onMyOwn'), text: t('ui.ed.tab.onMyOwn') }
 	];
 	const tabs = $derived(
-		TABS.filter((t) => k.levels.includes(t.name)).map((t) => ({
-			...t,
+		// (the tab is "tb", never "t": t is the words, and a tab named t made every method but the standard one throw here,
+		// so the editor of a ladder or area model activity never opened: audit 4)
+		TABS.filter((tb) => k.levels.includes(tb.name)).map((tb) => ({
+			...tb,
 			text:
-				t.name === 'countUp' && method !== 'standard'
+				tb.name === 'countUp' && method !== 'standard'
 					? activity?.kind === 'divide'
-						? (COUNT_UP[method] ?? t.text)
+						? (COUNT_UP[method] ?? tb.text)
 						: COUNT_UP_TIMES
-					: method !== 'standard' && t.name === 'guided'
+					: method !== 'standard' && tb.name === 'guided'
 						? t('ui.ed.tab.guidedMethod')
-						: (k.levelText?.[t.name] ?? t.text)
+						: (k.levelText?.[tb.name] ?? tb.text)
 		}))
 	);
 	const level = $derived(activity?.settings.level ?? 'guided');
-	const onTab = $derived(tabs.some((t) => t.name === level));
+	const onTab = $derived(tabs.some((tb) => tb.name === level));
 	const demoMode = $derived(onTab ? level : 'guided');
-	const tab = $derived(tabs.find((t) => t.name === demoMode));
+	const tab = $derived(tabs.find((tb) => tb.name === demoMode));
 	let plays = $state(0);
 	function setLevel(l: Level) {
 		if (!activity) return;
@@ -615,6 +644,7 @@
 						<li class="add-tile"><button type="button" onclick={addProblem}><Plus size={20} aria-hidden="true" /> {t('ui.ed.add')}</button></li>
 					{/if}
 				</ol>
+				{#if fieldNote}<p class="field-note" role="status">{fieldNote}</p>{/if}
 				{#each rows as r, i (i)}
 					{@const bad = fault(r)}
 					{#if bad}<p class="fault" role="alert">{t('ui.ed.fault', { n: i + 1, x: bad })}</p>{/if}
@@ -1194,6 +1224,13 @@
 	}
 	.faulty .result {
 		color: var(--bad);
+	}
+	.field-note {
+		margin: 0.6rem 0 0;
+		color: var(--ink-soft);
+		font-size: 0.9rem;
+		font-weight: 600;
+		line-height: 1.4;
 	}
 	.fault {
 		margin: 0.6rem 0 0;

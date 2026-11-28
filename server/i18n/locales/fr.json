@@ -7289,7 +7289,8 @@
       "toReviewList": "Réponses à corriger :",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Score du quiz : {pct} % de bonnes réponses",
-      "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %"
+      "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %",
+      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture."
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",
@@ -7315,7 +7316,8 @@
       "helped": "L'enseignant a montré une réponse",
       "stepFixes": "{count, plural, one {# étape corrigée} other {# étapes corrigées}}",
       "sampleName": "Élève exemple",
-      "sampleNote": "Un exemple : la ligne de chaque élève ressemblera à ceci dès qu’il commence. Labo d’arithmétique ajoute combien d’étapes il a ratées puis corrigées en chemin."
+      "sampleNote": "Un exemple : la ligne de chaque élève ressemblera à ceci dès qu’il commence. Labo d’arithmétique ajoute combien d’étapes il a ratées puis corrigées en chemin.",
+      "partDone": "{done} sur {total} répondus"
     },
     "student": {
       "doneOf": "{done} sur {total} terminées",

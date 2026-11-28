@@ -7,7 +7,7 @@
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
 	import { methodInfo } from '$lib/methods';
-	import { assignFirst, canListSets, copy, setLink } from '$lib/oomba';
+	import { assignFirst, canListSets, copy, firstAssignMenu, setLink } from '$lib/oomba';
 	import { go, show } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
@@ -29,9 +29,9 @@
 		return `${kindInfo(a.kind).title} · ${tn('ui.home.problems', a.problems.length)}${way} · ${label}${perStudent ? ` · ${t('ui.home.perStudent')}` : ''}`;
 	}
 
-	// opened from an Assign button (?mode=assign): say what to do, with the New activity menu open
+	// opened from an Assign button (?mode=assign): say what to do, with the New activity menu open the first time only
 	const assigning = assignFirst();
-	let newOpen = $state(assigning);
+	let newOpen = $state(firstAssignMenu());
 	let menuFor = $state<string | null>(null);
 	let confirmFor = $state<string | null>(null);
 	let copied = $state<string | null>(null);

@@ -638,6 +638,8 @@
 "ui.ed.shared":"已分享",
 "ui.ed.share":"分享",
 "ui.ed.save":"儲存",
+"ui.ed.widened":"{x}：現在是 {a} 到 {b}，你的題目就放得下了。新題目也用這個範圍。",
+"ui.ed.atLimit":"{x}：最多 {n} 位數（到 {max}）。",
 "ui.ed.saveHint":"將活動儲存到 Oomba。要給學生,請打開「分享」。",
 "ui.ed.savedHint":"已儲存到 Oomba。要給學生,請打開「分享」。",
 "ui.ed.settings":"設定",
