@@ -7302,7 +7302,8 @@
       "toReviewList": "Antwoorden om na te kijken:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quizscore: {pct}% goed",
-      "quizOverall": "Quizscore over alle lesplannen: {pct}%"
+      "quizOverall": "Quizscore over alle lesplannen: {pct}%",
+      "emptyWhat": "Zodra er iets is toegewezen en leerlingen bij de klas komen, krijgt elke leerling hier een rij: hoeveel stappen van elke opdracht ze hebben gedaan, hun scores en antwoorden die op jou wachten."
     },
     "lesson": {
       "finished": "{done} van de {total} leerlingen klaar",
@@ -7328,7 +7329,8 @@
       "helped": "Leraar liet een antwoord zien",
       "stepFixes": "{count, plural, one {# stap verbeterd} other {# stappen verbeterd}}",
       "sampleName": "Voorbeeldleerling",
-      "sampleNote": "Een voorbeeld: zo ziet de regel van elke leerling eruit zodra die begint. Rekenlab laat ook zien hoeveel stappen fout waren en onderweg zijn verbeterd."
+      "sampleNote": "Een voorbeeld: zo ziet de regel van elke leerling eruit zodra die begint. Rekenlab laat ook zien hoeveel stappen fout waren en onderweg zijn verbeterd.",
+      "partDone": "{done} van {total} beantwoord"
     },
     "student": {
       "doneOf": "{done} van {total} klaar",

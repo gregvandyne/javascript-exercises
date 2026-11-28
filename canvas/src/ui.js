@@ -14,20 +14,28 @@
 // tap targets; the end card's buttons stack full width on a narrow card and wrap whole otherwise (style.js).
 // 1.5.0: 1.4.1 in the Crossword look (style.js only): the dotted mint board, the problem line in the dark Now bar, and
 // Check Crossword's flat green Go pill. Same data, same behavior as 1.4.1.
-import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
+// 1.6.0: the owner's fourth audit (docs/decisions.md "Builder class games: audit 4 quality"). A wrong step box says so
+// (kindly, marked, counted as a Not yet); Check reads a step box that is not done yet, and "Nothing is there yet" only
+// when nothing is; Clear empties the step boxes too; typing in a full box starts it again; tapping the box already
+// chosen keeps it chosen (the lost first digit in the Tens box). Hints use the problem's own digits and answer the last
+// mistake, under one 💡 Hint label. Stars for each problem (3 first time, 2 after a Not yet or a hint, 1 after more)
+// and the stars on the end card, a sound switch (the site's own mute), carried digits shown over their column, and the
+// activity's theme (task.theme: an icon, cheers, an end line; a problem's story) on screen. No timer, no ranking.
+import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText, themeOf } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
 import { teachControls } from './teach.js';
 import { worksheets } from './sets.js';
 
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
 const B = () => (typeof window !== 'undefined' && window.BRB) || {};
 const call = (fn, ...a) => { try { return fn ? fn(...a) : undefined; } catch (e) { return undefined; } };
 const sfx = name => call(() => { const s = B().sfx; if (s && s.play) s.play(name); });
+const hasSfx = () => !!(B().sfx && typeof B().sfx.mute === 'function');
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const h = (tag, attrs = {}, ...kids) => {
   const el = document.createElement(tag);
@@ -66,6 +74,9 @@ export function activity(input) {
   const teach = B().canTeach === true;
   const task = A.task && typeof A.task === 'object' ? A.task : {};
   const ownSteps = A.steps && typeof A.steps === 'object' ? A.steps : {}, ownHints = A.hints && typeof A.hints === 'object' ? A.hints : {};
+  // 1.6.0: the activity's theme (task.theme, written by the Builder in the builder's language): an icon beside the
+  // problem line and on the end card, a few short cheers for a right answer, and the end card's own line
+  const TH = themeOf(task.theme);
   // 1.2.0: what it is for (config.purpose): practice on screen (always), a printable worksheet, a question generator.
   // Printing goes through the page (BRB.print: the frame cannot print); the answer key only where the page says the
   // viewer may print it (BRB.canPrintKey: the activity's maker, school staff; never a student).
@@ -103,14 +114,19 @@ export function activity(input) {
         : (el.sup = h('span', { class: 'oc-chip oc-sup' }, T(support))),
       board ? h('span', { class: 'oc-chip' }, T('board')) : null,
       teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
-      el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip oc-togo' })),
+      el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.stars = h('span', { class: 'oc-chip oc-stars' }), el.left = h('span', { class: 'oc-chip oc-togo' })),
     // (Back and Next follow the reading direction: the strip is a row in the page's direction, the arrows point outward;
     // each arrow is set left to right so the browser never mirrors it a second time)
     teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, arrow(dir === 'rtl' ? '›' : '‹'), ' ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ', arrow(dir === 'rtl' ? '‹' : '›')))) : null,
     el.acts = h('div', { class: 'oc-acts' },
       fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('newSheet'), onclick: () => again(true) }, h('span', { 'aria-hidden': 'true' }, '🎲'), ' ', ...dual(T('newSheet'), T('newShort'))) : null,
       printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('print'), 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, h('span', { 'aria-hidden': 'true' }, '🖨'), ' ', ...dual(T('print'), T('printGo')))) : null,
+      // 1.6.0: sound on or off, the site's own switch (BRB.sfx.mute: the choice is kept for every game)
+      hasSfx() ? (el.snd = h('button', { type: 'button', class: 'oc-btn oc-sm oc-snd', 'aria-label': T('sound'), onclick: toggleSound })) : null,
       el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, h('span', { 'aria-hidden': 'true' }, '⌨'), ' ', T('keypad'))));
+  function paintSound() { if (!el.snd) return; const off = !!call(() => B().sfx.muted); el.snd.textContent = off ? '🔇' : '🔊'; el.snd.setAttribute('aria-pressed', String(!off)); el.snd.title = T(off ? 'soundOff' : 'soundOn'); }
+  function toggleSound() { call(() => B().sfx.mute()); paintSound(); if (!call(() => B().sfx.muted)) sfx('click'); }
+  paintSound();
   // 1.3.0: the teacher's controls (teach.js): a bar under the strip, or one Teacher button and its menu on phones
   // (1.4.1: the button sits with the other actions, not on top of the title)
   // 1.4.0: My worksheets, only where the page offers the list (school staff in the published activity; never a student)
@@ -119,6 +135,7 @@ export function activity(input) {
   if (TC) el.acts.insertBefore(TC.button, el.keyBtn);
   const canSay = !!(task.say && B().speak);
   const card = h('section', { class: 'oc-task', 'aria-label': T('task') },
+    TH && TH.icon ? h('span', { class: 'oc-ticon', 'aria-hidden': 'true' }, TH.icon) : null,
     h('div', { class: 'oc-taskt' }, el.n = h('span', { class: 'oc-n' }), el.task = h('p', { id: 'oc-taskline', dir: 'auto' })),
     canSay ? h('button', { type: 'button', class: 'oc-say', 'aria-label': T('readAloud'), onclick: () => call(() => B().speak(String(task.say).slice(0, 300), { lang: cfg.lang || lang })) }, '🔊') : null);
   el.work = h('section', { class: 'oc-card oc-work', 'aria-label': T('workspace') });
@@ -159,15 +176,20 @@ export function activity(input) {
     // 1.4.0: the worksheet on screen: { id, code, title, items? } (link: true when the link opened it; else a teacher
     // opened it from My worksheets, and its questions replace the set on this screen only)
     ws: QS ? { id: QS.id, code: wsCode(QS.id), title: '', link: true } : null,
+    // 1.6.0: stars (0 to 3 for each problem, by its place in the set), notYet (every Not yet in this set: a wrong Check or
+    // a wrong step box; the ✗ chip), and for the problem on screen: miss (its Not yets), hinted (a hint was opened),
+    // focus (the column the last mistake was in: the hints answer it), badCol (the answer box marked after a Check)
+    stars: saved && Array.isArray(saved.stars) ? saved.stars.map(x => (Number.isInteger(x) && x >= 0 && x <= 3 ? x : 0)).slice(0, MAX_PROBLEMS) : [],
+    notYet: saved && Number.isInteger(saved.ny) && saved.ny >= 0 ? saved.ny : 0, miss: 0, hinted: false, focus: null, badCol: null, stepBad: null,
   };
   function dealSet(resume) {
     S.set = S.ws && !S.ws.link ? deal({ ...A, problems: S.ws.items, gen: null, config: { ...cfg, fresh: false } }, { seed: S.seed }) : deal(A, { seed: S.seed, seen: S.seen });
     S.i = 0; S.right = 0; S.wrong = 0; S.reported = false; S.boardUsed = S.boardOn;
-    if (resume && saved && !saved.done && Number.isInteger(saved.i) && saved.i < S.set.length) { S.i = saved.i; S.right = saved.right | 0; S.wrong = saved.wrong | 0; } else S.shown = [];
+    if (resume && saved && !saved.done && Number.isInteger(saved.i) && saved.i < S.set.length) { S.i = saved.i; S.right = saved.right | 0; S.wrong = saved.wrong | 0; } else { S.shown = []; S.stars = []; S.notYet = 0; }
     for (const p of S.set) { const k = TOOLS[p.tool].key(p); if (!S.seen.includes(k)) S.seen.push(k); }
   }
   // (a worksheet a teacher opened here is not their place in the activity: nothing is kept for it)
-  const save = (extra = {}) => !(S.ws && !S.ws.link) && call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...(S.shown.length ? { sh: S.shown } : {}), ...extra }));
+  const save = (extra = {}) => !(S.ws && !S.ws.link) && call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...(S.shown.length ? { sh: S.shown } : {}), stars: S.stars, ny: S.notYet, ...extra }));
 
   // ---- one problem
   const P = () => S.set[S.i];
@@ -175,6 +197,7 @@ export function activity(input) {
   function begin(resumeSt) {
     const p = P(), t = Tool();
     S.st = resumeSt && typeof resumeSt === 'object' ? resumeSt : t.start(p); S.tries = 0; S.phase = 'work'; S.hintN = 0; S.stuck = false; S.sel = null; S.idle = Date.now(); S.revealed = false; S.byTeacher = false;
+    S.miss = 0; S.hinted = false; S.focus = null; S.badCol = null; S.stepBad = null;
     const steps = stepList(p); S.stepVal = steps.map(() => null); S.stepDone = steps.map(() => false);
     el.hint.hidden = true; el.fb.textContent = ''; el.fb.className = 'oc-fb';
     if (p.tool === 'figure.number') S.sel = 'fig';
@@ -189,10 +212,20 @@ export function activity(input) {
     if (Array.isArray(own) && own.length) return own.slice(0, 6).map(s => ({ text: String(s).slice(0, 160) }));
     return TOOLS[p.tool].steps(p);
   }
+  /** 1.6.0: the digits carried, by column, for the steps done so far (adding and multiplying, the kit's own steps):
+   *  the digit boxes show each one small over its column, as on paper. */
+  function carries(p) {
+    if (p.tool !== 'digits.add' && p.tool !== 'digits.mul') return null;
+    const out = {};
+    stepList(p).forEach((s, i) => { if (Number.isInteger(s.col) && S.stepDone[i] && s.ans >= 10) out[s.col + 1] = Math.floor(s.ans / 10); });
+    return out;
+  }
+  /** 1.6.0: the hints for the problem as it stands: the kit's use its own digits and the column of the last mistake
+   *  (S.focus); the Builder's own lines come after the kit's line for that mistake, when there was one. */
   function hintList(p) {
-    const own = ownHints[p.tool];
-    if (Array.isArray(own) && own.length) return own.slice(0, 3).map(s => ({ text: String(s).slice(0, 160) }));
-    return TOOLS[p.tool].hints(p).slice(0, 3);
+    const own = ownHints[p.tool], kit = TOOLS[p.tool].hints(p, S.st, S.focus).slice(0, 3);
+    if (Array.isArray(own) && own.length) return [...(S.focus !== null && p.tool.startsWith('digits.') ? [kit[1]] : []), ...own.slice(0, 3).map(s => ({ text: String(s).slice(0, 160) }))].slice(0, 3);
+    return kit;
   }
   const line = x => (x.text !== undefined ? document.createTextNode(x.text) : rich(x.k, x.v));
   /** The switcher (1.1.0): another help mode for the problem on screen. It starts that problem again in the new mode
@@ -211,7 +244,9 @@ export function activity(input) {
   function paint() {
     const p = P(), t = Tool(), total = S.set.length;
     el.ok.textContent = `✓ ${S.right}`; el.ok.setAttribute('aria-label', `${T('right')} ${S.right}`);
-    el.no.textContent = `✗ ${S.wrong}`; el.no.setAttribute('aria-label', `${T('notYet')} ${S.wrong}`);
+    el.no.textContent = `✗ ${S.notYet}`; el.no.setAttribute('aria-label', `${T('notYet')} ${S.notYet}`);
+    const stars = S.stars.reduce((a, x) => a + (x || 0), 0);
+    el.stars.textContent = `⭐ ${stars}`; el.stars.setAttribute('aria-label', T('starsN', { n: stars }));
     el.left.textContent = T('toGo', { n: total - S.i - (S.phase === 'done' ? 1 : 0) });
     el.n.textContent = T('problemOf', { n: S.i + 1, total });
     const tk = t.task(p); el.task.textContent = ''; el.task.append(line(tk));
@@ -219,12 +254,13 @@ export function activity(input) {
     el.dot.hidden = p.tool !== 'figure.number';
     el.check.textContent = S.phase === 'done' ? `${T('next')} ›` : `✓ ${T('check')}`;
     el.check.disabled = S.watching;
-    el.hintBtn.textContent = ''; el.hintBtn.append(S.stuck ? '🙋 ' : '💡 ', T(S.stuck ? 'stuck' : 'hint'));
+    // 1.6.0: one label, always (it lights up when a hint would help: after a Not yet, or 45 s without a move)
+    el.hintBtn.textContent = ''; el.hintBtn.append('💡 ', T('hint'));
     el.hintBtn.classList.toggle('oc-lit', S.stuck && S.phase === 'work'); el.hintBtn.disabled = S.phase !== 'work' || S.watching;
     el.clear.disabled = S.phase !== 'work' || S.watching;
     el.work.dataset.tool = p.tool;
     el.work.textContent = '';
-    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel }));
+    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel, bad: S.badCol, carry: carries(p) }));
     paintSteps();
     if (TC) {
       el.navAt.textContent = T('nOfN', { n: S.i + 1, total });
@@ -263,7 +299,7 @@ export function activity(input) {
   /** A step's answer box: digits from the keypad or the keyboard (Guided, On my own), or ▲ ▼ (Count up). */
   function stepBox(i, s, done) {
     const v = S.stepVal[i], selected = S.sel === `step:${i}`;
-    const box = h('button', { type: 'button', class: `oc-box${selected ? ' oc-sel' : ''}${S.stepBad === i ? ' oc-try' : ''}`, 'aria-label': `${T('box')} ${i + 1}`, 'aria-pressed': String(selected), disabled: done || S.phase !== 'work' || S.watching, dir: 'ltr',
+    const box = h('button', { type: 'button', class: `oc-box${selected ? ' oc-sel' : ''}${S.stepBad === i ? ' oc-bad' : ''}`, 'aria-label': `${T('box')} ${i + 1}${S.stepBad === i ? `: ${T('notYet')}` : ''}`, 'aria-pressed': String(selected), disabled: done || S.phase !== 'work' || S.watching, dir: 'ltr',
       onclick: () => { S.sel = `step:${i}`; if (support !== 'count' && coarse()) keypad(true); paint(); } }, v === null ? '' : String(v));
     if (support !== 'count' || done) return h('span', { class: 'oc-ans' }, box);
     const bump = d => { S.stepVal[i] = Math.max(0, Math.min(999, (S.stepVal[i] || 0) + d)); sfx('click'); paintSteps(); };
@@ -271,10 +307,24 @@ export function activity(input) {
       h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('up'), onclick: () => bump(1) }, '▲'),
       h('button', { type: 'button', class: 'oc-btn oc-sm oc-primary', 'aria-label': T('check'), onclick: () => stepCheck(i) }, '✓'));
   }
+  /** A step box is checked as soon as it has as many digits as its answer (or by Check). 1.6.0: a wrong one says so,
+   *  kindly, and is marked; it counts as a Not yet (the ✗ chip, and the problem's stars) but never uses up a Check,
+   *  and the hints turn to that step's column. The next right step box is chosen by itself. */
   function stepCheck(i) {
-    const s = stepList(P())[i]; if (!s || s.ans === undefined) return;
-    if (S.stepVal[i] === s.ans) { S.stepDone[i] = true; S.stepBad = null; S.sel = null; sfx('coin'); }
-    else { S.stepBad = i; S.wrongMoves = (S.wrongMoves || 0) + 1; if (S.wrongMoves >= 2) S.stuck = true; }
+    const steps = stepList(P()), s = steps[i]; if (!s || s.ans === undefined || S.stepVal[i] === null) return;
+    if (S.stepVal[i] === s.ans) {
+      S.stepDone[i] = true; S.stepBad = null; sfx('coin');
+      const nx = steps.findIndex((x, j) => j > i && x.ans !== undefined && !S.stepDone[j]);
+      // (the last one done: a column sum's ones box, when it is still empty, so the answer can be typed straight away)
+      const ones = S.st && Array.isArray(S.st.ans) && (S.st.ans[0] === null || S.st.ans[0] === undefined) ? 'col:0' : null;
+      S.sel = support === 'count' ? null : nx >= 0 ? `step:${nx}` : ones;
+      if (S.focus === s.col) S.focus = null;
+      if (S.fbStep) { S.fbStep = false; feedback('', ''); }
+    } else {
+      S.stepBad = i; S.notYet++; S.miss++; S.stuck = true; S.focus = Number.isInteger(s.col) ? s.col : S.focus; S.hintN = 0; S.fbStep = true;
+      const f = document.createDocumentFragment(); f.append(h('b', {}, T('notYet')), ' ', T('fbStep', { n: S.stepVal[i] }));
+      feedback('try', f); save();
+    }
     paint();
   }
   /** A digit from the keypad or the keyboard: into the selected step box or digit box (null: delete). */
@@ -291,21 +341,31 @@ export function activity(input) {
     if (d === '.') return;
     if (S.sel.startsWith('step:')) {
       const i = +S.sel.slice(5), s = stepList(P())[i]; if (!s || s.ans === undefined || S.stepDone[i]) return;
-      const cur = S.stepVal[i] === null ? '' : String(S.stepVal[i]);
-      const nx = d === null ? cur.slice(0, -1) : (cur + d).slice(-3);
+      // 1.6.0: a box that is full (it was checked, right or not) starts again with the new digit: 8 then 9 is 9, not 89
+      const want = String(s.ans).length, full = S.stepBad === i || (S.stepVal[i] !== null && String(S.stepVal[i]).length >= want);
+      const cur = S.stepVal[i] === null || (full && d !== null) ? '' : String(S.stepVal[i]);
+      const nx = d === null ? (S.stepVal[i] === null ? '' : String(S.stepVal[i]).slice(0, -1)) : (cur + d).slice(-3);
       S.stepVal[i] = nx === '' ? null : +nx; S.stepBad = null;
-      if (d !== null && nx.length >= String(s.ans).length) stepCheck(i); else paint();
+      if (d !== null && nx.length >= want) stepCheck(i); else paint();
       return;
     }
     if (S.sel.startsWith('col:') && S.st && Array.isArray(S.st.ans)) {
+      // one digit a box; the next box to the left is chosen by itself (1.6.0: in the same paint, so no digit is lost)
       const c = +S.sel.slice(4), ans = S.st.ans.slice();
-      ans[c] = d; set({ ans });
-      if (d !== null && c + 1 < ans.length) { S.sel = `col:${c + 1}`; paint(); }
+      ans[c] = d; if (S.badCol === c) S.badCol = null;
+      if (d !== null && c + 1 < ans.length) S.sel = `col:${c + 1}`;
+      set({ ans });
     }
   }
   /** A new state for the manipulative (a move). */
   function set(st) { if (S.phase !== 'work' || S.watching) return; S.st = st; S.idle = Date.now(); sfx('click'); save(); paint(); }
-  function clear() { if (S.phase !== 'work') return; S.st = Tool().start(P()); S.sel = null; feedback('', ''); save(); paint(); }
+  /** Clear: the answer and (1.6.0) every step box not done yet; the steps already right stay right. */
+  function clear() {
+    if (S.phase !== 'work' || S.watching) return;
+    S.st = Tool().start(P()); S.sel = null; S.badCol = null; S.stepBad = null; S.fbStep = false;
+    S.stepVal = S.stepVal.map((v, i) => (S.stepDone[i] ? v : null));
+    feedback('', ''); save(); paint();
+  }
   function feedback(kind, content, o = {}) {
     el.fb.className = `oc-fb${kind ? ` oc-${kind}` : ''}`; el.fb.textContent = '';
     if (content) el.fb.append(content);
@@ -318,22 +378,40 @@ export function activity(input) {
     if (S.hintN >= list.length) { el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('p', {}, T('noMoreHints')))); return; }
     const x = list[S.hintN++];
     el.hint.append(h('span', { 'aria-hidden': 'true' }, '💡'), h('div', {}, h('b', {}, T('hintOf', { n: S.hintN, total: list.length })), h('p', {}, line(x))));
-    S.stuck = false; paint();
+    S.stuck = false; S.hinted = true; paint();
   }
+  /** 1.6.0: the stars a right answer earns: 3 first time with no hint, 2 after one Not yet or a hint, 1 after more. */
+  const starsNow = () => (S.miss === 0 && !S.hinted ? 3 : S.miss <= 1 ? 2 : 1);
+  const starText = n => '⭐'.repeat(n) + '☆'.repeat(3 - n);
   function doCheck() {
     if (S.phase !== 'work' || S.watching) return;
     const p = P(), t = Tool(), r = t.check(p, S.st);
+    // 1.6.0: nothing in the answer yet. A step box with digits in it that is not done is checked instead (a wrong one
+    // says so); "Nothing is there yet" only when nothing is anywhere, and that is not a try.
+    if (!r.ok && r.hint && r.hint.k === 'fbEmpty') {
+      const steps = stepList(p), k = steps.findIndex((s, i) => s.ans !== undefined && !S.stepDone[i] && S.stepVal[i] !== null);
+      if (k >= 0 && S.stepBad !== k) return stepCheck(k);
+      if (k < 0) {
+        const f = document.createDocumentFragment(); f.append(h('b', {}, T('fbEmpty')), ' ', T(p.tool.startsWith('digits.') ? 'fbEmptyHow' : 'tryAgain'));
+        feedback('try', f);
+      }
+      return;
+    }
     S.tries++;
     if (r.ok) {
-      S.right++; S.phase = 'done'; S.lastOk = true; sfx('coin');
-      feedback('good', rich('right'));
+      const n = starsNow();
+      S.right++; S.phase = 'done'; S.lastOk = true; S.stars[S.i] = n; S.badCol = null; sfx(n === 3 ? 'powerup' : 'coin');
+      const cheer = TH && TH.cheers.length ? TH.cheers[S.i % TH.cheers.length] : '';
+      const f = document.createDocumentFragment(); f.append(h('b', {}, T('right')), ' ', h('span', { class: 'oc-starrow', role: 'img', 'aria-label': T('starsN', { n }) }, starText(n)), cheer ? ` ${cheer}` : '');
+      feedback('good', f);
       call(() => { if (!reduced() && B().fx && B().fx.pop) B().fx.pop(el.work); });
     } else if (S.tries < 2) {
-      S.stuck = true; S.wrongMoves = 0;
+      S.stuck = true; S.wrongMoves = 0; S.notYet++; S.miss++; S.hintN = 0;
+      if (Number.isInteger(r.col)) { S.focus = r.col; S.badCol = r.col; }
       const f = document.createDocumentFragment(); f.append(h('b', {}, T('notYet')), ' ', r.hint ? rich(r.hint.k, r.hint.v) : '', ' ', T('tryAgain'));
       feedback('try', f);
     } else {
-      S.wrong++; S.phase = 'done'; S.lastOk = false; reveal(p);
+      S.wrong++; S.notYet++; S.phase = 'done'; S.lastOk = false; S.stars[S.i] = 0; S.badCol = null; reveal(p);
       feedback('shown', rich('shown'));
     }
     save({ i: S.phase === 'done' ? S.i + 1 : S.i });
@@ -393,7 +471,12 @@ export function activity(input) {
     sfx('win'); call(() => { if (S.right && !reduced() && B().fx && B().fx.confetti) B().fx.confetti(); });
     el.main.hidden = true; card.hidden = true; band.hidden = true;
     el.end.hidden = false; el.end.textContent = '';
-    el.end.append(h('h2', { id: 'oc-end-h' }, T('endH', { right: S.right, total })), h('p', {}, T(S.right === total ? 'endAll' : 'endSome')),
+    // 1.6.0: the stars earned (3 a problem; a problem the teacher showed is left out), one row of them, and the theme
+    const counted = Array.from({ length: total }, (_, i) => i).filter(i => !S.shown.includes(i)), got = counted.reduce((a, i) => a + (S.stars[i] || 0), 0);
+    el.end.append(TH && TH.icon ? h('div', { class: 'oc-endicon', 'aria-hidden': 'true' }, TH.icon) : null,
+      h('h2', { id: 'oc-end-h' }, T('endH', { right: S.right, total })),
+      counted.length ? h('p', { class: 'oc-endstars' }, h('span', { class: 'oc-starrow', 'aria-hidden': 'true' }, counted.map(i => starText(S.stars[i] || 0)).join(' ')), h('b', {}, T('endStars', { n: got, total: counted.length * 3 }))) : null,
+      h('p', {}, TH && TH.end ? TH.end : T(S.right === total ? 'endAll' : 'endSome')),
       h('div', { class: 'oc-btns oc-endbtns' },
         h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: () => again() }, A.gen ? `🎲 ${T('newSet')}` : `↻ ${T('again')}`),
         printable ? h('button', { type: 'button', class: 'oc-btn', onclick: () => printPanel(true) }, `🖨 ${T('print')}`) : null,
@@ -507,11 +590,15 @@ export function activity(input) {
   if (support === 'own') S.stepsOpen = false, paintSteps();
   const api = {
     version: VERSION, selfTest: () => selfTest(A, WORDS.en),
-    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support], purpose, seed: S.seed, worksheet: S.ws ? S.ws.id : null }),
+    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, notYet: S.notYet, stars: S.stars.reduce((a, x) => a + (x || 0), 0), tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support], purpose, seed: S.seed, worksheet: S.ws ? S.ws.id : null }),
     /** The printable sheet for a seed (sheet.js), as data: what the page prints for this activity. */
     sheet: (seed, n) => sheet(A, { seed, n, lang }),
   };
-  call(() => { window.__brbTest = { state: api.state, start() {} }; });
+  // 1.6.0: giveUp() is the platform's way through a set without knowing its answers (the layout check of the end card:
+  // services/layout-check.js canvasToEnd): the worked answer of the problem on screen, as after a second wrong Check
+  // (no stars, not right). An empty Check is no longer a try, so pressing Check twice no longer does it.
+  const giveUp = () => { if (S.phase !== 'work' || !el.end.hidden) return false; if (S.watching) { S.watching = false; } S.tries = 2; S.wrong++; S.notYet++; S.phase = 'done'; S.lastOk = false; S.stars[S.i] = 0; reveal(P()); feedback('shown', rich('shown')); save({ i: S.i + 1 }); paint(); return true; };
+  call(() => { window.__brbTest = { state: api.state, start() {}, giveUp }; });
   return api;
 }
 
@@ -614,7 +701,7 @@ function figPic(p, c) {
 VIEWS['figure.number'] = (p, st, c) => {
   const on = c.sel === 'fig', typed = typeof st.typed === 'string' ? st.typed : '';
   return h('div', { class: 'oc-stack oc-figq' }, figPic(p, c),
-    h('div', { class: 'oc-figans', dir: 'ltr' }, tapped(h('button', { type: 'button', class: `oc-box oc-figbox${on ? ' oc-sel' : ''}`, 'aria-pressed': String(on), 'aria-label': c.T('box'), disabled: c.locked }, typed), () => c.select(on ? null : 'fig')),
+    h('div', { class: 'oc-figans', dir: 'ltr' }, tapped(h('button', { type: 'button', class: `oc-box oc-figbox${on ? ' oc-sel' : ''}`, 'aria-pressed': String(on), 'aria-label': c.T('box'), disabled: c.locked }, typed), () => { if (!on) c.select('fig'); }),
       p.unit ? h('span', { class: 'oc-unit', dir: 'auto' }, p.unit) : null));
 };
 VIEWS['figure.choice'] = (p, st, c) => h('div', { class: 'oc-stack oc-figq' }, figPic(p, c),
@@ -635,11 +722,15 @@ function colView(p, st, c, sign) {
   const ans = st.ans || [], cols = ans.length, A = String(p.a).split('').reverse(), Bd = String(p.b).split('').reverse();
   const cell = (txt, cls = '') => h('span', { class: `oc-cell ${cls}` }, txt === undefined ? '' : txt);
   const rowOf = (digits, lead) => h('div', { class: 'oc-crow' }, cell(lead, 'oc-sign'), ...Array.from({ length: cols }, (_, k) => cell(digits[cols - 1 - k])));
+  // 1.6.0: tapping the box already chosen keeps it chosen (it used to let go of it, so after the kit moved on to the
+  // Tens box by itself, tapping that box and typing lost the digit); a box a Check found wrong is marked
   const boxes = h('div', { class: 'oc-crow oc-answer' }, cell(''), ...Array.from({ length: cols }, (_, k) => {
-    const i = cols - 1 - k, on = c.sel === `col:${i}`;
-    return tapped(h('button', { type: 'button', class: `oc-cell oc-dbox${on ? ' oc-sel' : ''}`, 'aria-pressed': String(on), 'aria-label': `${c.T('box')}: ${c.T(['ones', 'tens', 'hundreds', 'thousands', 'tenThousands'][i] || 'ones')}`, disabled: c.locked }, ans[i] === null || ans[i] === undefined ? '' : String(ans[i])), () => c.select(on ? null : `col:${i}`));
+    const i = cols - 1 - k, on = c.sel === `col:${i}`, bad = c.bad === i;
+    return tapped(h('button', { type: 'button', class: `oc-cell oc-dbox${on ? ' oc-sel' : ''}${bad ? ' oc-bad' : ''}`, 'data-col': i, 'aria-pressed': String(on), 'aria-label': `${c.T('box')}: ${c.T(['ones', 'tens', 'hundreds', 'thousands', 'tenThousands'][i] || 'ones')}${bad ? `: ${c.T('notYet')}` : ''}`, disabled: c.locked }, ans[i] === null || ans[i] === undefined ? '' : String(ans[i])), () => { if (!on) c.select(`col:${i}`); });
   }));
-  return h('div', { class: 'oc-stack oc-cols', dir: 'ltr' }, h('div', { class: 'oc-paper' }, rowOf(A, ''), rowOf(Bd, sign), h('div', { class: 'oc-rule', 'aria-hidden': 'true' }), boxes));
+  // the carried digits, small over their columns (only once a step has carried them)
+  const carry = c.carry && Object.keys(c.carry).length ? h('div', { class: 'oc-crow oc-carry', 'aria-hidden': 'true' }, cell(''), ...Array.from({ length: cols }, (_, k) => cell(c.carry[cols - 1 - k] === undefined ? '' : String(c.carry[cols - 1 - k]), 'oc-cc'))) : null;
+  return h('div', { class: 'oc-stack oc-cols', dir: 'ltr' }, h('div', { class: 'oc-paper' }, carry, rowOf(A, ''), rowOf(Bd, sign), h('div', { class: 'oc-rule', 'aria-hidden': 'true' }), boxes));
 }
 
 // ---------------------------------------------------------------- the font (Bricolage Grotesque, self-hosted next to the kit)

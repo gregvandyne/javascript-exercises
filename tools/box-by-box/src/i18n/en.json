@@ -687,6 +687,8 @@
 	"ui.ed.shared": "Shared",
 	"ui.ed.share": "Share",
 	"ui.ed.save": "Save",
+	"ui.ed.widened": "{x} now goes from {a} to {b}, so your problem fits. New problems use this range too.",
+	"ui.ed.atLimit": "{x} can have at most {n} digits (up to {max}).",
 	"ui.ed.saveHint": "Saves your activity on Oomba. Open Share to give it to students.",
 	"ui.ed.savedHint": "Saved on Oomba. Open Share to give it to students.",
 	"ui.ed.settings": "Settings",

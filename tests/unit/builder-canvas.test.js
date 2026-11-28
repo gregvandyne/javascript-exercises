@@ -117,8 +117,8 @@ test('the CANVAS RULES tell the Builder that lesson activities keep worksheets b
   assert.match(r, /"Save as worksheet"/); assert.match(r, /"My worksheets"/); assert.match(r, /class code/);
   assert.match(r, /keep every question as data in the oc-activity block/);
   assert.match(r, /never build saving, class codes, links, a worksheet list or a print button of your own/);
-  assert.match(r, /New activities use Oomba Canvas 1\.5\.0/, 'the newest kit (1.4.1 in the Crossword look)');
-  assert.ok(r.includes(canvasTag('1.5.0')), 'the pinned tag is the 1.5.0 one');
+  assert.match(r, /New activities use Oomba Canvas 1\.6\.0/, 'the newest kit (the fourth audit)');
+  assert.ok(r.includes(canvasTag('1.6.0')), 'the pinned tag is the 1.6.0 one');
   assert.match(fs.readFileSync(path.join(ROOT, 'docs/canvas-api.md'), 'utf8'), /<!-- builder:rules -->[\s\S]*Saved worksheets \(1\.4\.0\)[\s\S]*<!-- \/builder -->/, 'generated from the page');
   assert.doesNotMatch(prompt.SYSTEM_PROMPT, /Save as worksheet|My worksheets/, 'the arcade prompt is untouched');
 });
@@ -126,7 +126,7 @@ test('the CANVAS RULES tell the Builder that lesson activities keep worksheets b
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.5.0', 'new activities pin Oomba Canvas 1.5.0 (worksheets, the phone layout and the Crossword look)');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.6.0', 'new activities pin Oomba Canvas 1.6.0 (worksheets, the phone layout, the Crossword look and the fourth audit)');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);
@@ -148,6 +148,20 @@ test('a version whose self-test fails is not saved (so it can never be published
   assert.ok(rep.issues.some(i => i.key === 'canvas' && !i.soft && /problem 6/.test(i.text)), 'the playtest report names it too');
   const fixed = tb.exec('write_game', { html: withActivityData(cur.html, { ...data, gen: { tool: 'digits.add', digits: 2 } }), notes: 'gen' });
   assert.equal(fixed.ok, true, fixed.forModel);
+});
+// docs/decisions.md "Builder class games: audit 4 quality": a version whose column sums do not practise the skill the
+// teacher asked for is saved, and the model is told at once which problems to fix (the playtest lists it too).
+test('the save tells the model when the problems do not practise the skill asked for (regrouping, the digits)', async () => {
+  const g = games.createGame(teacher.user.id, { title: 'Farm Sums', icon: '🐔', cover: 'mint' });
+  const tb = toolbox({ user: teacher.user, gameId: g.id, emit: () => {}, state: {}, locale: 'en', requests: ['A farm game: regrouping addition, grade 4'] });
+  assert.equal((await tb.exec('start_from_template', { template: 'canvas' })).ok, true);
+  const cur = tb.current(), data = activityData(cur.html).data;
+  const set = [[46, 38], [40, 37], [57, 26], [42, 15], [29, 35], [21, 64]].map(([a, b]) => ({ tool: 'digits.add', a, b }));
+  const r = tb.exec('write_game', { html: withActivityData(cur.html, { ...data, problems: set, gen: null, config: { ...data.config, fresh: false } }), notes: 'farm' });
+  assert.equal(r.ok, true, r.forModel);
+  assert.match(r.forModel, /Skill check \(fix this now, before you finish\): The problems do not all practise the skill asked for: problem 2: 40 \+ 37 needs no regrouping/);
+  const ok = tb.exec('write_game', { html: withActivityData(cur.html, { ...data, gen: { tool: 'digits.add', digits: 2, regroup: 'some' }, skill: { regroup: 'some', digits: 2 } }), notes: 'gen' });
+  assert.equal(ok.ok, true); assert.doesNotMatch(ok.forModel, /Skill check/);
 });
 
 // ---------------------------------------------------------------- the page

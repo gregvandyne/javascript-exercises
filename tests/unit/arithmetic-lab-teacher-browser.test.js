@@ -17,6 +17,10 @@ const { createUser, startSession, getUser, OFFICIAL, getUserByName } = await imp
 const S = await import('../../server/services/schools.js');
 const { importGame } = await import('../../scripts/import-game.js');
 const games = await import('../../server/services/games.js');
+const gameSets = await import('../../server/services/game-sets.js');
+const L = await import('../../server/services/lessons.js');
+const P = await import('../../server/services/progress.js');
+const BL = await import('../../tools/box-by-box/src/lib/logic.ts');
 
 let pw = null; try { pw = await import('playwright'); } catch { try { pw = await import('playwright-core'); } catch { /* not installed */ } }
 const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
@@ -94,12 +98,14 @@ test('Assign goes straight into making an activity; its own name is the lessonâ€
   await f.getByText('Choose an activity to assign, or make a new one.').waitFor();
   await shot(page, 'assign-straight');
   await f.getByRole('menuitem').first().click();
+  // (kept once it changes: opening the editor and leaving makes no blank card, audit 4)
+  await f.getByRole('textbox', { name: /title/i }).fill('4b math - Long division test 27 Nov');
   // the editor's way back is labeled, and stays in the game
   await f.locator('.back-list').click();
   await f.getByRole('heading', { name: 'Your activities' }).waitFor();
   assert.match(page.url(), /\/play\/arithmetic-lab\?mode=assign$/, 'still in the game');
   await f.locator('.card .open').first().click();
-  await f.getByRole('textbox', { name: /title/i }).fill('4b math - Long division test 27 Nov');
+  await f.getByRole('textbox', { name: /title/i }).waitFor();
   await f.getByRole('button', { name: 'Save and assign' }).click();
   await page.waitForURL(/\/teach\/assign\?game=arithmetic-lab&opts=chapter%3Ds-/, { timeout: 30e3 });
   const lead = await page.locator('.assign-game .lead').innerText();
@@ -131,4 +137,54 @@ test('Assign goes straight into making an activity; its own name is the lessonâ€
   assert.match(await p.page.locator('.lib-row .lib-sub').first().innerText(), /Long division, 16 problems, Guided/);
   assert.ok(await p.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await p.ctx.close();
+});
+
+test('a student who answers every problem and leaves before See the score is done, with the score (audit 4, Job 4)', { skip, timeout: 180e3 }, async () => {
+  // a 2 problem Guided set, assigned as a lesson step
+  const item = { k: 'divide', p: [[84, 4], [96, 3]], l: 'guided' };
+  const set = gameSets.save(LAB.id, teacher.id, [item], null, 'arithmetic-lab', { title: 'Two problems' }).id;
+  const lesson = L.createLesson(teacher, school.id, { title: 'Two problems' }).lesson;
+  const step = L.addStep(teacher, lesson.id, { kind: 'game', gameId: LAB.id, options: `chapter=${set}&lock=1`, body: 'Play it' }).step;
+  const cl = L.assign(teacher, cls.id, lesson.id, {}).classLesson;
+  const kid = S.createSchoolAccount(teacher, school.id, { rosterName: 'Kim Pupil' }).user; S.addToClass(teacher, cls.id, kid.id);
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const [name, value] = cookieOf(kid.id).split('='); await ctx.addCookies([{ name, value, url: BASE }]);
+  const page = await ctx.newPage();
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${BASE}/play/arithmetic-lab?chapter=${set}&lock=1&lesson=${cl.id}&step=${step.id}`);
+  const f = page.frameLocator('#gameframe');
+  await f.getByRole('button', { name: 'Start', exact: true }).click();
+  const act = BL.parseItem(item);
+  const frame = await (await page.locator('#gameframe').elementHandle()).contentFrame();
+  for (const p of item.p) {
+    const right = BL.correctValues(BL.sheetFor(act, p));
+    for (let n = 0; n < 60 && !(await f.locator('.feedback').count()); n++) {
+      if (await f.locator('button.bring').count()) { await page.keyboard.press('Enter'); await page.waitForTimeout(250); continue; }
+      const box = await frame.evaluate(() => document.activeElement?.dataset?.box ?? '');
+      if (box) await page.keyboard.type(right[box]);
+      else await f.getByRole('button', { name: 'Check', exact: true }).click();
+      await page.waitForTimeout(150);
+    }
+    // started (with the score so far) from the first problem on
+    if (p === item.p[0]) {
+      for (let i = 0; i < 40 && !(P.get(cl.id, step.id, kid.id) || {}).label; i++) await page.waitForTimeout(100);
+      const r = P.get(cl.id, step.id, kid.id);
+      assert.deepEqual([r.status, r.score, r.label], ['started', 1, 'part:1/2']);
+      await f.locator('.feedback .btn-primary').click();
+    }
+  }
+  // the last problem is checked; the student leaves without See the score
+  for (let i = 0; i < 40 && (P.get(cl.id, step.id, kid.id) || {}).status !== 'done'; i++) await page.waitForTimeout(100);
+  await page.goto(`${BASE}/`);
+  const r = P.get(cl.id, step.id, kid.id);
+  assert.deepEqual([r.status, r.score, r.label], ['done', 2, ''], 'done, with the score');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+  // the teacher sees it done with its score on the lesson's progress page, never "not started"
+  const t = await open();
+  await t.page.goto(`${BASE}/class/${cls.id}/progress/${cl.id}`);
+  const row = t.page.locator('tr', { hasText: 'Kim Pupil' }).first();
+  assert.match(await row.innerHTML(), /st-done/);
+  assert.match(await row.locator('.st-score').innerText(), /^2/);
+  await t.ctx.close();
 });

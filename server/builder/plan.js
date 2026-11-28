@@ -31,6 +31,7 @@ import { BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS } from './catalog.js';
 import { config } from '../config.js';
 import { tEn, lookup, CODES } from '../i18n/index.js';
 import { figureWords, planText } from './figures.js';
+import { statedSkill } from './skill.js';
 
 export const PLAN_VERSION = 1;
 // characters: as many as they like ("Select all" on every group picks everyone there is), with room to grow.
@@ -259,7 +260,13 @@ export function topicFor(text, grade = '') {
   if (!hit) { const w = TOPIC_WORDS.find(([, re]) => re.test(s)); hit = w ? topicById(w[0]) : null; }
   // "adding fractions" is not column addition (the kit has no fraction sums): no suggestion, the model picks
   if (hit && /\bfraction/.test(s) && !/fraction/i.test(hit.id)) hit = null;
-  if (hit && hit.id === 'addColumns' && ['4', '5', '6', '7', '8'].includes(gradeOf(grade))) hit = topicById('bigAdd');
+  if (hit && hit.id === 'addColumns' && ['4', '5', '6', '7', '8'].includes(gradeOf(grade)) && !statedSkill([s]).digits) hit = topicById('bigAdd');
+  // the skill in their words (skill.js): "regrouping", "carrying in both columns", "no regrouping", "two-digit": a column
+  // generator keeps it (logic.js gen: regroup, digits), so every problem of the set practises what was asked
+  if (hit && /^digits\.(add|sub)$/.test(hit.gen.tool)) {
+    const sk = statedSkill([s]);
+    if (sk.regroup || sk.digits) hit = { ...hit, gen: { ...hit.gen, ...(sk.digits ? { digits: Math.min(4, sk.digits) } : {}), ...(sk.regroup ? { regroup: sk.regroup } : {}) } };
+  }
   return hit;
 }
 /** The chips for a grade, in order (no grade, or one with no chips: the middle grades' chips). */

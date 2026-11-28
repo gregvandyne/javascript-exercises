@@ -293,5 +293,16 @@ button.oc-part:hover:not(:disabled):not(.oc-on){background:var(--card-2)}
   .oc-tgrab{display:block;width:44px;height:5px;border-radius:9px;background:var(--line);justify-self:center;margin-top:-6px}}
 @media (max-width:560px){.oc-stat,.oc-acts{flex:1 1 100%;margin-inline-start:0}.oc-acts>.oc-btn{flex:1 0 auto}}
 @media (max-width:480px){.oc-acts .oc-ll{display:none}.oc-acts .oc-ls{display:inline}}
+.oc-stars{background:var(--spark-soft);color:var(--text)}
+.oc-snd{min-width:44px;padding:0 10px;font-size:1.1rem}
+.oc-box.oc-bad,.oc-dbox.oc-bad{box-shadow:inset 0 0 0 3px var(--bad-ink);background:var(--bad-bg);color:var(--bad-ink)}
+.oc-carry .oc-cc{height:26px;font-size:1rem;color:var(--accent-ink);align-items:end}
+.oc-ticon{font-size:2.2rem;line-height:1;flex:0 0 auto}
+.oc-starrow{letter-spacing:.06em;white-space:nowrap}
+.oc-endicon{font-size:3rem;line-height:1;margin-bottom:6px}
+.oc-endstars{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text)!important}
+.oc-endstars .oc-starrow{font-size:1.4rem;white-space:normal}
+.oc-boardmode .oc-stars,.oc-boardmode .oc-snd{display:none!important}
+@media (max-width:560px){.oc-ticon{font-size:1.7rem}.oc-carry .oc-cc{height:22px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 `;

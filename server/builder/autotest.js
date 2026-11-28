@@ -10,6 +10,7 @@
 import { cleanNote } from './steps.js';
 import { trustedMaker } from './usage.js';
 import { selfTestHtml } from '../services/canvaskit.js';
+import { skillProblems, skillText } from './skill.js';
 import { usesFigures, checkFigures, figureLibs, missingFigurePacks } from '../services/figlibs.js';
 
 // ---- The classroom activity check (Oomba Canvas, docs/canvas-api.md) -------------------------------------------------
@@ -21,6 +22,11 @@ import { usesFigures, checkFigures, figureLibs, missingFigurePacks } from '../se
 /** null when the version is not a canvas activity; else { ok, problems: [{ at, why }] }. */
 export function canvasSelfTest(html) {
   try { return selfTestHtml(html); } catch (e) { return { ok: false, problems: [{ at: 'activity', why: `the self-test could not run (${String((e && e.message) || e).slice(0, 100)})` }] }; }
+}
+/** The skill check of an activity's column sums (skill.js) as one note for the model, or '' (it fits, or nothing to check).
+ *  s: { requests, topic, before }. */
+export function canvasSkillText(html, s = {}) {
+  try { return skillText(skillProblems(html, s || {}).map(x => ({ at: x.at, why: cleanNote(x.why, 200) }))); } catch { return ''; }
 }
 /** The self-test's problems as one line for the model ("problem 3: cannot be solved: 5/6 cannot be made with pieces of 1/4"). */
 export const canvasProblemsText = rep => (rep && rep.problems ? rep.problems.map(p => `${p.at}: ${cleanNote(p.why, 160)}`).join('; ') : '');
@@ -65,7 +71,8 @@ const sceneOf = st => (st && typeof (st.scene ?? st.screen) === 'string' ? st.sc
 
 /**
  * raw: snapshot.autoplayGame() result, or { failed: message } when the run itself broke (a timeout: the game froze).
- * o: { html (the version's code), version }.
+ * o: { html (the version's code), version, playthrough?, skill?: { requests, topic, before } (the teacher's words and
+ *    the version the build started from, for a classroom activity's skill check: skill.js) }.
  * -> { facts (compact, for tests and logs), issues: [{ key, text, soft }], problems: [their texts], forModel: the report
  *    text, clean }
  */
@@ -156,6 +163,9 @@ export function buildReport(raw, o = {}) {
   // A classroom activity: the kit's self-test of its answer key (a hard problem: the same check refuses to save it).
   const canvas = canvasSelfTest(html);
   if (canvas && !canvas.ok) add('canvas', `The classroom activity's self-test failed (fix the PROBLEMS or GEN data, never the kit): ${canvasProblemsText(canvas)}.`);
+  // ...and its skill (skill.js): every column sum practises what the teacher asked for (regrouping, the number of digits)
+  const sk = canvas ? canvasSkillText(html, o.skill) : '';
+  if (sk) add('skill', sk);
   // Figures (Oomba Figures, docs/figures-api.md): a build that uses them loads them only from the pinned tags, and at
   // least one figure (an <svg>) was on screen while it was played (a figure that failed to draw shows nothing).
   if (usesFigures(html)) {

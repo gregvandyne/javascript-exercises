@@ -679,6 +679,8 @@
 "ui.ed.shared":"Gedeeld",
 "ui.ed.share":"Delen",
 "ui.ed.save":"Opslaan",
+"ui.ed.widened":"{x}: nu van {a} tot {b}, zodat je som past. Nieuwe sommen gebruiken dit bereik ook.",
+"ui.ed.atLimit":"{x}: hoogstens {n} cijfers (tot {max}).",
 "ui.ed.saveHint":"Slaat je activiteit op bij Oomba. Open Delen om hem aan leerlingen te geven.",
 "ui.ed.savedHint":"Opgeslagen bij Oomba. Open Delen om hem aan leerlingen te geven.",
 "ui.ed.settings":"Instellingen",
