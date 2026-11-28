@@ -40,6 +40,8 @@ import { SANDBOX } from './frame.js';
 import * as PT from './playthrough.js';
 import * as S from './schools.js';
 import * as CM from './companion-make.js';
+import * as GF from './game-folders.js';
+import { publish } from './publish.js';
 import { log } from './log.js';
 
 const SURFACE = 'companion', KEY = 'main';
@@ -140,14 +142,21 @@ function planOf(u, card) {
   ].slice(0, 5);
   return { state: 'plan', title: card.title || (card.topic ? clip(card.topic.charAt(0).toUpperCase() + card.topic.slice(1), 80) : t('studio.newGameTitle')), does, left: turnsLeft(u.id) };
 }
-/** The Builder's plan for a card (builder/plan.js's classroom activity, as /build/new makes it): the topic, the grade,
- *  the help, how students use it, and the teacher's words as the first message (told, sent as they are). */
+/** The Builder's plan for a card (builder/plan.js), with the teacher's words as the first message (told, sent as they
+ *  are) and chat: true (the starter is not a saved version, so the first build is Version 1: tools.js draft).
+ *  On their own devices: the class game kind (a game plan, as /build/new's Classroom game makes it: played on each
+ *  device, never a Canvas activity, so Studio calls it a game and "Make it a live game" works where a game can be
+ *  live), its topic as what it teaches, with the grade and the help (planNote says them), the words as a brief (brief:
+ *  true: runner.submit sends them word for word). On the board: the classroom activity kind, played on the board.
+ *  (docs/decisions.md "Builder in the chat: audit 4 fixes": devices had been the activity kind too, so a game for
+ *  devices was labelled "Classroom activity" and could not be made live.) */
 export function builderPlan(card, told) {
-  const use = usesPlan(['screen']);
-  return {
-    kind: 'activity', topic: card.topic ? { text: card.topic } : null, grade: card.grade || '',
-    help: HELP[card.pick.help] || ['guided'], purpose: use.purpose, played: card.pick.use === 'board' ? 'board' : use.played, told,
-  };
+  const help = HELP[card.pick.help] || ['guided'];
+  if (card.pick.use === 'board') {
+    const use = usesPlan(['screen']);
+    return { kind: 'activity', topic: card.topic ? { text: card.topic } : null, grade: card.grade || '', help, purpose: use.purpose, played: 'board', told, chat: true };
+  }
+  return { type: null, look: null, world: null, characters: [], learn: card.topic ? [{ text: card.topic }] : [], notes: '', play: 'solo', grade: card.grade || '', help, told, brief: true, chat: true };
 }
 
 // ---------------------------------------------------------------- taps
@@ -170,13 +179,18 @@ const busyChat = row => !!q.get("SELECT 1 FROM oomba_turns WHERE chat_id=? AND s
  * A tap on a build card. act: buildPlan (value: JSON { kind, use, help }: Show me the plan), buildGo (value: the words
  * for the Builder: Build it), buildRedo (Change on the plan card: the choices again). -> the conversation | fail.
  */
-export function act(u, turnId, a, value = '') {
+export function act(u, turnId, a, value = '', lang = '') {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
   const got = turnOf(u, turnId); if (!got) return { ok: false, code: 'notFound' };
   const { row, turn } = got, card = turn.note.build;
+  if ((a === 'buildAssign' || a === 'buildAgain') && !card) {
+    if (busyChat(row)) return { ok: false, code: 'chatBusy' };
+    return a === 'buildAssign' ? assignStart(u, row, turn, String(value || ''), lang) : againAct(u, row, turn, String(value || ''));
+  }
   if (!card) return { ok: false, code: 'notFound' };
   if (busyChat(row)) return { ok: false, code: 'chatBusy' };
   const t = tFor(card.lang || 'en');
+  if (a === 'buildClass') return classPicked(u, turn, card, String(value || ''));
   if (a === 'buildPlan') {
     if (card.state !== 'ask') return { ok: false, code: 'notFound' };
     const v = parse(String(value || ''), {}) || {};
@@ -238,6 +252,96 @@ function buildGo(u, row, turn, card, told, t) {
     })();
   } catch (e) { if (!e.rollback) throw e; }
   return out;
+}
+
+// ---------------------------------------------------------------- assign (docs/decisions.md "Builder in the chat: audit 4 fixes")
+// Assign on a done card: a game just built is a draft, and a class only plays a game shared with it, so the assign card
+// (companion.js's own, with its Assign / Not now) shares it with that class first, on the teacher's Assign tap: visibility
+// 'class' for that one class, through publish.js's publish (the same checks as Studio's Publish: the safety scan, the
+// playthrough, a person's look for a flagged version), never public. Several classes: which one first (a choice card).
+/** The done card's job in this turn (a game the teacher owns, still there). */
+function doneJob(u, turn, jobId) {
+  const j = ((turn.note && turn.note.jobs) || []).find(x => x.id === jobId && x.kind === 'game' && x.state === 'done' && x.game);
+  if (!j) return null;
+  const g = games.getGame(j.gameId);
+  return g && g.owner_id === u.id && g.status !== 'deleted' ? { j, g } : null;
+}
+/** Would assigning this game to this class share it with the class first? A draft (or a private game) of the teacher's
+ *  own, built while they may build in the chat. A game already shared at any other level is never changed here. */
+export function needsShare(u, gameId, classId) {
+  if (!on(u)) return false;
+  const g = games.getGame(String(gameId || '')), c = S.getClass(String(classId || ''));
+  if (!g || !c || g.owner_id !== u.id || g.status === 'deleted' || g.source === 'seed') return false;
+  if (g.status === 'published' && g.visibility !== 'private') return false;
+  return S.shareableClasses(u.id).some(x => x.id === c.id) && GF.assignable(u, g, c).code === 'publishFirst';
+}
+/** The classes a done card's game may be assigned to (shared with first when it needs it). */
+function classesFor(u, g) {
+  const all = GF.assignClasses(u);
+  if (g.status === 'published' && g.visibility !== 'private') return all;
+  const mine = new Set(S.shareableClasses(u.id).map(c => c.id));
+  return all.filter(c => mine.has(c.id));
+}
+function assignCard(u, g, c, lang) {
+  const names = studentNames(u);
+  return { id: uid(10), kind: 'game', itemId: g.id, title: clip(scrub(g.title, names).text, 120), classId: c.id, className: clip(scrub(c.name, names).text, 80), students: [], due: '', state: 'open', lang, ...(needsShare(u, g.id, c.id) ? { share: true } : {}) };
+}
+function assignStart(u, row, turn, jobId, pageLang = '') {
+  const got = doneJob(u, turn, jobId); if (!got || !got.j.game.ok) return { ok: false, code: 'notFound' };
+  const lang = pageLang || u.lang || 'en', t = tFor(lang);
+  const list = classesFor(u, got.g);
+  if (!list.length) return C.addTurn(u, SURFACE, KEY, { text: t('js.companion-build.asg.noClass'), apply: () => ({}) });
+  if (list.length === 1) return assignTurn(u, got.g, list[0], lang);
+  const names = studentNames(u);
+  const pick = { id: uid(10), state: 'classPick', lang, gameId: got.g.id, title: clip(scrub(got.g.title, names).text, 120), classes: list.slice(0, 8).map(c => ({ id: c.id, name: clip(scrub(c.name, names).text, 80) })) };
+  return C.addTurn(u, SURFACE, KEY, { text: t('js.companion-build.asg.which'), apply: () => ({ note: { build: pick } }) });
+}
+function assignTurn(u, g, c, lang, mark = null) {
+  const t = tFor(lang), p = assignCard(u, g, c, lang);
+  return C.addTurn(u, SURFACE, KEY, { mark, text: p.share ? t('js.companion-build.asg.share', { class: p.className }) : '', apply: () => ({ note: { assign: p } }) });
+}
+function classPicked(u, turn, card, classId) {
+  if (card.state !== 'classPick' || !(card.classes || []).some(c => c.id === classId)) return { ok: false, code: 'notFound' };
+  const g = games.getGame(card.gameId), c = GF.assignClasses(u).find(x => x.id === classId);
+  if (!g || g.owner_id !== u.id || g.status === 'deleted' || !c) return { ok: false, code: 'notFound' };
+  return assignTurn(u, g, c, card.lang || 'en', { id: turn.id, fields: { note: { ...turn.note, build: { ...card, state: 'classPicked', picked: classId } } } });
+}
+/**
+ * The assign card's Assign, for a game that needs sharing first (companion.js assignAct): the game published at 'class'
+ * for that class (publish.js, with every check it runs), then the assignment. -> { ok } | { ok: false, message } (the
+ * plain reason, in the teacher's language: the scan, the playthrough, a person's look, a class that cannot be picked).
+ */
+export async function shareForAssign(u, p) {
+  const t = tFor(p.lang || u.lang || 'en');
+  if (!needsShare(u, p.itemId, p.classId)) return { ok: true };
+  let r;
+  try { r = await publish(u, p.itemId, 'class', { t, classIds: [p.classId] }); } catch (e) { log('error', 'companion share failed', { game: p.itemId, error: e.message }); r = { ok: false, message: t('js.companion-build.err.other') }; }
+  const g = games.getGame(p.itemId);
+  if (r.ok && r.state === 'live' && g && g.visibility === 'class' && games.gameLiveInClass(g.id, p.classId)) {
+    audit(u.id, 'companion.build.share', g.id, { classes: 1 });
+    return { ok: true };
+  }
+  const why = String(r.message || '').trim();
+  return { ok: false, message: t(r.ok ? 'js.companion-build.asg.waiting' : 'js.companion-build.asg.notShared', { why }).trim() };
+}
+
+// ---------------------------------------------------------------- Try again (a change the Builder saved nothing for)
+function againAct(u, row, turn, jobId) {
+  const got = doneJob(u, turn, jobId);
+  if (!got || got.j.game.versionId || got.j.game.why !== 'nothing' || got.j.again) return { ok: false, code: 'notFound' };
+  const g = pageGame(u, got.g.id); if (!g) return { ok: false, code: 'notFound' };
+  if (J.liveCount(u.id) >= J.LIMITS.QUEUE_MAX) return { ok: false, code: 'cap' };
+  const r0 = J.get(jobId), input = parse(r0 && r0.input, {});
+  const words = clip(String(input.text || ''), 2000).trim(); if (!words) return { ok: false, code: 'notFound' };
+  const lang = input.lang || 'en', t = tFor(lang);
+  const job = changeJob(g, words, lang);
+  const { input: _in, ...shown } = job;
+  const jobs = turn.note.jobs.map(x => (x.id === jobId ? { ...x, again: true } : x));
+  return C.addTurn(u, SURFACE, KEY, {
+    mark: { id: turn.id, fields: { note: { ...turn.note, jobs } } },
+    text: t('js.companion-build.reply.change', { n: job.base + 1, prev: job.base || 1 }),
+    apply: () => { J.enqueue(u.id, row.id, null, [job]); audit(u.id, 'companion.build.again', g.gameId, {}); return { note: { jobs: [shown] } }; },
+  });
 }
 
 // ---------------------------------------------------------------- change by message
@@ -337,7 +441,7 @@ const notesOf = v => String((v && v.notes) || '').split(/(?<=[.!?])\s+|;\s*|\n+/
 export function sayOf(c, lang = 'en') {
   const t = tFor(lang);
   if (c.why === 'refused') return t('js.companion-build.say.refused', { why: c.message || '' }).trim();
-  if (c.why === 'nothing') return t('js.companion-build.say.nothing');
+  if (c.why === 'nothing') return c.message ? t('js.companion-build.say.nothingSaid', { said: c.message }) : t('js.companion-build.say.nothing');
   if (c.scan !== 'pass') return t('js.companion-build.say.scanFail');
   if (c.played === 'fail') return t('js.companion-build.say.playFail', { why: c.reason || t('js.companion-build.say.noEnd') });
   if (c.played === 'skipped') return t('js.companion-build.say.noPlay');
@@ -345,6 +449,17 @@ export function sayOf(c, lang = 'en') {
   let joined = list.join(', ');
   try { joined = new Intl.ListFormat(lang, { style: 'long', type: 'conjunction' }).format(list); } catch { /* the plain list */ }
   return `${list.length ? t('js.companion-build.say.devices', { devices: joined }) : t('js.companion-build.say.played')} ${t('js.companion-build.say.students')}`;
+}
+/** What the Builder said in one build (its reply and any question it asked), for the card: plain text, short. */
+export function builderSaid(gameId, turnId) {
+  const parts = [];
+  for (const m of loadChat(gameId).messages) {
+    if (!m || m.role !== 'assistant' || m.turn !== turnId) continue;
+    if (m.text) parts.push(String(m.text));
+    for (const e of m.events || []) if (Array.isArray(e) && e[0] === 'ask' && e[1] && e[1].question) parts.push(String(e[1].question));
+  }
+  const text = parts.join(' ').replace(/[*_`#>]+/g, '').replace(/\s+/g, ' ').trim();
+  return text.length > 300 ? `${text.slice(0, 297).replace(/\s+\S*$/, '')}…` : text;
 }
 /** What the job knows once the build is over: the version it made and every check, read back. */
 export async function resultFor(user, input, base) {
@@ -358,7 +473,8 @@ export async function resultFor(user, input, base) {
       return { card: { ok: false, why: 'refused', message: clip((said && said.text) || '', 400) } };
     }
     if (last && last.end_reason === 'limit') return { failed: 'limit' };
-    return { card: { ok: false, why: 'nothing' } };
+    // Nothing saved (it asked a question, or said it could not make that change): the card says what the Builder said.
+    return { card: { ok: false, why: 'nothing', message: last ? builderSaid(g.id, last.id) : '' } };
   }
   let played = PT.resultOf(v).status;
   let report = PT.resultOf(v).report || null;
@@ -450,9 +566,20 @@ export function view(u, gameId, { versionId = '', lang = 'en' } = {}) {
   return {
     ok: true, busy: runner.isBusy(g.id), title: g.title,
     rows: ls ? rowsOf(ls.steps, { phase: ls.phase }) : null,
-    preview: ver ? { url: previewUrl(ver, g, u.id, lang), number: ver.number, sandbox: SANDBOX } : null,
+    preview: ver ? { url: previewUrl(ver, g, u.id, lang), number: ver.number, sandbox: SANDBOX, safety: ver.safety_status || '' } : null,
+    // the done card's Versions (newest first): every version of the game, the earlier ones too
+    versions: games.listVersions(g.id).map(x => ({ id: x.id, number: x.number })).sort((a, b) => b.number - a.number).slice(0, 60),
     left: turnsLeft(u.id),
   };
+}
+/** The layout's "Your game is ready" notice (builder/turns.js notices), for a build that ended while the teacher was on
+ *  a page (the chat's own card saw it end): told once (markNotified, as the layout does). not: the game open in Studio
+ *  right now (its own page shows it). -> [{ kind, gameId, title }] */
+export function news(u, { not = '' } = {}) {
+  if (!companionFor(u)) return [];
+  const list = turns.notices(u.id).filter(n => n.gameId !== not);
+  if (list.length) turns.markNotified(list.map(n => n.id));
+  return list.map(n => ({ kind: n.kind, gameId: n.gameId, title: n.title }));
 }
 
 // ---------------------------------------------------------------- the AI's tools and rules

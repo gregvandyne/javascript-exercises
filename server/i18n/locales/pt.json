@@ -3060,7 +3060,8 @@
         "sees": "Estúdio, versão {n}",
         "hello": "Diga-me o que mudar neste jogo e eu envio ao Construtor. Cada nova versão aparece na pré-visualização grande.",
         "versionOf": "Versão {n} de {total}",
-        "versionLabel": "Versão na pré-visualização"
+        "versionLabel": "Versão na pré-visualização",
+        "showFailed": "Não foi possível mostrar a versão {n} agora, então a prévia ficou como estava. Tente de novo."
       }
     },
     "character": {
@@ -5436,7 +5437,8 @@
         "scanFail": "A verificação de segurança encontrou algo para corrigir, então ainda não está pronto para os alunos. Diga o que mudar ou toque em Mudar.",
         "noPlay": "A verificação de segurança foi aprovada, mas este servidor não conseguiu testar, então ainda não joguei.",
         "refused": "A verificação de segurança do Builder parou essa mensagem, então nada foi construído. {why}",
-        "nothing": "Desta vez o Builder não salvou uma versão nova, então nada mudou. Tente dizer de outro jeito."
+        "nothing": "Desta vez o Builder não salvou uma versão nova, então nada mudou. Toque em Tentar de novo ou me diga de outro jeito.",
+        "nothingSaid": "Desta vez o Builder não salvou uma versão nova, então nada mudou. Ele disse: “{said}” Toque em Tentar de novo ou me diga de outro jeito."
       },
       "dev": {
         "phone": "um celular",
@@ -5452,7 +5454,14 @@
         "big": "Abrir grande",
         "showBig": "Ver em grande"
       },
-      "assignText": "Atribua “{title}” à minha turma.",
+      "asg": {
+        "noClass": "Você ainda não tem uma turma para atribuir. Crie uma turma primeiro e toque em Atribuir de novo.",
+        "which": "Qual turma deve receber?",
+        "pick": "Atribuir “{title}” a qual turma?",
+        "share": "Ainda não está compartilhado com {class}. Atribuir compartilha só com {class} (nunca com todo mundo) e depois atribui.",
+        "notShared": "Não consegui compartilhar com a turma, então nada foi atribuído. {why}",
+        "waiting": "Ainda não está compartilhado com a turma, então nada foi atribuído. {why}"
+      },
       "changeText": "Em “{title}”, ",
       "fail": {
         "limit": "Não restam construções hoje, então nada foi construído. Amanhã você terá mais.",
@@ -5479,7 +5488,10 @@
       "answered": "Escolhido: {list}",
       "retry": "Tentar de novo",
       "showingBig": "Aparece em grande à esquerda",
-      "showingBigAbove": "Aparece em grande na pré-visualização acima"
+      "showingBigAbove": "Aparece em grande na pré-visualização acima",
+      "versions": "Versões",
+      "versionOf": "Versão {n} de {total}",
+      "olderShown": "Mostrando a versão {n}. A versão {newest} é a mais nova, e as mudanças vão para ela."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palavra} other {# palavras}}",

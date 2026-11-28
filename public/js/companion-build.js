@@ -23,7 +23,9 @@ const OPTIONS = { kind: ['game', 'lesson'], use: ['devices', 'board'], help: ['s
 const ROWS = ['safe', 'plan', 'write', 'play', 'scan'];
 const POLL_MS = 1500;
 
-const S = { chat: null, picks: new Map(), told: new Map(), live: new Map(), pv: new Map(), asked: new Set(), playing: new Set(), timer: null };
+const S = { chat: null, picks: new Map(), told: new Map(), live: new Map(), pv: new Map(), asked: new Set(), playing: new Set(), timer: null,
+  // the done card's Versions: each game's versions (newest first), and the version a card shows (job id -> version id)
+  vers: new Map(), cardV: new Map(), states: new Map(), newsAt: 0 };
 /** The chat panel (oomba-chat.js mountChat), once mounted. */
 export function setChat(chat) {
   S.chat = chat;
@@ -39,6 +41,7 @@ const gameJobs = () => turns().flatMap(x => ((x.note && x.note.jobs) || []).filt
 const gradeText = g => (!g ? '' : g === 'K' ? L('gradeK') : L('grade', { g }));
 const picksOf = (x, card) => ({ ...(card.pick || {}), ...(S.picks.get(x.id) || {}) });
 export function cardHtml(x, card) {
+  if (card.state === 'classPick' || card.state === 'classPicked') return classHtml(x, card);
   if (card.state === 'ask' || card.state === 'answered') return askHtml(x, card);
   return planHtml(x, card);
 }
@@ -55,6 +58,15 @@ function askHtml(x, card) {
   }).join('')}</div></fieldset>`).join('');
   const ready = qs.every(k => p[k]);
   return `<div class="oc-hand ocb-ask" data-ocb="${esc(card.id)}">${fs}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="buildPlan" data-turn="${esc(x.id)}"${ready ? '' : ' aria-disabled="true"'}>${esc(L('showPlan'))}</button></div></div>`;
+}
+/** Assign on a done card, for a teacher with several classes: which class first (then the assign card). */
+function classHtml(x, card) {
+  const list = card.classes || [];
+  if (card.state !== 'classPick') {
+    const c = list.find(y => y.id === card.picked);
+    return `<div class="oc-ask done ocb-ask"><p class="oc-hsub">${ic('✓', 14)} <span dir="auto">${esc(c ? c.name : '')}</span></p></div>`;
+  }
+  return `<div class="oc-hand ocb-ask" data-ocb="${esc(card.id)}"><fieldset class="ocb-q"><legend dir="auto">${esc(L('asg.pick', { title: card.title || '' }))}</legend><div class="ocb-opts">${list.map(c => `<button type="button" class="ocb-opt" data-c="act" data-act="buildClass" data-turn="${esc(x.id)}" data-v="${esc(c.id)}"><span class="ocb-oi" aria-hidden="true">${ic('🎒', 22)}</span><span class="ocb-ot"><b dir="auto">${esc(c.name)}</b></span></button>`).join('')}</div></fieldset></div>`;
 }
 function planHtml(x, card) {
   const p = card.pick || {};
@@ -114,10 +126,18 @@ function doneHtml(x, j, head) {
   const say = `<p class="ocb-say" dir="auto">${esc(g.say || '')}</p>`;
   const big = `<a class="btn btn-sm" href="/studio/${encodeURIComponent(j.gameId)}">${ic('↗️', 16)} ${esc(L('btn.big'))}</a>`;
   const change = `<button type="button" class="btn btn-sm" data-c="act" data-act="buildChange" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('✏️', 16)} ${esc(L('btn.change'))}</button>`;
-  if (!g.versionId) return `<div class="oc-made oc-made-no ocb-game ocb-done" role="note">${say}${head}<div class="oc-acts">${change}${big}</div></div>`;
+  const again = g.why === 'nothing' && !j.again ? `<button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="buildAgain" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('🔁', 16)} ${esc(L('retry'))}</button>` : '';
+  if (!g.versionId) return `<div class="oc-made oc-made-no ocb-game ocb-done" role="note">${say}${head}<div class="oc-acts">${again}${change}${big}</div></div>`;
+  // Versions: the card shows the version it made, or an earlier one picked here (S.cardV); the newest is the one a
+  // change by message changes.
+  const list = S.vers.get(j.gameId) || [];
+  const vid = list.some(v => v.id === S.cardV.get(j.id)) ? S.cardV.get(j.id) : g.versionId;
+  const shownN = (list.find(v => v.id === vid) || {}).number || g.number;
+  const vpick = list.length > 1 ? `<label class="ocb-vers"><span>${ic('🕘', 14)} ${esc(L('versions'))}</span><select data-ocb-vers="${esc(j.id)}" data-game="${esc(j.gameId)}" aria-label="${esc(L('versions'))}">${list.map(v => `<option value="${esc(v.id)}"${v.id === vid ? ' selected' : ''}>${esc(L('versionOf', { n: v.number, total: list[0].number }))}</option>`).join('')}</select></label>` : '';
   const changed = (g.changed || []).length ? `<div class="ocb-changed"><b>${esc(L('changed'))}</b><ul>${g.changed.map(c => `<li dir="auto">${esc(c)}</li>`).join('')}</ul></div>` : '';
-  const acts = `<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="buildPlay" data-turn="${esc(x.id)}" data-v="${esc(pvKey(j.gameId, g.versionId))}">${ic('▶️', 16)} ${esc(L('btn.play'))}</button>${change}${g.ok ? `<button type="button" class="btn btn-sm" data-c="act" data-act="buildAssign" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('🎒', 16)} ${esc(L('btn.assign'))}</button><a class="btn btn-sm" href="/live?game=${encodeURIComponent(j.gameId)}">${ic('📡', 16)} ${esc(L('btn.host'))}</a>` : ''}${big}</div>`;
-  return `<div class="oc-made ocb-game ocb-done${g.ok ? '' : ' ocb-warn'}" data-ocb-done="${esc(j.id)}">${say}${head}${previewHtml(j.gameId, g.versionId, j.title)}<p class="ocb-line">${g.ok ? ic('✓', 14) : ic('⚠️', 14)} ${esc(lineOf(g))}</p>${changed}${acts}</div>`;
+  const acts = `<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="buildPlay" data-turn="${esc(x.id)}" data-v="${esc(pvKey(j.gameId, vid))}">${ic('▶️', 16)} ${esc(L('btn.play'))}</button>${change}${g.ok ? `<button type="button" class="btn btn-sm" data-c="act" data-act="buildAssign" data-turn="${esc(x.id)}" data-v="${esc(j.id)}">${ic('🎒', 16)} ${esc(L('btn.assign'))}</button><a class="btn btn-sm" href="/live?game=${encodeURIComponent(j.gameId)}">${ic('📡', 16)} ${esc(L('btn.host'))}</a>` : ''}${big}</div>`;
+  const line = vid === g.versionId ? `<p class="ocb-line">${g.ok ? ic('✓', 14) : ic('⚠️', 14)} ${esc(lineOf(g))}</p>` : `<p class="ocb-line">${ic('🕘', 14)} ${esc(L('olderShown', { n: shownN, newest: g.number }))}</p>`;
+  return `<div class="oc-made ocb-game ocb-done${g.ok ? '' : ' ocb-warn'}" data-ocb-done="${esc(j.id)}">${say}${head}${previewHtml(j.gameId, vid, j.title)}${vpick}${line}${changed}${acts}</div>`;
 }
 
 /** The done card in Studio: no preview (the big one is beside the chat), "Showing big on the left" for the version on
@@ -153,9 +173,11 @@ export async function onAct(act, turn, btn) {
     if (box) { box.value = L('changeText', { title: (job && job.title) || '' }); box.dispatchEvent(new Event('input')); box.focus(); try { box.setSelectionRange(box.value.length, box.value.length); } catch { /* not a text box */ } }
     return null;
   }
-  if (act === 'buildAssign') { if (job) setTimeout(() => chat.send(L('assignText', { title: job.title })), 0); return null; }
   const card = turn.note && turn.note.build;
   let value = '';
+  // Assign (the game is shared with the class on the assign card's own Assign), Try again, a class picked
+  if ((act === 'buildAssign' || act === 'buildAgain') && job) value = job.id;
+  if (act === 'buildClass') value = String((btn && btn.dataset.v) || '');
   if (act === 'buildPlan' && card) {
     const p = picksOf(turn, card);
     const need = card.asked.filter(k => !(k !== 'kind' && p.kind === 'lesson'));
@@ -187,11 +209,56 @@ async function poll() {
         if (box && r.rows) box.innerHTML = stepsHtml(r.rows);
       } catch { /* the next tick asks again */ }
     }
-    const vid = j.state === 'done' && j.game ? j.game.versionId : j.mode === 'change' ? j.baseId : null;
+    const vid = j.state === 'done' && j.game ? (S.cardV.get(j.id) || j.game.versionId) : j.mode === 'change' ? j.baseId : null;
     if (vid) await preview(j.gameId, vid);
+    if (j.state === 'done' && j.game && j.game.versionId && !inStudio(j.gameId)) await versionsOf(j.gameId, j.game.versionId);
   }
+  readyNotice(list);
   frames();
 }
+/** The game's versions for the done card's Versions (read again when a newer version lands). */
+async function versionsOf(gameId, newest) {
+  const have = S.vers.get(gameId);
+  if (have && have.some(v => v.id === newest)) return;
+  if (S.asked.has(`vers:${gameId}:${newest}`)) return;
+  S.asked.add(`vers:${gameId}:${newest}`);
+  try {
+    const r = await api(`/api/companion/build/${encodeURIComponent(gameId)}`, { background: true });
+    if (Array.isArray(r.versions)) { S.vers.set(gameId, r.versions); if (r.versions.length > 1 && S.chat) S.chat.render(); }
+  } catch { S.asked.delete(`vers:${gameId}:${newest}`); }
+}
+/** "Your game is ready" (the layout's own notice), when a game's card is done (first seen done on this page, or turned
+ *  done while it is open): the build ended while the teacher was here, on any page, or just before. The server tells
+ *  each build once (the layout marks what it showed when the page opened), so asking again never repeats it. */
+function readyNotice(list) {
+  let fresh = false;
+  for (const { j } of list) {
+    const was = S.states.get(j.id);
+    S.states.set(j.id, j.state);
+    if (was !== 'done' && j.state === 'done') fresh = true;
+  }
+  if (!fresh || Date.now() - S.newsAt < 3000) return;
+  S.newsAt = Date.now();
+  const g = studio();
+  api(`/api/companion/build/news${g ? `?not=${encodeURIComponent(g.id)}` : ''}`, { background: true }).then(r => {
+    if (!r || !r.html) return;
+    const main = document.getElementById('main'); if (!main) return;
+    const p = document.createElement('p');
+    p.className = `notice ${r.kind === 'stopped' ? 'warn' : 'good'} pagenote ocb-news`;
+    p.setAttribute('role', 'status');
+    p.innerHTML = `${ic({ ready: '✨', question: '💬', stopped: '⚠️' }[r.kind] || '✨', 20)} ${r.html}`;
+    main.prepend(p);
+  }).catch(() => { /* the next page's layout says it */ });
+}
+// A version picked on a done card: that version in the card's preview (this viewer's own address, made once).
+document.addEventListener('change', e => {
+  const sel = e.target && e.target.closest && e.target.closest('select[data-ocb-vers]');
+  if (!sel || !S.chat) return;
+  S.cardV.set(sel.dataset.ocbVers, sel.value);
+  preview(sel.dataset.game, sel.value).then(() => { if (S.chat) S.chat.render(); });
+  S.chat.render();
+  const again = S.chat.root.querySelector(`select[data-ocb-vers="${CSS.escape(sel.dataset.ocbVers)}"]`); if (again) again.focus();
+});
 /** This viewer's own preview address for one version (once). */
 async function preview(gameId, vid) {
   const key = pvKey(gameId, vid);

@@ -3060,7 +3060,8 @@
         "sees": "Studio, versione {n}",
         "hello": "Dimmi cosa cambiare in questo gioco e lo invierò al Costruttore. Ogni nuova versione appare nell’anteprima grande.",
         "versionOf": "Versione {n} di {total}",
-        "versionLabel": "Versione nell’anteprima"
+        "versionLabel": "Versione nell’anteprima",
+        "showFailed": "Non è stato possibile mostrare la versione {n} adesso, quindi l’anteprima resta com’era. Riprova."
       }
     },
     "character": {
@@ -5436,7 +5437,8 @@
         "scanFail": "Il controllo di sicurezza ha trovato qualcosa da correggere, quindi non è ancora pronto per gli studenti. Dimmi cosa cambiare, o tocca Cambia.",
         "noPlay": "Il controllo di sicurezza è superato, ma questo server non è riuscito a provarlo, quindi non l’ho ancora giocato.",
         "refused": "Il controllo di sicurezza del Builder ha fermato quel messaggio, quindi non è stato costruito niente. {why}",
-        "nothing": "Questa volta il Builder non ha salvato una nuova versione, quindi non è cambiato niente. Prova a dirlo in un altro modo."
+        "nothing": "Questa volta il Builder non ha salvato una nuova versione, quindi non è cambiato niente. Tocca Riprova, oppure dimmelo in un altro modo.",
+        "nothingSaid": "Questa volta il Builder non ha salvato una nuova versione, quindi non è cambiato niente. Ha detto: «{said}» Tocca Riprova, oppure dimmelo in un altro modo."
       },
       "dev": {
         "phone": "un telefono",
@@ -5452,7 +5454,14 @@
         "big": "Apri in grande",
         "showBig": "Mostra in grande"
       },
-      "assignText": "Assegna «{title}» alla mia classe.",
+      "asg": {
+        "noClass": "Non hai ancora una classe a cui assegnarlo. Crea prima una classe, poi tocca di nuovo Assegna.",
+        "which": "Quale classe deve riceverlo?",
+        "pick": "Assegnare «{title}» a quale classe?",
+        "share": "Non è ancora condiviso con {class}. Assegna lo condivide solo con {class} (mai con tutti), poi lo assegna.",
+        "notShared": "Non sono riuscito a condividerlo con la classe, quindi non è stato assegnato niente. {why}",
+        "waiting": "Non è ancora condiviso con la classe, quindi non è stato assegnato niente. {why}"
+      },
       "changeText": "In «{title}», ",
       "fail": {
         "limit": "Oggi non restano costruzioni, quindi non è stato costruito niente. Domani ne avrai altre.",
@@ -5479,7 +5488,10 @@
       "answered": "Scelto: {list}",
       "retry": "Riprova",
       "showingBig": "In grande a sinistra",
-      "showingBigAbove": "In grande nell’anteprima qui sopra"
+      "showingBigAbove": "In grande nell’anteprima qui sopra",
+      "versions": "Versioni",
+      "versionOf": "Versione {n} di {total}",
+      "olderShown": "È mostrata la versione {n}. La versione {newest} è la più recente, e le modifiche vanno su quella."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# parola} other {# parole}}",
