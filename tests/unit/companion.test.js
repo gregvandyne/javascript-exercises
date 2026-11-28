@@ -274,7 +274,7 @@ test('uploads: a lesson plan\'s text with names taken out (the file is not kept)
     for (const c of calls) assert.doesNotMatch(JSON.stringify(c), NAMES);
     const last = (await chatOf(paid)).turns.at(-1);
     assert.equal(last.note.handoff.tool, 'builder');
-    assert.equal(last.note.handoff.href, `/build/new?for=class&class=${cls.id}`);
+    assert.equal(last.note.handoff.href, `/build/new?for=class&class=${cls.id}&kind=classgame`);
     assert.deepEqual(last.note.steps.map(s => s.k), ['read', 'brief']);
     const h = await as(paid)('/api/companion/chat/act', { body: { turnId: last.id, act: 'handoff' } });
     assert.equal(h.json.handoff.brief, 'Place halves and thirds on a number line, guided then on my own.');

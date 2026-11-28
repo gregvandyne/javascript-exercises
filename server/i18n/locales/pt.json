@@ -4375,7 +4375,8 @@
       "chAnswers": "Cada resposta calculada a partir da sua figura",
       "greetLine": "Me diga o que esta folha precisa: o tema, o ano, quantas perguntas.",
       "greetLineTest": "Me diga o que esta prova deve cobrir: o tema, o ano, quantas perguntas.",
-      "greetLineHas": "Peça para mudar perguntas, adicionar mais ou mudar as unidades ou o ano."
+      "greetLineHas": "Peça para mudar perguntas, adicionar mais ou mudar as unidades ou o ano.",
+      "loading": "Carregando a folha de atividades…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4525,11 +4526,11 @@
       "historyDelete": "Apagar esta conversa",
       "historyDeleteAsk": "Apagar esta conversa para sempre? Ela não poderá ser recuperada.",
       "historyDeleteOk": "Apagar",
-      "hello": "Oi! Eu sou o Oomba, seu ajudante para ensinar. Peça uma aula, um livro, uma mudança no seu painel ou ajuda com um plano de aula.",
+      "hello": "Oi! Eu sou o Oomba, seu ajudante para ensinar. Peça um jogo, um livro, uma folha de atividades, uma mudança no seu painel ou ajuda com um plano de aula.",
       "idea": {
         "game": {
-          "label": "Encontrar uma aula",
-          "text": "Me dê uma aula de frações para o 3º ano, de uns 10 minutos"
+          "label": "Encontrar um jogo",
+          "text": "Me dê um jogo de frações para o 3º ano, de uns 10 minutos"
         },
         "book": {
           "label": "Encontrar um livro",
@@ -4607,7 +4608,7 @@
         "explain": "Consultou como o Oomba Academy funciona",
         "page": "Leu esta página",
         "dash": "Leu seu layout {q} ({n} widgets)",
-        "games": "Buscou aulas: {q}",
+        "games": "Procurei jogos: {q}",
         "books": "Buscou na Story Library",
         "booksLevel": "Relacionou o nível de leitura {q}",
         "lessons": "Buscou planos de aula e folhas de atividades",
@@ -4656,7 +4657,7 @@
         "sheetMade": "Criou e conferiu uma folha de atividades ({n, plural, one {# questão} other {# questões}})",
         "sheetNo": "Não conseguiu criar essa folha de atividades",
         "lessonMade": "Criou e conferiu um plano de aula ({n, plural, one {# etapa} other {# etapas}})",
-        "lessonNo": "Não conseguiu criar essa lição",
+        "lessonNo": "Não consegui fazer esse plano de aula",
         "lessonAsk": "Perguntou o assunto",
         "kinds": "Viu o que o Figures consegue desenhar",
         "find": "Procurou “{q}”",
@@ -4713,7 +4714,7 @@
         "openDash": "Abrir o painel"
       },
       "hand": {
-        "builder": "Atividade de turma no Builder",
+        "builder": "Jogo no Builder",
         "figures": "Folha de atividades no Figures",
         "manipulatives": "Quadro nos Manipulativos",
         "open": {
@@ -4728,7 +4729,7 @@
         "help": "Ajuda",
         "length": "Duração",
         "fromPlan": "Do seu plano",
-        "filled": "O Oomba preencheu sua descrição. Confira e depois toque no botão para criar.",
+        "filled": "A descrição do Oomba está pronta: é a primeira mensagem para o Builder. Escolha o que quiser e confira antes de abrir o Builder.",
         "makeNow": "Criar agora",
         "makeText": "Crie isto agora:"
       },
@@ -4791,7 +4792,7 @@
         "lessonTopic": "Com prazer. Sobre qual assunto, e para qual ano?",
         "sheetTopic": "Com prazer. O que a folha de atividades deve praticar, e para qual ano?",
         "boardTopic": "Com prazer. Qual ferramenta (por exemplo, blocos de base dez ou uma reta numérica), e o que ela deve mostrar?",
-        "assignWhat": "Qual lição devo atribuir? Me diga o nome dela, e a turma se você tiver mais de uma."
+        "assignWhat": "Qual jogo, plano de aula ou folha de atividades devo atribuir? Diga o nome, e a turma se tiver mais de uma."
       },
       "cls": {
         "default": "Turma de teste",
@@ -4818,7 +4819,11 @@
         "assigned": "Atribuído",
         "declined": "Não atribuído",
         "done": "“{title}” atribuído a {class}.",
-        "open": "Ver os jogos da turma"
+        "open": "Ver os jogos da turma",
+        "openLesson": "Ver os planos de aula da turma",
+        "openSheet": "Ver as folhas de atividades da turma",
+        "openBook": "Ver os livros da turma",
+        "openAll": "Ver o que foi atribuído à turma"
       },
       "book": {
         "adding": "Adicionando ao seu livro",
@@ -4920,12 +4925,12 @@
         "open": {
           "board": "Abrir o quadro",
           "sheet": "Abrir a folha de atividades",
-          "lesson": "Abrir a lição"
+          "lesson": "Abrir o plano de aula"
         },
         "no": {
           "board": "O quadro não foi criado. Nada foi salvo.",
           "sheet": "A folha de atividades não foi criada. Nada foi salvo.",
-          "lesson": "A lição não foi criada. Nada foi salvo."
+          "lesson": "O plano de aula não foi feito. Nada foi salvo."
         }
       },
       "pts": {
@@ -4934,7 +4939,8 @@
       },
       "rep": {
         "empty": "{name} ainda não tem alunos, então não há progresso para mostrar.",
-        "which": "De qual turma deve ser o relatório?"
+        "which": "De qual turma deve ser o relatório?",
+        "noWork": "{name} tem {count, plural, one {# aluno} other {# alunos}} e nada atribuído ainda, então ainda não há progresso para mostrar."
       },
       "find": {
         "hidden": "{title} está no Oomba, mas esse jogo está desativado agora, então os alunos não podem jogar.",
@@ -5042,9 +5048,9 @@
             "unassign": "Isso tira da turma. O trabalho dos alunos é mantido.",
             "students": "Os alunos vão ver isso.",
             "classroom": "Isso publica no Google Classroom: os alunos de lá vão ver.",
-            "deleteSheet": "Isso apaga a folha de atividades para sempre. As aulas já atribuídas mantêm as perguntas.",
+            "deleteSheet": "Isso apaga a folha de atividades de vez. O que já foi atribuído mantém as perguntas.",
             "deleteBoard": "Isso apaga o quadro para sempre.",
-            "deleteLesson": "Isso apaga a aula para sempre, com as atribuições e o trabalho dos alunos nelas."
+            "deleteLesson": "Isso apaga o plano de aula de vez, com o que foi atribuído e o trabalho dos alunos."
           },
           "due": {
             "ask": "Mudar as datas de “{title}” em {class}?",
@@ -5059,8 +5065,8 @@
           },
           "seeWork": "Ver o trabalho",
           "lesson": {
-            "ask": "Atribuir a aula “{title}” a {class}?",
-            "done": "A aula “{title}” foi atribuída a {class}."
+            "ask": "Atribuir o plano de aula “{title}” a {class}?",
+            "done": "Atribuí o plano de aula “{title}” a {class}."
           },
           "sheet": {
             "ask": "Atribuir a folha de atividades “{title}” a {class}?",
@@ -5110,14 +5116,14 @@
             "deletedBoard": "O quadro “{title}” foi apagado.",
             "openBoard": "Abrir o quadro",
             "allBoards": "Ver meus quadros",
-            "copyLesson": "Fazer uma cópia da aula “{title}”?",
+            "copyLesson": "Fazer uma cópia do plano de aula “{title}”?",
             "copiedLesson": "Cópia feita: “{title}”.",
-            "deleteLesson": "Apagar a aula “{title}”?",
+            "deleteLesson": "Apagar o plano de aula “{title}”?",
             "inClasses": "{count, plural, one {Está atribuída a # turma.} other {Está atribuída a # turmas.}}",
             "withWork": "{count, plural, one {# aluno tem trabalho nela.} other {# alunos têm trabalho nela.}}",
-            "deletedLesson": "A aula “{title}” foi apagada.",
-            "openLesson": "Abrir a aula",
-            "allLessons": "Ver minhas aulas"
+            "deletedLesson": "Apaguei o plano de aula “{title}”.",
+            "openLesson": "Abrir o plano de aula",
+            "allLessons": "Ver meus planos de aula"
           }
         },
         "homeroom": {
@@ -5208,13 +5214,16 @@
             "ask": "Começar um jogo ao vivo para {class}?",
             "what": "{count, plural, one {# pergunta pronta} other {# perguntas prontas}} do banco de perguntas.",
             "done": "O jogo ao vivo de {class} está aberto: os alunos entram pela página da turma.",
-            "open": "Abrir a tela de quem conduz"
+            "open": "Abrir a tela de quem conduz",
+            "results": "Os resultados vão para a página de Progresso da turma quando o jogo for jogado e encerrado.",
+            "progress": "Ver o progresso da turma"
           },
           "end": {
             "ask": "Encerrar o jogo ao vivo “{title}”?",
             "players": "{count, plural, =0 {Ninguém entrou ainda.} one {Há # jogador.} other {Há # jogadores.}}",
             "done": "O jogo ao vivo “{title}” foi encerrado.",
-            "results": "Ver os resultados"
+            "results": "Ver os resultados",
+            "notPlayed": "Ninguém jogou, então não há resultados."
           }
         },
         "dashboard": {
@@ -15404,9 +15413,7 @@
     "progressEmptyTextForTeachers": "Atribua uma aula na aba Aulas e você verá aqui como cada aluno está indo.",
     "studentEmptyText": "O teu professor vai pôr jogos aqui.",
     "liveHistory": "Histórico de jogos ao vivo",
-    "liveHistoryForTeachers": "Histórico de aulas ao vivo",
     "liveHistoryNone": "Ainda não há jogos ao vivo com esta turma.",
-    "liveHistoryNoneForTeachers": "Ainda não há aulas ao vivo com esta turma.",
     "allGames": "Todos os meus jogos",
     "allGamesForTeachers": "Todas as minhas aulas",
     "assignedTo": "Atribuídos a {class}",
@@ -15460,7 +15467,9 @@
       "collectionEmpty": "Esta coleção ainda está vazia",
       "allEmpty": "Você ainda não criou nenhum jogo.",
       "allEmptyForTeachers": "Você ainda não criou nenhuma aula."
-    }
+    },
+    "liveOpenNow": "Há um jogo ao vivo aberto agora: {title}. Os resultados aparecem aqui quando ele for jogado e encerrado.",
+    "liveOpenHost": "Ir para a tela do anfitrião"
   },
   "library": {
     "title": "Biblioteca de histórias",

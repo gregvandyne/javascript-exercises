@@ -105,7 +105,7 @@ function start() {
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
     change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'action' ? actionDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L('asg.open'))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L(`asg.${{ game: 'open', book: 'openBook' }[x.change.what] || 'openAll'}`))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
@@ -833,7 +833,7 @@ function start() {
   const h = store.get('oomba-handoff');
   if (h) {
     let x = null; try { x = JSON.parse(h); } catch { x = null; }
-    const target = x && Date.now() - x.at < 10 * 60e3 ? (x.tool === 'builder' && location.pathname === '/build/new' ? 'su-ltext' : x.tool === 'figures' && location.pathname === '/figures' ? 'fgd-in' : null) : null;
+    const target = x && Date.now() - x.at < 10 * 60e3 ? (x.tool === 'builder' && location.pathname === '/build/new' ? 'su-brief' : x.tool === 'figures' && location.pathname === '/figures' ? 'fgd-in' : null) : null;
     if (target && document.getElementById(target)) {
       store.set('oomba-handoff', null);
       const box = document.getElementById(target);

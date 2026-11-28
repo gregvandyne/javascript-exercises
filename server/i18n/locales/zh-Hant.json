@@ -4374,7 +4374,8 @@
       "chAnswers": "每個答案都由它的圖形算出",
       "greetLine": "告訴我這份學習單需要什麼:主題、年級、題數。",
       "greetLineTest": "告訴我這份測驗要涵蓋什麼:主題、年級、題數。",
-      "greetLineHas": "請我修改題目、加題,或改單位、年級。"
+      "greetLineHas": "請我修改題目、加題,或改單位、年級。",
+      "loading": "正在載入學習單…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4524,11 +4525,11 @@
       "historyDelete": "刪除這個對話",
       "historyDeleteAsk": "要永久刪除這個對話嗎?刪除後無法復原。",
       "historyDeleteOk": "刪除",
-      "hello": "嗨！我是 Oomba，你的教學小幫手。可以請我找課程、找書、修改儀表板，或幫忙寫教案。",
+      "hello": "嗨！我是 Oomba，你的教學小幫手。可以請我找遊戲、找書、做學習單、修改儀表板，或幫忙寫教案。",
       "idea": {
         "game": {
-          "label": "找課程",
-          "text": "給我一個三年級分數的課程，大約 10 分鐘"
+          "label": "找遊戲",
+          "text": "給我一個三年級分數的遊戲，大約 10 分鐘"
         },
         "book": {
           "label": "找書",
@@ -4606,7 +4607,7 @@
         "explain": "查了 Oomba Academy 怎麼運作",
         "page": "讀了這個頁面",
         "dash": "讀了你的「{q}」版面({n} 個小工具)",
-        "games": "搜尋課程：{q}",
+        "games": "搜尋了遊戲：{q}",
         "books": "搜尋了 Story Library",
         "booksLevel": "對應了閱讀等級 {q}",
         "lessons": "搜尋教案和學習單",
@@ -4655,7 +4656,7 @@
         "sheetMade": "建立並檢查了一份學習單({n} 題)",
         "sheetNo": "無法建立這份學習單",
         "lessonMade": "建立並檢查了一份課程計畫({n} 個步驟)",
-        "lessonNo": "無法建立這一課",
+        "lessonNo": "無法製作這份教案",
         "lessonAsk": "詢問了主題",
         "kinds": "查看了 Figures 能畫什麼",
         "find": "搜尋了「{q}」",
@@ -4712,7 +4713,7 @@
         "openDash": "開啟儀表板"
       },
       "hand": {
-        "builder": "在 Builder 製作的課堂活動",
+        "builder": "在 Builder 製作的遊戲",
         "figures": "Figures 學習單",
         "manipulatives": "數學教具的板子",
         "open": {
@@ -4727,7 +4728,7 @@
         "help": "協助",
         "length": "時間",
         "fromPlan": "來自你的教案",
-        "filled": "Oomba 已填好你的說明。請檢查後按下按鈕來建立。",
+        "filled": "Oomba 的說明準備好了：這就是給 Builder 的第一則訊息。挑你喜歡的，打開 Builder 前再檢查一次。",
         "makeNow": "現在建立",
         "makeText": "現在建立這個:"
       },
@@ -4790,7 +4791,7 @@
         "lessonTopic": "很樂意幫忙。主題是什麼?給幾年級?",
         "sheetTopic": "很樂意幫忙。這份學習單要練習什麼?給幾年級?",
         "boardTopic": "很樂意幫忙。要用哪個工具(例如十進位積木或數線),要顯示什麼?",
-        "assignWhat": "要指派哪一課?請告訴我名稱;如果有不只一個班級,也請說是哪一班。"
+        "assignWhat": "要指派哪個遊戲、教案或學習單？請告訴我名稱，如果你有不只一個班級，也告訴我是哪一班。"
       },
       "cls": {
         "default": "測試班級",
@@ -4817,7 +4818,11 @@
         "assigned": "已指派",
         "declined": "未指派",
         "done": "已把「{title}」指派給 {class}。",
-        "open": "查看班上的遊戲"
+        "open": "查看班上的遊戲",
+        "openLesson": "查看班級的教案",
+        "openSheet": "查看班級的學習單",
+        "openBook": "查看班級的書",
+        "openAll": "查看班級的指派"
       },
       "book": {
         "adding": "正在加入你的書",
@@ -4919,12 +4924,12 @@
         "open": {
           "board": "開啟這塊板",
           "sheet": "開啟學習單",
-          "lesson": "開啟這一課"
+          "lesson": "開啟教案"
         },
         "no": {
           "board": "這塊板沒有建立。什麼都沒有儲存。",
           "sheet": "學習單沒有建立。什麼都沒有儲存。",
-          "lesson": "這一課沒有建立。什麼都沒有儲存。"
+          "lesson": "教案沒有做出來，什麼都沒有儲存。"
         }
       },
       "pts": {
@@ -4933,7 +4938,8 @@
       },
       "rep": {
         "empty": "{name} 還沒有學生,所以還沒有進度可以報告。",
-        "which": "報告要給哪一班?"
+        "which": "報告要給哪一班?",
+        "noWork": "{name} 有 {count} 位學生，但還沒有指派任何東西，所以還沒有進度可以報告。"
       },
       "find": {
         "hidden": "{title} 在 Oomba 上,但這個遊戲目前已關閉,所以學生不能玩。",
@@ -5041,9 +5047,9 @@
             "unassign": "這會把它從班級移除。學生的作業會保留。",
             "students": "學生會看到這個。",
             "classroom": "這會張貼到 Google Classroom：那裡的學生會看到。",
-            "deleteSheet": "這會永久刪除這份學習單。已經指派的課程會保留題目。",
+            "deleteSheet": "這會永久刪除這份學習單。已經指派出去的會保留原本的題目。",
             "deleteBoard": "這會永久刪除這塊白板。",
-            "deleteLesson": "這會永久刪除這堂課，連同它的指派和學生在其中的作業。"
+            "deleteLesson": "這會永久刪除這份教案，連同它的指派和學生在裡面的作業。"
           },
           "due": {
             "ask": "要變更 {class} 中「{title}」的日期嗎？",
@@ -5058,8 +5064,8 @@
           },
           "seeWork": "查看作業",
           "lesson": {
-            "ask": "要把課程「{title}」指派給 {class} 嗎？",
-            "done": "已把課程「{title}」指派給 {class}。"
+            "ask": "要把教案「{title}」指派給 {class} 嗎？",
+            "done": "已把教案「{title}」指派給 {class}。"
           },
           "sheet": {
             "ask": "要把學習單「{title}」指派給 {class} 嗎？",
@@ -5109,14 +5115,14 @@
             "deletedBoard": "已刪除白板「{title}」。",
             "openBoard": "開啟白板",
             "allBoards": "我的白板",
-            "copyLesson": "要複製課程「{title}」嗎？",
+            "copyLesson": "要複製教案「{title}」嗎？",
             "copiedLesson": "已複製：「{title}」。",
-            "deleteLesson": "要刪除課程「{title}」嗎？",
+            "deleteLesson": "要刪除教案「{title}」嗎？",
             "inClasses": "已指派給 {count} 個班級。",
             "withWork": "有 {count} 位學生在其中有作業。",
-            "deletedLesson": "已刪除課程「{title}」。",
-            "openLesson": "開啟課程",
-            "allLessons": "我的課程"
+            "deletedLesson": "已刪除教案「{title}」。",
+            "openLesson": "開啟教案",
+            "allLessons": "我的教案"
           }
         },
         "homeroom": {
@@ -5207,13 +5213,16 @@
             "ask": "要為 {class} 開始即時遊戲嗎？",
             "what": "來自題庫的 {count} 道現成題目。",
             "done": "{class} 的即時遊戲已開啟：學生從班級頁面加入。",
-            "open": "開啟主持人畫面"
+            "open": "開啟主持人畫面",
+            "results": "遊戲玩過並結束後，結果會放到班級的進度頁面。",
+            "progress": "查看班級進度"
           },
           "end": {
             "ask": "要結束即時遊戲「{title}」嗎？",
             "players": "{count, plural, =0 {還沒有人加入。} other {有 # 位玩家在遊戲中。}}",
             "done": "已結束即時遊戲「{title}」。",
-            "results": "查看結果"
+            "results": "查看結果",
+            "notPlayed": "沒有人玩過，所以沒有結果。"
           }
         },
         "dashboard": {
@@ -15402,9 +15411,7 @@
     "progressEmptyTextForTeachers": "在「課程」分頁指派一個課程，就能在這裡看到每位學生的進度。",
     "studentEmptyText": "老師會在這裡加入遊戲。",
     "liveHistory": "即時遊戲紀錄",
-    "liveHistoryForTeachers": "即時課程紀錄",
     "liveHistoryNone": "這個班級還沒有玩過即時遊戲。",
-    "liveHistoryNoneForTeachers": "這個班級還沒有即時課程。",
     "allGames": "我的所有遊戲",
     "allGamesForTeachers": "我所有的課程",
     "assignedTo": "已指派給 {class}",
@@ -15458,7 +15465,9 @@
       "collectionEmpty": "這個合集還是空的",
       "allEmpty": "你還沒有製作任何遊戲。",
       "allEmptyForTeachers": "你還沒做過課程。"
-    }
+    },
+    "liveOpenNow": "目前有一個即時遊戲開著：{title}。遊戲玩過並結束後，結果會顯示在這裡。",
+    "liveOpenHost": "前往主持畫面"
   },
   "library": {
     "title": "故事圖書館",

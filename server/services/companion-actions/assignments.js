@@ -128,7 +128,7 @@ export default [
   // students). Undo: L.unassign (the work is kept).
   {
     id: 'assignLesson', area: 'assignments', risk: 'normal', undoable: true,
-    label: 'Assign one of the teacher\'s OWN lessons (their lesson library, by its title) to a class or some of its students, with a due day or an open day when they gave one. Games and books: use assign.',
+    label: 'Assign one of the teacher\'s OWN lesson plans (their lesson library, by its title) to a class or some of its students, with a due day or an open day when they gave one. Games and books: use assign.',
     params: { classRef: CLASS_REF, lesson: P('Words of the lesson\'s title as the teacher wrote them.'), due: DUE, opens: OPENS, students: STUDENTS },
     plan(u, ctx, p) {
       const w = whichClass(u, ctx, p.classRef); if (!w.c) return w;
@@ -138,7 +138,7 @@ export default [
       const s = someStudents(ctx, w.c, p.students); if (s.error) return s;
       return {
         data: { classId: w.c.id, lessonId: l.it.id, title: l.it.title, ...days, students: s.ids },
-        ai: `Assign the lesson "${clean(ctx, l.it.title)}" to ${clean(ctx, w.c.name)} (${s.ids.length ? `${s.ids.length} students` : 'the whole class'}${days.opens ? `, opens ${days.opens}` : ''}${days.due ? `, due ${days.due}` : ''}).`,
+        ai: `Assign the lesson plan "${clean(ctx, l.it.title)}" to ${clean(ctx, w.c.name)} (${s.ids.length ? `${s.ids.length} students` : 'the whole class'}${days.opens ? `, opens ${days.opens}` : ''}${days.due ? `, due ${days.due}` : ''}).`,
       };
     },
     view: (u, d, t) => ({ title: t('js.companion.act.assignments.lesson.ask', { title: d.title, class: className(d.classId) }), lines: whoLines(t, { ...d, students: d.students.length }) }),
@@ -148,7 +148,7 @@ export default [
       const cl = r.classLesson;
       return { ok: true, landed: assignedOk(cl.id, d.classId, d.students) && isoDay(cl.due_at) === d.due && isoDay(cl.opens_at) === d.opens, done: { classId: d.classId, clId: cl.id, title: d.title, students: d.students.length, due: d.due, opens: d.opens }, undo: { clId: cl.id } };
     },
-    doneView: (u, d, t) => ({ lines: [t('js.companion.act.assignments.lesson.done', { title: d.title, class: className(d.classId) }), ...whoLines(t, d)], links: [workLink(d, t), assignedLink(d.classId, t)] }),
+    doneView: (u, d, t) => ({ lines: [t('js.companion.act.assignments.lesson.done', { title: d.title, class: className(d.classId) }), ...whoLines(t, d)], links: [workLink(d, t), assignedLink(d.classId, t, 'lesson')] }),
     undo: undoAssignment,
   },
 
@@ -175,7 +175,7 @@ export default [
       const cl = r.classLesson;
       return { ok: true, landed: assignedOk(cl.id, d.classId, []) && isoDay(cl.due_at) === d.due, done: { classId: d.classId, clId: cl.id, title: d.title, due: d.due, opens: d.opens }, undo: { clId: cl.id } };
     },
-    doneView: (u, d, t) => ({ lines: [t('js.companion.act.assignments.sheet.done', { title: d.title, class: className(d.classId) }), ...whoLines(t, { ...d, students: 0 })], links: [workLink(d, t), assignedLink(d.classId, t)] }),
+    doneView: (u, d, t) => ({ lines: [t('js.companion.act.assignments.sheet.done', { title: d.title, class: className(d.classId) }), ...whoLines(t, { ...d, students: 0 })], links: [workLink(d, t), assignedLink(d.classId, t, 'sheet')] }),
     undo: undoAssignment,
   },
 

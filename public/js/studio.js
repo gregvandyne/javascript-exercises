@@ -290,7 +290,12 @@ function makeLive(btn) {
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
 async function refreshLiveLine() {
-  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; S.activity = st.activity; S.versions = st.versions; renderActs(); syncPanel(); } catch { /* the next resync redraws it */ }
+  let st = null;
+  try { st = await api(`/api/studio/${ID}`, { background: true }); } catch { return; /* the next resync redraws it */ }
+  // The header too (chat audit 3: "Nothing built yet" after the first version landed): the version being edited, the
+  // game's status and what is live or waiting, read back with the rest.
+  for (const k of ['liveClass', 'canvasLine', 'activity', 'versions', 'current', 'status', 'live', 'pending', 'game']) if (k in st) S[k] = st[k];
+  renderTop(); renderLive(); renderSafety(); syncPanel();
 }
 function renderSafety() {
   renderActs();

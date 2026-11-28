@@ -280,7 +280,7 @@ test('"Build a lesson" asks (no AI, nothing guessed); "Assign it" asks in plain 
   assert.match(bot.text, /What topic is it on, and for which grade\?/);
   await say(x, 'Assign it');
   bot = await lastBot(x.tc);
-  assert.match(bot.text, /Which lesson should I assign\? Tell me its name/);
+  assert.match(bot.text, /Which game, lesson plan or worksheet should I assign\? Tell me its name/);
   assert.equal(bot.note.ask, undefined, 'no buttons made from old searches');
   // A guessed topic (not in the teacher's words): refused, nothing made.
   const c2 = standIn((p, i) => (i === 0 ? toolUse('makeLesson', { topic: 'Identifying Adjectives', grade: '4' }) : 'What topic would you like?'));

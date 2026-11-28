@@ -16886,3 +16886,42 @@ On the site:
 Tests: `tests/unit/arithmetic-lab-playthrough-browser.test.js` (the game on 390 and 320 wide phones),
 `tests/unit/arithmetic-lab-teacher-browser.test.js` (the site), `tests/unit/box-by-box.test.js` (the title, the summary,
 step fixes), and the existing Arithmetic Lab tests updated (Bring down, the remainder, the zero line).
+
+## Oomba chat: audit 3 fixes (28 Nov 2026)
+
+The owner's third chat audit, its quick items (the Builder in the chat, phase 2, is separate work):
+
+- **No hidden game in a drafted lesson plan.** The draft's game list (services/lesson-draft.js `catalogs`, the one
+  pipeline behind the library's Draft with AI and the chat's `makeLesson`) keeps only games a step may use
+  (`stepGameOk`): published, not an official game hidden right now (game-focus.js `gameHidden`) unless the teacher may
+  open it anyway (`mayOpenHidden`), and not an Oomba Live game hosted live only (Brain Board). The save checks again: a
+  step naming any other game is written as a text step. The audit's plan used Sum Racer while the chat said it was off:
+  the site list (lessons.js `gamesForPicker`) has no hidden filter of its own.
+- **The progress reply reads the class now.** `classProgress` already read the roster fresh; the stale "Once [student] is
+  added..." was the model's own words. A class with students and nothing assigned now gets the app's line first ("4b
+  math has 1 student and nothing assigned yet...") and a note that forbids "no students"; "no students yet" stays only for
+  `students: 0`. Results carry `className`.
+- **A live game from the chat leaves a trace.** A room's results are saved when it is played and ended
+  (classlive-results.js `save`, only with `startedAt`): a room nobody played leaves none, by design. The class's Progress
+  page now shows an open room for the class ("A live game is open now", with the host screen link), the chat's host card
+  says results come once the game is played and ended (with a link to the class's Progress), the AI is told to say
+  "hosting a live game", and ending a room nobody played says it has no results. Teachers read "Live games history" /
+  "No live games with this class yet." (the "live lessons" teacher variants are gone: one vocabulary, below).
+- **The change card's link names what was assigned**: games, lesson plans, worksheets, books, or the class's assignments
+  for anything else (shared.js `assignedLink(classId, t, what)`; the chat's Assign card carries `change.what`). The link
+  is still the class's assigned list (`?view=assigned`), where every assignment is.
+- **The class's full name**: a prompt rule ("4b math", never the "4b" the teacher typed); tools already passed it.
+- **Studio**: a new version's `refreshLiveLine` reads back the header too (current version, status, live, pending) and
+  redraws it, so "Nothing built yet" no longer stays after the first build.
+- **Figures worksheet pages** send the worksheet with the page (`fg-sheet.worksheet`): the first paint is its real title
+  and questions; while a saved worksheet is not known yet the list says "Loading the worksheet…", never "No questions yet".
+- **The Builder hand-off** opens `/build/new?...&kind=classgame` (a plain `&` for `location.href`; the page started on
+  Classroom lesson for teachers, `startKind`). The brief used to land in the activity's lesson box and reach the Builder
+  as "I described my lesson.". Now it lands in a hidden `#su-brief` box; the plan screen shows the first message as an
+  editable box: the plan's sentence, then the brief word for word, sent as `plan.told` with `brief: true` (and as `text`
+  when nothing was picked). The runner takes `told` from an activity's plan or a plan with `brief: true`; any other game
+  plan still sends its own sentence.
+- **One vocabulary in the chat**: game, lesson plan, worksheet (system prompt, tool descriptions, card strings: hello,
+  ideas, steps, the lesson plan cards, the hand-off). This replaces the chat's part of "Teachers say lessons"; routes and
+  data keep their names.
+Tests: `tests/unit/companion-audit3.test.js`, `tests/unit/builder-setup-told.test.js` (a brief's first message).

@@ -25,7 +25,7 @@ const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'use', 
 const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
 const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
 const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
-const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], use: [...D.canvas.use] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false, told: { gen: '', edited: false } };
+const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], use: [...D.canvas.use] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false, told: { gen: '', edited: false }, brief: '' };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -337,7 +337,9 @@ const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id
 function renderPlan() {
   const h = $('#su-h-plan'); h.textContent = S.kind === 'activity' ? h.dataset.activity : h.dataset.game;
   // an activity's first message is a box they may edit; an arcade game's is shown as it is
-  $('#su-told').hidden = S.kind === 'activity'; $('#su-tedit').hidden = S.kind !== 'activity';
+  // a game with a brief from Oomba's chat: its first message is a box they may edit too (the brief in it, word for word)
+  const editable = S.kind === 'activity' || !!S.brief;
+  $('#su-told').hidden = editable; $('#su-tedit').hidden = !editable;
   if (S.kind !== 'activity') $('#su-lline').hidden = true;
   if (S.kind === 'activity') return renderActivityPlan();
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
@@ -355,6 +357,7 @@ function renderPlan() {
   });
   $('#su-rows').innerHTML = rows.join('');
   const plan = buildPlan(), told = $('#su-told');
+  if (S.brief) return renderBriefTold(plan);
   if (isEmpty(plan)) { told.textContent = t('js.buildsetup.plan.empty'); return; }
   told.textContent = '…';
   api('/api/build/plan', { method: 'POST', body: { plan, files: S.files.length } })
@@ -380,8 +383,21 @@ function renderActivityPlan() {
   line.hidden = true;
   if (!S.told.edited) { inp.value = '…'; inp.style.height = ''; }
   api('/api/build/plan', { method: 'POST', body: { plan: buildPlan(), files: 0 } })
-    .then(r => { if (S.screen !== 'plan') return; S.told.gen = r.text || ''; if (!S.told.edited) inp.value = S.told.gen; paintTold(); renderLessonSum(r); })
+    .then(r => { if (S.screen !== 'plan') return; S.told.gen = withBrief(r.text); if (!S.told.edited) inp.value = S.told.gen; paintTold(); renderLessonSum(r); })
     .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } if (!S.told.edited) inp.value = ''; toast(e.message, { bad: true }); });
+}
+/** The plan's sentence, then the brief from Oomba's chat word for word (chat audit 3: the brief reached the Builder as
+ *  "I described my lesson."). */
+const withBrief = text => [String(text || '').trim(), S.brief].filter(Boolean).join('\n\n').slice(0, D.told.max);
+/** A game's first message with a brief: the plan's sentence (when anything is picked) and the brief, in the box. */
+function renderBriefTold(plan) {
+  const inp = $('#su-told-in');
+  const put = text => { if (S.screen !== 'plan') return; S.told.gen = withBrief(text); if (!S.told.edited) inp.value = S.told.gen; paintTold(); };
+  if (isEmpty(plan)) return put('');
+  if (!S.told.edited) inp.value = '…';
+  api('/api/build/plan', { method: 'POST', body: { plan, files: S.files.length } })
+    .then(r => put(r.text))
+    .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } put(''); });
 }
 // ---------------------------------------------------------------- the first message: theirs to edit
 // What they type is sent instead of the sentence (as plan.told: builder/runner.js submit); the plan and what it says
@@ -398,7 +414,7 @@ function resetTold() {
   say(t('js.buildsetup.plan.toldResetDone')); inp.focus();
 }
 /** The first message as it will be sent: their edit, or '' for the plan's own sentence. */
-const toldOf = () => (S.kind === 'activity' && S.told.edited ? $('#su-told-in').value.trim() : '');
+const toldOf = () => (S.brief ? $('#su-told-in').value.trim() || S.told.gen : S.kind === 'activity' && S.told.edited ? $('#su-told-in').value.trim() : '');
 /** One line under the message saying their lesson goes with it (r.plan.lesson, as the server will send it): their file,
  *  and whether all of it is read (the first part only when it was cut at the limit), or their notes. */
 function renderLessonSum(r) {
@@ -442,8 +458,8 @@ const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypt
 /** "Open the Builder": the game, the file (if any), then the first build with the plan. If the build cannot start
  *  (no messages left today, the Builder is resting), the Studio opens with the sentence in the box and says why. */
 async function openBuilder() {
-  const btn = $('#su-open'), told = toldOf(), plan = { ...buildPlan(), ...(told ? { told } : {}) };
-  if (isEmpty(plan)) return direct(btn);
+  const btn = $('#su-open'), told = toldOf(), plan = { ...buildPlan(), ...(told ? { told, ...(S.brief ? { brief: true } : {}) } : {}) };
+  if (isEmpty(plan) && !told) return direct(btn);
   if (S.busy) return; S.busy = true;
   const old = btn.textContent; btn.textContent = t('js.buildsetup.plan.opening'); btn.setAttribute('aria-busy', 'true');
   const stop = () => { S.busy = false; btn.textContent = old; btn.removeAttribute('aria-busy'); };
@@ -467,10 +483,10 @@ async function openBuilder() {
   let pro = false; try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
   let ok = false;
   try {
-    const res = await fetch(`/api/studio/${id}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ plan, uploads: S.files.map(f => f.id), cid: newCid(), detach: true, pro }) });
+    const res = await fetch(`/api/studio/${id}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ plan, ...(told ? { text: told } : {}), uploads: S.files.map(f => f.id), cid: newCid(), detach: true, pro }) });
     ok = res.ok;
   } catch { ok = false; }
-  const ask = S.kind === 'activity' ? $('#su-told-in').value.trim() : $('#su-told').textContent;
+  const ask = S.kind === 'activity' || S.brief ? $('#su-told-in').value.trim() : $('#su-told').textContent;
   location.href = ok || !ask || ask === '…' ? `/studio/${id}` : `/studio/${id}?ask=${encodeURIComponent(ask.slice(0, 600))}`;
 }
 
@@ -519,6 +535,8 @@ $('#su-direct').addEventListener('click', e => direct(e.currentTarget));
 $('#su-skipall').addEventListener('click', e => direct(e.currentTarget));
 $('#su-open').addEventListener('click', openBuilder);
 $('#su-told-in').addEventListener('input', paintTold);
+// The brief from Oomba's chat (public/js/companion.js puts it here when the hand-off arrives).
+$('#su-brief').addEventListener('input', e => { S.brief = e.target.value.replace(/\r\n/g, '\n').trim(); S.told.edited = false; if (S.screen === 'plan') renderPlan(); });
 $('#su-told-reset').addEventListener('click', resetTold);
 for (const inp of $$('[data-idea]')) {
   inp.addEventListener('input', () => { S.idea[inp.dataset.idea] = inp.value; });
