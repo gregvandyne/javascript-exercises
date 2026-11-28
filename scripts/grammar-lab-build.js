@@ -728,6 +728,8 @@ const TELLING = /^(?:the )?[\p{L}']+ (?:was|is|were|are|felt|seemed) [a-z]+\.$/i
 const PROGRESSIVE = /^(?:is|are|was|were|am|will be) [a-z]+ing$/;
 
 // ------------------------------------------------------------------------------------------------- three-section cards
+/** Labels of a writing card's weak or wrong sentences: never highlighted (the fix is). */
+const WEAK_LABEL = /^(?:weak\b|vague|redundant|wordy|unnecessary|too close|telling)/i;
 /** A writing topic's card: "Section 1, Facts. Guiding question: What is a fact? Worked passage: "S1 S2" Note." ->
  *  { sections: [{ title, question, passage: [{ label?, text, hl }], note }] }. Which sentences the card highlights is
  *  Oomba's own note (overrides.json card.sections[i].highlight: indexes of the section's sentences). */
@@ -753,6 +755,9 @@ export function parseSections(cardLines, problems, where, notes = {}) {
     const want = (hl[i] || {}).highlight;
     if (!Array.isArray(want) || !want.length || want.some(x => !passage[x])) problems.push(`${where}: section ${i + 1} needs overrides card.sections[${i}].highlight (sentences 0 to ${passage.length - 1})`);
     else for (const x of want) passage[x].hl = true;
+    // The highlight marks the sentence to learn from: never a weak or wrong one ("Vague:", "Weak hook:", "Too close:"),
+    // nor the sentences that follow it under the same label. A weak sentence is shown with its fix, and the fix is lit.
+    { let lab = ''; passage.forEach((p, j) => { if (p.label) lab = p.label; if (p.hl && WEAK_LABEL.test(lab)) problems.push(`${where}: section ${i + 1} highlights sentence ${j} ("${lab}"); highlight its fixed sentence instead`); }); }
     if (!passage.length) problems.push(`${where}: section ${i + 1} has no worked passage`);
     return { title, question, ...(body ? { body } : {}), passage, note };
   }).filter(Boolean);

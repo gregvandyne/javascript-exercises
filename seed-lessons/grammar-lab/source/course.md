@@ -2578,7 +2578,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 **Teaching card**
 - Section 1, Job one: restate the claim. Guiding question: How do I remind the reader what I argued? A conclusion restates the claim in fresh words, so the reader remembers the main point. Worked passage: Claim: "Schools should keep art classes." Conclusion restatement: "Art classes belong in every school." The idea is the same, but the words are new.
 - Section 2, Job two: leave a final thought. Guiding question: What should the reader take away? A conclusion ends with a final thought that gives the reader something to remember, such as a call to action or a look ahead. Worked passage: "If we protect art classes now, the next generation of artists, builders, and thinkers will thank us." The final thought looks ahead and gives the reader a reason to care.
-- Section 3, What a conclusion does not do. Guiding question: What should I avoid? A conclusion should not bring in new evidence, start a new argument, or repeat the essay word for word. Worked passage: Weak conclusion: "Art classes are good. Art classes are good. Art classes are good." This repeats the same words and adds nothing new, so it fails both jobs.
+- Section 3, What a conclusion does not do. Guiding question: What should I avoid? A conclusion should not bring in new evidence, start a new argument, or repeat the essay word for word. Worked passage: Weak conclusion: "Art classes are good. Art classes are good. Art classes are good." Strong conclusion: "Art classes help students think in new ways, so every school should keep them." The weak one repeats the same words and adds nothing new, so it fails both jobs.
 
 **Quiz**
 1. Passage: Claim: "Schools should keep art classes." Which restates the claim in fresh words? Answer: "Art classes belong in every school." Hint: A conclusion restates the claim in fresh words.
@@ -3422,7 +3422,7 @@ Quiz:
 Teaching card (three sections):
 - Section 1, What is a hook? Guiding question: Does the first sentence grab the reader? Worked passage: "Most students agree that homework takes too long." This hooks the reader by starting with something many people already believe.
 - Section 2, Why start with agreement? Guiding question: Does it make the reader nod before you argue? Worked passage: "Everyone knows that practice makes a player better. But practice only helps when the drills match the game." The first sentence gets the reader to agree, so the second sentence lands harder.
-- Section 3, What makes a hook weak? Guiding question: Does it just restate the topic? Worked passage: Weak hook: "This essay is about homework." This is a weak hook. It tells the reader the topic but gives no reason to keep reading.
+- Section 3, What makes a hook weak? Guiding question: Does it just restate the topic? Worked passage: Weak hook: "This essay is about homework." Strong hook: "Most students spend an hour a night on homework, but does it help them learn?" The weak hook tells the reader the topic but gives no reason to keep reading. The strong hook asks a question the reader wants answered.
 
 Quiz:
 1. Passage: "Most students agree that homework takes too long. They finish one subject and start another, and the evening disappears." Ask: Which sentence is the hook? Answer: the first sentence. Hint: Look for the sentence that grabs the reader and makes them want to read on.
@@ -4849,7 +4849,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 ### Topic: Identifying Vague Words and Phrases 1
 
 **Teaching card**
-- Section 1, What vague words are. Guiding question: Does the word give the reader a clear picture? Worked passage: Vague: "The trip was nice." The word "nice" is vague. It does not say what was good about the trip.
+- Section 1, What vague words are. Guiding question: Does the word give the reader a clear picture? Worked passage: Vague: "The trip was nice." Clear: "The trip was sunny, and we swam every day." The word "nice" is vague. It does not say what was good about the trip.
 - Section 2, How to spot them. Guiding question: Could the word mean many different things? Worked passage: Vague: "She did a lot of stuff at camp." Clear: "She swam, hiked, and cooked at camp." The phrase "a lot of stuff" is vague. It could mean swimming, hiking, cooking, or anything else.
 - Section 3, How to replace them. Guiding question: What exact word says what you mean? Worked passage: "The trip was exciting because we climbed a tall hill and cooked dinner over a fire." The exact words replace the vague word "nice" with clear details.
 

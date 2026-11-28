@@ -12213,12 +12213,12 @@
        {
         "label": "Original",
         "text": "Bees carry pollen from flower to flower, which helps plants make seeds.",
-        "hl": false
+        "hl": true
        },
        {
         "label": "Too close",
         "text": "Bees carry pollen from bloom to bloom, which helps plants make seeds.",
-        "hl": true
+        "hl": false
        }
       ],
       "note": "Only one word changed, so it is still a copy."
@@ -28990,18 +28990,23 @@
        {
         "label": "Weak conclusion",
         "text": "Art classes are good.",
-        "hl": true
+        "hl": false
        },
        {
         "text": "Art classes are good.",
-        "hl": true
+        "hl": false
        },
        {
         "text": "Art classes are good.",
+        "hl": false
+       },
+       {
+        "label": "Strong conclusion",
+        "text": "Art classes help students think in new ways, so every school should keep them.",
         "hl": true
        }
       ],
-      "note": "This repeats the same words and adds nothing new, so it fails both jobs."
+      "note": "The weak one repeats the same words and adds nothing new, so it fails both jobs."
      }
     ]
    },
@@ -34070,10 +34075,15 @@
        {
         "label": "Weak hook",
         "text": "This essay is about homework.",
+        "hl": false
+       },
+       {
+        "label": "Strong hook",
+        "text": "Most students spend an hour a night on homework, but does it help them learn?",
         "hl": true
        }
       ],
-      "note": "This is a weak hook. It tells the reader the topic but gives no reason to keep reading."
+      "note": "The weak hook tells the reader the topic but gives no reason to keep reading. The strong hook asks a question the reader wants answered."
      }
     ]
    },
@@ -34295,12 +34305,12 @@
        {
         "label": "Redundant",
         "text": "She returned back to school.",
-        "hl": true
+        "hl": false
        },
        {
         "label": "Fixed",
         "text": "She returned to school.",
-        "hl": false
+        "hl": true
        }
       ],
       "note": "The words “returned” and “back” say the same thing, so one of them is redundant."
@@ -34312,12 +34322,12 @@
        {
         "label": "Unnecessary word",
         "text": "The very unique painting hung in the hall.",
-        "hl": true
+        "hl": false
        },
        {
         "label": "Fixed",
         "text": "The unique painting hung in the hall.",
-        "hl": false
+        "hl": true
        }
       ],
       "note": "The word “very” adds nothing, so it is unnecessary."
@@ -34329,12 +34339,12 @@
        {
         "label": "Wordy",
         "text": "Due to the fact that it rained, the game was moved inside.",
-        "hl": true
+        "hl": false
        },
        {
         "label": "Fixed",
         "text": "Because it rained, the game was moved inside.",
-        "hl": false
+        "hl": true
        }
       ],
       "note": "The short word “because” says the same thing in one word."
@@ -34571,6 +34581,11 @@
        {
         "label": "Vague",
         "text": "The trip was nice.",
+        "hl": false
+       },
+       {
+        "label": "Clear",
+        "text": "The trip was sunny, and we swam every day.",
         "hl": true
        }
       ],
@@ -34583,12 +34598,12 @@
        {
         "label": "Vague",
         "text": "She did a lot of stuff at camp.",
-        "hl": true
+        "hl": false
        },
        {
         "label": "Clear",
         "text": "She swam, hiked, and cooked at camp.",
-        "hl": false
+        "hl": true
        }
       ],
       "note": "The phrase “a lot of stuff” is vague. It could mean swimming, hiking, cooking, or anything else."
