@@ -157,6 +157,41 @@ test('the parser: a fix example is a before and an after; every mark on the afte
   assert.ok(problems.some(p => /is not capitalized by the title rules/.test(p)), problems.join('\n'));
 });
 
+test('the card lint: a wrong sentence is never shown as a model; a before with its after, or a labeled passage, passes', () => {
+  const lint = (worked, tip, items = [], proper = new Set(['sam'])) => {
+    const lines = [`Definition: A rule.`, `Worked example: ${worked}`, `How it works: The rule.`, `Tip box: ${tip}`].map((text, line) => ({ text, line }));
+    return B.checkCardExamples({ id: 'x', items, card: B.parseCard(lines, [], 'x', 'choice') }, proper);
+  };
+  const ok = '"The dog ran." The dog does the running.';
+  const fails = (worked, tip, why, items) => { const p = lint(worked, tip, items); assert.ok(p.some(x => why.test(x)), `${worked} | ${tip}\n${p.join('\n')}`); };
+  assert.deepEqual(lint(ok, '"Sam saw the moon." Sam is a name.'), []);
+  // the owner's case: a list with no commas on a series topic, shown alone
+  const series = [{ text: 'We need milk eggs and bread.', right: 'We need milk, eggs, and bread.', answer: [1] }, { text: 'We ate rice beans and corn.', right: 'We ate rice, beans, and corn.', answer: [1] }];
+  fails(ok, '"We saw a lion a tiger and a bear." The list is a lion, a tiger, and a bear.', /lists things with no commas/, series);
+  assert.deepEqual(lint(ok, '"We saw a lion a tiger and a bear." With commas: "We saw a lion, a tiger, and a bear."', series), []);
+  // the after of a fix is checked like a model
+  fails(ok, '"We saw a lion a tiger and a bear." With commas: "We saw a lion a tiger, and a bear."', /lists things|right answer/, series.concat({ text: 'We saw a lion a tiger and a bear.', right: 'We saw a lion, a tiger, and a bear.', answer: [1] }));
+  fails(ok, '"the dog ran home." The dog ran.', /starts with a small letter/);
+  fails(ok, '"Then i ran home." I ran.', /small i/);
+  fails(ok, '"The dog ran home" The dog ran.', /no end mark/);
+  fails(ok, '"We met on monday." Monday is a day.', /day or month "monday"/);
+  fails(ok, '"I saw sam at school." Sam is a name.', /name "sam"/);
+  fails(ok, '"We had alot of fun." Two words.', /never right/);
+  fails(ok, '"Sam said, \'I am here\'." The words are inside.', /outside the closing quotation mark/);
+  fails(ok, '"Because it rained." This is a fragment.', /subordinating word|calls it wrong/);
+  fails(ok, '"Ran to the store." This is a fragment.', /calls it wrong \("fragment"\)/);
+  fails(ok, '"Covered in mud, Sam washed the dog." Covered in mud describes the dog, not Sam.', /calls it wrong/);
+  assert.deepEqual(lint(ok, '"Ran to the store." This is a fragment. Fix it: "Sam ran to the store."'), []);
+  // a fragment in a line of dialogue is fine in speech; a question that opens with "when" is not a fragment
+  assert.deepEqual(lint(`"'Where did you go?' 'To the store.'" To the store is a fragment.`, '"When is the party?" When asks about time.'), []);
+  // the quiz calls it wrong: a wrong option, or a right answer with its capitals changed
+  fails(ok, '"Mars is called the red planet." Mars is a planet.', /capitals or commas changed/, [{ text: 'mars is called the red planet.', right: 'Mars is called the Red Planet.', answer: [0] }]);
+  // a writing card: a section whose note calls its sentence weak needs a label on the passage
+  const sec = rest => B.parseSections([{ text: `Section 1, Hooks. Guiding question: Is it strong? Worked passage: ${rest}`, line: 1 }, { text: 'Section 2, Two. Guiding question: Two? Worked passage: "Two." Fine.', line: 2 }, { text: 'Section 3, Three. Guiding question: Three? Worked passage: "Three." Fine.', line: 3 }], [], 'x', { card: { sections: [{ highlight: [0] }, { highlight: [0] }, { highlight: [0] }] } });
+  assert.ok(B.checkCardExamples({ id: 'x', items: [], card: sec('"This essay is about homework." This is a weak hook.') }, new Set()).some(p => /no label/.test(p)));
+  assert.deepEqual(B.checkCardExamples({ id: 'x', items: [], card: sec('Weak hook: "This essay is about homework." This is a weak hook.') }, new Set()), []);
+});
+
 // ------------------------------------------------------------------------------------------------- mastery math
 const play = (s, results) => results.map(r => M.answer(s, r));
 test('mastery: 3 levels of 4 is 12 questions when every answer is right; levels need two in a row', () => {
