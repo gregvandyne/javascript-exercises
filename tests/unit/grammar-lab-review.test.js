@@ -130,7 +130,7 @@ test('the reported repeats: the counter and the question change together (the pa
     assert.equal(new Set(items).size, 12, `run ${r}: 12 different items`);
   }
   const js = fs.readFileSync(path.join(ROOT, 'public/js/grammar-lab.js'), 'utf8');
-  assert.match(js, /await flash\(r\.kind === 'fixed'\);\s*question = r\.question;/, 'the new question is taken after the confirmation');
+  assert.match(js, /await flash\(r\.kind === 'fixed', r\.after \|\| ''\);\s*question = r\.question;/, 'the new question is taken after the confirmation');
   assert.match(js, /if \(r\.levelDone !== null && r\.levelDone !== undefined\) \{ renderQuestion\(\); return levelDone\(r\.levelDone\); \}/, 'the next question is under the level overlay');
 });
 
