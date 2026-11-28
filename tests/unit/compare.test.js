@@ -297,7 +297,7 @@ test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedI
       const home = (await get('/')).text;
       const found = [...new Set([...text(home).matchAll(new RegExp(ANY_NAME.source, 'gi'))].map(m => m[0].toLowerCase()))].sort();
       assert.deepEqual(found, ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'noredink', 'typing.com'], 'the six');
-      assert.ok(text(home).includes('One subscription instead of five: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com Pay'), 'the strip keeps the five');
+      assert.ok(text(home).includes('One subscription instead of six: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com NoRedInk Pay for one plan instead of six.'), 'the strip names six, NoRedInk too');
       assert.ok(text(home).includes('Kahoot!, Classroomscreen, Blooket, Brainingcamp, Typing.com and NoRedInk are trademarks of their owners.'), 'the trademark line');
       const cards = [...home.matchAll(/<article class="lp-card lp-vs-card">([\s\S]*?)<\/article>/g)].map(m => m[1]);
       assert.equal(cards.length, 4);

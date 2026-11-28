@@ -11566,7 +11566,9 @@
     },
     "names": {
       "lead": "Un abbonamento invece di cinque:",
-      "line": "Un solo piano invece di cinque. <a href=\"{compare}\">Guarda il confronto</a>"
+      "line": "Un solo piano invece di cinque. <a href=\"{compare}\">Guarda il confronto</a>",
+      "leadSix": "Un abbonamento invece di sei:",
+      "lineSix": "Un solo piano invece di sei. <a href=\"{compare}\">Guarda il confronto</a>"
     },
     "one": {
       "kicker": "E molto altro",

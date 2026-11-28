@@ -11565,7 +11565,9 @@
     },
     "names": {
       "lead": "Un abonnement au lieu de cinq :",
-      "line": "Un seul forfait au lieu de cinq. <a href=\"{compare}\">Voir la comparaison</a>"
+      "line": "Un seul forfait au lieu de cinq. <a href=\"{compare}\">Voir la comparaison</a>",
+      "leadSix": "Un abonnement au lieu de six :",
+      "lineSix": "Un seul forfait au lieu de six. <a href=\"{compare}\">Voir la comparaison</a>"
     },
     "one": {
       "kicker": "Et bien plus",

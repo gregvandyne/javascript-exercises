@@ -11566,7 +11566,9 @@
     },
     "names": {
       "lead": "Eén abonnement in plaats van vijf:",
-      "line": "Betaal voor één abonnement in plaats van vijf. <a href=\"{compare}\">Bekijk de vergelijking</a>"
+      "line": "Betaal voor één abonnement in plaats van vijf. <a href=\"{compare}\">Bekijk de vergelijking</a>",
+      "leadSix": "Eén abonnement in plaats van zes:",
+      "lineSix": "Betaal voor één abonnement in plaats van zes. <a href=\"{compare}\">Bekijk de vergelijking</a>"
     },
     "one": {
       "kicker": "En nog veel meer",

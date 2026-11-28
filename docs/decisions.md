@@ -16784,3 +16784,6 @@ GRAMMAR_LAB_USERS='*' (every visitor), so `grammarCompareOn()` is true and the N
   assigns a unit, a topic or its proofreading room to a class, a group or one student with a due day, the class report
   shows topics mastered (counts, never a ranking), and placement sets where each student starts.
 - Strings in all 13 languages; tests/unit/compare.test.js checks the row appears with Grammar Lab open.
+- **The homepage's "One subscription instead of five" strip** now names six, NoRedInk too, and says "instead of six"
+  (`landing.names.leadSix` / `lineSix`), while Grammar Lab is open to every visitor (owner, 28 Nov 2026: this replaces
+  "the strip keeps the five" in "Grammar Lab beside NoRedInk"). With Grammar Lab closed it is the five as before.

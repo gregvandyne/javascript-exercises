@@ -13138,7 +13138,9 @@
     },
     "names": {
       "lead": "One subscription instead of five:",
-      "line": "Pay for one plan instead of five. <a href=\"{compare}\">See how we compare</a>"
+      "line": "Pay for one plan instead of five. <a href=\"{compare}\">See how we compare</a>",
+      "leadSix": "One subscription instead of six:",
+      "lineSix": "Pay for one plan instead of six. <a href=\"{compare}\">See how we compare</a>"
     },
     "one": {
       "kicker": "And much more",

@@ -11567,7 +11567,9 @@
     },
     "names": {
       "lead": "Uma assinatura em vez de cinco:",
-      "line": "Pague um plano em vez de cinco. <a href=\"{compare}\">Veja a comparação</a>"
+      "line": "Pague um plano em vez de cinco. <a href=\"{compare}\">Veja a comparação</a>",
+      "leadSix": "Uma assinatura em vez de seis:",
+      "lineSix": "Pague um plano em vez de seis. <a href=\"{compare}\">Veja a comparação</a>"
     },
     "one": {
       "kicker": "E muito mais",

@@ -11566,7 +11566,9 @@
     },
     "names": {
       "lead": "Ein Abo statt fünf:",
-      "line": "Ein Plan statt fünf. <a href=\"{compare}\">Zum Vergleich</a>"
+      "line": "Ein Plan statt fünf. <a href=\"{compare}\">Zum Vergleich</a>",
+      "leadSix": "Ein Abo statt sechs:",
+      "lineSix": "Ein Plan statt sechs. <a href=\"{compare}\">Zum Vergleich</a>"
     },
     "one": {
       "kicker": "Und noch viel mehr",
