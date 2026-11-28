@@ -1381,7 +1381,9 @@ export function endSession(sid, why = 'ended') {
   // Doodle Hoot Live: the drawing, the word and the tray go now, before anything is kept
   if (s.doodle) DG.wipe(s);
   let summary = null;
-  try { summary = R.summary(s); s.summary = summary; if (s.startedAt) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
+  // A class's room that ended before anyone played (chat audit 4: hosted from the chat, nobody joined) is kept too, as
+  // a run with no players: the class's Live games history says "Ended, no one joined" (classlive-results.js emptyRun).
+  try { summary = R.summary(s); s.summary = summary; if (s.startedAt || R.emptyClassRun(s, summary)) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
   if (s.startedAt && T.isOn(s) && !s.tug) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
   // Team scores first (fin), then the end. No individual ranking anywhere (docs/decisions.md "No leaderboards"): `top`
   // stays an empty list (older games and the kit pack read it) and each player is told only their own result.

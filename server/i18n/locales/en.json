@@ -16964,7 +16964,8 @@
       "allEmptyForTeachers": "You haven't built a lesson yet."
     },
     "liveOpenNow": "A live game is open now: {title}. Its results show here once it is played and ended.",
-    "liveOpenHost": "Go to the host screen"
+    "liveOpenHost": "Go to the host screen",
+    "liveEndedEmpty": "Ended, no one joined"
   },
   "library": {
     "title": "Story Library",

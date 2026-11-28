@@ -113,10 +113,43 @@ export function ownIn(ctx, all, ref, what, here = '') {
   let hit = all.filter(x => x.id === r);
   if (!hit.length) hit = all.filter(x => fold(x.title) === fold(r));
   if (!hit.length) hit = all.filter(x => fold(x.title).includes(fold(r)));
+  // Chat audit 4: "the regrouping lesson plan" for "Regrouping with Addition": the teacher's words without the words
+  // around a name (the, lesson, plan...), each starting a word of the title.
+  if (!hit.length) hit = all.filter(x => fitsWords(x.title, r));
+  // "the lesson plan you just made": what this conversation made (newest first), when the words name nothing else.
+  if (!hit.length && !termsOf(r).length) { const made = madeIn(ctx); hit = made.map(id => all.find(x => x.id === id)).filter(Boolean).slice(0, 1); }
+  if (hit.length > 1) { const made = madeIn(ctx), mine = hit.filter(x => made.includes(x.id)); if (mine.length === 1) hit = mine; }
   if (hit.length === 1) return { it: hit[0] };
   if (!hit.length) return no(`None of the teacher's ${what}s has that name. Their ${what}s: ${list(all)}.`);
   return no(`More than one ${what} fits: ${list(hit)}. Ask the teacher which one.`);
 }
+// Words around a name that never name it: "the regrouping lesson plan", "my Fractions day lesson".
+const AROUND = new Set(['a', 'an', 'the', 'my', 'our', 'your', 'this', 'that', 'it', 'its', 'one', 'new', 'old', 'lesson', 'lessons', 'plan', 'plans',
+  'on', 'about', 'for', 'of', 'to', 'with', 'in', 'you', 'i', 'me', 'we', 'just', 'made', 'make', 'created', 'drafted', 'last', 'latest', 'please',
+  'assign', 'find', 'open', 'worksheet', 'board', 'unit', 'game', 'activity']);
+/** The words that name something, folded: "the regrouping lesson plan" -> ['regrouping']. */
+export const termsOf = s => fold(s).split(' ').filter(w => w && !AROUND.has(w));
+const stem = w => (w.length > 4 ? w.replace(/(ies|es|s)$/, '') : w);
+/** Does a title fit the words? Every naming word starts a word of the title (either way round for plurals). */
+export function fitsWords(title, words) {
+  const terms = termsOf(words); if (!terms.length) return false;
+  const hay = fold(title).split(' ');
+  return terms.every(w => hay.some(h => h.startsWith(stem(w)) || (h.length > 3 && w.startsWith(stem(h)))));
+}
+/** The ids of what this conversation made (a lesson plan, a worksheet, a board: the made cards and finished jobs),
+ *  newest first. */
+export function madeIn(ctx) {
+  const out = [];
+  for (const x of [...((ctx && ctx.history) || [])].reverse()) {
+    const n = x && x.note; if (!n) continue;
+    if (n.made && n.made.id && !n.made.failed) out.push(n.made.id);
+    for (const j of n.jobs || []) if (j && j.result && j.result.id) out.push(j.result.id);
+  }
+  return out;
+}
+/** The teacher's own lesson plans (lessons.js kind 'lesson', or a ready-made course's copy): never the row an assigned
+ *  game, book, worksheet or board is kept in (chat audit 4: "Word Hunt" was offered as a lesson plan). */
+export const ownPlans = (u, schoolId = '') => ownLessons(u, schoolId).filter(l => !l.kind || l.kind === 'lesson' || l.kind === 'course');
 /** The teacher's own lessons (they may edit) at every school they are staff of, or at one school; not archived. */
 export const ownLessons = (u, schoolId = '') => S.schoolsOf(u.id).filter(s => s.role !== 'student' && (!schoolId || s.id === schoolId))
   .flatMap(s => L.allLessonsOf(u.id, s.id)).filter(l => L.canEditLesson(u, l));

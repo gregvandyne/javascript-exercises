@@ -35,7 +35,7 @@ export function loopState(u) {
   const kept = stored(u.id);
   const done = {
     plan: has('SELECT 1 FROM lessons WHERE owner_id=? LIMIT 1', u.id) || has("SELECT 1 FROM games WHERE owner_id=? AND status!='deleted' LIMIT 1", u.id) || has('SELECT 1 FROM game_folders WHERE owner_id=? LIMIT 1', u.id),
-    play: has('SELECT 1 FROM class_lessons WHERE assigned_by=? AND removed_at IS NULL LIMIT 1', u.id) || has('SELECT 1 FROM live_runs WHERE host_id=? LIMIT 1', u.id),
+    play: has('SELECT 1 FROM class_lessons WHERE assigned_by=? AND removed_at IS NULL LIMIT 1', u.id) || has('SELECT 1 FROM live_runs WHERE host_id=? AND started_at<>0 LIMIT 1', u.id),
     check: !!kept.check,
     feedback: has('SELECT 1 FROM step_progress WHERE reviewed_by=? LIMIT 1', u.id),
   };

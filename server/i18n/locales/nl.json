@@ -15487,7 +15487,8 @@
       "allEmptyForTeachers": "Je hebt nog geen les gebouwd."
     },
     "liveOpenNow": "Er is nu een livespel open: {title}. De resultaten staan hier zodra het gespeeld en beëindigd is.",
-    "liveOpenHost": "Naar het hostscherm"
+    "liveOpenHost": "Naar het hostscherm",
+    "liveEndedEmpty": "Afgelopen, niemand deed mee"
   },
   "library": {
     "title": "Verhalenbibliotheek",

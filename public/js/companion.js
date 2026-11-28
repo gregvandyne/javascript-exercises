@@ -413,7 +413,7 @@ function start() {
     if (n.sources && n.sources.length) parts.push(webHtml(n.sources));
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
-    if (n.made) parts.push(madeHtml(n.made));
+    if (n.made) parts.push(madeHtml(n.made, x.change && x.change.kind === 'made' && x.change.undone));
     if (n.jobs && n.jobs.length) parts.push(jobsHtml(x, n.jobs));
     if (n.build) parts.push(CBD.cardHtml(x, n.build));
     if (n.pick) parts.push(pickHtml(x, n.pick));
@@ -454,8 +454,10 @@ function start() {
   }
   /** Made in the chat (services/companion-make.js): what it is, checked, and the button that opens that exact board,
    *  worksheet or lesson. A make that did not land says so (the reply says it too). */
-  function madeHtml(m) {
+  function madeHtml(m, undone = false) {
     const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[m.kind] || '✨';
+    // Undone (a board Oomba made, taken off My boards again): no Open button for a board that is gone.
+    if (undone) return `<div class="oc-made" data-made="${esc(m.kind)}"><h4>${ic(ico, 18)} <span dir="auto">${esc(m.title || '')}</span></h4></div>`;
     if (m.failed) return `<div class="oc-made oc-made-no" role="note"><p>${ic('⚠️', 16)} ${esc(L(`made.no.${m.kind}`))}</p></div>`;
     return `<div class="oc-made" data-made="${esc(m.kind)}"><h4>${ic(ico, 18)} <span dir="auto">${esc(m.title || '')}</span></h4><p class="oc-hsub">${ic('✓', 14)} ${esc(t(`js.companion.made.${m.kind}`, { n: m.n || 0 }))}</p><div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(m.href)}" data-oc-made="${esc(m.id)}">${esc(L(`made.open.${m.kind}`))}</a></div></div>`;
   }

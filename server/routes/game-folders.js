@@ -21,21 +21,9 @@ import { cleanOptions, parseParams } from '../services/play-params.js';
 import * as PS from '../services/proof-steps.js';
 import * as TY from '../services/typing.js';
 
-/** An official game that opens at a teacher's problem or question set (services/game-sets.js SET_GAMES): its Assign
- *  carries those lesson options (opts), and the lesson is named after them. -> { opts, what, title } | null (not one) */
-const setGameOf = g => !!g && gameSets.SET_GAMES.has(g.slug) && g.source === 'seed';
-function setAssign(t, g, raw) {
-  if (!setGameOf(g)) return null;
-  const opts = cleanOptions(String(raw || '')) || '';
-  if (!opts && gameSets.OPEN_SET_GAMES.has(g.slug)) return null;   // Word Hunt with no set: the game as it is
-  // Typing Zoo: only a teacher's own lesson (a set code) goes this way; its built-in lessons and tests are the picker's.
-  if (g.slug === TY.SLUG && !gameSets.SET_ID.test(parseParams(opts).chapter || '')) return null;
-  const what = gameSets.describe(g.id, parseParams(opts), g.slug);
-  const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
-  // A set with the teacher's own name (Arithmetic Lab): the lesson takes that name, and the label is its subtitle.
-  if (what && what.title) return { opts, what, label, name: what.title, title: what.title, summary: label };
-  return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
-}
+// An official game that opens at a teacher's problem or question set: its Assign carries those lesson options (opts),
+// and the lesson is named after them (services/set-assign.js, shared with Oomba's chat).
+import { setGameOf, setAssign } from '../services/set-assign.js';
 import { zoneNote, assignToField, studentsFrom } from './lessons.js';
 import { gameHidden, mayOpenHidden } from '../services/game-focus.js';
 

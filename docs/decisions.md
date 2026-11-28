@@ -16987,3 +16987,59 @@ The owner's third chat audit, its quick items (the Builder in the chat, phase 2,
   ideas, steps, the lesson plan cards, the hand-off). This replaces the chat's part of "Teachers say lessons"; routes and
   data keep their names.
 Tests: `tests/unit/companion-audit3.test.js`, `tests/unit/builder-setup-told.test.js` (a brief's first message).
+
+## Oomba chat: audit 4 fixes (28 Nov 2026)
+
+The owner's fourth live audit of the teacher chat (28 Nov), the chat's items (the Builder in the chat, the Builder and
+Arithmetic Lab's own items are separate work):
+
+- **Assign what the chat made, and never take an offer back (4.4).** "Assign the regrouping lesson plan" right after the
+  chat made it said it could not find it ("I shouldn't have offered it earlier"): findLesson looked at game folders, the
+  class's assignments, the catalog and Grammar Lab, never the teacher's own lesson plans, and assignLesson matched the
+  words "the regrouping lesson plan" against the title as one string. Now findLesson returns `lessonPlans` (the teacher's
+  own, kind lesson or a course copy; the one this conversation made first, `madeInThisChat`) and `yourActivities` (their
+  saved sets of the set games), every result with its `type`; assignLesson matches the naming words ("regrouping", not
+  "the", "lesson", "plan"), and "the lesson plan you just made" is the one the conversation made
+  (companion-actions/shared.js `fitsWords`, `madeIn`). Its list is lesson plans only (`ownPlans`): the row an assigned game
+  is kept in ("Word Hunt") is never offered as one. A prompt rule: offer to assign only what the assign tools can take.
+- **Arithmetic Lab from the chat (4.4).** Set games (game-sets.js SET_GAMES, not the open ones) are assigned with one of
+  the teacher's saved activities: `assign` takes `set` (id or title); with none named and several saved it lists them to
+  offer (no card yet); with one, or one their message names, it makes the card. The assignment is the Assign page's own
+  (services/set-assign.js, moved out of routes/game-folders.js and used by both): options `chapter=<set>&lock=1`, the
+  activity's name as the title and its label under it, Undo as any assignment. None saved: refused, with a link to the
+  activity editor (`/play/arithmetic-lab?mode=assign`, the page the Assign button opens then). Grammar Lab's
+  "Identifying Adjectives" (audit 3) still assigns (regression test).
+- **The privacy filter (5.5, Job 4).** Owner-approved rule: **a student's SURNAME on its own is not taken out when it is a
+  common English word** (Test, Brown, Rose, King, Young...); the first name and the full name ("Jamie Test") are always
+  taken out, and so is a surname that is not a common word ("Okafor"). The surname is the last word of a name of two or
+  more words (not a username); the word list is the site's own sight-word list (`server/library/sight-words.json`:
+  Fry's 1,000 Instant Words and the Dolch words; builder/lesson.js `COMMON_WORDS`), applied in `namesFrom`, so every
+  scrubber caller gets it. Before, "rename 4b math to 4b math test" reached the AI with the username's placeholder and
+  an activity "Test 881 Assign" as "[student] 881 Assign". Titles of the teacher's own things the app gives the AI in the
+  results added here (lesson plans, saved activities, an assign card's title) keep everything but a student's whole name
+  (`titleText`, `wholeNames`: the pieces of longer names are not taken out of a title).
+- **A live game nobody joined (4.3)** is kept: a class room that ends before it was started, with nobody in it, is saved
+  as a run with no players and `started_at` 0 (classlive-results.js `emptyClassRun`), listed in the class's Live games
+  history as "Ended, no one joined" (no results link). It is never a played game: not a gradebook column (scores.js
+  classLive), not in the host's results list, the weekly digest's count or the teach loop's "played" step
+  (`started_at<>0`). A room that was started is saved as before.
+- **A lesson plan's grade (1.7):** makeLesson on a class page takes the class's grade when the teacher gives none, and
+  its result says which grade (`grade`).
+- **Boards (5.1):** the read-back lists each item's label (the text above its cell, "+ 15"; manip-chat.js `readBack`
+  only: the board Oomba just built), and the board rules say to check it there once. A board made with makeBoard has
+  Undo (it comes off My boards again while it is as made; undo kind `made`). A change on the open board keeps the board
+  before it in the tab's sessionStorage (five at most), so its Undo is still there after a reload or a slow answer. Why
+  it took about 5 minutes: with no labels in the read-back the model sent the board again to check them, a whole model
+  round each time (up to the 8 tool steps). With the stand-in that does the same, a board went from 5 model calls to 2.
+- **One vocabulary (4.6):** a search for a lesson plan returns lesson plans; findLesson's games are `type: 'game'`, its
+  note says when no lesson plan fits and that a game is never offered as one, and the prompt says so.
+- **Slow answers (perf, the stand-in):** the server's own work is small (tool time 6 ms for find then assign, 86 to
+  94 ms for a board change; a made lesson, worksheet or board 70 to 410 ms); every model call carries the system prompt
+  (about 9,600 characters on a class page, 11,800 on a board) and the tools (41,000 characters, about 10,000 tokens,
+  cached after the first call of an answer). The 1 to 2 minutes are model time: each tool round is a whole model call,
+  so the lever is fewer rounds, not server work. Rounds cut here: the board labels in the read-back (a board 5 calls to
+  2 with the stand-in that checks them), lesson plans and saved activities in one findLesson (no second search before
+  "I could not find it"), the class's grade from the page (no question back). Tried and kept out: sending the page's
+  class name with the first call; the AI gets a class's name only when it asks with getPageContext (the privacy rule of
+  "Points from the Oomba chat", tests/unit/companion-points.test.js). The model is unchanged.
+Tests: `tests/unit/companion-audit4.test.js` (15).

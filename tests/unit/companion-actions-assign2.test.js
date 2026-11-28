@@ -66,7 +66,7 @@ test('assignLesson: one of the teacher\'s own lessons to one student, due on a d
   assert.equal(lessonIn(x.A.id, les.id), null, 'off the class with Undo');
   // Refusals.
   L.createLesson(x.other, x.s.id, { title: 'Their Secret Lesson' });
-  await H.refused(x, 'assignLesson', { lesson: 'secret lesson' }, /None of the teacher's lessons/);
+  await H.refused(x, 'assignLesson', { lesson: 'secret lesson' }, /None of the teacher's lesson plans/);
   await H.refused(x, 'assignLesson', { lesson: 'fractions', due: 'Friday' }, /YYYY-MM-DD/);
   await H.refused(x, 'assignLesson', { lesson: 'fractions', due: '2026-12-01', opens: '2026-12-05' }, /before the open day/);
   await H.refused(x, 'assignLesson', { lesson: 'fractions', students: ['Maya'] }, /not a student placeholder/);

@@ -15486,7 +15486,8 @@
       "allEmptyForTeachers": "你還沒做過課程。"
     },
     "liveOpenNow": "目前有一個即時遊戲開著：{title}。遊戲玩過並結束後，結果會顯示在這裡。",
-    "liveOpenHost": "前往主持畫面"
+    "liveOpenHost": "前往主持畫面",
+    "liveEndedEmpty": "已結束，沒有人加入"
   },
   "library": {
     "title": "故事圖書館",
