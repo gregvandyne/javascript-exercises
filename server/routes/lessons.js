@@ -504,6 +504,9 @@ export function assignedPane(req, c, { tools = '' } = {}) {
   const plan = L.classPlan(c.id);
   const count = plan.reduce((n, g) => n + g.lessons.length, 0);
   const staff = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
+  // An assigned game's line under its title (an Arithmetic Lab activity named by the teacher: "Long division, 16
+  // problems, Guided"); a lesson's own summary is longer and stays on its page.
+  const subOf = cl => (cl.kind === 'game' && cl.summary && cl.summary.length <= 200 ? cl.summary : '');
   // A game step shows its game's own emoji (a game's picture, never an icon); the other kinds their icon.
   const iconOf = cl => { const e = icon(cl); return cl.kind === 'game' && cl.first_game ? e : ico(e, { size: 18 }); };
   const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : cl.kind === 'figures' ? '📐' : cl.kind === 'proofread' ? '🔎' : cl.kind === 'manip' ? '🧮' : cl.kind === 'grammar' ? '🔤' : '📚'; };
@@ -512,7 +515,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
     const lessonRow = (cl, i, n) => {
       const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
       return html`<li class="cl-row" id="cl-${cl.id}">
-      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${iconOf(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${staff && ['lesson', 'course'].includes(cl.kind) ? `${t('lessons.class.kindPlan')} · ` : ''}${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
+      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${iconOf(cl)}</span> ${cl.title}</b>${subOf(cl) ? html`<span class="small muted cl-sub" dir="auto">${subOf(cl)}</span>` : ''}<span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${staff && ['lesson', 'course'].includes(cl.kind) ? `${t('lessons.class.kindPlan')} · ` : ''}${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
         ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
         ${cl.picked ? html`<span class="small cl-stats"><span class="chip-s cl-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: sm.students })}</span></span>` : ''}
         ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
@@ -582,7 +585,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
         </div></details>`;
       return html`<li class="lib-row${reorder && canMove ? ' is-moving' : ''}" data-id="${cl.id}">
         <a class="lib-cover" href="/class/${c.id}/progress/${cl.id}" tabindex="-1" aria-hidden="true">${thumb}</a>
-        <div class="lib-body"><a class="lib-name" href="/class/${c.id}/progress/${cl.id}" dir="auto">${cl.title}</a>
+        <div class="lib-body"><a class="lib-name" href="/class/${c.id}/progress/${cl.id}" dir="auto">${cl.title}</a>${subOf(cl) ? html`<span class="lib-sub" dir="auto">${subOf(cl)}</span>` : ''}
           <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}${cl.picked ? html`<span class="lib-due is-none cl-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: sm.students })}</span>` : ''}</span>
           ${sm.students ? html`<span class="lib-done"><progress max="${sm.students}" value="${sm.done}" aria-hidden="true"></progress><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span></span>` : ''}</div>
         ${staff ? acts : ''}</li>`;

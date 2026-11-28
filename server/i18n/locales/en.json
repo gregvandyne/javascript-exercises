@@ -1331,7 +1331,8 @@
       "fronts": "{title}: fronts",
       "backs": "{title}: backs",
       "how": "Print on both sides (flip on the long edge), then cut along the dashed lines. Each back lands behind its front."
-    }
+    },
+    "loading": "Loading {title}…"
   },
   "friends": {
     "title": "Friends",
@@ -1887,6 +1888,9 @@
         "selfTest": "Not saved: the activity's check found a problem.",
         "scan": "Not saved: the safety check failed."
       }
+    },
+    "dock": {
+      "label": "Oomba chat"
     }
   },
   "publish": {
@@ -3137,6 +3141,13 @@
         "anyway": "Publish anyway",
         "confirm": "Publish without a full playthrough? Players may get stuck.",
         "checking": "Playing your game all the way through first…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, version {n}",
+        "hello": "Tell me what to change in this game and I will send it to the Builder. Each new version shows in the big preview.",
+        "versionOf": "Version {n} of {total}",
+        "versionLabel": "Version in the preview"
       }
     },
     "character": {
@@ -4747,7 +4758,8 @@
       "chAnswers": "Every answer worked out from its figure",
       "greetLine": "Tell me what this worksheet needs: the topic, the grade, how many questions.",
       "greetLineTest": "Tell me what this test should cover: the topic, the grade, how many questions.",
-      "greetLineHas": "Ask me to change some questions, add more, or change the units or the grade."
+      "greetLineHas": "Ask me to change some questions, add more, or change the units or the grade.",
+      "loading": "Loading the worksheet…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4927,11 +4939,11 @@
       "historyDelete": "Delete this chat",
       "historyDeleteAsk": "Delete this chat for good? It can't be brought back.",
       "historyDeleteOk": "Delete",
-      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a lesson, a book, a change to your dashboard or help with a lesson plan.",
+      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a worksheet, a change to your dashboard or help with a lesson plan.",
       "idea": {
         "game": {
-          "label": "Find a lesson",
-          "text": "Give me a lesson for 3rd grade fractions, about 10 minutes"
+          "label": "Find a game",
+          "text": "Give me a game for 3rd grade fractions, about 10 minutes"
         },
         "book": {
           "label": "Find a book",
@@ -5009,7 +5021,7 @@
         "explain": "Looked up how Oomba Academy works",
         "page": "Read this page",
         "dash": "Read your {q} layout ({n} widgets)",
-        "games": "Searched lessons: {q}",
+        "games": "Searched games: {q}",
         "books": "Searched the Story Library",
         "booksLevel": "Matched reading level {q}",
         "lessons": "Searched lesson plans and worksheets",
@@ -5063,7 +5075,7 @@
         "sheetMade": "Made and checked a worksheet ({n, plural, one {# question} other {# questions}})",
         "sheetNo": "Couldn't make that worksheet",
         "lessonMade": "Made and checked a lesson plan ({n, plural, one {# step} other {# steps}})",
-        "lessonNo": "Couldn't make that lesson",
+        "lessonNo": "Couldn't make that lesson plan",
         "lessonAsk": "Asked for the topic",
         "kinds": "Looked up what Figures can draw",
         "find": "Looked for “{q}”",
@@ -5120,7 +5132,7 @@
         "openDash": "Open the dashboard"
       },
       "hand": {
-        "builder": "Classroom activity in the Builder",
+        "builder": "Game in the Builder",
         "figures": "Worksheet in Figures",
         "manipulatives": "Board in the Manipulatives",
         "open": {
@@ -5135,7 +5147,7 @@
         "help": "Help",
         "length": "Length",
         "fromPlan": "From your plan",
-        "filled": "Oomba filled in your brief. Check it, then press the button to make it.",
+        "filled": "Oomba's brief is ready: it is the Builder's first message. Pick what you like, then check it before you open the Builder.",
         "makeNow": "Make it now",
         "makeText": "Make this now:"
       },
@@ -5204,7 +5216,7 @@
         "lessonTopic": "Happy to build one. What topic is it on, and for which grade?",
         "sheetTopic": "Happy to make one. What should the worksheet practice, and for which grade?",
         "boardTopic": "Happy to set one up. Which tool (for example base-ten blocks or a number line), and what should it show?",
-        "assignWhat": "Which lesson should I assign? Tell me its name, and the class if you have more than one."
+        "assignWhat": "Which game, lesson plan or worksheet should I assign? Tell me its name, and the class if you have more than one."
       },
       "cls": {
         "default": "Test class",
@@ -5231,7 +5243,11 @@
         "assigned": "Assigned",
         "declined": "Not assigned",
         "done": "Assigned “{title}” to {class}.",
-        "open": "See the class's games"
+        "open": "See the class's games",
+        "openLesson": "See the class's lesson plans",
+        "openSheet": "See the class's worksheets",
+        "openBook": "See the class's books",
+        "openAll": "See the class's assignments"
       },
       "book": {
         "adding": "Adding to your book",
@@ -5377,12 +5393,12 @@
         "open": {
           "board": "Open the board",
           "sheet": "Open the worksheet",
-          "lesson": "Open the lesson"
+          "lesson": "Open the lesson plan"
         },
         "no": {
           "board": "The board wasn't made. Nothing was saved.",
           "sheet": "The worksheet wasn't made. Nothing was saved.",
-          "lesson": "The lesson wasn't made. Nothing was saved."
+          "lesson": "The lesson plan wasn't made. Nothing was saved."
         }
       },
       "pts": {
@@ -5391,7 +5407,8 @@
       },
       "rep": {
         "empty": "{name} has no students yet, so there's no progress to report.",
-        "which": "Which class should the report be for?"
+        "which": "Which class should the report be for?",
+        "noWork": "{name} has {count, plural, one {# student} other {# students}} and nothing assigned yet, so there is no progress to report yet."
       },
       "find": {
         "hidden": "{title} is on Oomba, but that game is turned off right now, so students can't play it.",
@@ -5499,9 +5516,9 @@
             "unassign": "This takes it off the class. Students' work is kept.",
             "students": "Students will see this.",
             "classroom": "This posts to Google Classroom: students there will see it.",
-            "deleteSheet": "This deletes the worksheet for good. Lessons already assigned keep their questions.",
+            "deleteSheet": "This deletes the worksheet for good. Assignments already made keep their questions.",
             "deleteBoard": "This deletes the board for good.",
-            "deleteLesson": "This deletes the lesson for good, with its assignments and the students' work in them."
+            "deleteLesson": "This deletes the lesson plan for good, with its assignments and the students' work in them."
           },
           "due": {
             "ask": "Change the dates of “{title}” in {class}?",
@@ -5516,8 +5533,8 @@
           },
           "seeWork": "See the work",
           "lesson": {
-            "ask": "Assign the lesson “{title}” to {class}?",
-            "done": "Assigned the lesson “{title}” to {class}."
+            "ask": "Assign the lesson plan “{title}” to {class}?",
+            "done": "Assigned the lesson plan “{title}” to {class}."
           },
           "sheet": {
             "ask": "Assign the worksheet “{title}” to {class}?",
@@ -5567,14 +5584,14 @@
             "deletedBoard": "Deleted the board “{title}”.",
             "openBoard": "Open the board",
             "allBoards": "See my boards",
-            "copyLesson": "Make a copy of the lesson “{title}”?",
+            "copyLesson": "Make a copy of the lesson plan “{title}”?",
             "copiedLesson": "Made a copy: “{title}”.",
-            "deleteLesson": "Delete the lesson “{title}”?",
+            "deleteLesson": "Delete the lesson plan “{title}”?",
             "inClasses": "{count, plural, one {It is assigned to # class.} other {It is assigned to # classes.}}",
             "withWork": "{count, plural, one {# student has work in it.} other {# students have work in it.}}",
-            "deletedLesson": "Deleted the lesson “{title}”.",
-            "openLesson": "Open the lesson",
-            "allLessons": "See my lessons"
+            "deletedLesson": "Deleted the lesson plan “{title}”.",
+            "openLesson": "Open the lesson plan",
+            "allLessons": "See my lesson plans"
           }
         },
         "homeroom": {
@@ -5665,13 +5682,16 @@
             "ask": "Start a live game for {class}?",
             "what": "{count, plural, one {# ready question} other {# ready questions}} from the question bank.",
             "done": "The live game for {class} is open: students join from their class page.",
-            "open": "Open the host screen"
+            "open": "Open the host screen",
+            "results": "Its results go on the class's Progress page once the game is played and ended.",
+            "progress": "See the class's Progress"
           },
           "end": {
             "ask": "End the live game “{title}”?",
             "players": "{count, plural, =0 {Nobody has joined yet.} one {# player is in it.} other {# players are in it.}}",
             "done": "Ended the live game “{title}”.",
-            "results": "See the results"
+            "results": "See the results",
+            "notPlayed": "Nobody played it, so it has no results."
           }
         },
         "dashboard": {
@@ -5772,6 +5792,152 @@
       "line0": "What can I help with?",
       "line1": "What are we working on?",
       "line2": "Where should we start?"
+    },
+    "companion-build": {
+      "reply": {
+        "ask": "Three quick taps and I'll show you a plan. Nothing is built until you say so.",
+        "plan": "Here is the plan. It isn't built yet: tap Build it when it looks right.",
+        "building": "Building it now. The card below shows each step as it happens.",
+        "change": "I sent your words to the Builder exactly as you wrote them. Version {n} is building on the card below, and version {prev} still works while you wait.",
+        "lesson": "Making the lesson plan now. Its card below fills in when it is ready.",
+        "noSchool": "A lesson plan is saved in a school's lessons, and this account has no school on Oomba yet, so nothing was made."
+      },
+      "q": {
+        "kind": "What should I make?",
+        "use": "Where will they play?",
+        "help": "How much help?"
+      },
+      "opt": {
+        "game": {
+          "label": "A game students play.",
+          "text": "Each student plays on a device and gets instant feedback. Good for practice."
+        },
+        "lesson": {
+          "label": "A lesson plan you teach.",
+          "text": "Steps for you to run the lesson: a warm-up, teaching, practice and an exit ticket."
+        },
+        "devices": {
+          "label": "On their own devices.",
+          "text": "Each student plays at their own pace."
+        },
+        "board": {
+          "label": "On the board.",
+          "text": "The whole class plays together on one screen."
+        },
+        "show": {
+          "label": "Show me first.",
+          "text": "A worked example, then they try."
+        },
+        "hints": {
+          "label": "Hints when stuck.",
+          "text": "A tip after a wrong try, never the answer."
+        },
+        "own": {
+          "label": "On their own.",
+          "text": "No hints, like a quick check."
+        }
+      },
+      "showPlan": "Show me the plan",
+      "planKind": "Game plan",
+      "grade": "Grade {g}",
+      "gradeK": "Kindergarten",
+      "short": {
+        "devices": "On their devices",
+        "board": "On the board",
+        "show": "Show me first",
+        "hints": "Hints when stuck",
+        "own": "On their own"
+      },
+      "does": {
+        "devices": "Each student plays on their own device, at their own pace.",
+        "board": "The whole class plays together on the board.",
+        "topic": "They practice {topic}.",
+        "show": "They see a worked example first, then try one themselves.",
+        "hints": "After a wrong try they get a tip, never the answer.",
+        "own": "No hints: it works like a quick check.",
+        "feedback": "Every answer gets instant feedback.",
+        "boardRun": "You run each round from the board.",
+        "fresh": "A fresh set of problems each time it is played."
+      },
+      "tell": "What I'll tell the Builder",
+      "build": "Build it",
+      "change": "Change",
+      "uses": "Uses 1 of today's builds ({left} left)",
+      "noneLeft": "No builds left today. You get more tomorrow.",
+      "steps": {
+        "safe": "Checked your message for safety",
+        "plan": "Planned the game",
+        "write": "Writing the game",
+        "play": "Playtesting on a phone, a tablet and a laptop",
+        "scan": "Safety scan"
+      },
+      "usually": "Usually 1-2 minutes. You can keep chatting or close this page.",
+      "vBuilding": "Version {n} building…",
+      "vWorks": "Version {n} still works while you wait.",
+      "tap": "Tap to play",
+      "previewOf": "Preview of {title}",
+      "line": {
+        "version": "Version {n}",
+        "sizes": "{count, plural, one {playtested on # screen size} other {playtested on # screen sizes}}",
+        "played": "played to the end",
+        "playFail": "the playtest found a problem",
+        "noPlay": "not playtested yet",
+        "scanPass": "safety scan passed",
+        "scanFail": "the safety scan found something to fix"
+      },
+      "say": {
+        "devices": "I played it on {devices} and every round worked, and the safety scan passed.",
+        "played": "I played it all the way through and every round worked, and the safety scan passed.",
+        "students": "Students only see it when you assign it or host it live.",
+        "playFail": "I played it and {why}, so it isn't ready for students yet. Tell me what to change, or tap Change.",
+        "noEnd": "it didn't reach the end",
+        "scanFail": "The safety scan found something to fix, so it isn't ready for students yet. Tell me what to change, or tap Change.",
+        "noPlay": "The safety scan passed, but this server couldn't playtest it, so I haven't played it yet.",
+        "refused": "The Builder's safety check stopped that message, so nothing was built. {why}",
+        "nothing": "The Builder didn't save a new version this time, so nothing changed. Try saying it another way."
+      },
+      "dev": {
+        "phone": "a phone",
+        "tablet": "a tablet",
+        "laptop": "a laptop"
+      },
+      "changed": "What changed",
+      "btn": {
+        "play": "Play",
+        "change": "Change",
+        "assign": "Assign",
+        "host": "Host live",
+        "big": "Open big",
+        "showBig": "Show it big"
+      },
+      "assignText": "Assign “{title}” to my class.",
+      "changeText": "In “{title}”, ",
+      "fail": {
+        "limit": "No builds left today, so nothing was built. You get more tomorrow.",
+        "resting": "The Builder is resting right now, so nothing was built. Try again later.",
+        "tooMany": "Two builds are already running. Try again when one is done.",
+        "disabled": "Building is turned off for this account, so nothing was built.",
+        "restarting": "Oomba was restarting, so nothing was built. Try again in a minute.",
+        "gone": "That game isn't there anymore, so nothing was built.",
+        "notAllowed": "This account can't build in the chat right now, so nothing was built.",
+        "restart": "Oomba restarted while building this. Try again.",
+        "error": "Something went wrong while building, so nothing new was saved."
+      },
+      "err": {
+        "chatBusy": "Oomba is still answering. Try again in a moment.",
+        "cap": "Many things are being made right now. Try again when some cards are done.",
+        "noBuilds": "No builds left today. You get more tomorrow.",
+        "needPick": "Pick one answer for each question.",
+        "buildOff": "Building in the chat is turned off for this account.",
+        "notFound": "That card isn't there anymore.",
+        "other": "That didn't work. Try again."
+      },
+      "sent": "Sent to the Builder: it is building on the card below.",
+      "redone": "Changed: the new card is below.",
+      "answered": "Picked: {list}",
+      "retry": "Try again",
+      "showingBig": "Showing big on the left",
+      "showingBigAbove": "Showing big in the preview above"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# word} other {# words}}",
@@ -8278,7 +8444,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Swipe the table sideways to see every step",
       "quizScore": "{right} of {total} right ({pct}%)",
-      "helped": "Teacher showed an answer"
+      "helped": "Teacher showed an answer",
+      "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
+      "sampleName": "Sample student",
+      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
     },
     "student": {
       "doneOf": "{done} of {total} done",
@@ -10420,7 +10589,7 @@
     },
     "demo": {
       "h": "See it in under a minute",
-      "note": "A short video with music and captions on screen: children play learning games (a globe of the world, Would You Rather, chess and Gulp City), then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, how it stays safe: a made-up name with no email, friends added only with a code, and games kept private until the child chooses to share."
+      "note": "A short video with music and captions on screen: children play learning games (a word search, a globe of the world, chess and a crossword), then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, how it stays safe: a made-up name with no email, friends added only with a code, and games kept private until the child chooses to share."
     }
   },
   "research": {
@@ -16739,9 +16908,7 @@
     "progressEmptyTextForTeachers": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
     "studentEmptyText": "Your teacher will add games here.",
     "liveHistory": "Live games history",
-    "liveHistoryForTeachers": "Live lessons history",
     "liveHistoryNone": "No live games with this class yet.",
-    "liveHistoryNoneForTeachers": "No live lessons with this class yet.",
     "allGames": "All my games",
     "allGamesForTeachers": "All my lessons",
     "assignedTo": "Assigned to {class}",
@@ -16795,7 +16962,9 @@
       "collectionEmpty": "Nothing in this collection yet",
       "allEmpty": "You haven't built a game yet.",
       "allEmptyForTeachers": "You haven't built a lesson yet."
-    }
+    },
+    "liveOpenNow": "A live game is open now: {title}. Its results show here once it is played and ended.",
+    "liveOpenHost": "Go to the host screen"
   },
   "library": {
     "title": "Story Library",

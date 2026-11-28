@@ -202,7 +202,7 @@ export function checkLadder(dividend: number, divisor: number, qs: string[], pro
 
 /** A part times a part. With decimals the parts and the product are also written out (2.3 × 1.4: 0.3 × 0.4 = 0.12),
  *  worked from whole numbers so no floating point creeps in: tk, bk, k are the decimal places of each. */
-export type PartProduct = { id: string; top: number; bottom: number; value: number; text?: { top: string; bottom: string; value: string; places: number } };
+export type PartProduct = { id: string; top: number; bottom: number; value: number; text?: { top: string; bottom: string; value: string; places: number }; zero?: true };
 /** A number's place-value parts, as whole numbers of 10^-k, with the places it is written with: 2.3 -> [20, 3], 1. */
 function decParts(x: number) {
 	const k = placesOf(x);
@@ -230,11 +230,14 @@ export const decProduct = (a: number, b: number) => decText(scaled(a, placesOf(a
 export const partValue = (p: PartProduct) => p.text?.value ?? String(p.value);
 /** Partial products, in the order they're written: each place of the bottom number (ones first) times each place of the
  *  top number (ones first). */
+/** A 0 digit's place keeps its line, marked zero (610 × 9: 9 × 0 is 0), so no place is skipped without a word: the
+ *  player writes it as given and says why there is nothing to work out on it. */
 export function partialProducts(top: number, bottom: number): PartProduct[] {
 	const out: PartProduct[] = [];
-	const bs = placeParts(bottom).reverse();
-	const ts = placeParts(top).reverse();
-	bs.forEach((b, i) => ts.forEach((t, j) => out.push({ id: `pp${i}_${j}`, top: t, bottom: b, value: t * b })));
+	const all = (n: number) => [...String(n)].reverse().map((d, k) => Number(d) * 10 ** k);
+	const bs = all(bottom);
+	const ts = all(top);
+	bs.forEach((b, i) => ts.forEach((t, j) => out.push({ id: `pp${i}_${j}`, top: t, bottom: b, value: t * b, ...(t * b === 0 ? { zero: true as const } : {}) })));
 	return out;
 }
 /** The parts add up to the product (they always do: checked in the tests). */
@@ -277,6 +280,10 @@ export type Field = {
 		| { auto: true };
 	/** Typed with a decimal point (the area model with decimals). */
 	point?: boolean;
+	/** The page writes it as a copy of another field (the remainder is what's left on the last rung): never typed twice. */
+	copyOf?: string;
+	/** A part's product as it reads ("40 × 20"), for its accessible name. */
+	what?: string;
 };
 export type Rung = { q: string; p: string; r: string; left: number; leftKey: string };
 export type Work =
@@ -492,6 +499,8 @@ function divisionWork(method: 'ladder' | 'area', given: number, divisor: number,
 		len: Math.max(1, len(divisor - 1)),
 		role: 'remainder',
 		expect: String(R),
+		// what's left on the last rung, written in by the page (typing it a second time taught nothing)
+		copyOf: lastR,
 		...words(ln(`q.lad.rem${method === 'ladder' ? 'Ladder' : 'Area'}`), R ? ln('q.lad.remTold', { r: R }) : ln('q.lad.remNone')),
 		hints: [t('h.lad.rem1', { d: divisor }), t('h.lad.copyLast'), t('h.its', { x: R })],
 		lit: [lastR, 'remainder']
@@ -533,6 +542,7 @@ function partField(p: PartProduct, role: 'cell' | 'product', where: string): Fie
 		len: value.length,
 		role,
 		expect: value,
+		what: e,
 		...(p.text ? { accept: sameNumber(value), point: true } : {}),
 		...words(ln('q.part.whatIs', { e }), ln('q.part.is', { e, x: value })),
 		hints: [
@@ -549,6 +559,7 @@ function partField(p: PartProduct, role: 'cell' | 'product', where: string): Fie
 	};
 }
 function sumField(parts: PartProduct[], v: Values, total: string, what: string, point: boolean): Field {
+	parts = parts.filter((p) => !p.zero);
 	const list = parts.map((p) => v[p.id] || partValue(p));
 	return {
 		id: 'sum',
@@ -569,9 +580,32 @@ export function buildWork(method: Method, kind: Kind, [a, b]: Problem, v: Values
 	const product = dec ? decProduct(a, b) : String(a * b);
 	if (method === 'partial') {
 		const rows = partialProducts(a, b);
-		const fields = rows.map((p) => partField(p, 'product', 'partial'));
-		const one = rows.length === 1;
-		if (!one) fields.push(sumField(rows, v, product, 'lines', false));
+		// a line that is 0 (a 0 digit) is written by the page; the next line to work says so (610 × 9: 9 × 0 is 0)
+		const fields: Field[] = [];
+		let zeros: string[] = [];
+		for (const p of rows) {
+			if (p.zero) {
+				zeros.push(partText(p, 'product'));
+				continue;
+			}
+			const f = partField(p, 'product', 'partial');
+			if (zeros.length) {
+				const said = [ln('q.part.zeroLine', { e: zeros.join(', ') }, zeros.length), ...(f.ask ?? [])];
+				Object.assign(f, { ask: said, prompt: tx(said) });
+				zeros = [];
+			}
+			fields.push(f);
+		}
+		const one = fields.length === 1;
+		if (!one) {
+			const sf = sumField(rows, v, product, 'lines', false);
+			// zero lines after the last part to work are said with the adding
+			if (zeros.length) {
+				const said = [ln('q.part.zeroLine', { e: zeros.join(', ') }, zeros.length), ...(sf.ask ?? [])];
+				Object.assign(sf, { ask: said, prompt: tx(said) });
+			}
+			fields.push(sf);
+		}
 		return { method: 'partial', kind: 'multiply', title: `${a} × ${b}`, answer: product, fields, closed: true, top: a, bottom: b, rows, sum: one ? null : 'sum' };
 	}
 	const cells = areaCells(a, b);

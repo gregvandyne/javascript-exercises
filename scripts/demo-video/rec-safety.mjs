@@ -3,13 +3,15 @@
 //   friends - the friend code card; typing a friend's code
 //   publish - the Studio's share sheet: Only me / Friends (no Everyone while PUBLIC_GAMES is off)
 // node scripts/demo-video/rec-safety.mjs land|port [only]
+// Wide: recorded in a window shaped like the band under the caption (1152 x 558 at 5/3, shown at 1920 x 930), so the
+// page is shown at a readable size with nothing shrunk.
 import { chromium } from 'playwright';
 import { launchOptions } from '../chromium.js';
 import { Capture, cursorInit, glide, setCursor } from './vc.mjs';
 import { B, login, sleep } from './lib.mjs';
 const orient = process.argv[2] || 'land', only = process.argv[3];
 const L = orient === 'land';
-const V = L ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
+const V = L ? { viewport: { width: 1152, height: 558 }, deviceScaleFactor: 5 / 3, out: [1920, 930] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const C = process.env.DEMO_CLIPS || '/tmp/claude-0/demo2/clips';
 const STUDIO = process.env.DEMO_STUDIO;   // a studio MayaMakes built (rec-builder.mjs makes a Category Board)
 if (!STUDIO && (!only || only === 'publish')) { console.error('Set DEMO_STUDIO to one of MayaMakes\'s studio ids.'); process.exit(1); }
@@ -38,6 +40,16 @@ await run('signup', async () => {
   await glide(cap, p, kid, { sec: 0.7, click: false });
   await Promise.all([p.waitForURL(u => /kid/.test(String(u))), kid.click()]);
   await p.waitForLoadState('networkidle').catch(() => {}); await sleep(200);
+  // the form opens at its fields: the "Pick a fun name" label just under the sticky site header, so no line of the
+  // text above it (the page's heading and intro) peeks out under the header. Scrolled before this page's first frame.
+  await p.evaluate(() => {
+    const label = document.querySelector('label[for="username"]') || document.querySelector('#username');
+    let bar = 0;   // the bottom of whatever stays fixed or sticky at the top of the window
+    for (const e of document.querySelectorAll('body *')) { const cs = getComputedStyle(e); if ((cs.position === 'sticky' || cs.position === 'fixed') && e.getBoundingClientRect().top <= 1 && e.getBoundingClientRect().height < innerHeight / 3) bar = Math.max(bar, e.getBoundingClientRect().bottom); }
+    window.__demoBar = bar;
+    window.scrollTo({ top: Math.max(0, label.getBoundingClientRect().top + scrollY - bar - 18), behavior: 'instant' });
+  });
+  console.log('signup: header bar ends at', await p.evaluate(() => window.__demoBar));
   await cap.advance(400); await cursorInit(p);
   await cap.frames(8);
   await glide(cap, p, p.locator('#username'), { sec: 0.5, click: true });
@@ -51,6 +63,9 @@ await run('signup', async () => {
 await run('friends', async () => {
   const p = await mk(true);
   await p.goto(B + '/friends'); await p.waitForLoadState('networkidle').catch(() => {});
+  // the empty friends list's last line would end just past the bottom of the short window: scroll it into view
+  // (a few px, before the first frame) so no line of text is cut at the bottom edge
+  await p.evaluate(() => { const e = [...document.querySelectorAll('p, div')].filter(x => !x.children.length && /^Swap friend codes/.test(x.textContent.trim()))[0]; if (e) { const over = e.getBoundingClientRect().bottom - innerHeight + 8; if (over > 0) window.scrollTo({ top: scrollY + over, behavior: 'instant' }); } });
   const cap = new Capture([p], `${C}/tmp-friends-${orient}`);
   await cap.advance(600); await cursorInit(p);
   await cap.frames(10);

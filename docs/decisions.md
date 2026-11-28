@@ -16539,7 +16539,8 @@ room had no bubble; Send was greyed out for "Assign it".
 - **The bubble**: in the live host room (`/live/host/<id>`, `companion: 'live'`) at the end of the room's top bar, so it
   never covers the controls or the join code; hidden in full screen. The class Lessons tab has it (checked in a real
   browser). **Owner decision:** it is left off Studio (`/studio/<id>`), which has its own "Chat with the Builder":
-  two chats on one page confused. Say if Studio should have Oomba too.
+  two chats on one page confused. ~~Say if Studio should have Oomba too.~~ **Resolved (28 Nov 2026, owner):** yes, for
+  teachers, replacing the Builder chat there: phase 3 of "Builder in the chat (phase 2)" below. Kids keep Studio's own chat.
 - **Sending**: any non-empty message sends (the engine's minimum was 2 characters); Send is never greyed out; an empty
   box only puts the focus back (no "Write a few words" warning); a second tap while one is on its way does nothing.
 - **Latency**: the page context goes with the first call (no getPageContext round trip just to look; the class's name
@@ -16714,6 +16715,113 @@ oomba_jobs, migration 0147) and the chat stays usable while they run.
   messages-an-hour limit; the budget. Finished jobs are kept 7 days (the card keeps what was made); they go with the
   chat and with the account. Tests: tests/unit/oomba-jobs.test.js.
 
+## Builder in the chat (phase 2) (28 Nov 2026)
+
+The owner: "the Builder lives in the global chat". ONE Builder engine, two doors: teachers build a game entirely in the
+Oomba companion chat; kids keep Studio and /build/new unchanged; the companion stays teacher-only. Built in
+`server/services/companion-build.js` (+ `server/routes/companion-build.js`, `public/js/companion-build.js`,
+`public/css/companion-build.css`, strings `js.companion-build.*` in the 12 full locales); companion.js only gained hooks.
+
+- **Ask** (replaces /build/new for teachers in the chat; the wizard stays for kids and direct visits). `startBuild` (the
+  AI decides a message asks for a game) no longer makes a hand-off card while COMPANION_BUILD is on (default) and the
+  teacher's Builder is on: it makes an ask card with only the questions the message did not answer (English words are
+  read on the server, `answered()`; the AI's own fields fill in other languages): What should I make? (🎮 a game / 📋
+  a lesson plan), Where will they play? (game only: 💻 their devices / 🖥️ the board), How much help? (👀 show me first,
+  💡 hints when stuck, 🎯 on their own). Picks stay in the page until "Show me the plan". Oomba's words are the app's
+  own: "Three quick taps and I'll show you a plan. Nothing is built until you say so." A lesson plan picked here is the
+  existing lesson job (makeLesson's draft and save), never the Builder.
+- **Mapping to the Builder's plan** (builder/plan.js): both places are the classroom activity kind (Oomba Canvas) with
+  `told`, so the teacher's words reach the Builder exactly as written: their devices = use `screen` (played `both`), the
+  board = played `board`. Help: show me first = `watch`, hints when stuck = `guided`, on their own = `own`.
+  (Deviation from "classgame for the board": the class-game plan has no `told`, so its first message would be the
+  plan's sentence, not the teacher's words.)
+- **Plan card**: title, "Game plan · Grade 4 · On their devices · Hints when stuck", 3 to 5 lines of what students do
+  (from the choices only, never invented), an editable "What I'll tell the Builder" box (the teacher's own words,
+  already scrubbed of names by the chat), Build it and Change (the choices again), "Uses 1 of today's builds (N left)"
+  (builder/usage.js turnsLeft). Nothing is built until Build it.
+- **Build it** (one tap; it spends one Builder message like a Studio message): the game is made as POST /api/studio/new
+  makes an empty game, and a background job of the new kind `game` (services/oomba-jobs.js) sends the first message
+  with the plan through `runner.submit` (as POST /api/studio/:id/chat), then waits for the build. Every check of the
+  Builder runs unchanged: screen.js, the turn limit, the scanner at every save, the automatic playtest, the playthrough
+  the publish rules need. The chat is never blocked.
+- **Building card**: five rows from the Builder's real live steps (`rowsOf`: the runner's replay buffer, the same steps
+  GET /api/studio/:id/live sends): checked for safety (screen), planned (think), writing (write/edit/fix), playtesting
+  (autotest/playtest), safety scan (check, once the playtest is done); a thin bar by rows done; "Usually 1-2 minutes".
+  The page reads them from GET /api/companion/build/:gameId every 1.5 s (polling, not the SSE stream: the chat panel
+  redraws from its own state). The layout's existing "Your game is ready" notice still comes from the Builder's turn.
+- **Done card**: the job reads the version back: its safety status, its playthrough (`playthrough.ensure`: run now if
+  the build did not, the same result publishing needs) and the sizes the automatic playtest checked (its `playtest`
+  event now carries `views`, from autotest's layout keys). Oomba's words say only that: "I played it on a phone, a
+  tablet, and a laptop and every round worked, and the safety scan passed. Students only see it when you assign it or
+  host it live." A failed playtest, a scan that found something, no browser on the server, a message the Builder's
+  screening stopped, or a build that saved nothing each say so plainly instead (and the card has no Assign or Host
+  live). The preview is the Builder's own sandboxed frame (SANDBOX, never allow-same-origin), 16:10 with "Tap to play",
+  its address minted per viewer; it keeps the game's own colours in dark mode. The frame lives in one layer outside the
+  chat's redrawn log (on the page, clipped to the log, laid over its card's box after every redraw, scroll and resize),
+  so a new message, a job ending or polling never reloads a game being played; a new version gets a new frame. Buttons: Play (full screen), Change (puts
+  "In “title”, " in the box), Assign (asks Oomba, which uses the existing assign tool and card), Host live (the game
+  cards' existing /live?game= link: the `hostLive` action only opens question-bank quick games), Open big (/studio/:id).
+- **Change by message**: `changeGame` (offered with the list of games made in this chat in the system prompt) sends the
+  teacher's message VERBATIM to that game's Builder (no AI rewrite in between, no tap, the same screening). Its card
+  shows version 1 with "Version 2 building…" over it and the step rows, then the done card with "What changed" (the
+  version's notes). Version 1 stays in Versions; a change while a build runs is that build's follow-up (runner.js).
+- **Privacy**: the chat's scrubber already replaced students' names with placeholders; runner.submit scrubs a plan's
+  words again. Tests check that no name reaches the chat's AI, the Builder or the Builder's transcript.
+- **Off switch**: COMPANION_BUILD=0, or a teacher whose Builder is turned off, gets the old hand-off card.
+- **Phase 3 (owner decision)**: Studio gets the Oomba chat for teachers, replacing the Builder chat there; kids keep it.
+- **Restart**: a `game` job queued again after a restart (oomba-jobs recover) never sends the message again: it waits for
+  the Builder's own build (carried on by runner.recover, or already ended) and reads the result.
+- Tests: tests/unit/companion-build.test.js (10, the restart case included), tests/unit/companion-build-browser.test.js
+  (2: the four cards at 1280x800 and 390x844, light and dark, `COMPANION_SHOTS=<dir>` saves the pictures; the preview
+  survives a redraw and version 2 loads fresh); oomba-jobs.test.js lists `game` as
+  a make kind (it makes a new version of the teacher's own game and never changes a class).
+
+## Builder in the chat (phase 3): Oomba in Studio (28 Nov 2026)
+
+The owner's phase 3 of "the Builder lives in the global chat": one chat per page. For a teacher who builds in the chat
+(companion-build.js `on`: the companion, their Builder on, COMPANION_BUILD on) on a game they own, Studio (/studio/:id)
+shows the Oomba companion chat where "Chat with the Builder" was. Kids, and everyone else, keep Studio exactly as it was.
+
+- **Layout**: the big preview, Publish, Save/Versions/Settings/Share and the safety line under the preview stay. The
+  preview moves to the start side and the chat is docked in the column on the end side (`#st-dock`; on a wide screen,
+  961 px and up, the panel is moved there, always open, no Minimize or Close, and the page does not narrow for it). On
+  a phone the column goes and Oomba is the usual bubble and sheet. The header reads "Oomba · <game title>" and "Sees:
+  Studio, version N" (N: the version in the big preview); it is the same conversation as on every other page.
+- **Who**: routes/studio.js asks the layout for the chat (`companion: 'studio'`) only when `CB.docksIn(user, game)`;
+  the layout's NO_COMPANION no longer lists /studio, but any studio page that does not ask (another viewer, a kid, a
+  teacher with building in the chat off, /build/new) still gets no bubble. Studio's own Builder column is still in the
+  page, hidden, so its live stream and the preview's progress pill work as before.
+- **The page adapter** (public/js/studio.js, "Studio with Oomba"): page type `game` with `gameId` and `version`.
+  services/companion.js pageOf re-checks it with `CB.pageGame` (the teacher's own, not deleted game, building in the
+  chat on); the version is read on the server, never taken from the page; anything else becomes the `build` page.
+  pageContext adds the game (title scrubbed of names, version), and the system prompt says which game is open and that a
+  change to it goes to changeGame.
+- **Change by message**: on the game page, `changeGame` sends the teacher's message VERBATIM to THIS game's Builder
+  (even one not made in the chat), unless the AI names another game made in the chat by its exact title. No tap, no
+  rewrite; the Builder's screening, scanner, playtest and publish rules all run as before.
+- **Studio's own buttons** (Fix it, Make it a live game, Make it a classroom activity, Fix live) send their fixed words
+  through the chat: POST /api/companion/build/studio puts them in as the teacher's message, with a change job for this
+  game, without the AI in between (scrubbed of names like any message). (Deviation: Carry on building, which needs the
+  stopped build's id, still goes straight to the Builder; its progress shows on the preview's pill.)
+- **The big preview loads once**: a new version loads when it lands, from the live stream's version event (as before);
+  the chat's done card loads it only if the stream missed it, and the resync after a build never loads the same version
+  again. Nothing else reloads it.
+- **Compact done card** (only for the game open in Studio): no preview in the card, "Showing big on the left" (on the
+  right in Arabic and Hebrew, where the page is mirrored; "Showing big in the preview above" on a phone) for the version
+  on screen, "Show it big" for another version,
+  the checks' line, What changed, and Assign, Host live and Change. A change being built shows the step rows only.
+- **Version picker**: "Version 2 of 2" (a select) replaces the "Editing: version 2" tag for these teachers; picking a
+  version shows it in the big preview (this viewer's own preview address, GET /api/companion/build/:gameId?v=). The
+  Builder still changes the newest version; Versions' "Bring back" is unchanged.
+- **Privacy and safety unchanged**: no student names to any AI (the chat's scrubber, and the Studio route's own scrub);
+  every build goes through runner.submit.
+- Strings: `studio.dock.label`, `js.studio.dock.*`, `js.companion-build.showingBig`, `js.companion-build.btn.showBig`,
+  in the 12 full locales.
+- Tests: tests/unit/companion-studio.test.js (4: the page check, another teacher's game refused; a change on Studio goes
+  to that game verbatim; Studio's buttons through the chat; the teacher's docked Studio and the kid's unchanged one),
+  tests/unit/companion-studio-browser.test.js (2: the docked chat, a change loads the big preview once and the compact
+  card, laptop and phone, light and dark, `STUDIO_SHOTS=<dir>` saves pictures; a student's Studio unchanged).
+
 ## Grammar Lab listed everywhere (27 Nov 2026)
 
 Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.
@@ -16787,3 +16895,95 @@ GRAMMAR_LAB_USERS='*' (every visitor), so `grammarCompareOn()` is true and the N
 - **The homepage's "One subscription instead of five" strip** now names six, NoRedInk too, and says "instead of six"
   (`landing.names.leadSix` / `lineSix`), while Grammar Lab is open to every visitor (owner, 28 Nov 2026: this replaces
   "the strip keeps the five" in "Grammar Lab beside NoRedInk"). With Grammar Lab closed it is the five as before.
+## Arithmetic Lab: the owner's playthrough (28 Nov 2026)
+
+The owner played Arithmetic Lab end to end on oomba.ai, as a student and as a teacher, and listed 17 things to fix; the
+phone layout was checked too (390 x 844 and 320 x 568, light and dark). In the game (`tools/box-by-box`, rebuilt into
+`seed-games/arithmetic-lab.html`):
+- **Bring down.** Long division typed with the page bringing down (Guided): after a subtraction the band asks "Now bring
+  down the next digit, 2. Press Bring down (or Enter)." with a Bring down button in place of Check, which has the focus.
+  It slides the digit down, then the focus goes to the answer's next digit on top, which pulses, and the question says
+  "The answer's next digit goes on top." Count up and Watch bring down by themselves, as before.
+- **The ladder and the area model.** A number of groups goes on by itself once no more digits could fit (20 groups of 7
+  from 945: 200 × 7 is more than 945), so the next digits never land in it; one that could still grow (10) says "Press
+  Enter when that's your number." Tab follows the work (groups, product, what's left), skips what the page writes, and
+  never reaches the quotient before the ladder ends (those fields are out of the tab order until then).
+- **One remainder.** The remainder (as R) is what's left on the last rung: the page writes it in (`Field.copyOf`), never
+  typed twice. A fraction's top is still typed (it may be simplified).
+- **One rule for products.** Multiplication's every product is typed whole in its column's box: the last one of a row
+  too (13 in the tens box; its 1 moves into the box on the left, as a carry moves up). Before, the last one started in
+  the box on the left.
+- **Accessible names.** A part's field is named by its product ("Box for 40 × 20", "Line for 9 × 10"), not "Box" or
+  "Product, step NaN"; a decimal point is a valid value in its box (the digit boxes' pattern made "." invalid).
+- **Partial products keep a 0 digit's line.** 610 × 9 lists 9 × 0 = 0 as a written line, and the next question says
+  "9 × 0 is 0, so its line is written for you."
+- **Step fixes count.** Each wrong digit Guided marks, and each wrong count in Count up, is a step fix: the end screen
+  says "You fixed 2 steps along the way", and the score goes with the label `fixes:2` (`BRB.gameOver` now takes a
+  `label`, passed on with the score), which the class's progress page (and the game page's best score) reads as
+  "2 step fixes" in the reader's language (`services/progress.js scoreLabel`).
+- **Leaving a set** half done (← Practice, Back) asks first in the page's own dialog (`lib/ConfirmDialog.svelte`):
+  "Leave this set? You've done 2 of 5 problems..." Keep going / Leave the set. Never confirm() or alert().
+- **Give up? Show the answer** after a Check that didn't pass, in every method (it counts as wrong, as a second try does).
+- **Decimals.** The area model's start screen for decimals says "2.3 is 2 + 0.3, and 1.4 is 1 + 0.4"; the standard
+  multiplication of decimals adds where the point goes. MethodPlayer's "N to go" is translated, as the other player's.
+- **Teachers.** The editor's way back is a labeled "← Your activities" button (an arrow alone, under the play page's own
+  Back arrow, was taken for it and left the game; on a phone the title goes on its own line). Save on an activity saved
+  before (students may have it: its class code, its link, a class it is assigned to) asks first: Save for everyone, or
+  Save as a copy (a new activity with its own link; this one goes back to what students have). A saved activity shows
+  Assign to a class next to Save for school staff.
+On the site:
+- **Assign** (the game page, the Assign page, a class's shelf): Arithmetic Lab with nothing made yet goes straight into the
+  game (`/play/arithmetic-lab?mode=assign`, BRB.params.mode), at Your activities with "Choose an activity to assign, or
+  make a new one" and New activity open; Save and assign saves it and opens the Assign page for it.
+- **The teacher's own title.** A set's title (`game_sets.title`) is the lesson's title when it has one (`describe` gives
+  it; `F.assignGame` takes a `summary`), with the label under it as the lesson's summary: on the Assign page ("Students
+  open: 4b math - Long division test", "Long division, 16 problems, Guided" under it), the class page's assigned rows
+  (wide and phone) and the progress page's heading. Lessons assigned before keep their names.
+- **No students yet:** the lesson's progress page shows a faded sample row under "No students yet" (each step done, a
+  game's score, Arithmetic Lab's step fixes) and says what it is.
+- **Loading.** The play page shows "Loading Arithmetic Lab…" with a spinner over the stage, in the play page's ink in
+  both themes, from the first paint until the game's page has loaded (or says it is ready): every game gets it.
+- **The About text** was cut at 600 characters by the seed import's update (`games.updateMeta`, a builder's limit);
+  `scripts/import-game.js` now keeps the team's own description whole. The translations were never cut.
+Tests: `tests/unit/arithmetic-lab-playthrough-browser.test.js` (the game on 390 and 320 wide phones),
+`tests/unit/arithmetic-lab-teacher-browser.test.js` (the site), `tests/unit/box-by-box.test.js` (the title, the summary,
+step fixes), and the existing Arithmetic Lab tests updated (Bring down, the remainder, the zero line).
+
+## Oomba chat: audit 3 fixes (28 Nov 2026)
+
+The owner's third chat audit, its quick items (the Builder in the chat, phase 2, is separate work):
+
+- **No hidden game in a drafted lesson plan.** The draft's game list (services/lesson-draft.js `catalogs`, the one
+  pipeline behind the library's Draft with AI and the chat's `makeLesson`) keeps only games a step may use
+  (`stepGameOk`): published, not an official game hidden right now (game-focus.js `gameHidden`) unless the teacher may
+  open it anyway (`mayOpenHidden`), and not an Oomba Live game hosted live only (Brain Board). The save checks again: a
+  step naming any other game is written as a text step. The audit's plan used Sum Racer while the chat said it was off:
+  the site list (lessons.js `gamesForPicker`) has no hidden filter of its own.
+- **The progress reply reads the class now.** `classProgress` already read the roster fresh; the stale "Once [student] is
+  added..." was the model's own words. A class with students and nothing assigned now gets the app's line first ("4b
+  math has 1 student and nothing assigned yet...") and a note that forbids "no students"; "no students yet" stays only for
+  `students: 0`. Results carry `className`.
+- **A live game from the chat leaves a trace.** A room's results are saved when it is played and ended
+  (classlive-results.js `save`, only with `startedAt`): a room nobody played leaves none, by design. The class's Progress
+  page now shows an open room for the class ("A live game is open now", with the host screen link), the chat's host card
+  says results come once the game is played and ended (with a link to the class's Progress), the AI is told to say
+  "hosting a live game", and ending a room nobody played says it has no results. Teachers read "Live games history" /
+  "No live games with this class yet." (the "live lessons" teacher variants are gone: one vocabulary, below).
+- **The change card's link names what was assigned**: games, lesson plans, worksheets, books, or the class's assignments
+  for anything else (shared.js `assignedLink(classId, t, what)`; the chat's Assign card carries `change.what`). The link
+  is still the class's assigned list (`?view=assigned`), where every assignment is.
+- **The class's full name**: a prompt rule ("4b math", never the "4b" the teacher typed); tools already passed it.
+- **Studio**: a new version's `refreshLiveLine` reads back the header too (current version, status, live, pending) and
+  redraws it, so "Nothing built yet" no longer stays after the first build.
+- **Figures worksheet pages** send the worksheet with the page (`fg-sheet.worksheet`): the first paint is its real title
+  and questions; while a saved worksheet is not known yet the list says "Loading the worksheet…", never "No questions yet".
+- **The Builder hand-off** opens `/build/new?...&kind=classgame` (a plain `&` for `location.href`; the page started on
+  Classroom lesson for teachers, `startKind`). The brief used to land in the activity's lesson box and reach the Builder
+  as "I described my lesson.". Now it lands in a hidden `#su-brief` box; the plan screen shows the first message as an
+  editable box: the plan's sentence, then the brief word for word, sent as `plan.told` with `brief: true` (and as `text`
+  when nothing was picked). The runner takes `told` from an activity's plan or a plan with `brief: true`; any other game
+  plan still sends its own sentence.
+- **One vocabulary in the chat**: game, lesson plan, worksheet (system prompt, tool descriptions, card strings: hello,
+  ideas, steps, the lesson plan cards, the hand-off). This replaces the chat's part of "Teachers say lessons"; routes and
+  data keep their names.
+Tests: `tests/unit/companion-audit3.test.js`, `tests/unit/builder-setup-told.test.js` (a brief's first message).

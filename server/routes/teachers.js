@@ -69,8 +69,8 @@ export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 // The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 const demoFiles = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
-// The /teachers/live demo was recorded with a Quest Race in it: shown only while the arcade games are on the site.
-const hasDemo = () => demoFiles && !focus.arcadeHidden();
+// Re-recorded (#693) with Brain Board and games that stay on the site while the arcade is off, so it always shows.
+const hasDemo = () => demoFiles;
 /** The questions on /teachers/live, in order (teachersLive.faq.q<n>, a<n>). The first, "Is Oomba Live free?", answers
  *  honestly (the owner, 27 Nov 2026): hosting, the question sets, the results and the ready-made courses cost nothing;
  *  the Teacher plan adds the paid tools (plans.teacher.li5, teacher-tools.js toolAccess, homeroom.js canUse). No amount:
@@ -810,7 +810,9 @@ export function learnPage(req, res, { landing = false } = {}) {
   // The games by topic (routes/discover.js focusSections), each narrowed to the grade chosen (a game without grades fits
   // every grade). Live class games come first for a student in a class (their teacher starts them).
   const gradeFits = g => !f.grade || !SHELF_INFO[g.slug] || fits({ ...SHELF_INFO[g.slug], subject: '' }, { grade: f.grade });
-  const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(gradeFits) })).filter(sec => sec.games.length);
+  // A game already shown as a course card above (Typing Zoo) is not listed again in a topic row.
+  const inCourses = new Set(learnCourses.some(c => c.id === 'typing') ? [TYPING_SLUG] : []);
+  const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(g => gradeFits(g) && !inCourses.has(g.slug)) })).filter(sec => sec.games.length);
   if (liveFirst) topicSecs.sort((a, b) => (b.id === 'live') - (a.id === 'live'));
   // My favorites: the games this player tapped Favorite on (students too), that they may still open. No section until there is one.
   const favs = gridView || out ? [] : games.favorites(u, u.id, 16).filter(g => !courseOwned(g));

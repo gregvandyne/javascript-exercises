@@ -28,6 +28,7 @@ import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
 import { greeting } from '/js/companion-greet.js';
 import { formatText, copyText } from '/js/oomba-text.js';
+import * as CBD from '/js/companion-build.js';
 
 const raw = document.body.dataset.oc;
 const PAGE = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
@@ -45,6 +46,10 @@ function start() {
   // in the dashboard's footer) and follows the view on screen (the dashboard, or the class).
   const views = !!document.getElementById('cv');
   let dash = PAGE.type === 'dashboard';
+  // Studio with Oomba: the column the chat docks in (routes/studio.js), and the widths where it does (Studio's two columns).
+  const dockEl = PAGE.type === 'game' ? document.getElementById('st-dock') : null;
+  const dockMq = window.matchMedia('(min-width: 961px)');
+  const docked = () => !!dockEl && dockMq.matches;
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
   const actDrafts = new Map();   // an action card's typed box, by turn (below)
   const label = () => {
@@ -74,7 +79,7 @@ function start() {
   const via = (k, ...a) => { const x = P(); return x && typeof x[k] === 'function' ? x[k](...a) : undefined; };
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
-    start: () => via('start') || 'closed',
+    start: () => via('start') || (docked() ? 'open' : 'closed'),
     // The dashboard: at the end of its layout bar. The live host room: at the end of its top bar, so it never covers
     // the room's controls or the join code (the owner's live audit, 27 Nov 2026); it hides in full screen (below).
     bubbleHost: dash && !views ? document.getElementById('dash-foot') : PAGE.type === 'live' ? document.querySelector('.lv-host > .lv-bar') : null,
@@ -104,7 +109,7 @@ function start() {
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
     change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'action' ? actionDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L('asg.open'))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L(`asg.${{ game: 'open', book: 'openBook' }[x.change.what] || 'openAll'}`))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
@@ -117,13 +122,34 @@ function start() {
       via('onUndo', r);
     },
     onQuote: q => via('onQuote', q),
-    onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
+    onMode: m => { if (m !== 'open') stopMic(); if (m !== 'open' && docked()) setTimeout(() => chat.setMode('open', { focus: false, user: false }), 0); via('onMode', m); },
     onSync: c => { if (S.sent) { S.sent = false; setFile(null); } drawBookMode(c); autoCheck(c); via('onSync', c); },
   });
   ref.chat = chat;
+  CBD.setChat(chat);   // the Builder in the chat (public/js/companion-build.js)
   BUS.setChat(chat);
-  BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
+  // The header: "Sees: <the page>", and a page's own title (Studio: "Oomba · <game title>").
+  const titleEl = document.getElementById('oc-title'), titleAs = titleEl ? titleEl.textContent : '';
+  const heads = () => {
+    const b = document.getElementById('oc-sees'); if (b) b.textContent = label();
+    const a = BUS.page(), tt = a && a.title ? a.title() : '';
+    if (titleEl) titleEl.textContent = tt ? String(tt).slice(0, 80) : titleAs;
+  };
+  BUS.onPage(() => { heads(); chat.render(); });
+  BUS.onRefresh(() => { heads(); chat.render(); });
+  heads();
   const root = chat.root;
+  // Studio (docs/decisions.md "Builder in the chat (phase 3): Oomba in Studio"): on a wide screen the panel sits in
+  // Studio's Builder column (#st-dock), always open; on a phone it is the usual bubble and sheet.
+  function placeDock() {
+    if (!dockEl) return;
+    const on = docked();
+    document.body.classList.toggle('oc-docked', on);
+    const home = on ? dockEl : document.body;
+    if (root.parentElement !== home) home.appendChild(root);
+    if (on && chat.state().mode !== 'open') chat.setMode('open', { focus: false, user: false });
+  }
+  if (dockEl) { placeDock(); dockMq.addEventListener('change', placeDock); }
   // What the teacher typed in an action card's box, kept while the panel redraws (never stored, never sent until Do it).
   root.addEventListener('input', e => { const el = e.target.closest && e.target.closest('[id^="oc-act-"]'); if (el) actDrafts.set(el.id.slice(7), el.value); });
   const $ = id => document.getElementById(id);
@@ -389,6 +415,7 @@ function start() {
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
     if (n.made) parts.push(madeHtml(n.made));
     if (n.jobs && n.jobs.length) parts.push(jobsHtml(x, n.jobs));
+    if (n.build) parts.push(CBD.cardHtml(x, n.build));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
@@ -438,6 +465,7 @@ function start() {
   const JOB_FAILS = ['budgetDay', 'budgetMonth', 'ai', 'gone', 'restart', 'notAllowed'];
   function jobsHtml(x, list) {
     return `<div class="oc-jobs">${list.map(j => {
+      if (j.kind === 'game') return CBD.jobHtml(x, j);
       if (j.state === 'done' && j.made) return madeHtml(j.made);
       const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[j.kind] || '✨';
       const head = `<h4>${ic(ico, 18)} <span dir="auto">${esc(j.title || L(`job.kind.${j.kind}`))}</span></h4>`;
@@ -653,6 +681,7 @@ function start() {
     catch { go.disabled = false; }
   });
   async function onAct(act, turn, btn) {
+    if (/^build[A-Z]/.test(act)) return CBD.onAct(act, turn, btn);
     if (!turn) return null;
     if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
     if (act === 'bookOther') {
@@ -828,7 +857,7 @@ function start() {
   const h = store.get('oomba-handoff');
   if (h) {
     let x = null; try { x = JSON.parse(h); } catch { x = null; }
-    const target = x && Date.now() - x.at < 10 * 60e3 ? (x.tool === 'builder' && location.pathname === '/build/new' ? 'su-ltext' : x.tool === 'figures' && location.pathname === '/figures' ? 'fgd-in' : null) : null;
+    const target = x && Date.now() - x.at < 10 * 60e3 ? (x.tool === 'builder' && location.pathname === '/build/new' ? 'su-brief' : x.tool === 'figures' && location.pathname === '/figures' ? 'fgd-in' : null) : null;
     if (target && document.getElementById(target)) {
       store.set('oomba-handoff', null);
       const box = document.getElementById(target);

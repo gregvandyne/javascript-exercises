@@ -417,6 +417,10 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-again[hidden]{display:none}
 /* "Fixed it!", a level that took more questions, the mastery screen's first-try line and the units it also counts in. */
 .gl-flash .gl-flash-note{font-size:clamp(18px,4.6vw,24px);font-weight:700;margin-top:6px}
+/* a question about a faulty sentence (a fragment, a modifier in the wrong place, a wordy sentence): once it is answered
+   right, the sentence fixed on a card under "Correct!", in the after style of a card's fix (a check, its own line) */
+.gl-flash .gl-flash-after{max-width:min(560px,calc(100vw - 32px));margin:18px auto 0;padding:12px 16px;border-radius:var(--r);background:var(--card);color:var(--text);font-size:clamp(18px,4.8vw,24px);font-weight:700;line-height:1.35;text-align:start}
+.gl-review-fix{margin:0 0 4px}
 .gl-level-more{font-size:15px;color:var(--text-2)}
 .gl-done-acc{margin:-4px 0 8px;font-size:18px;font-weight:700;color:var(--text)}
 .gl-done-also{margin:0 0 12px}

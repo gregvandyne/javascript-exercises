@@ -497,6 +497,11 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen,.stage.css-full{top:0}
+.stage-load{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:var(--brand-ink,#16130f);color:var(--brand-cream,#fff6e6);font-weight:700;text-align:center}
+.stage-spin{width:40px;height:40px;border-radius:50%;border:4px solid color-mix(in srgb,var(--brand-cream,#fff6e6) 22%,transparent);border-top-color:var(--brand-cream,#fff6e6);animation:stage-spin .9s linear infinite}
+@keyframes stage-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.stage-spin{animation:none;border-top-color:color-mix(in srgb,var(--brand-cream,#fff6e6) 22%,transparent);border-right-color:var(--brand-cream,#fff6e6)}}
+.gl-roommode .stage-load{background:var(--bg);color:var(--text)}
 /* a Grammar Lab room (routes/games.js glRoom) is a lesson screen: its bar, stage and frame follow the theme, light or
    dark, rather than the games' Ink chrome (the lesson flipped to black and back on the way in and out) */
 body.playmode.gl-roommode,.gl-roommode .stage,.gl-roommode .stage iframe{background:var(--bg)}
@@ -1234,6 +1239,10 @@ ol.steps li{margin-bottom:var(--s2)}
 .course-rail.has-more::after{content:"";position:absolute;top:0;bottom:0;inset-inline-end:-16px;width:56px;pointer-events:none;z-index:2;background:linear-gradient(to right,transparent,var(--bg))}
 [dir="rtl"] .course-rail.has-more::after{background:linear-gradient(to left,transparent,var(--bg))}
 .course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:12px;align-content:start}
+/* Learn's Courses rail: every course card the same height, its button along the bottom (a longer title or a progress line no longer makes one card shorter than its neighbour). */
+.learn-courses-track{align-items:stretch}
+.learn-course{display:flex;flex-direction:column}
+.learn-course>.course-foot{margin-top:auto}
 .course-head{display:flex;gap:12px;align-items:center}
 /* Learn's compact course card: the whole head opens the course (a full tap target), the units fold behind a tap. */
 a.course-head{min-height:48px;color:inherit;text-decoration:none;border-radius:14px}
@@ -2166,6 +2175,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .lib-ico{flex:none;width:28px;text-align:center;font-size:1.35rem;line-height:1}
   .lib-text{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:2px}
   .lib-sub{color:var(--muted);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lib-body>.lib-sub{display:block}
   .lib-n{flex:none;color:var(--muted);font-weight:700}
   .lib-chev{flex:none;color:var(--muted)}
   [dir="rtl"] .lib-chev,[dir="rtl"] .lib-backarrow{transform:scaleX(-1)}

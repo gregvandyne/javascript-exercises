@@ -4,7 +4,9 @@
 // page and the lesson call an activity, and saving one through the route and opening it in the frame.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { reset, call, publish, official, kid, teacher, games } from './_live.js';
+import { reset, call, publish, official, kid, teacher, games, cls, mia } from './_live.js';
+import * as L from '../../server/services/lessons.js';
+import * as P from '../../server/services/progress.js';
 import * as gameSets from '../../server/services/game-sets.js';
 import { parseParams } from '../../server/services/play-params.js';
 
@@ -64,7 +66,41 @@ test('box-by-box: a teacher saves an activity, its link opens it, the Assign pag
   assert.equal(gameSets.describe(g.id, { mode: 'solve', chapter: '2xp3q7' }, 'arithmetic-lab'), null, 'only its own sets');
   const pg = await call(`/teach/assign?game=arithmetic-lab&opts=${encodeURIComponent(`chapter=${r.json.id}&lock=1`)}`, { user: teacher });
   assert.match(pg.text, /Students open: Long division, 3 problems, Guided/);
-  assert.match((await call('/teach/assign?game=arithmetic-lab', { user: teacher })).text, /in the game first/);
+  // nothing made yet: the Assign button goes straight into the game to make one (then Save and assign comes back here)
+  assert.match((await call('/teach/assign?game=arithmetic-lab', { user: teacher })).text, /Redirecting to \/play\/arithmetic-lab\?mode=assign/);
+  assert.match((await call(`/teach/assign?id=${g.id}`, { user: teacher })).text, /Redirecting to \/play\/arithmetic-lab\?mode=assign/);
+});
+
+test('arithmetic lab: a named activity is assigned under its own name, the label under it; step fixes read as words', async () => {
+  reset();
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
+  const named = gameSets.save(g.id, teacher.id, [DIV], null, 'arithmetic-lab', { title: '4b math - Long division test' });
+  assert.deepEqual(gameSets.describe(g.id, { chapter: named.id }, 'arithmetic-lab'), { kind: 'one', label: 'Long division, 3 problems, Guided', title: '4b math - Long division test' });
+  const opts = `chapter=${named.id}&lock=1`;
+  const pg = await call(`/teach/assign?id=${g.id}&opts=${encodeURIComponent(opts)}`, { user: teacher });
+  assert.match(pg.text, /Students open: 4b math - Long division test/);
+  assert.match(pg.text, /class="small muted assign-sub" dir="auto">Long division, 3 problems, Guided</);
+  const r = await call('/api/teach/assign-game', { method: 'POST', body: { gameId: g.id, classId: cls.id, opts }, user: teacher });
+  assert.equal(r.status, 200, r.text);
+  const cl = L.classLessons(cls.id).find((x) => x.first_game === g.id || x.title === '4b math - Long division test');
+  assert.equal(cl.title, '4b math - Long division test', 'the lesson is the teacher\'s own name');
+  assert.equal(cl.summary, 'Long division, 3 problems, Guided', 'with the label under it');
+  const cp = await call(`/class/${cls.id}`, { user: teacher });
+  assert.match(cp.text, /4b math - Long division test<\/b><span class="small muted cl-sub" dir="auto">Long division, 3 problems, Guided<\/span>/);
+  const pp = await call(`/class/${cls.id}/progress/${cl.id}`, { user: teacher });
+  assert.match(pp.text, /<h2 dir="auto">4b math - Long division test<\/h2><p class="lp-sub muted" dir="auto">Long division, 3 problems, Guided<\/p>/);
+  // a student's run: the end (won, with the score), then the score with its label, as the play page sends them; the
+  // progress page shows the score and "2 step fixes", never the bare 'won'
+  const step = L.steps(cl.lesson_id)[0];
+  assert.equal((await call(`/api/progress/${cl.id}/${step.id}/game`, { method: 'POST', body: { event: 'end', score: 3, won: true }, user: mia })).status, 200);
+  assert.equal((await call(`/api/progress/${cl.id}/${step.id}/game`, { method: 'POST', body: { event: 'score', score: 3, label: 'fixes:2' }, user: mia })).status, 200);
+  const pp2 = await call(`/class/${cls.id}/progress/${cl.id}`, { user: teacher });
+  assert.match(pp2.text, /<span class="st-score" dir="ltr">3<\/span><span class="st-fixes small muted" dir="auto">2 step fixes<\/span>/);
+  // the game's step fixes (BRB.gameOver label fixes:N) read as words, in the reader's language
+  const t = (k, v) => (k === 'progress.lesson.stepFixes' ? `${v.count} step fix${v.count === 1 ? '' : 'es'}` : k);
+  assert.equal(P.scoreLabel(t, 'fixes:2'), '2 step fixes');
+  assert.equal(P.scoreLabel(t, 'fixes:1'), '1 step fix');
+  assert.equal(P.scoreLabel(t, 'won'), 'won', 'any other label as it is');
 });
 
 // ---------------------------------------------------------------- the game file

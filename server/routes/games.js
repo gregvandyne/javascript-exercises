@@ -170,7 +170,7 @@ router.get('/g/:slug', (req, res) => {
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
         ${best ? html`<section class="panel" aria-labelledby="best-h" id="mybest"><h2 id="best-h">${ico('⭐', { size: 28 })} ${t('game.best.heading')}</h2>
-          <p class="mybest"><b dir="ltr">${f.int(best.score)}</b>${best.label ? html` <span class="muted" dir="auto">${best.label}</span>` : ''}</p>
+          <p class="mybest"><b dir="ltr">${f.int(best.score)}</b>${best.label ? html` <span class="muted" dir="auto">${progress.scoreLabel(t, best.label)}</span>` : ''}</p>
         </section>` : ''}
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
@@ -404,6 +404,7 @@ router.get('/play/:slug', (req, res) => {
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
+    <div class="stage-load" id="stage-load" role="status"><span class="stage-spin" aria-hidden="true"></span><span class="stage-load-t" dir="auto">${t('play.loading', { title: g.title })}</span></div>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson || glRoom) ? { backHref, backLabel } : {}), ...(glRoom ? { glRoom: { topic: glRoom.topic, unit: glRoom.unit } } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}), ...(hostLiveMode(u, g) ? { hostLive: hostLiveMode(u, g) } : {}) })}`;

@@ -1330,7 +1330,8 @@
       "fronts": "{title}: frentes",
       "backs": "{title}: reversos",
       "how": "Imprime a doble cara (voltear por el borde largo) y recorta por las líneas discontinuas. Cada reverso queda detrás de su frente."
-    }
+    },
+    "loading": "Cargando {title}…"
   },
   "friends": {
     "title": "Amigos",
@@ -1886,6 +1887,9 @@
         "selfTest": "No se guardó: la comprobación de la actividad encontró un problema.",
         "scan": "No se guardó: la revisión de seguridad falló."
       }
+    },
+    "dock": {
+      "label": "Chat de Oomba"
     }
   },
   "publish": {
@@ -3049,6 +3053,13 @@
         "anyway": "Publicar de todos modos",
         "confirm": "¿Publicar sin haberlo jugado hasta el final? Los jugadores podrían quedarse atascados.",
         "checking": "Primero jugamos tu juego hasta el final…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Estudio, versión {n}",
+        "hello": "Dime qué cambiar en este juego y se lo enviaré al Constructor. Cada versión nueva aparece en la vista previa grande.",
+        "versionOf": "Versión {n} de {total}",
+        "versionLabel": "Versión en la vista previa"
       }
     },
     "character": {
@@ -4373,7 +4384,8 @@
       "chAnswers": "Cada respuesta calculada a partir de su figura",
       "greetLine": "Dime qué necesita esta hoja: el tema, el grado y cuántas preguntas.",
       "greetLineTest": "Dime qué debe cubrir esta prueba: el tema, el grado y cuántas preguntas.",
-      "greetLineHas": "Pídeme cambiar preguntas, agregar más o cambiar las unidades o el grado."
+      "greetLineHas": "Pídeme cambiar preguntas, agregar más o cambiar las unidades o el grado.",
+      "loading": "Cargando la hoja de trabajo…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4523,11 +4535,11 @@
       "historyDelete": "Borrar este chat",
       "historyDeleteAsk": "¿Borrar este chat para siempre? No se puede recuperar.",
       "historyDeleteOk": "Borrar",
-      "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme una lección, un libro, un cambio en tu panel o ayuda con un plan de clase.",
+      "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme un juego, un libro, una hoja de trabajo, un cambio en tu panel o ayuda con un plan de clase.",
       "idea": {
         "game": {
-          "label": "Buscar una lección",
-          "text": "Dame una lección de fracciones para 3.º, de unos 10 minutos"
+          "label": "Buscar un juego",
+          "text": "Dame un juego de fracciones para 3.º, de unos 10 minutos"
         },
         "book": {
           "label": "Buscar un libro",
@@ -4605,7 +4617,7 @@
         "explain": "Consultó cómo funciona Oomba Academy",
         "page": "Leyó esta página",
         "dash": "Leyó tu diseño {q} ({n} widgets)",
-        "games": "Buscó lecciones: {q}",
+        "games": "Busqué juegos: {q}",
         "books": "Buscó en la Story Library",
         "booksLevel": "Relacionó el nivel de lectura {q}",
         "lessons": "Buscó planes de clase y hojas de trabajo",
@@ -4654,7 +4666,7 @@
         "sheetMade": "Creó y comprobó una hoja de trabajo ({n, plural, one {# pregunta} other {# preguntas}})",
         "sheetNo": "No pudo crear esa hoja de trabajo",
         "lessonMade": "Creó y comprobó un plan de lección ({n, plural, one {# parte} other {# partes}})",
-        "lessonNo": "No pudo crear esa lección",
+        "lessonNo": "No pude hacer ese plan de clase",
         "lessonAsk": "Preguntó el tema",
         "kinds": "Consultó lo que Figures puede dibujar",
         "find": "Buscó «{q}»",
@@ -4711,7 +4723,7 @@
         "openDash": "Abrir el panel"
       },
       "hand": {
-        "builder": "Actividad de clase en el Builder",
+        "builder": "Juego en el Builder",
         "figures": "Hoja de trabajo en Figures",
         "manipulatives": "Tablero en los Manipulativos",
         "open": {
@@ -4726,7 +4738,7 @@
         "help": "Ayuda",
         "length": "Duración",
         "fromPlan": "De tu plan",
-        "filled": "Oomba escribió tu descripción. Revísala y luego toca el botón para crearlo.",
+        "filled": "La descripción de Oomba está lista: es el primer mensaje para el Builder. Elige lo que quieras y revísala antes de abrir el Builder.",
         "makeNow": "Crearlo ahora",
         "makeText": "Crea esto ahora:"
       },
@@ -4789,7 +4801,7 @@
         "lessonTopic": "Con gusto la creo. ¿Sobre qué tema es y para qué grado?",
         "sheetTopic": "Con gusto la hago. ¿Qué debe practicar la hoja de trabajo y para qué grado?",
         "boardTopic": "Con gusto lo preparo. ¿Qué herramienta (por ejemplo, bloques de base diez o una recta numérica) y qué debe mostrar?",
-        "assignWhat": "¿Qué lección debo asignar? Dime su nombre, y la clase si tienes más de una."
+        "assignWhat": "¿Qué juego, plan de clase u hoja de trabajo asigno? Dime su nombre, y la clase si tienes más de una."
       },
       "cls": {
         "default": "Clase de prueba",
@@ -4816,7 +4828,11 @@
         "assigned": "Asignado",
         "declined": "No asignado",
         "done": "«{title}» asignado a {class}.",
-        "open": "Ver los juegos de la clase"
+        "open": "Ver los juegos de la clase",
+        "openLesson": "Ver los planes de clase de la clase",
+        "openSheet": "Ver las hojas de trabajo de la clase",
+        "openBook": "Ver los libros de la clase",
+        "openAll": "Ver lo asignado a la clase"
       },
       "book": {
         "adding": "Añadiendo a tu libro",
@@ -4918,12 +4934,12 @@
         "open": {
           "board": "Abrir el tablero",
           "sheet": "Abrir la hoja de trabajo",
-          "lesson": "Abrir la lección"
+          "lesson": "Abrir el plan de clase"
         },
         "no": {
           "board": "El tablero no se creó. No se guardó nada.",
           "sheet": "La hoja de trabajo no se creó. No se guardó nada.",
-          "lesson": "La lección no se creó. No se guardó nada."
+          "lesson": "No se hizo el plan de clase. No se guardó nada."
         }
       },
       "pts": {
@@ -4932,7 +4948,8 @@
       },
       "rep": {
         "empty": "{name} todavía no tiene estudiantes, así que no hay progreso que informar.",
-        "which": "¿De qué clase debe ser el informe?"
+        "which": "¿De qué clase debe ser el informe?",
+        "noWork": "{name} tiene {count, plural, one {# estudiante} other {# estudiantes}} y aún nada asignado, así que todavía no hay progreso que informar."
       },
       "find": {
         "hidden": "{title} está en Oomba, pero ese juego está desactivado ahora, así que los estudiantes no pueden jugarlo.",
@@ -5040,9 +5057,9 @@
             "unassign": "Esto lo quita de la clase. Se conserva el trabajo de los estudiantes.",
             "students": "Los estudiantes lo verán.",
             "classroom": "Esto publica en Google Classroom: los estudiantes de allí lo verán.",
-            "deleteSheet": "Esto borra la hoja de trabajo para siempre. Las lecciones ya asignadas conservan sus preguntas.",
+            "deleteSheet": "Esto borra la hoja de trabajo para siempre. Lo que ya se asignó conserva sus preguntas.",
             "deleteBoard": "Esto borra el tablero para siempre.",
-            "deleteLesson": "Esto borra la lección para siempre, con sus asignaciones y el trabajo de los estudiantes en ellas."
+            "deleteLesson": "Esto borra el plan de clase para siempre, con lo asignado y el trabajo de los estudiantes."
           },
           "due": {
             "ask": "¿Cambiar las fechas de «{title}» en {class}?",
@@ -5057,8 +5074,8 @@
           },
           "seeWork": "Ver el trabajo",
           "lesson": {
-            "ask": "¿Asignar la lección «{title}» a {class}?",
-            "done": "Se asignó la lección «{title}» a {class}."
+            "ask": "¿Asignar el plan de clase «{title}» a {class}?",
+            "done": "Asigné el plan de clase «{title}» a {class}."
           },
           "sheet": {
             "ask": "¿Asignar la hoja de trabajo «{title}» a {class}?",
@@ -5108,14 +5125,14 @@
             "deletedBoard": "Se borró el tablero «{title}».",
             "openBoard": "Abrir el tablero",
             "allBoards": "Ver mis tableros",
-            "copyLesson": "¿Hacer una copia de la lección «{title}»?",
+            "copyLesson": "¿Hacer una copia del plan de clase «{title}»?",
             "copiedLesson": "Copia hecha: «{title}».",
-            "deleteLesson": "¿Borrar la lección «{title}»?",
+            "deleteLesson": "¿Borrar el plan de clase «{title}»?",
             "inClasses": "{count, plural, one {Está asignada a # clase.} other {Está asignada a # clases.}}",
             "withWork": "{count, plural, one {# estudiante tiene trabajo en ella.} other {# estudiantes tienen trabajo en ella.}}",
-            "deletedLesson": "Se borró la lección «{title}».",
-            "openLesson": "Abrir la lección",
-            "allLessons": "Ver mis lecciones"
+            "deletedLesson": "Borré el plan de clase «{title}».",
+            "openLesson": "Abrir el plan de clase",
+            "allLessons": "Ver mis planes de clase"
           }
         },
         "homeroom": {
@@ -5206,13 +5223,16 @@
             "ask": "¿Empezar un juego en vivo para {class}?",
             "what": "{count, plural, one {# pregunta lista} other {# preguntas listas}} del banco de preguntas.",
             "done": "El juego en vivo de {class} está abierto: los estudiantes entran desde la página de su clase.",
-            "open": "Abrir la pantalla del anfitrión"
+            "open": "Abrir la pantalla del anfitrión",
+            "results": "Sus resultados pasan a la página de Progreso de la clase cuando el juego se juega y se termina.",
+            "progress": "Ver el progreso de la clase"
           },
           "end": {
             "ask": "¿Terminar el juego en vivo «{title}»?",
             "players": "{count, plural, =0 {Todavía no ha entrado nadie.} one {Hay # jugador.} other {Hay # jugadores.}}",
             "done": "Terminó el juego en vivo «{title}».",
-            "results": "Ver los resultados"
+            "results": "Ver los resultados",
+            "notPlayed": "Nadie lo jugó, así que no tiene resultados."
           }
         },
         "dashboard": {
@@ -5313,6 +5333,152 @@
       "line0": "¿En qué te ayudo?",
       "line1": "¿En qué trabajamos?",
       "line2": "¿Por dónde empezamos?"
+    },
+    "companion-build": {
+      "reply": {
+        "ask": "Tres toques rápidos y te muestro un plan. No se construye nada hasta que tú lo digas.",
+        "plan": "Aquí está el plan. Todavía no está construido: toca Constrúyelo cuando te parezca bien.",
+        "building": "Lo estoy construyendo. La tarjeta de abajo muestra cada paso mientras ocurre.",
+        "change": "Envié tus palabras al Builder tal como las escribiste. La versión {n} se está construyendo en la tarjeta de abajo, y la versión {prev} sigue funcionando mientras esperas.",
+        "lesson": "Estoy preparando el plan de clase. Su tarjeta de abajo se completa cuando esté listo.",
+        "noSchool": "Un plan de clase se guarda en las lecciones de una escuela, y esta cuenta todavía no tiene escuela en Oomba, así que no se hizo nada."
+      },
+      "q": {
+        "kind": "¿Qué preparo?",
+        "use": "¿Dónde van a jugar?",
+        "help": "¿Cuánta ayuda?"
+      },
+      "opt": {
+        "game": {
+          "label": "Un juego para tus estudiantes.",
+          "text": "Cada estudiante juega en un dispositivo y recibe respuesta al instante. Ideal para practicar."
+        },
+        "lesson": {
+          "label": "Un plan de clase para ti.",
+          "text": "Pasos para dar la clase: un calentamiento, la explicación, práctica y un boleto de salida."
+        },
+        "devices": {
+          "label": "En sus propios dispositivos.",
+          "text": "Cada estudiante juega a su ritmo."
+        },
+        "board": {
+          "label": "En la pizarra.",
+          "text": "Toda la clase juega junta en una sola pantalla."
+        },
+        "show": {
+          "label": "Muéstralo primero.",
+          "text": "Un ejemplo resuelto y luego lo intentan."
+        },
+        "hints": {
+          "label": "Pistas si se atascan.",
+          "text": "Una pista tras un intento fallido, nunca la respuesta."
+        },
+        "own": {
+          "label": "Por su cuenta.",
+          "text": "Sin pistas, como una comprobación rápida."
+        }
+      },
+      "showPlan": "Muéstrame el plan",
+      "planKind": "Plan del juego",
+      "grade": "Grado {g}",
+      "gradeK": "Kínder",
+      "short": {
+        "devices": "En sus dispositivos",
+        "board": "En la pizarra",
+        "show": "Muéstralo primero",
+        "hints": "Pistas si se atascan",
+        "own": "Por su cuenta"
+      },
+      "does": {
+        "devices": "Cada estudiante juega en su propio dispositivo, a su ritmo.",
+        "board": "Toda la clase juega junta en la pizarra.",
+        "topic": "Practican {topic}.",
+        "show": "Primero ven un ejemplo resuelto y luego prueban uno por su cuenta.",
+        "hints": "Tras un intento fallido reciben una pista, nunca la respuesta.",
+        "own": "Sin pistas: funciona como una comprobación rápida.",
+        "feedback": "Cada respuesta recibe respuesta al instante.",
+        "boardRun": "Tú diriges cada ronda desde la pizarra.",
+        "fresh": "Problemas nuevos cada vez que se juega."
+      },
+      "tell": "Lo que le diré al Builder",
+      "build": "Constrúyelo",
+      "change": "Cambiar",
+      "uses": "Usa 1 de las construcciones de hoy (quedan {left})",
+      "noneLeft": "Hoy no quedan construcciones. Mañana tendrás más.",
+      "steps": {
+        "safe": "Revisé tu mensaje por seguridad",
+        "plan": "Planeé el juego",
+        "write": "Escribiendo el juego",
+        "play": "Probándolo en un teléfono, una tableta y un portátil",
+        "scan": "Revisión de seguridad"
+      },
+      "usually": "Suele tardar 1-2 minutos. Puedes seguir conversando o cerrar esta página.",
+      "vBuilding": "Construyendo la versión {n}…",
+      "vWorks": "La versión {n} sigue funcionando mientras esperas.",
+      "tap": "Toca para jugar",
+      "previewOf": "Vista previa de {title}",
+      "line": {
+        "version": "Versión {n}",
+        "sizes": "{count, plural, one {probado en # tamaño de pantalla} other {probado en # tamaños de pantalla}}",
+        "played": "jugado hasta el final",
+        "playFail": "la prueba encontró un problema",
+        "noPlay": "aún sin probar",
+        "scanPass": "revisión de seguridad superada",
+        "scanFail": "la revisión de seguridad encontró algo que corregir"
+      },
+      "say": {
+        "devices": "Lo jugué en {devices} y cada ronda funcionó, y la revisión de seguridad salió bien.",
+        "played": "Lo jugué hasta el final y cada ronda funcionó, y la revisión de seguridad salió bien.",
+        "students": "Tus estudiantes solo lo ven cuando lo asignas o lo presentas en vivo.",
+        "playFail": "Lo jugué y {why}, así que todavía no está listo para tus estudiantes. Dime qué cambiar o toca Cambiar.",
+        "noEnd": "no llegó al final",
+        "scanFail": "La revisión de seguridad encontró algo que corregir, así que todavía no está listo para tus estudiantes. Dime qué cambiar o toca Cambiar.",
+        "noPlay": "La revisión de seguridad salió bien, pero este servidor no pudo probarlo, así que todavía no lo he jugado.",
+        "refused": "La revisión de seguridad del Builder detuvo ese mensaje, así que no se construyó nada. {why}",
+        "nothing": "Esta vez el Builder no guardó una versión nueva, así que nada cambió. Prueba a decirlo de otra forma."
+      },
+      "dev": {
+        "phone": "un teléfono",
+        "tablet": "una tableta",
+        "laptop": "un portátil"
+      },
+      "changed": "Qué cambió",
+      "btn": {
+        "play": "Jugar",
+        "change": "Cambiar",
+        "assign": "Asignar",
+        "host": "Presentar en vivo",
+        "big": "Abrir en grande",
+        "showBig": "Verla en grande"
+      },
+      "assignText": "Asigna «{title}» a mi clase.",
+      "changeText": "En «{title}», ",
+      "fail": {
+        "limit": "Hoy no quedan construcciones, así que no se construyó nada. Mañana tendrás más.",
+        "resting": "El Builder está descansando ahora, así que no se construyó nada. Inténtalo más tarde.",
+        "tooMany": "Ya hay dos construcciones en marcha. Inténtalo cuando termine una.",
+        "disabled": "Construir está desactivado para esta cuenta, así que no se construyó nada.",
+        "restarting": "Oomba se estaba reiniciando, así que no se construyó nada. Inténtalo en un minuto.",
+        "gone": "Ese juego ya no existe, así que no se construyó nada.",
+        "notAllowed": "Esta cuenta no puede construir en el chat ahora, así que no se construyó nada.",
+        "restart": "Oomba se reinició mientras lo construía. Inténtalo de nuevo.",
+        "error": "Algo salió mal al construir, así que no se guardó nada nuevo."
+      },
+      "err": {
+        "chatBusy": "Oomba todavía está respondiendo. Inténtalo en un momento.",
+        "cap": "Se están preparando muchas cosas ahora. Inténtalo cuando terminen algunas tarjetas.",
+        "noBuilds": "Hoy no quedan construcciones. Mañana tendrás más.",
+        "needPick": "Elige una respuesta para cada pregunta.",
+        "buildOff": "Construir en el chat está desactivado para esta cuenta.",
+        "notFound": "Esa tarjeta ya no está.",
+        "other": "No funcionó. Inténtalo de nuevo."
+      },
+      "sent": "Enviado al Builder: lo está construyendo en la tarjeta de abajo.",
+      "redone": "Cambiado: la tarjeta nueva está abajo.",
+      "answered": "Elegido: {list}",
+      "retry": "Intentar de nuevo",
+      "showingBig": "Se ve en grande a la izquierda",
+      "showingBigAbove": "Se ve en grande en la vista previa de arriba"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palabra} other {# palabras}}",
@@ -7146,7 +7312,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Desliza la tabla hacia un lado para ver todos los pasos",
       "quizScore": "{right} de {total} correctas ({pct} %)",
-      "helped": "El docente mostró una respuesta"
+      "helped": "El docente mostró una respuesta",
+      "stepFixes": "{count, plural, one {# paso corregido} other {# pasos corregidos}}",
+      "sampleName": "Alumno de ejemplo",
+      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino."
     },
     "student": {
       "doneOf": "{done} de {total} hechos",
@@ -9007,7 +9176,7 @@
     },
     "demo": {
       "h": "Míralo en menos de un minuto",
-      "note": "Un video corto con música y subtítulos en pantalla: niños juegan a juegos educativos (un globo terráqueo, ¿Qué prefieres?, ajedrez y Gulp City), luego un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, cómo se mantiene seguro: un nombre inventado sin correo electrónico, amigos que se agregan solo con un código y juegos que siguen siendo privados hasta que el niño decide compartirlos."
+      "note": "Un video corto con música y subtítulos en pantalla: niños juegan a juegos educativos (una sopa de letras, un globo terráqueo, ajedrez y un crucigrama), luego un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, cómo se mantiene seguro: un nombre inventado sin correo electrónico, amigos que se agregan solo con un código y juegos que siguen siendo privados hasta que el niño decide compartirlos."
     }
   },
   "research": {
@@ -15261,9 +15430,7 @@
     "progressEmptyTextForTeachers": "Asigna una lección en la pestaña Lecciones y aquí verás cómo va cada alumno.",
     "studentEmptyText": "Tu docente añadirá juegos aquí.",
     "liveHistory": "Historial de juegos en directo",
-    "liveHistoryForTeachers": "Historial de lecciones en vivo",
     "liveHistoryNone": "Aún no hay juegos en directo con esta clase.",
-    "liveHistoryNoneForTeachers": "Aún no hay lecciones en vivo con esta clase.",
     "allGames": "Todos mis juegos",
     "allGamesForTeachers": "Todas mis lecciones",
     "assignedTo": "Asignados a {class}",
@@ -15317,7 +15484,9 @@
       "collectionEmpty": "Esta colección aún está vacía",
       "allEmpty": "Todavía no has creado ningún juego.",
       "allEmptyForTeachers": "Todavía no has creado ninguna lección."
-    }
+    },
+    "liveOpenNow": "Hay un juego en directo abierto ahora: {title}. Sus resultados aparecen aquí cuando se juega y se termina.",
+    "liveOpenHost": "Ir a la pantalla del anfitrión"
   },
   "library": {
     "title": "Biblioteca de cuentos",

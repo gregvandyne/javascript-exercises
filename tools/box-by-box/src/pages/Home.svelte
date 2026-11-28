@@ -7,7 +7,7 @@
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
 	import { methodInfo } from '$lib/methods';
-	import { canListSets, copy, setLink } from '$lib/oomba';
+	import { assignFirst, canListSets, copy, setLink } from '$lib/oomba';
 	import { go, show } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
@@ -29,7 +29,9 @@
 		return `${kindInfo(a.kind).title} · ${tn('ui.home.problems', a.problems.length)}${way} · ${label}${perStudent ? ` · ${t('ui.home.perStudent')}` : ''}`;
 	}
 
-	let newOpen = $state(false);
+	// opened from an Assign button (?mode=assign): say what to do, with the New activity menu open
+	const assigning = assignFirst();
+	let newOpen = $state(assigning);
 	let menuFor = $state<string | null>(null);
 	let confirmFor = $state<string | null>(null);
 	let copied = $state<string | null>(null);
@@ -122,6 +124,10 @@
 		</div>
 	</header>
 
+	{#if assigning}
+		<p class="assign-first" role="status">{t('ui.assign.first')}</p>
+	{/if}
+
 	{#if list.loaded && !items.length}
 		<div class="empty">
 			<p>{t('ui.home.empty')}</p>
@@ -186,6 +192,15 @@
 		min-height: 100dvh;
 		margin: 0 auto;
 		padding: 2rem 1.25rem 1.5rem;
+	}
+	.assign-first {
+		margin: -0.75rem 0 1.25rem;
+		padding: 0.75rem 1rem;
+		border: 2px solid var(--accent, var(--box));
+		border-radius: 14px;
+		background: var(--accent-wash, var(--box-wash));
+		font-weight: 600;
+		line-height: 1.45;
 	}
 	.top {
 		display: flex;
@@ -265,7 +280,17 @@
 		min-width: 17rem;
 	}
 	@media (max-width: 40rem) {
-		/* The header wraps, so New activity sits at the left: open the menu to the right of it, within the screen. */
+		/* The header wraps, so the buttons sit at the left (New activity after My worksheets for staff): the menu opens
+		   from the left of their row, within the screen, wherever New activity is in it. */
+		.top-actions {
+			position: relative;
+			flex: 1 1 100%;
+			flex-wrap: wrap;
+			min-width: 0;
+		}
+		.menu-wrap.new-wrap {
+			position: static;
+		}
 		.new-wrap .menu {
 			right: auto;
 			left: 0;

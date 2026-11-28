@@ -295,6 +295,11 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .st{display:inline-flex;align-items:center;gap:6px;justify-content:center;min-height:28px}
 .st-none{color:var(--muted)}
 .st-score{font-weight:700;font-variant-numeric:tabular-nums}
+.st:has(.st-fixes){flex-wrap:wrap}
+.st-fixes{flex-basis:100%;font-size:.78rem;line-height:1.2;white-space:nowrap;text-align:center}
+.gb-sample{opacity:.62}
+.gb-sample th,.gb-sample td{border-style:dashed}
+.gb-sample-note{margin:var(--s2) 0 0}
 .st-helped{margin-inline-start:3px;font-size:.85em}
 .gradebook td>.small{display:block;margin-top:2px}
 
@@ -404,6 +409,8 @@ fieldset.picklist input{width:20px;height:20px;flex:none}
 .lphead{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s3) var(--s4)}
 .lphead>div:first-child{flex:1 1 280px;min-width:0}
 .lphead h2{margin:0;font-size:clamp(1.3rem,3.4vw,1.7rem);overflow-wrap:anywhere}
+.lphead .lp-sub{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.cl-main>.cl-sub{font-weight:600;overflow-wrap:anywhere}
 .lphead .lp-meta{margin:var(--s1) 0 0}
 .lphead>.row{gap:var(--s3) var(--s2)}
 @media (max-width:600px){.lphead>.row{width:100%}.lphead>.row>.btn{flex:1 1 auto}}

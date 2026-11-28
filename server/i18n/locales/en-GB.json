@@ -1265,5 +1265,15 @@
   "classes": {
     "welcome": "You're in {name}! The games your teacher gives you show up here.",
     "welcomeDesk": "You're in {name}! Tap My desk to see what your teacher hands out."
+  },
+  "play": {
+    "loading": "Loading {title}…"
+  },
+  "progress": {
+    "lesson": {
+      "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
+      "sampleName": "Sample pupil",
+      "sampleNote": "A sample: each pupil’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
+    }
   }
 }

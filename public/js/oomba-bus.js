@@ -15,3 +15,7 @@ export const chat = () => B.chat;
 export function whenChat(f) { if (B.chat) f(B.chat); else B.chatWaiters.push(f); }
 /** f(adapter) whenever the page's adapter changes. */
 export function onPage(f) { B.pageWaiters.add(f); return () => B.pageWaiters.delete(f); }
+/** The page changed something the panel shows (Studio: the version on screen): the panel redraws its header and cards. */
+const refreshers = new Set();
+export function onRefresh(f) { refreshers.add(f); return () => refreshers.delete(f); }
+export function refresh() { for (const f of refreshers) { try { f(); } catch { /* a listener's own problem */ } } }

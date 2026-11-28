@@ -806,9 +806,11 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 				const carryIn = part.carries[i];
 				const carryId = `${letter}c${i}`;
 				const lastDigit = i === tops.length - 1;
-				const placed: PlacedBox[] = (lastDigit ? reversed(value) : [value % 10])
-					.map((d, k) => ({ id: `${letter}${i + k + n}`, digit: d, row: r, col: colOf(i + k + n) }))
-					.reverse();
+				// the last product of a row with two digits is typed the same way as every other product: whole, in its
+				// column's box, and its tens digit moves on by itself (here into the box on its left, not up as a carry)
+				const two = lastDigit && value >= 10;
+				const all = (lastDigit ? reversed(value) : [value % 10]).map((d, k) => ({ id: `${letter}${i + k + n}`, digit: d, row: r, col: colOf(i + k + n) }));
+				const placed: PlacedBox[] = two ? all : all.reverse();
 				ids.push(...placed.map((x) => x.id));
 				const carried = (v: Values) => val(v, carryId, carryIn);
 				const out = lastDigit ? 0 : Math.floor(value / 10);
@@ -824,7 +826,7 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 					lit: [`m${n}`, `t${i}`, ...(carryIn > 0 ? [carryId] : []), ...placed.map((x) => x.id), ...(carryBox ? [carryBox.id] : [])],
 					view,
 					skipCount: { by: bd, times: td, carry: carryIn, row: r, onesCol: colOf(i + n) },
-					...(carryBox ? { liftCarry: { ones: placed[0].id, tens: carryBox.id } } : {})
+					...(carryBox ? { liftCarry: { ones: placed[0].id, tens: carryBox.id } } : two ? { liftCarry: { ones: placed[0].id, tens: placed[1].id } } : {})
 				});
 			});
 		rowIds.push(ids);

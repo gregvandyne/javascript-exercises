@@ -728,6 +728,8 @@ const TELLING = /^(?:the )?[\p{L}']+ (?:was|is|were|are|felt|seemed) [a-z]+\.$/i
 const PROGRESSIVE = /^(?:is|are|was|were|am|will be) [a-z]+ing$/;
 
 // ------------------------------------------------------------------------------------------------- three-section cards
+/** Labels of a writing card's weak or wrong sentences: never highlighted (the fix is). */
+const WEAK_LABEL = /^(?:weak\b|vague|redundant|wordy|unnecessary|too close|telling)/i;
 /** A writing topic's card: "Section 1, Facts. Guiding question: What is a fact? Worked passage: "S1 S2" Note." ->
  *  { sections: [{ title, question, passage: [{ label?, text, hl }], note }] }. Which sentences the card highlights is
  *  Oomba's own note (overrides.json card.sections[i].highlight: indexes of the section's sentences). */
@@ -753,6 +755,9 @@ export function parseSections(cardLines, problems, where, notes = {}) {
     const want = (hl[i] || {}).highlight;
     if (!Array.isArray(want) || !want.length || want.some(x => !passage[x])) problems.push(`${where}: section ${i + 1} needs overrides card.sections[${i}].highlight (sentences 0 to ${passage.length - 1})`);
     else for (const x of want) passage[x].hl = true;
+    // The highlight marks the sentence to learn from: never a weak or wrong one ("Vague:", "Weak hook:", "Too close:"),
+    // nor the sentences that follow it under the same label. A weak sentence is shown with its fix, and the fix is lit.
+    { let lab = ''; passage.forEach((p, j) => { if (p.label) lab = p.label; if (p.hl && WEAK_LABEL.test(lab)) problems.push(`${where}: section ${i + 1} highlights sentence ${j} ("${lab}"); highlight its fixed sentence instead`); }); }
     if (!passage.length) problems.push(`${where}: section ${i + 1} has no worked passage`);
     return { title, question, ...(body ? { body } : {}), passage, note };
   }).filter(Boolean);
@@ -1026,9 +1031,11 @@ const READERS = [
     if (!m) return null;
     const [, lead, text, list] = m;
     const given = list.split(/,? or |, /).map(s => s.trim());
-    const start = !text.split('___')[0].trim();
+    // a blank that starts the sentence (or a sentence after the first: "It rained. ___, the game went on.") takes
+    // its words with a capital
+    const start = !text.split('___')[0].trim() || /[.!?]['"\u201D]?\s+$/.test(text.split('___')[0]);
     const options = given.map(w => (start ? capFirst(w) : w));
-    const k = options.findIndex(o => o === unq(r.a).replace(/\.$/, ''));
+    const k = options.findIndex(o => o === (start ? capFirst : x => x)(unq(r.a).replace(/\.$/, '')));
     if (k < 0) { problems.push(`${at}: the answer "${r.a}" is not one of ${options.join(' / ')} as the sentence needs it`); return false; }
     if (hintLeaks(r.hint, options[k], options.filter((_, i) => i !== k))) problems.push(`${at}: the hint names the answer "${options[k]}" and not the other choices`);
     const [before, after] = text.split('___');
@@ -2243,6 +2250,241 @@ function lint(text, problems, where) {
 }
 const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && u.then.note].filter(Boolean).join(' ');
 
+// ------------------------------------------------------------------------------------------------- card examples
+// No card example may read as a model when it is wrong. A wrong sentence belongs on a card only as the "before" of a
+// fix (beforeAfter: shown muted and struck through after a cross, the fixed sentence on its own line after a check), or
+// behind a label that names it (a writing card's "Redundant:", "Weak hook:"). checkCardExamples reads every sentence a
+// card shows as right: a worked example, its more examples, the tip box items, the "after" of every fix, and a writing
+// card's passage sentences. Befores are skipped; afters are checked like any model. It fails the build on:
+//   start     a sentence that starts with a small letter (a quote that continues the card's own sentence is not one),
+//             or a later sentence of the same text that does ("It rained. however, ...")
+//   i         the word I written as a small i
+//   end       a sentence standing on its own with no end mark (a title or phrase the note goes on about is not one)
+//   date      a day of the week or a month in small letters (not may, march or august, which are everyday words too)
+//   name      a proper noun in small letters: a word the course's right answers only ever write with a capital
+//             (Sam, Denver, Thanksgiving), counted away from a sentence's start and outside titles
+//   spelling  a form that is never right: alot, could of, a made-up past (MADE_UP_PASTS), your's, their's, its'
+//   quote     an end mark outside a closing quotation mark ('.' or ',' straight after it)
+//   opener    a sentence that opens with a subordinating word and has no comma: a fragment, or the comma after the
+//             opening clause left out (a question, "When is it?", is not one)
+//   phrase    on a topic that teaches the comma after a starting phrase (most of its right answers open with a
+//             preposition and a comma): a model that opens with a preposition and has no comma
+//   series    on a topic that teaches commas in a series (most of its right answers hold "x, y, and z"): a model with
+//             "and" or "or" and no comma
+//   compound  two complete sentences joined by and, but, or or yet with no comma before it, which the FANBOYS cards
+//             teach (compoundWithoutComma: both parts need their own subject and verb; "so" is left out)
+//   quiz      a model that the topic's own quiz calls wrong: one of its wrong options, an item's sentence as written
+//             when the item fixes it, or a right answer with its capitals or commas changed
+//   note      a note that calls the example wrong (a fragment, a run-on, a splice, incomplete, spelled wrong, missing,
+//             should be, does not fit, vague, could mean, seems to say, has no walker, describes the dog, not Sam,
+//             misplaced, dangling) on an example that is not a before; a fragment in a
+//             line of dialogue is exempt ("'Where did you go?' 'To the store.'": short replies are fine in speech)
+//   label     a writing card section whose note calls a sentence weak, redundant, unnecessary, wordy, vague or too
+//             close, with no label on its passage to say which sentence that is
+// checkQuizItems reads the quiz with the same sentence rules (sentenceFaults): every right answer and accepted fix, a
+// tap question's sentence, a passage's sentences, a sentence shown with sentence-or-fragment pills, a join question's
+// two thoughts. A sentence a question shows wrong on purpose is read with the rules of its own error left out.
+const EVERYDAY_MONTHS = new Set(['may', 'march', 'august']);
+const DATE_WORDS = new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'january', 'february', 'march',
+  'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'].filter(w => !EVERYDAY_MONTHS.has(w)));
+const NEVER_RIGHT = /\b(?:alot|(?:could|should|would|must) of|your's|her's|our's|their's|its')(?=$|[^\p{L}'])/iu;
+const WRONG_NOTE = /\b(?:fragment|run-on|comma splice|fused|incomplete|spelled wrong|is wrong|wrong for|is missing|are missing|needs? (?:a|an) (?:capital|comma|period|main clause|subject|verb)|should (?:be|describe|have|start|end|go)|does not fit|is vague|could mean|seems to say|misplaced|dangling|has no \w+er|describes [^.,]*, not)\b/i;
+const WEAK_NOTE = /\b(?:is|are) (?:a )?(?:weak|redundant|unnecessary|wordy|vague|too close)\b|\bstill a copy\b|\bfails\b/i;
+/** Quiz rules whose wrong options are wrong by a rule of mechanics or grammar (not a passage's other sentences, a
+ *  register or a style choice): a card model that is one of them reads as right when it is not. */
+const MECHANICS_RULES = new Set(['comma', 'title', 'pair', 'join', 'connect', 'splice', 'shift', 'tense', 'fragment68', 'depfrag', 'misplaced',
+  'dangling', 'shared', 'possessive', 'pluralposs', 'plural', 'contraction', 'citemark', 'parallel', 'parallel-match', 'agree', 'indefinite',
+  'compound', 'gerund', 'reflexive', 'degree', 'words']);
+const OPENING_QUOTE = /(?:^|\s)['‘"“][\p{Lu}\p{Ll}]/u;
+/** A sentence's words and, for each, whether it starts a sentence (the first word, after an end mark, inside an
+ *  opening quotation mark). */
+function wordsWithStarts(text) {
+  return tokenize(text).map((w, i, all) => ({ ...w, start: i === 0 || /[.!?]['’"”]*$/.test(all[i - 1].post) || /['‘"“]/.test(w.pre) }));
+}
+/** Proper nouns: words the right answers of every topic write only with a capital, away from a sentence's start. A
+ *  title's words and the words of a name of two or more (Riverside Theater) are not counted: theater is an everyday
+ *  word, while Sam, Denver and Monday are names on their own. */
+export function properNouns(topics) {
+  const caps = new Set(), low = new Set();
+  const capital = w => !!w && /^\p{Lu}/u.test(w.t);
+  for (const tp of Object.values(topics)) {
+    if (tp.italic || (tp.choices && tp.choices.kind === 'title')) continue;
+    const rights = tp.items.filter(it => !['title', 'italics', 'longshort'].includes(it.rule))
+      .flatMap(it => [it.right, ...(it.accept || []), ...(tp.format === 'tap' ? [it.text] : [])]).filter(x => typeof x === 'string');
+    for (const r of rights) {
+      const ws = wordsWithStarts(r);
+      ws.forEach((w, i) => {
+        if (!/^\p{L}+$/u.test(w.t) || w.t === 'I') return;
+        if (/^\p{Ll}/u.test(w.t)) low.add(w.t);
+        else if (!w.start && !/['‘"“]/.test(w.pre) && !(capital(ws[i - 1]) && !ws[i - 1].start) && !capital(ws[i + 1])) caps.add(w.t.toLowerCase());
+      });
+    }
+  }
+  return new Set([...caps].filter(k => !low.has(k)));
+}
+/** A sentence as compared for the quiz check: quotation marks and apostrophes all one mark; same(): and with capitals
+ *  and commas let go. */
+const plainQuotes = s => normTyped(s).replace(/"/g, "'");
+const looseKey = s => plainQuotes(s).toLowerCase().replace(/,/g, '').replace(/\s+/g, ' ');
+const share = (items, test) => items.length > 0 && items.filter(test).length * 2 >= items.length;
+const DETERMINERS = new Set(['the', 'my', 'his', 'her', 'our', 'their', 'your', 'a', 'an']);
+/** Words that can be a sentence's verb right after its subject: the be and have forms, the helpers, the irregular
+ *  pasts, and any word ending in ed. */
+const CLAUSE_HELPERS = new Set([...HELPERS, 'could', 'would', 'should']);
+const verbish = w => !!w && (CLAUSE_HELPERS.has(norm(w.t)) || Object.values(IRREGULAR_PAST).includes(norm(w.t)) || /^\p{Ll}+ed$/u.test(w.t));
+/** Two complete sentences joined by and, but, or or yet with no comma before it ("The cat slept and the dog
+ *  played."): the joining word, or null. It counts only when both parts have their own subject and verb: the second
+ *  opens with a subject pronoun and a word, or a noun (after a, the, my, ...) and a verb; the first has a verb, or four
+ *  words or more ("Marked lanes and signs would" is one subject). So is left out ("so students can" is often "so that"),
+ *  and "both ... and", "either ... or", "whether ... or" pairs, and words inside a title in quotation marks. */
+function compoundWithoutComma(words) {
+  const low = words.map(w => norm(w.t));
+  if (low.some(w => ['both', 'either', 'neither', 'whether'].includes(w))) return null;
+  let quoted = false;
+  for (let i = 0; i < words.length - 2; i++) {
+    if (/["\u201C]/.test(words[i].pre)) quoted = true;
+    const inQuote = quoted;
+    if (/["\u201D]/.test(words[i].post)) quoted = false;
+    if (i < 2 || inQuote || !['and', 'but', 'or', 'yet'].includes(low[i]) || /[,;:]$/.test(words[i - 1].post)) continue;
+    if (!(i >= 4 || words.slice(0, i).some(verbish))) continue;
+    const a = words[i + 1], b = words[i + 2], c = words[i + 3];
+    if (SUBJECT_PRONOUNS.has(low[i + 1]) && b && /^\p{Ll}/u.test(b.t) && !/^(?:and|or)$/.test(norm(b.t))) return low[i];
+    if (DETERMINERS.has(low[i + 1]) && b && /^\p{Ll}/u.test(b.t) && verbish(c)) return low[i];
+    if (/^\p{Ll}+s$/u.test(a.t) && verbish(b)) return low[i];
+  }
+  return null;
+}
+/** The rules a sentence shown as right breaks (the list above, but the quiz ones): -> [[rule, why]]. own: it stands as
+ *  its own sentence (not a quote a note's sentence goes on about); start: its first word starts a sentence; phrase,
+ *  series: the topic teaches that comma; skip: rules a quiz sentence breaks on purpose (the error its task is about). */
+export function sentenceFaults(text, { own = true, start = true, phrase = false, series = false, proper = new Set(), skip = new Set() } = {}) {
+  const out = [], s = String(text).trim(), bare = s.replace(/^['‘"“]+/, '');
+  const bad = (rule, why) => { if (!skip.has(rule)) out.push([rule, why]); };
+  if (start && /^\p{Ll}/u.test(bare)) bad('start', 'starts with a small letter');
+  if (/(?:^|[\s'‘"“(])i(?=$|[\s.,!?;:'’"”])/.test(s)) bad('i', 'writes the word I as a small i');
+  if (own && !/[.!?]['’"”)]*$/.test(s)) bad('end', 'has no end mark');
+  const words = wordsWithStarts(s);
+  // a later sentence of the same text starts with a small letter ("It rained. however, ..."; a quote's own end mark,
+  // "Can we go?" asked Ana, does not end the sentence)
+  const late = words.find((w, i) => i > 0 && /[.!?]$/.test(words[i - 1].post) && !/\b(?:Dr|Mr|Mrs|Ms|St|p)$/.test(words[i - 1].t) && /^\p{Ll}/u.test(w.t));
+  if (late) bad('start', `starts a sentence with the small letter of "${late.t}"`);
+  for (const w of words) {
+    if (DATE_WORDS.has(w.t)) bad('date', `writes the day or month "${w.t}" with a small letter`);
+    else if (/^\p{Ll}+$/u.test(w.t) && proper.has(w.t)) bad('name', `writes the name "${w.t}" with a small letter (the quiz always capitalizes it)`);
+    if (MADE_UP_PASTS.has(norm(w.t))) bad('spelling', `uses "${w.t}", which is not a real past form`);
+  }
+  if (NEVER_RIGHT.test(s)) bad('spelling', `uses "${NEVER_RIGHT.exec(s)[0]}", which is never right`);
+  if (OPENING_QUOTE.test(s) && /\p{L}['’"”][.,]/u.test(s.replace(/\p{L}s'(?=[\s.,])/gu, 's'))) bad('quote', 'puts an end mark or comma outside the closing quotation mark');
+  if (start && own && SUBORDINATORS.includes(norm(words[0] && words[0].t)) && !s.includes(',') && !/\?['’"”]*$/.test(s)) bad('opener', 'opens with a subordinating word and has no comma: a fragment, or a missing comma');
+  if (start && own && phrase && words[0] && PREPOSITIONS.has(norm(words[0].t)) && !s.includes(',')) bad('phrase', 'opens with a starting phrase and has no comma after it');
+  if (series && /\s(?:and|or)\s/.test(s) && !s.includes(',')) bad('series', 'lists things with no commas between them');
+  const joined = compoundWithoutComma(words);
+  if (joined) bad('compound', `joins two complete sentences with "${joined}" and no comma before it (the FANBOYS cards teach the comma)`);
+  return out;
+}
+/** The quiz, read the same way: every sentence a question shows as right breaks none of the sentence rules above. That is
+ *  the right answer (the "look back" sentence), each accepted fix, the sentence of a tap question (its task is a word's
+ *  job, so the sentence around it is right), a passage's sentences, a sentence shown with sentence-or-fragment pills
+ *  when it is a sentence, and the two thoughts a join question starts from. A sentence a question shows wrong on
+ *  purpose is read with the rules of its own error left out: a capitalization fix keeps its small letters, a comma or
+ *  marks question its missing marks; a fragment the question asks about is not a sentence. A right answer or option
+ *  that is a word or a phrase ("its", "a lot of rain") is read for its words only. -> problems. */
+const SENTENCE_END = /[.!?]['’"”)]*$/;
+/** The sentence a question shows again once it is answered ("look back", and the green confirmation's "after"): the
+ *  sentence it asked about for a tap or a sentence-or-fragment question, else its right answer. */
+export const replayOf = (topic, it) => ((it.format || topic.format) === 'tap' || it.label ? it.text : it.right);
+const FAULT_ASK = /\b(?:seems to|really describes|vague|redundant|unnecessary|wordy|weak(?:er)?|too close|too (?:in)?formal)\b/i;
+/** Does the question show a faulty sentence again once it is answered? A fragment or incomplete thought it labels, a
+ *  pronoun it reads as unclear, a modifier it reads in the wrong place, or the weak, wordy, vague, too-close or
+ *  wrong-register sentence it asks the student to pick. Such a question needs its sentence fixed (overrides.json
+ *  { after }): the page shows the fix once the question is answered, never the faulty sentence alone. */
+export function replaysFault(topic, it) {
+  const f = it.format || topic.format, ask = it.ask || topic.ask || '';
+  if (it.rule === 'antecedent') return /unclear/i.test(it.options[it.answer[0]]);
+  if (it.label) return /fragment|incomplete/i.test(it.label);
+  return FAULT_ASK.test(ask) && (f === 'tap' || ['judge', 'given', 'paraphrase'].includes(it.rule)) && SENTENCE_END.test(String(replayOf(topic, it) || '').trim());
+}
+export function checkQuizItems(topic, proper) {
+  const problems = [], S = (...a) => new Set(a);
+  for (const it of topic.items) {
+    // a faulty sentence shown again has its fix, and only such a question has one; the fix is a right sentence
+    const faulty = replaysFault(topic, it);
+    if (faulty && !it.after) problems.push(`${it.id}: shows the faulty sentence "${replayOf(topic, it)}" again once answered: give it the sentence fixed (overrides.json { after })`);
+    if (!faulty && it.after) problems.push(`${it.id}: has a fixed sentence (after), but its own sentence is not faulty`);
+    if (it.after) {
+      if (normTyped(it.after) === normTyped(replayOf(topic, it))) problems.push(`${it.id}: the fixed sentence is the sentence as it was`);
+      for (const [, why] of sentenceFaults(it.after, { proper })) problems.push(`${it.id}: the fixed sentence "${it.after}" ${why}`);
+      lint(it.after, problems, `${it.id} fixed sentence`);
+    }
+    const f = it.format || topic.format, rule = it.rule || (topic.choices && topic.choices.kind);
+    if (['title', 'italics'].includes(rule)) continue;   // a title, not a sentence (checked by the title rules)
+    const read = (what, text, skip = S()) => {
+      const sk = new Set(skip);
+      if (!SENTENCE_END.test(String(text).trim())) for (const r of ['start', 'end', 'opener', 'phrase']) sk.add(r);
+      for (const [, why] of sentenceFaults(text, { proper, skip: sk })) problems.push(`${it.id}: the ${what} "${text}" ${why}`);
+    };
+    const fragment = it.label && /fragment|incomplete/i.test(it.label);
+    if (typeof it.right === 'string' && !fragment) read('right answer', it.right);
+    for (const a of it.accept || []) read('accepted fix', a);
+    if (f === 'tap') read('sentence', it.text, /fragment/.test(topic.id) ? S('opener') : S());
+    else if (f === 'capfix') read('sentence', it.text, S('start', 'i', 'date', 'name'));
+    else if (f === 'gaps' || f === 'marks') read('sentence', it.text, S('opener', 'phrase', 'series', 'quote', 'end', 'compound'));
+    else if (f === 'passage') for (const o of it.options) read('passage sentence', o, S('opener'));
+    else if (f === 'choice' && it.plain && !fragment) read('sentence', it.text);
+    if (it.prompt && SENTENCE_END.test(it.prompt.trim()) && rule !== 'depfrag') for (const x of sentencesOf(it.prompt)) read('starting sentence', x, S('opener'));
+  }
+  return problems;
+}
+/** Every card example that reads as a model and breaks a rule above. -> problems. */
+export function checkCardExamples(topic, proper) {
+  const problems = [], at = `${topic.id} card`;
+  const rights = topic.items.map(it => it.right).filter(x => typeof x === 'string');
+  const series = share(rights, r => /\p{L}, [\p{L}' ]+, (?:and|or) /u.test(r));
+  const phrase = share(rights, r => { const w = r.split(/\s+/); return PREPOSITIONS.has(norm(w[0])) && /^[^,]{3,40}, /.test(r); });
+  const wrongs = new Set(), asWritten = new Set();
+  for (const it of topic.items) {
+    const rule = it.rule || (topic.choices && topic.choices.kind);
+    if (MECHANICS_RULES.has(rule)) (it.options || []).forEach((o, i) => { if (!it.answer.includes(i) && /\s/.test(o)) wrongs.add(plainQuotes(o)); });
+    if (typeof it.right === 'string' && it.text && !it.text.includes('___') && plainQuotes(it.text) !== plainQuotes(it.right)) asWritten.add(plainQuotes(it.text));
+  }
+  /** One sentence a card shows as right. */
+  const check = (text, where, { own = true, start = true } = {}) => {
+    const s = String(text).trim();
+    const bad = why => problems.push(`${at}: ${where} "${s}" ${why}`);
+    for (const [, why] of sentenceFaults(s, { own, start, phrase, series, proper })) bad(why);
+    const words = tokenize(s);
+    const n = plainQuotes(s);
+    if (wrongs.has(n)) bad('is one of the quiz\'s wrong options');
+    else if (asWritten.has(n)) bad('is a quiz sentence as written, before its fix');
+    else if (own && start && words.length > 2 && rights.some(r => looseKey(r) === looseKey(s) && plainQuotes(r) !== n)) bad('is a quiz right answer with its capitals or commas changed');
+  };
+  /** A quote a note goes on about ("Black Beauty" is a book.) stands inside the note's sentence, not on its own. */
+  const ownOf = note => !note || /^[\p{Lu}'"“]/u.test(note.trim()) || /^(?:becomes|with|fix|fixed|the correct)/i.test(note.trim());
+  const unit = (u, where) => {
+    const continues = u.lead && !/[.!?:]$/.test(u.lead.trim());
+    if (!u.fix) {
+      check(u.text, where, { own: !continues && ownOf(u.note), start: !continues });
+      const dialogue = (u.text.match(/(?:^|\s)['‘]/g) || []).length >= 2;
+      if (WRONG_NOTE.test(`${u.note || ''} ${u.then ? u.then.note || '' : ''}`) && !(dialogue && /fragment/i.test(u.note))) problems.push(`${at}: ${where} "${u.text}" has a note that calls it wrong ("${WRONG_NOTE.exec(`${u.note || ''} ${u.then ? u.then.note || '' : ''}`)[0]}"), but no fixed sentence after it: write it as a fix ('"..." Fix it: "..."')`);
+    }
+    if (u.then) {
+      const note = String(u.note || '').trim();
+      const own = u.fix || /[.!?:]$/.test(note) || !note;
+      check(u.then.text, `${where} (${u.fix ? 'after' : 'second sentence'})`, { own: own && ownOf(u.then.note), start: own });
+    }
+  };
+  const c = topic.card;
+  if (c.example) [c.example, ...(c.example.more || [])].forEach((u, i) => unit(u, i ? 'more example' : 'worked example'));
+  for (const u of c.tips || []) unit(u, 'tip');
+  (c.sections || []).forEach((sec, i) => {
+    for (const p of sec.passage) check(p.text, `section ${i + 1} passage`);
+    // (a sentence of the note that quotes a sentence of its own, "A weak claim would be “Recess is nice,”", is about that one)
+    const about = sentencesOf(sec.note).filter(x => !/\u201C[^\u201D]*\s[^\u201D]*[,.!?]\u201D/.test(x)).join(' ');
+    if (WEAK_NOTE.test(about) && !sec.passage.some(p => p.label)) problems.push(`${at}: section ${i + 1}'s note says a sentence ${WEAK_NOTE.exec(about)[0]}, but no label on its passage says which one ("Weak hook:", "Redundant:")`);
+  });
+  return problems;
+}
+
 // ------------------------------------------------------------------------------------------------- Mistake Hunt rooms
 const ROOM_SIZE = 8, ROOM_MISTAKES = 5, ROOM_MIN = 3, ROOM_PASS = 0.8;
 /** Grades 9-12 read longer passages: a 9-12 topic's room holds 12 of its sentences. */
@@ -2306,7 +2548,7 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     const card = sectioned ? parseSections(src.cardLines, problems, where, notes) : parseCard(src.cardLines, problems, where, def.format === 'items' ? 'choice' : def.format, def.choices && def.choices.pair);
     const items = (def.format === 'items' ? readItems(src.quizLines, problems, where, def, notes)
       : src.quizLines.map(l => fmt({ ...l, text: (notes[l.text.split('.')[0]] || {}).text || l.text }, problems, where, { ...def, notes })).filter(Boolean))
-      .map(it => { const { n, ...rest } = it; return { id: `${id}-${n}`, ...rest }; });
+      .map(it => { const { n, ...rest } = it, after = (notes[String(n)] || {}).after; return { id: `${id}-${n}`, ...rest, ...(after ? { after } : {}) }; });
     const levels = Array.isArray(def.levels) && def.levels.length ? def.levels : [4, 4, 4];
     if (items.length < 12) problems.push(`${where}: ${items.length} quiz items, at least 12 needed`);
     for (const it of items) {
@@ -2326,6 +2568,8 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     topics[id] = topic;
     if (def.room) { const r = buildRoom(topic, def, problems); if (r) { rooms[id] = r; topic.room = true; } }
   }
+  const proper = properNouns(topics);
+  for (const topic of Object.values(topics)) problems.push(...checkCardExamples(topic, proper), ...checkQuizItems(topic, proper));
   for (const b of plan.bands) for (const p of b.pathways) {
     if (!plan.pathways[p]) { problems.push(`band ${b.id}: no pathway "${p}"`); continue; }
     lint(plan.pathways[p].title, problems, `pathway ${p}`);

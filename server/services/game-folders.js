@@ -163,7 +163,7 @@ export const assignmentOf = (classId, gameId, options = null) => q.get(`SELECT c
  *  -> { ok, classLesson, game } | { ok: false, code, className? } */
 /** body: the teacher's words on the game step (Homeroom's instructions; the lesson page shows them). again: the caller
  *  checked for itself that no student gets the game twice (Homeroom hands a game to one group today, another tomorrow). */
-export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '', students = [], body = '', again = false } = {}) {
+export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '', summary = '', students = [], body = '', again = false } = {}) {
   const c = S.getClass(String(classId || ''));
   if (!c || c.archived_at || !S.canManageClass(u, c)) return fail('notFound');
   const g = games.getGame(String(gameId || ''));
@@ -172,7 +172,9 @@ export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, o
   // problem or set, named after it (named); any other game once.
   if (!again && assignmentOf(c.id, g.id, options ? options : null)) return { ok: false, code: 'alreadyAssigned', className: c.name };
   const title = String(named || g.title).slice(0, 100);
-  const made = L.createLesson(u, c.school_id, { title, kind: 'game' });
+  // summary: a line under the title on the class and progress pages (an Arithmetic Lab activity's own name is the title,
+  // and "Long division, 16 problems, Guided" this line)
+  const made = L.createLesson(u, c.school_id, { title, summary: String(summary || '').slice(0, 200), kind: 'game' });
   if (!made.ok) return made;
   const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, options, ...(body ? { body } : {}) });
   if (!step.ok) { L.deleteLesson(u, made.lesson.id); return step; }

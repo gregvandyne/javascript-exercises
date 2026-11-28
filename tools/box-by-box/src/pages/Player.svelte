@@ -2,7 +2,8 @@
 	// The student player: a start screen, then each problem worked on graph paper one box at a time with the support
 	// the teacher chose, Check (one try again, then the answer), and the end screen with the score.
 	import { onMount, tick } from 'svelte';
-	import { Check, ChevronDown, ChevronUp, Eraser, Grid3x3, Lightbulb, Play, SkipForward, X } from '@lucide/svelte';
+	import { ArrowDown, Check, ChevronDown, ChevronUp, Eraser, Grid3x3, Lightbulb, Play, SkipForward, X } from '@lucide/svelte';
+	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
 	import Sheet from '$lib/Sheet.svelte';
 	import Keypad from '$lib/Keypad.svelte';
 	import FloatingKeypad, { type Rect } from '$lib/FloatingKeypad.svelte';
@@ -19,6 +20,7 @@
 		isWrong,
 		kindInfo,
 		levelInfo,
+		numbersOf,
 		problemsForRun,
 		sheetFor,
 		showAnswer,
@@ -57,6 +59,10 @@
 	const SQUARE = 56;
 	const STEP_MS = 650;
 	const kind = $derived(kindInfo(activity.kind));
+	/** Decimals: multiplication's start screen says where the point goes, with a decimal example. */
+	const introSteps = $derived(
+		activity.kind === 'multiply' && numbersOf((activity.plan as { numbers?: unknown } | undefined)?.numbers) === 'decimal' ? [...kind.steps, t('ui.multiply.stepDec')] : kind.steps
+	);
 	let runs = 0;
 	// The first run plays the activity's own problems; a practice run after that gets a new set.
 	const makeSheets = () => (fresh && runs++ > 0 ? fresh() : problemsForRun(activity)).map((p) => sheetFor(activity, p));
@@ -66,7 +72,16 @@
 	let index = $state(0);
 	let rightCount = $state(0);
 	let wrongCount = $state(0);
+	/** Steps got wrong and put right on the way, this run (they don't change the score; the teacher sees them). */
+	let fixes = $state(0);
 	let firstTry = $state(true);
+	let leaveDialog = $state<ConfirmDialog>();
+	/** Long division, typing with the page bringing down: after a subtraction, the bring-down step waiting for the
+	 *  student to press Bring down (or Enter), so they see it happen and know what's next. */
+	let downAt = $state<number | null>(null);
+	/** The box the answer's next digit goes in, just after a bring-down (it's on top, away from the work): it pulses. */
+	let upTop = $state<string | null>(null);
+	let downBtn = $state<HTMLButtonElement>();
 	let fb = $state<'right' | 'again' | 'reveal'>('right');
 	let sticky = $state(false);
 	let values = $state<Values>({});
@@ -162,7 +177,7 @@
 	const nextBox = (id: string) => typeable[typeable.indexOf(id) + 1] ?? null;
 	const prevBox = (id: string) => typeable[typeable.indexOf(id) - 1] ?? null;
 	const active = $derived(
-		!sheet || phase !== 'working' ? -1 : way === 'type' ? (current ? stepOfBox(sheet, current) : -1) : at < steps.length ? at : -1
+		!sheet || phase !== 'working' ? -1 : way === 'type' ? (downAt !== null ? downAt : current ? stepOfBox(sheet, current) : -1) : at < steps.length ? at : -1
 	);
 	/** The step a hint is for: the one being worked, or (no box chosen) the first empty box's. */
 	const hintStep = $derived.by(() => {
@@ -306,10 +321,12 @@
 			const p = sc && carryStep === si ? [m('q.skip.addCarried', { a: sc.by, b: sc.times, p: sc.by * sc.times, c: sc.carry })] : askOf(st);
 			return current && flags.markNow && isWrong(sheet, values, current) ? [m('q.notQuite'), ...p] : p;
 		}
+		if (downAt !== null) return [m('q.div.bringDownPress', { d: String(boxOf(sheet, steps[downAt].boxes[0]).digit) })];
 		if (!flags.prompt) return [];
 		if (!current || (values[current] && !nextBox(current) && allFilled(sheet, values))) return [m('q.pressCheck')];
 		const p = askOf(steps[stepOfBox(sheet, current)]);
-		return flags.markNow && isWrong(sheet, values, current) ? [m('q.notQuite'), ...p] : p;
+		if (flags.markNow && isWrong(sheet, values, current)) return [m('q.notQuite'), ...p];
+		return current === upTop ? [m('q.div.onTop'), ...p] : p;
 	});
 	const prompt = $derived(way === 'watch' ? shownPrefixed(promptLines) : tx(promptLines));
 	const sayLines = $derived(sayAll(promptLines));
@@ -454,10 +471,12 @@
 		floater = { text: tens, row: o.row, col: t.col, toRow: t.row };
 		await tick();
 		const dy = (t.row - o.row) * SQUARE;
+		// a carry goes up, small; the tens of the last product goes on into the box on its left, full size
+		const k = t.row === o.row ? 1 : 0.45;
 		const a = floaterEl?.animate(
 			still
-				? [{ opacity: 0, transform: `translateY(${dy}px) scale(0.45)` }, { opacity: 1, transform: `translateY(${dy}px) scale(0.45)` }]
-				: [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(0) scale(1)', offset: 0.2 }, { transform: `translateY(${dy}px) scale(0.45)` }],
+				? [{ opacity: 0, transform: `translateY(${dy}px) scale(${k})` }, { opacity: 1, transform: `translateY(${dy}px) scale(${k})` }]
+				: [{ transform: 'translateY(0) scale(1)', opacity: 0.55 }, { transform: 'translateY(0) scale(1)', offset: 0.2 }, { transform: `translateY(${dy}px) scale(${k})`, opacity: 1 }],
 			{ duration: hurry ? 0 : 845, easing: 'ease-in-out', fill: 'forwards' }
 		);
 		try {
@@ -510,6 +529,8 @@
 		typed = '';
 		carryStep = null;
 		current = null;
+		downAt = null;
+		upTop = null;
 		phase = 'working';
 		if (!sheet) return;
 		const grow = steps[0]?.grow;
@@ -528,6 +549,7 @@
 		index = 0;
 		rightCount = 0;
 		wrongCount = 0;
+		fixes = 0;
 		reported = false;
 		reset();
 	}
@@ -538,6 +560,8 @@
 	async function enterDigit(id: string, d: string) {
 		if (!sheet || phase !== 'working' || isAuto(id)) return;
 		const sh = sheet;
+		downAt = null;
+		if (id !== upTop) upTop = null;
 		const el = inputs[id];
 		const l = steps[stepOfBox(sh, id)]?.liftCarry;
 		if (l && l.ones === id) {
@@ -566,6 +590,7 @@
 			await busyDo(() => lift(si, tens));
 			if (flags.markNow && (isWrong(sh, values, id) || isWrong(sh, values, l.tens))) {
 				misses += 1;
+				fixes += 1;
 				inputs[id]?.select();
 				return;
 			}
@@ -576,12 +601,21 @@
 		if (!d) return;
 		if (flags.markNow && isWrong(sh, values, id)) {
 			misses += 1;
+			fixes += 1;
 			el?.select();
 			return;
 		}
 		const si = stepOfBox(sh, id);
 		const next = steps[si + 1];
 		const lastOfStep = id === steps[si].boxes.filter((b) => !isAuto(b)).at(-1);
+		if (next && next.kind === 'bringDown' && way === 'type' && isAuto(next.boxes[0]) && lastOfStep && !values[next.boxes[0]]) {
+			// the bring-down waits for the student: Bring down (or Enter) slides the digit, then on to the next box
+			downAt = si + 1;
+			current = null;
+			await tick();
+			downBtn?.focus();
+			return;
+		}
 		if (next && isAuto(next.boxes[0]) && lastOfStep) await busyDo(() => slide(si + 1));
 		if (way === 'countUp' && lastOfStep) return advance(si + 1);
 		const n = nextBox(id);
@@ -591,6 +625,24 @@
 			await tick();
 			checkBtn?.focus();
 		}
+	}
+	/** Bring down: the digit slides down, then the answer's next digit (on top) gets the focus, and pulses. */
+	async function bringDown() {
+		if (downAt === null || busy || !sheet) return;
+		const i = downAt;
+		await busyDo(() => slide(i));
+		downAt = null;
+		const after = steps[i].boxes[0];
+		const n = typeable.find((b) => stepOfBox(sheet!, b) > i && !values[b]) ?? nextBox(after);
+		if (!n) {
+			current = null;
+			await tick();
+			checkBtn?.focus();
+			return;
+		}
+		upTop = cellOf(n) && steps[stepOfBox(sheet, n)]?.kind === 'divide' ? n : null;
+		await focusBox(n);
+		if (upTop && !still) inputs[n]?.animate([{ boxShadow: '0 0 0 0 var(--box)' }, { boxShadow: '0 0 0 10px transparent' }], { duration: 700, iterations: 2, easing: 'ease-out' });
 	}
 	function onBoxInput(id: string, e: Event) {
 		const el = e.currentTarget as HTMLInputElement;
@@ -615,7 +667,8 @@
 			e.preventDefault();
 			// this Enter checks; it must not also go on to the feedback (a second Enter does)
 			enterHandled = e;
-			check();
+			if (downAt !== null) bringDown();
+			else check();
 		} else if (e.key === ' ') {
 			e.preventDefault();
 			finishAll();
@@ -695,6 +748,7 @@
 			if (Number(typed) !== skipValue(sc)) {
 				setNudge(sc.words ? m('q.skip.notIt', { x: typed }) : m('q.skip.notItMul', { x: typed, a: sc.by, b: sc.times }));
 				fails += 1;
+				fixes += 1;
 				typed = '';
 				return;
 			}
@@ -716,6 +770,7 @@
 				const which = sc.words === 'sub' ? 'sub' : sc.words === 'add' ? 'add' : 'mul';
 				setNudge(m(`q.skip.${which}${count < sc.times ? 'SoFar' : 'TooFar'}`, { x: (sc.start ?? 0) + count, b: sc.times }, count));
 				fails += 1;
+				fixes += 1;
 				return;
 			}
 			setNudge(null);
@@ -728,7 +783,10 @@
 		}
 		const cu = steps[at].countUp!;
 		const n = countNudgeMsg(cu.partial, cu.divisor, count);
-		if (n) setNudge(n);
+		if (n) {
+			setNudge(n);
+			fixes += 1;
+		}
 		else {
 			setNudge(null);
 			return advance(at + 1);
@@ -758,7 +816,7 @@
 	// --- the keypad ---
 
 	function keypad(k: string) {
-		if (!sheet || phase !== 'working' || busy) return;
+		if (!sheet || phase !== 'working' || busy || downAt !== null) return;
 		if (counting && counted) {
 			const most = counted.words ? 2 : String(counted.by * 9).length;
 			typed = k === '' ? typed.slice(0, -1) : typed.length >= most ? k : typed + k;
@@ -813,6 +871,29 @@
 		else soundWrong(feedbackEl);
 		feedbackBtn?.focus();
 	}
+	/** Give up after a Check that didn't pass: the answer is shown, as after a second try (it counts as wrong). */
+	async function giveUp() {
+		if (!sheet || phase !== 'feedback' || fb !== 'again') return;
+		fb = 'reveal';
+		sticky = false;
+		if (scored) wrongCount++;
+		before = { ...values };
+		values = correctValues(sheet);
+		await tick();
+		soundWrong(feedbackEl);
+		feedbackBtn?.focus();
+	}
+	/** Leaving in the middle of a set (Practice, Back) asks first, in the page's own dialog: the set isn't kept. */
+	async function leave(go: () => void) {
+		const begun = phase === 'feedback' || (phase === 'working' && (index > 0 || Object.values(values).some(Boolean)));
+		if (!begun || preview || !leaveDialog) return go();
+		const done = index + +settled;
+		const yes = await leaveDialog.ask(t('ui.leave.title'), tn('ui.leave.text', sheets.length, { done }), [
+			{ value: 'stay', label: t('ui.leave.stay') },
+			{ value: 'go', label: t('ui.leave.go'), danger: true }
+		]);
+		if (yes === 'go') go();
+	}
 	async function onFeedback() {
 		if (!sheet) return;
 		if (fb === 'again') {
@@ -829,7 +910,7 @@
 			phase = 'over';
 			if (!reported) {
 				reported = true;
-				finished(rightCount);
+				finished(rightCount, fixes);
 			}
 		}
 	}
@@ -842,7 +923,10 @@
 			e.preventDefault();
 			onFeedback();
 		} else if (phase === 'working') {
-			if (way === 'watch' && [' ', 'Enter', 'ArrowRight'].includes(e.key)) {
+			if (downAt !== null && e.key === 'Enter') {
+				e.preventDefault();
+				bringDown();
+			} else if (way === 'watch' && [' ', 'Enter', 'ArrowRight'].includes(e.key)) {
 				e.preventDefault();
 				watchNext();
 			} else if (way === 'countUp' && (counting || at >= steps.length)) {
@@ -905,7 +989,7 @@
 	<input
 		bind:this={inputs[id]}
 		type="text"
-		pattern="[0-9]*"
+		pattern={cell?.point ? '[0-9.,]*' : '[0-9]*'}
 		autocomplete="off"
 		maxlength="2"
 		class="digit"
@@ -984,7 +1068,7 @@
 
 <header class="bar" bind:offsetHeight={barH}>
 	{#if extra}
-		<button type="button" class="extra" onclick={extra.onclick}>{extra.label}</button>
+		<button type="button" class="extra" onclick={() => leave(extra.onclick)}>{extra.label}</button>
 	{/if}
 	<h1>{title}</h1>
 	{#if preview}<span class="chip preview">{t('ui.preview')}</span>{/if}
@@ -1010,7 +1094,7 @@
 		{#if phase === 'setup'}
 			<h2>{kind.title}</h2>
 			<ol class="steps">
-				{#each kind.steps as s (s)}<li>{s}</li>{/each}
+				{#each introSteps as s (s)}<li>{s}</li>{/each}
 			</ol>
 			<p class="level-line">
 				{#each segments('ui.player.planned', planned) as x, i (i)}{#if x.v === 'level'}<b>{levelLabel}</b>{:else if x.v === 'n'}{planned}{:else}{x.s}{/if}{/each}{#if level !== 'custom'}{t('ui.colon')}{kind.studentLevelText?.[level] ?? info?.detail}{/if}
@@ -1024,6 +1108,7 @@
 				<p class="final">
 					{#each segments('ui.player.final') as x, i (i)}{#if x.v === 'r'}<b class="good-text">{rightCount}</b>{:else if x.v === 'w'}<b class="bad-text">{wrongCount}</b>{:else}{x.s}{/if}{/each}
 				</p>
+				{#if fixes > 0}<p class="fixes">{tn('ui.player.fixes', fixes)}</p>{/if}
 			{:else}
 				<p class="final">{tn('ui.player.watched', sheets.length)}</p>
 			{/if}
@@ -1057,9 +1142,12 @@
 						{t('ui.fb.tryAgainLine')}{:else}<b>{t('ui.fb.answerIs', { x: showAnswer(sheet.answer) })}</b> {t('ui.fb.filledIn')}{/if}
 					{#if fb !== 'again' && sheet.note}<span class="note">{sheet.note}</span>{/if}
 				</p>
-				<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
-					{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < sheets.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
-				</button>
+				<span class="fb-actions">
+					{#if fb === 'again'}<button type="button" class="btn-ghost give-up" onclick={giveUp}>{t('ui.fb.giveUp')}</button>{/if}
+					<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
+						{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < sheets.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
+					</button>
+				</span>
 			</div>
 		{:else}
 			{#if hintOpen && hintShown && hints.length}
@@ -1090,6 +1178,10 @@
 						<button type="button" class="btn-primary big" disabled={busy} onpointerdown={(e) => e.preventDefault()} onclick={thatsIt}
 							><Check size={18} aria-hidden="true" /> {t('ui.thatsIt')}</button
 						>
+					{:else if downAt !== null}
+						<button type="button" class="btn-primary big bring" bind:this={downBtn} disabled={busy} onclick={bringDown}
+							><ArrowDown size={18} aria-hidden="true" /> {t('ui.bringDown')}</button
+						>
 					{:else}
 						<button type="button" class="btn-primary big" bind:this={checkBtn} disabled={!canCheck} onclick={check}
 							><Check size={18} aria-hidden="true" /> {t('ui.check')}</button
@@ -1117,6 +1209,8 @@
 		{/if}
 	</div>
 {/if}
+
+<ConfirmDialog bind:this={leaveDialog} />
 
 <style>
 	.graph {
@@ -1576,6 +1670,21 @@
 	}
 	.feedback .btn-primary {
 		padding: 0.75rem 1.2rem;
+		font-size: 1rem;
+	}
+	.fb-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-inline-start: auto;
+	}
+	.give-up {
+		color: var(--ink);
+		font-size: 0.95rem;
+	}
+	.fixes {
+		margin: -0.75rem 0 1.25rem;
+		color: var(--muted);
 		font-size: 1rem;
 	}
 	@media (max-width: 760px) {

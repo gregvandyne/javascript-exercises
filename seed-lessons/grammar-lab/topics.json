@@ -2735,13 +2735,43 @@
     "tips": [
      {
       "text": "We saw a lion a tiger and a bear.",
-      "note": "The list is a lion, a tiger, and a bear.",
-      "marks": []
+      "note": "With commas:",
+      "then": {
+       "text": "We saw a lion, a tiger, and a bear.",
+       "note": "",
+       "marks": [
+        {
+         "i": 3,
+         "role": "comma"
+        },
+        {
+         "i": 5,
+         "role": "comma"
+        }
+       ]
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "I like red blue and green.",
-      "note": "The list is red, blue, and green.",
-      "marks": []
+      "note": "With commas:",
+      "then": {
+       "text": "I like red, blue, and green.",
+       "note": "",
+       "marks": [
+        {
+         "i": 2,
+         "role": "comma"
+        },
+        {
+         "i": 3,
+         "role": "comma"
+        }
+       ]
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -2932,21 +2962,35 @@
     "tips": [
      {
       "text": "After lunch we read books.",
-      "note": "The phrase is",
+      "note": "With a comma:",
       "then": {
-       "text": "After lunch.",
-       "note": ""
+       "text": "After lunch, we read books.",
+       "note": "",
+       "marks": [
+        {
+         "i": 1,
+         "role": "comma"
+        }
+       ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      },
      {
       "text": "On Monday we go to the park.",
-      "note": "The phrase is",
+      "note": "With a comma:",
       "then": {
-       "text": "On Monday.",
-       "note": ""
+       "text": "On Monday, we go to the park.",
+       "note": "",
+       "marks": [
+        {
+         "i": 1,
+         "role": "comma"
+        }
+       ]
       },
-      "marks": []
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -4458,7 +4502,7 @@
    "items": [
     {
      "id": "coordinating-conjunctions-1",
-     "text": "The cat slept and the dog played.",
+     "text": "The cat slept, and the dog played.",
      "answer": [
       3
      ],
@@ -4466,7 +4510,7 @@
     },
     {
      "id": "coordinating-conjunctions-2",
-     "text": "We can swim or we can hike.",
+     "text": "We can swim, or we can hike.",
      "answer": [
       3
      ],
@@ -5611,20 +5655,38 @@
     "definition": "A fragment is a group of words that is not a complete sentence. It is missing a subject, a verb, or a complete thought.",
     "example": {
      "text": "Ran to the store.",
-     "note": "This is a fragment. It has a verb but no subject, so we do not know who ran.",
-     "marks": []
+     "note": "This is a fragment. It has a verb but no subject, so we do not know who ran. Fix it:",
+     "then": {
+      "text": "Sam ran to the store.",
+      "note": "",
+      "marks": []
+     },
+     "marks": [],
+     "fix": true
     },
     "how": "A sentence needs a subject and a verb and a complete thought.",
     "tips": [
      {
       "text": "The big red ball.",
-      "note": "This is a fragment. It has no verb.",
-      "marks": []
+      "note": "This is a fragment. It has no verb. Fix it:",
+      "then": {
+       "text": "The big red ball bounced.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "After the rain stopped.",
-      "note": "This is a fragment. It does not finish the thought.",
-      "marks": []
+      "note": "This is a fragment. It does not finish the thought. Fix it:",
+      "then": {
+       "text": "After the rain stopped, we played outside.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -5642,7 +5704,8 @@
      "right": "Ran to the store.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "Sam ran to the store."
     },
     {
      "id": "recognizing-fragments-2",
@@ -5672,7 +5735,8 @@
      "right": "The big red ball.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "The big red ball bounced."
     },
     {
      "id": "recognizing-fragments-4",
@@ -5687,7 +5751,8 @@
      "right": "After the rain stopped.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "After the rain stopped, we played outside."
     },
     {
      "id": "recognizing-fragments-5",
@@ -5717,7 +5782,8 @@
      "right": "Under the table.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "The cat hid under the table."
     },
     {
      "id": "recognizing-fragments-7",
@@ -5747,7 +5813,8 @@
      "right": "Because it was cold.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "We wore coats because it was cold."
     },
     {
      "id": "recognizing-fragments-9",
@@ -5777,7 +5844,8 @@
      "right": "Jumped over the fence.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "The dog jumped over the fence."
     },
     {
      "id": "recognizing-fragments-11",
@@ -5807,7 +5875,8 @@
      "right": "When the bell rang.",
      "label": "Fragment",
      "hint": "Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?",
-     "plain": true
+     "plain": true,
+     "after": "When the bell rang, we went to lunch."
     }
    ]
   },
@@ -6602,13 +6671,13 @@
      "text": "Which sentence shows that Mia is surprised?",
      "ask": "Which sentence shows that Mia is surprised?",
      "options": [
-      "Mia's eyes went wide and her mouth fell open.",
+      "Mia's eyes went wide, and her mouth fell open.",
       "Mia was surprised."
      ],
      "answer": [
       0
      ],
-     "right": "Mia's eyes went wide and her mouth fell open.",
+     "right": "Mia's eyes went wide, and her mouth fell open.",
      "hint": "Look for the sentence that shows surprise on Mia's face.",
      "whole": true
     },
@@ -11318,7 +11387,8 @@
      "right": "Libraries are great.",
      "whole": true,
      "rule": "given",
-     "hint": "A weak claim is vague and hard to support with reasons."
+     "hint": "A weak claim is vague and hard to support with reasons.",
+     "after": "Our town library should stay open later on weekends."
     },
     {
      "id": "strong-claims-12",
@@ -11452,12 +11522,12 @@
     {
      "id": "claims-evidence-reasoning-4",
      "format": "passage",
-     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class.",
+     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class.",
      "ask": "Which sentence is the claim?",
      "options": [
       "Every student should learn to cook a simple meal.",
       "Cooking teaches planning and measuring.",
-      "A school cooking club met once a week and members cooked lunch for their class."
+      "A school cooking club met once a week, and members cooked lunch for their class."
      ],
      "answer": [
       0
@@ -11469,17 +11539,17 @@
     {
      "id": "claims-evidence-reasoning-5",
      "format": "passage",
-     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class.",
+     "text": "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class.",
      "ask": "Which sentence is evidence?",
      "options": [
       "Every student should learn to cook a simple meal.",
       "Cooking teaches planning and measuring.",
-      "A school cooking club met once a week and members cooked lunch for their class."
+      "A school cooking club met once a week, and members cooked lunch for their class."
      ],
      "answer": [
       2
      ],
-     "right": "A school cooking club met once a week and members cooked lunch for their class.",
+     "right": "A school cooking club met once a week, and members cooked lunch for their class.",
      "rule": "judge",
      "hint": "Evidence is something that actually happened, a fact that supports the claim."
     },
@@ -12151,12 +12221,12 @@
        {
         "label": "Original",
         "text": "Bees carry pollen from flower to flower, which helps plants make seeds.",
-        "hl": false
+        "hl": true
        },
        {
         "label": "Too close",
         "text": "Bees carry pollen from bloom to bloom, which helps plants make seeds.",
-        "hl": true
+        "hl": false
        }
       ],
       "note": "Only one word changed, so it is still a copy."
@@ -12225,7 +12295,8 @@
      "rule": "paraphrase",
      "original": "Bees carry pollen from flower to flower, which helps plants make seeds.",
      "good": false,
-     "hint": "Changing one word is still a copy."
+     "hint": "Changing one word is still a copy.",
+     "after": "When bees move pollen between flowers, plants can produce seeds."
     },
     {
      "id": "paraphrase-plagiarism-3",
@@ -12266,7 +12337,8 @@
      "rule": "paraphrase",
      "original": "The moon has no light of its own. It shines because it reflects light from the sun.",
      "good": false,
-     "hint": "Changing one word is still a copy."
+     "hint": "Changing one word is still a copy.",
+     "after": "Moonlight is really sunlight bouncing off the moon, since the moon does not glow by itself."
     },
     {
      "id": "paraphrase-plagiarism-5",
@@ -12307,7 +12379,8 @@
      "rule": "paraphrase",
      "original": "Wolves hunt in packs to catch large animals.",
      "good": false,
-     "hint": "Changing one word is still a copy."
+     "hint": "Changing one word is still a copy.",
+     "after": "By hunting together, wolves can bring down animals that are bigger than one wolf alone."
     },
     {
      "id": "paraphrase-plagiarism-7",
@@ -12366,7 +12439,8 @@
      "rule": "paraphrase",
      "original": "Rain fills the rivers that farmers use to water their crops.",
      "good": false,
-     "hint": "Changing one word is still a copy."
+     "hint": "Changing one word is still a copy.",
+     "after": "Farmers depend on river water from rainfall to grow their crops."
     },
     {
      "id": "paraphrase-plagiarism-10",
@@ -12425,7 +12499,8 @@
      "rule": "paraphrase",
      "original": "The library stays open late during exams.",
      "good": false,
-     "hint": "Changing one word is still a copy."
+     "hint": "Changing one word is still a copy.",
+     "after": "During exam week, students can use the library into the evening."
     }
    ]
   },
@@ -12841,7 +12916,7 @@
      "id": "in-text-citations-5",
      "format": "choice",
      "text": "The first school opened in 1910 (Rivera 33).",
-     "prompt": "The first school opened in 1910 The source is Rivera, page 33.",
+     "prompt": "The first school opened in 1910. The source is Rivera, page 33.",
      "ask": "Choose the sentence with the citation written the right way.",
      "options": [
       "The first school opened in 1910 (Rivera 33).",
@@ -13084,13 +13159,13 @@
      "text": "The garden grew tomatoes. ___, it grew peppers.",
      "ask": "Which transition adds an idea?",
      "options": [
-      "however",
-      "in addition"
+      "However",
+      "In addition"
      ],
      "answer": [
       1
      ],
-     "right": "The garden grew tomatoes. in addition, it grew peppers.",
+     "right": "The garden grew tomatoes. In addition, it grew peppers.",
      "rule": "given",
      "hint": "Ask whether the peppers add to the tomatoes or contrast with them."
     },
@@ -13100,13 +13175,13 @@
      "text": "The rain was heavy. ___, the game went on.",
      "ask": "Which transition shows contrast?",
      "options": [
-      "however",
-      "therefore"
+      "However",
+      "Therefore"
      ],
      "answer": [
       0
      ],
-     "right": "The rain was heavy. however, the game went on.",
+     "right": "The rain was heavy. However, the game went on.",
      "rule": "given",
      "hint": "Ask whether the game going on fits with the heavy rain or goes against it."
     },
@@ -13116,13 +13191,13 @@
      "text": "The bus was late. ___, we missed the first class.",
      "ask": "Which transition shows cause and effect?",
      "options": [
-      "on the other hand",
-      "as a result"
+      "On the other hand",
+      "As a result"
      ],
      "answer": [
       1
      ],
-     "right": "The bus was late. as a result, we missed the first class.",
+     "right": "The bus was late. As a result, we missed the first class.",
      "rule": "given",
      "hint": "Ask whether missing class happened because of the late bus or in contrast to it."
     },
@@ -13153,13 +13228,13 @@
      "text": "The movie was long. ___, it was exciting.",
      "ask": "Which transition fits?",
      "options": [
-      "however",
-      "furthermore"
+      "However",
+      "Furthermore"
      ],
      "answer": [
       0
      ],
-     "right": "The movie was long. however, it was exciting.",
+     "right": "The movie was long. However, it was exciting.",
      "rule": "given",
      "hint": "Ask whether exciting goes along with long or goes against it."
     },
@@ -13169,13 +13244,13 @@
      "text": "The library is quiet. ___, it has many books.",
      "ask": "Which transition fits?",
      "options": [
-      "furthermore",
-      "although"
+      "Furthermore",
+      "Although"
      ],
      "answer": [
       0
      ],
-     "right": "The library is quiet. furthermore, it has many books.",
+     "right": "The library is quiet. Furthermore, it has many books.",
      "rule": "given",
      "hint": "Ask whether having many books adds to being quiet or contrasts with it."
     },
@@ -13185,13 +13260,13 @@
      "text": "She studied hard. ___, she passed the test.",
      "ask": "Which transition fits?",
      "options": [
-      "on the other hand",
-      "therefore"
+      "On the other hand",
+      "Therefore"
      ],
      "answer": [
       1
      ],
-     "right": "She studied hard. therefore, she passed the test.",
+     "right": "She studied hard. Therefore, she passed the test.",
      "rule": "given",
      "hint": "Ask whether passing happened because of studying or in contrast to it."
     },
@@ -13220,13 +13295,13 @@
      "text": "We packed our bags. ___, we left for camp.",
      "ask": "Which transition shows time order?",
      "options": [
-      "then",
-      "however"
+      "Then",
+      "However"
      ],
      "answer": [
       0
      ],
-     "right": "We packed our bags. then, we left for camp.",
+     "right": "We packed our bags. Then, we left for camp.",
      "rule": "given",
      "hint": "Ask whether leaving came after packing or went against it."
     },
@@ -13236,13 +13311,13 @@
      "text": "The soup was hot. ___, it was delicious.",
      "ask": "Which transition fits?",
      "options": [
-      "although",
-      "in addition"
+      "Although",
+      "In addition"
      ],
      "answer": [
       1
      ],
-     "right": "The soup was hot. in addition, it was delicious.",
+     "right": "The soup was hot. In addition, it was delicious.",
      "rule": "given",
      "hint": "Ask whether being delicious adds to being hot or goes against it."
     },
@@ -14385,20 +14460,28 @@
     "example": {
      "lead": "Comma splice:",
      "text": "The bell rang, the students left.",
-     "note": "Fused:",
+     "note": "Fixed:",
      "then": {
-      "text": "The bell rang the students left.",
-      "note": ""
+      "text": "The bell rang, so the students left.",
+      "note": "",
+      "marks": []
      },
      "marks": [],
      "more": [
       {
-       "lead": "Fixed:",
-       "text": "The bell rang, so the students left.",
-       "note": "",
-       "marks": []
+       "lead": "Fused:",
+       "text": "The bell rang the students left.",
+       "note": "Fixed:",
+       "then": {
+        "text": "The bell rang. The students left.",
+        "note": "",
+        "marks": []
+       },
+       "marks": [],
+       "fix": true
       }
-     ]
+     ],
+     "fix": true
     },
     "how": "Find the two complete sentences. Then separate them with a period, join them with a semicolon, or join them with a comma and a FANBOYS word.",
     "tips": [
@@ -18630,7 +18713,7 @@
     {
      "id": "choosing-fanboys-12",
      "format": "choice",
-     "text": "The room was dark, ___ the lamp was on.",
+     "text": "The lamp was on, ___ the room was still dark.",
      "options": [
       "so",
       "but"
@@ -18638,10 +18721,10 @@
      "answer": [
       1
      ],
-     "right": "The room was dark, but the lamp was on.",
+     "right": "The lamp was on, but the room was still dark.",
      "rule": "given",
      "cycle": true,
-     "hint": "Ask whether the lamp being on is a result of the dark room or a contrast with it."
+     "hint": "Ask whether the room staying dark is a result of the lamp being on or a contrast with it."
     }
    ]
   },
@@ -18973,14 +19056,20 @@
     "how": "First check the link. Does the conjunction match the link? Then check the punctuation. Two complete sentences need a comma before the conjunction.",
     "tips": [
      {
-      "text": "We were hungry, so we ate lunch.",
-      "note": "So fits the result, and the comma is there.",
+      "text": "We were tired, but we kept playing.",
+      "note": "But fits the contrast, and the comma is there.",
       "marks": []
      },
      {
       "text": "We were hungry, but we ate lunch.",
-      "note": "But does not fit, because eating lunch does not contrast with being hungry.",
-      "marks": []
+      "note": "But does not fit, because eating lunch does not contrast with being hungry. Fixed:",
+      "then": {
+       "text": "We were hungry, so we ate lunch.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -22876,9 +22965,15 @@
      "marks": [],
      "more": [
       {
-       "text": "Alot of fun",
-       "note": "is spelled wrong.",
-       "marks": []
+       "text": "We had alot of fun.",
+       "note": "Alot is spelled wrong. Fixed:",
+       "then": {
+        "text": "We had a lot of fun.",
+        "note": "",
+        "marks": []
+       },
+       "marks": [],
+       "fix": true
       }
      ]
     },
@@ -28381,8 +28476,14 @@
      "more": [
       {
        "text": "When the dog barked.",
-       "note": "Incomplete. It leaves you waiting for more.",
-       "marks": []
+       "note": "Incomplete. It leaves you waiting for more. Fix it:",
+       "then": {
+        "text": "When the dog barked, the cat ran.",
+        "note": "",
+        "marks": []
+       },
+       "marks": [],
+       "fix": true
       }
      ]
     },
@@ -28395,13 +28496,25 @@
      },
      {
       "text": "After Maya finished her homework.",
-      "note": "Incomplete.",
-      "marks": []
+      "note": "Incomplete. Fix it:",
+      "then": {
+       "text": "After Maya finished her homework, she read a book.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "Because it rained.",
-      "note": "Incomplete.",
-      "marks": []
+      "note": "Incomplete. Fix it:",
+      "then": {
+       "text": "Because it rained, we stayed inside.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -28440,7 +28553,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Ask if the words make sense on their own or leave you waiting for more."
+     "hint": "Ask if the words make sense on their own or leave you waiting for more.",
+     "after": "When the dog barked, the cat ran."
     },
     {
      "id": "complete-or-incomplete-3",
@@ -28476,7 +28590,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Ask if the words make sense on their own or leave you waiting for more."
+     "hint": "Ask if the words make sense on their own or leave you waiting for more.",
+     "after": "After Maya finished her homework, she read a book."
     },
     {
      "id": "complete-or-incomplete-5",
@@ -28494,7 +28609,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Check for a subject and a verb, then ask if the idea is finished."
+     "hint": "Check for a subject and a verb, then ask if the idea is finished.",
+     "after": "Because it rained, we stayed inside."
     },
     {
      "id": "complete-or-incomplete-6",
@@ -28530,7 +28646,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Check for a subject and a verb, then ask if the idea is finished."
+     "hint": "Check for a subject and a verb, then ask if the idea is finished.",
+     "after": "While the baby slept, we read quietly."
     },
     {
      "id": "complete-or-incomplete-8",
@@ -28566,7 +28683,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Check for a subject and a verb, then ask if the idea is finished."
+     "hint": "Check for a subject and a verb, then ask if the idea is finished.",
+     "after": "If you finish early, you can read a book."
     },
     {
      "id": "complete-or-incomplete-10",
@@ -28602,7 +28720,8 @@
      "plain": true,
      "ask": "Is this thought complete or incomplete?",
      "rule": "thought",
-     "hint": "Check for a subject and a verb, then ask if the idea is finished."
+     "hint": "Check for a subject and a verb, then ask if the idea is finished.",
+     "after": "Before the game started, the team warmed up."
     },
     {
      "id": "complete-or-incomplete-12",
@@ -28649,8 +28768,14 @@
     "tips": [
      {
       "text": "When the bell rings.",
-      "note": "Dependent. It needs a main clause.",
-      "marks": []
+      "note": "Dependent. It needs a main clause. Fix it:",
+      "then": {
+       "text": "When the bell rings, we go to lunch.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The bell rings.",
@@ -28882,19 +29007,25 @@
       "body": "A conclusion should not bring in new evidence, start a new argument, or repeat the essay word for word.",
       "passage": [
        {
+        "label": "Weak conclusion",
         "text": "Art classes are good.",
-        "hl": true
+        "hl": false
        },
        {
         "text": "Art classes are good.",
-        "hl": true
+        "hl": false
        },
        {
         "text": "Art classes are good.",
+        "hl": false
+       },
+       {
+        "label": "Strong conclusion",
+        "text": "Art classes help students think in new ways, so every school should keep them.",
         "hl": true
        }
       ],
-      "note": "This repeats the same words and adds nothing new, so it fails both jobs."
+      "note": "The weak one repeats the same words and adds nothing new, so it fails both jobs."
      }
     ]
    },
@@ -29000,7 +29131,8 @@
      "right": "Art classes are good. Art classes are good. Art classes are good.",
      "whole": true,
      "rule": "given",
-     "hint": "Check each choice against the two jobs: restating the claim in fresh words and leaving a final thought."
+     "hint": "Check each choice against the two jobs: restating the claim in fresh words and leaving a final thought.",
+     "after": "Art classes belong in every school, and protecting them now will help the next generation."
     },
     {
      "id": "conclusion-jobs-7",
@@ -29904,7 +30036,8 @@
      "right": "That worry is silly.",
      "whole": true,
      "rule": "given",
-     "hint": "Ask which response takes the other side seriously and which one brushes it off."
+     "hint": "Ask which response takes the other side seriously and which one brushes it off.",
+     "after": "The worry is real, and here is how to handle it."
     },
     {
      "id": "counterargument-11",
@@ -31695,7 +31828,8 @@
      "right": "Hey, what's up?",
      "whole": true,
      "rule": "given",
-     "hint": "Informal language does not fit a letter to the principal."
+     "hint": "Informal language does not fit a letter to the principal.",
+     "after": "May I please speak with you?"
     },
     {
      "id": "formal-informal-2",
@@ -31712,7 +31846,8 @@
      "right": "I humbly request your esteemed presence at the park.",
      "whole": true,
      "rule": "given",
-     "hint": "Formal language does not fit a note to a friend."
+     "hint": "Formal language does not fit a note to a friend.",
+     "after": "Want to meet at the park?"
     },
     {
      "id": "formal-informal-3",
@@ -31763,7 +31898,8 @@
      "right": "The book was awesome!",
      "whole": true,
      "rule": "given",
-     "hint": "A book report needs more formal language."
+     "hint": "A book report needs more formal language.",
+     "after": "The book tells a moving story about friendship."
     },
     {
      "id": "formal-informal-6",
@@ -31780,7 +31916,8 @@
      "right": "I extend my deepest gratitude for your generous sharing of sustenance.",
      "whole": true,
      "rule": "given",
-     "hint": "A note to a classmate should be friendly and simple."
+     "hint": "A note to a classmate should be friendly and simple.",
+     "after": "Thanks for sharing your lunch!"
     },
     {
      "id": "formal-informal-7",
@@ -31814,7 +31951,8 @@
      "right": "I wish you the most splendid anniversary of your birth.",
      "whole": true,
      "rule": "given",
-     "hint": "A birthday card should be warm and simple."
+     "hint": "A birthday card should be warm and simple.",
+     "after": "Happy birthday! Hope your day is great!"
     },
     {
      "id": "formal-informal-9",
@@ -31848,7 +31986,8 @@
      "right": "Hey everyone, listen up!",
      "whole": true,
      "rule": "given",
-     "hint": "A speech to the school needs more formal language."
+     "hint": "A speech to the school needs more formal language.",
+     "after": "Good morning, everyone. Thank you for coming."
     },
     {
      "id": "formal-informal-11",
@@ -31882,7 +32021,8 @@
      "right": "The assembled students of grade six at the annual fair.",
      "whole": true,
      "rule": "given",
-     "hint": "A photo caption should be simple and friendly."
+     "hint": "A photo caption should be simple and friendly.",
+     "after": "Our class at the fair!"
     }
    ]
   },
@@ -33418,8 +33558,14 @@
      "more": [
       {
        "text": "That I borrowed.",
-       "note": "Alone, it is a fragment.",
-       "marks": []
+       "note": "Alone, it is a fragment. Fix it:",
+       "then": {
+        "text": "The book that I borrowed is due on Monday.",
+        "note": "",
+        "marks": []
+       },
+       "marks": [],
+       "fix": true
       }
      ]
     },
@@ -33432,8 +33578,14 @@
      },
      {
       "text": "Which was red.",
-      "note": "Alone, it is a fragment.",
-      "marks": []
+      "note": "Alone, it is a fragment. Fix it:",
+      "then": {
+       "text": "The ball, which was red, rolled away.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -33470,7 +33622,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "The book that I borrowed is due on Monday."
     },
     {
      "id": "that-which-especially-3",
@@ -33504,7 +33657,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "The kite, which was red, flew high."
     },
     {
      "id": "that-which-especially-5",
@@ -33538,7 +33692,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "I like soup, especially the tomato kind."
     },
     {
      "id": "that-which-especially-7",
@@ -33572,7 +33727,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "The dog that barked all night is sleeping now."
     },
     {
      "id": "that-which-especially-9",
@@ -33606,7 +33762,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "Our school, which sits by the river, has a big garden."
     },
     {
      "id": "that-which-especially-11",
@@ -33640,7 +33797,8 @@
      "label": "Fragment",
      "plain": true,
      "rule": "fragment68",
-     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone."
+     "hint": "Look for a main clause with its own subject and verb, then ask whether the words can stand alone.",
+     "after": "Leo loves books, especially the ones with trains."
     }
    ]
   },
@@ -33949,11 +34107,17 @@
       "question": "Does it just restate the topic?",
       "passage": [
        {
+        "label": "Weak hook",
         "text": "This essay is about homework.",
+        "hl": false
+       },
+       {
+        "label": "Strong hook",
+        "text": "Most students spend an hour a night on homework, but does it help them learn?",
         "hl": true
        }
       ],
-      "note": "This is a weak hook. It tells the reader the topic but gives no reason to keep reading."
+      "note": "The weak hook tells the reader the topic but gives no reason to keep reading. The strong hook asks a question the reader wants answered."
      }
     ]
    },
@@ -34004,7 +34168,8 @@
      ],
      "right": "This essay is about homework.",
      "rule": "judge",
-     "hint": "A weak hook only restates the topic and gives no reason to keep reading."
+     "hint": "A weak hook only restates the topic and gives no reason to keep reading.",
+     "after": "Most students agree that homework takes too long."
     },
     {
      "id": "hook-agreeing-4",
@@ -34052,7 +34217,8 @@
      ],
      "right": "This paper is about the library.",
      "rule": "judge",
-     "hint": "A weak hook only restates the topic and gives no reason to keep reading."
+     "hint": "A weak hook only restates the topic and gives no reason to keep reading.",
+     "after": "Most people agree that a library is a great place to read."
     },
     {
      "id": "hook-agreeing-7",
@@ -34100,7 +34266,8 @@
      ],
      "right": "This essay will discuss gardens.",
      "rule": "judge",
-     "hint": "A weak hook only restates the topic and gives no reason to keep reading."
+     "hint": "A weak hook only restates the topic and gives no reason to keep reading.",
+     "after": "Everybody enjoys fresh food from a garden."
     },
     {
      "id": "hook-agreeing-10",
@@ -34148,7 +34315,8 @@
      ],
      "right": "This report is about trains.",
      "rule": "judge",
-     "hint": "A weak hook only restates the topic and gives no reason to keep reading."
+     "hint": "A weak hook only restates the topic and gives no reason to keep reading.",
+     "after": "Most people agree that trains are a calm way to travel."
     }
    ]
   },
@@ -34173,7 +34341,13 @@
       "question": "Does one word already say what the other word says?",
       "passage": [
        {
+        "label": "Redundant",
         "text": "She returned back to school.",
+        "hl": false
+       },
+       {
+        "label": "Fixed",
+        "text": "She returned to school.",
         "hl": true
        }
       ],
@@ -34184,7 +34358,13 @@
       "question": "Does the sentence keep its meaning without this word?",
       "passage": [
        {
+        "label": "Unnecessary word",
         "text": "The very unique painting hung in the hall.",
+        "hl": false
+       },
+       {
+        "label": "Fixed",
+        "text": "The unique painting hung in the hall.",
         "hl": true
        }
       ],
@@ -34195,7 +34375,13 @@
       "question": "Can a short phrase say the same thing?",
       "passage": [
        {
+        "label": "Wordy",
         "text": "Due to the fact that it rained, the game was moved inside.",
+        "hl": false
+       },
+       {
+        "label": "Fixed",
+        "text": "Because it rained, the game was moved inside.",
         "hl": true
        }
       ],
@@ -34219,7 +34405,8 @@
      ],
      "right": "He repeated the question again.",
      "rule": "judge",
-     "hint": "Look for two words that say the same thing."
+     "hint": "Look for two words that say the same thing.",
+     "after": "He repeated the question."
     },
     {
      "id": "redundant-wordy-2",
@@ -34253,7 +34440,8 @@
      ],
      "right": "The team won the game in the end.",
      "rule": "judge",
-     "hint": "Look for a phrase that adds nothing to the meaning."
+     "hint": "Look for a phrase that adds nothing to the meaning.",
+     "after": "The team won the game."
     },
     {
      "id": "redundant-wordy-4",
@@ -34287,7 +34475,8 @@
      ],
      "right": "Due to the fact that it snowed, school closed early.",
      "rule": "judge",
-     "hint": "Look for a long phrase that one short word could replace."
+     "hint": "Look for a long phrase that one short word could replace.",
+     "after": "Because it snowed, school closed early."
     },
     {
      "id": "redundant-wordy-6",
@@ -34321,7 +34510,8 @@
      ],
      "right": "She entered into the room quietly.",
      "rule": "judge",
-     "hint": "Look for two words that say the same thing."
+     "hint": "Look for two words that say the same thing.",
+     "after": "She entered the room quietly."
     },
     {
      "id": "redundant-wordy-8",
@@ -34355,7 +34545,8 @@
      ],
      "right": "In my opinion, I think the book is great.",
      "rule": "judge",
-     "hint": "Look for words that say the same idea twice."
+     "hint": "Look for words that say the same idea twice.",
+     "after": "I think the book is great."
     },
     {
      "id": "redundant-wordy-10",
@@ -34389,7 +34580,8 @@
      ],
      "right": "The very unique painting hung in the hall.",
      "rule": "judge",
-     "hint": "Look for a word that adds nothing to the word after it."
+     "hint": "Look for a word that adds nothing to the word after it.",
+     "after": "The unique painting hung in the hall."
     },
     {
      "id": "redundant-wordy-12",
@@ -34431,7 +34623,13 @@
       "question": "Does the word give the reader a clear picture?",
       "passage": [
        {
+        "label": "Vague",
         "text": "The trip was nice.",
+        "hl": false
+       },
+       {
+        "label": "Clear",
+        "text": "The trip was sunny, and we swam every day.",
         "hl": true
        }
       ],
@@ -34442,7 +34640,13 @@
       "question": "Could the word mean many different things?",
       "passage": [
        {
+        "label": "Vague",
         "text": "She did a lot of stuff at camp.",
+        "hl": false
+       },
+       {
+        "label": "Clear",
+        "text": "She swam, hiked, and cooked at camp.",
         "hl": true
        }
       ],
@@ -34477,7 +34681,8 @@
      ],
      "right": "The game was fun.",
      "rule": "judge",
-     "hint": "Look for a word that does not give the reader a clear picture."
+     "hint": "Look for a word that does not give the reader a clear picture.",
+     "after": "The game was exciting because we won in the last minute."
     },
     {
      "id": "vague-words-2",
@@ -34511,7 +34716,8 @@
      ],
      "right": "He is a good player.",
      "rule": "judge",
-     "hint": "Look for a word that could mean many different things."
+     "hint": "Look for a word that could mean many different things.",
+     "after": "He scores in almost every game."
     },
     {
      "id": "vague-words-4",
@@ -34545,7 +34751,8 @@
      ],
      "right": "The cake was great.",
      "rule": "judge",
-     "hint": "Look for a word that does not say what was good about the cake."
+     "hint": "Look for a word that does not say what was good about the cake.",
+     "after": "The cake was sweet and soft, with chocolate frosting."
     },
     {
      "id": "vague-words-6",
@@ -34579,7 +34786,8 @@
      ],
      "right": "They did things at the museum.",
      "rule": "judge",
-     "hint": "Look for a phrase that could mean almost anything."
+     "hint": "Look for a phrase that could mean almost anything.",
+     "after": "They looked at dinosaur bones at the museum."
     },
     {
      "id": "vague-words-8",
@@ -34613,7 +34821,8 @@
      ],
      "right": "The movie was awesome.",
      "rule": "judge",
-     "hint": "Look for a word that does not say what was good about the movie."
+     "hint": "Look for a word that does not say what was good about the movie.",
+     "after": "The movie made us laugh from start to finish."
     },
     {
      "id": "vague-words-10",
@@ -34635,11 +34844,11 @@
     {
      "id": "vague-words-11",
      "format": "passage",
-     "text": "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home.",
+     "text": "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home.",
      "ask": "Which sentence has a vague word?",
      "options": [
       "It was a bad day.",
-      "The bus was late and my lunch spilled.",
+      "The bus was late, and my lunch spilled.",
       "I lost my homework on the way home."
      ],
      "answer": [
@@ -34647,22 +34856,23 @@
      ],
      "right": "It was a bad day.",
      "rule": "judge",
-     "hint": "Look for a word that does not say what went wrong."
+     "hint": "Look for a word that does not say what went wrong.",
+     "after": "The bus was late, and my lunch spilled."
     },
     {
      "id": "vague-words-12",
      "format": "passage",
-     "text": "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home.",
+     "text": "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home.",
      "ask": "Which sentence is the most exact?",
      "options": [
       "It was a bad day.",
-      "The bus was late and my lunch spilled.",
+      "The bus was late, and my lunch spilled.",
       "I lost my homework on the way home."
      ],
      "answer": [
       1
      ],
-     "right": "The bus was late and my lunch spilled.",
+     "right": "The bus was late, and my lunch spilled.",
      "rule": "judge",
      "hint": "Exact words give details about what happened."
     }
@@ -35147,20 +35357,38 @@
     "definition": "A misplaced modifier is a describing phrase that sits too far from the word it should describe, so the sentence seems to say something silly. To read it right, you have to spot which word the modifier really belongs to.",
     "example": {
      "text": "Running down the hall, the bell surprised the students.",
-     "note": "The sentence seems to say the bell was running. The modifier running down the hall really belongs to the students, not the bell.",
-     "marks": []
+     "note": "The sentence seems to say the bell was running. The modifier running down the hall really belongs to the students, not the bell. Fixed:",
+     "then": {
+      "text": "Running down the hall, the students heard the bell.",
+      "note": "",
+      "marks": []
+     },
+     "marks": [],
+     "fix": true
     },
     "how": "Find the modifier, then find the word right next to it. Ask whether that word makes sense with the modifier. If it does not, the modifier is misplaced.",
     "tips": [
      {
       "text": "Covered in mud, Sam washed the dog.",
-      "note": "Covered in mud describes the dog, not Sam.",
-      "marks": []
+      "note": "Covered in mud should describe the dog, not Sam. Fixed:",
+      "then": {
+       "text": "Sam washed the dog, which was covered in mud.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The teacher gave a book to the student with a torn cover.",
-      "note": "With a torn cover describes the book, not the student.",
-      "marks": []
+      "note": "With a torn cover should describe the book, not the student. Fixed:",
+      "then": {
+       "text": "The teacher gave the student a book with a torn cover.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -35177,7 +35405,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "Running down the hall, the students heard the bell."
     },
     {
      "id": "misplaced-meaning-2",
@@ -35191,7 +35420,8 @@
       5
      ],
      "rule": "tap",
-     "hint": "The modifier belongs to the word it really describes, not the nearest one."
+     "hint": "The modifier belongs to the word it really describes, not the nearest one.",
+     "after": "Sam washed the dog, which was covered in mud."
     },
     {
      "id": "misplaced-meaning-3",
@@ -35205,7 +35435,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "The modifier belongs to the word it really describes, not the nearest one."
+     "hint": "The modifier belongs to the word it really describes, not the nearest one.",
+     "after": "The teacher gave the student a book with a torn cover."
     },
     {
      "id": "misplaced-meaning-4",
@@ -35217,7 +35448,8 @@
      ],
      "optional": [],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "Leo watched the kite flying over the field."
     },
     {
      "id": "misplaced-meaning-5",
@@ -35231,7 +35463,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "The modifier belongs to the word it really describes, not the nearest one."
+     "hint": "The modifier belongs to the word it really describes, not the nearest one.",
+     "after": "The baker handed the boy a loaf with burnt crust."
     },
     {
      "id": "misplaced-meaning-6",
@@ -35243,7 +35476,8 @@
      ],
      "optional": [],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "Ana admired the painting hanging on the wall."
     },
     {
      "id": "misplaced-meaning-7",
@@ -35257,7 +35491,8 @@
       2
      ],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "Driving home last night, Sam saw a deer."
     },
     {
      "id": "misplaced-meaning-8",
@@ -35271,7 +35506,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "The snow fell on Mia, who was wearing a red scarf."
     },
     {
      "id": "misplaced-meaning-9",
@@ -35283,7 +35519,8 @@
      ],
      "optional": [],
      "rule": "tap",
-     "hint": "The modifier belongs to the word it really describes, not the nearest one."
+     "hint": "The modifier belongs to the word it really describes, not the nearest one.",
+     "after": "The chef served the guests soup in a silver pot."
     },
     {
      "id": "misplaced-meaning-10",
@@ -35297,7 +35534,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "The bird watched Leo as he climbed the tree."
     },
     {
      "id": "misplaced-meaning-11",
@@ -35311,7 +35549,8 @@
       0
      ],
      "rule": "tap",
-     "hint": "The modifier belongs to the word it really describes, not the nearest one."
+     "hint": "The modifier belongs to the word it really describes, not the nearest one.",
+     "after": "With a smile, the librarian shelved the books."
     },
     {
      "id": "misplaced-meaning-12",
@@ -35325,7 +35564,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning."
+     "hint": "A misplaced modifier sits next to the wrong word and changes the meaning.",
+     "after": "The rain soaked Ana while she was riding her bike."
     }
    ]
   },
@@ -35350,20 +35590,38 @@
     "definition": "A dangling modifier is a describing phrase with nothing to describe. The word it should modify is missing from the sentence, so the phrase hangs loose and the sentence seems to say something odd.",
     "example": {
      "text": "After reading the book, the movie was disappointing.",
-     "note": "After reading the book has no reader in the sentence. The sentence seems to say the movie read the book.",
-     "marks": []
+     "note": "After reading the book has no reader in the sentence. The sentence seems to say the movie read the book. Fixed:",
+     "then": {
+      "text": "After we read the book, the movie was disappointing.",
+      "note": "",
+      "marks": []
+     },
+     "marks": [],
+     "fix": true
     },
     "how": "Find the opening phrase, then look for the word it should describe. If that word is missing, the modifier is dangling.",
     "tips": [
      {
       "text": "While walking to school, the rain began.",
-      "note": "While walking to school has no walker.",
-      "marks": []
+      "note": "While walking to school has no walker. Fixed:",
+      "then": {
+       "text": "While Leo was walking to school, the rain began.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "To win the prize, hard work is needed.",
-      "note": "To win the prize has no winner.",
-      "marks": []
+      "note": "To win the prize has no winner. Fixed:",
+      "then": {
+       "text": "To win the prize, you need hard work.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -35380,7 +35638,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "After we read the book, the movie was disappointing."
     },
     {
      "id": "dangling-meaning-2",
@@ -35394,7 +35653,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "While Leo was walking to school, the rain began."
     },
     {
      "id": "dangling-meaning-3",
@@ -35408,7 +35668,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "To win the prize, you need hard work."
     },
     {
      "id": "dangling-meaning-4",
@@ -35422,7 +35683,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "Before leaving the house, Sam lost the keys."
     },
     {
      "id": "dangling-meaning-5",
@@ -35436,7 +35698,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "Having finished dinner, Mia washed the dishes."
     },
     {
      "id": "dangling-meaning-6",
@@ -35450,7 +35713,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "Excited about the trip, the students packed their bags."
     },
     {
      "id": "dangling-meaning-7",
@@ -35464,7 +35728,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "After studying all night, Ana found the test easy."
     },
     {
      "id": "dangling-meaning-8",
@@ -35478,7 +35743,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "To bake the cake, you must heat the oven."
     },
     {
      "id": "dangling-meaning-9",
@@ -35492,7 +35758,8 @@
       5
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "As Leo ran to catch the bus, the rain soaked his coat."
     },
     {
      "id": "dangling-meaning-10",
@@ -35506,7 +35773,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "While Dad was cooking dinner, the phone rang."
     },
     {
      "id": "dangling-meaning-11",
@@ -35520,7 +35788,8 @@
       3
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "Hoping for snow, the children watched the window all day."
     },
     {
      "id": "dangling-meaning-12",
@@ -35534,7 +35803,8 @@
       4
      ],
      "rule": "tap",
-     "hint": "A dangling modifier has no word in the sentence to describe."
+     "hint": "A dangling modifier has no word in the sentence to describe.",
+     "after": "After winning the game, the team lifted the trophy high."
     }
    ]
   },
@@ -44133,8 +44403,8 @@
     "how": "Specific things in space are proper nouns, so they take capital letters.",
     "tips": [
      {
-      "text": "Mars is called the red planet.",
-      "note": "Mars is capitalized because it names a specific planet.",
+      "text": "Mars is called the Red Planet.",
+      "note": "Mars and its nickname, the Red Planet, are capitalized because they name a specific planet.",
       "marks": []
      },
      {
@@ -44557,7 +44827,7 @@
    "card": {
     "definition": "In a sentence, capitalize only the parts of a hyphenated word that are proper nouns or proper adjectives, unless the word starts the sentence. In a title, capitalize both parts of a hyphenated word unless the second part is a small word like \"and\" or \"the.\"",
     "example": {
-     "text": "the well-known author spoke at school.",
+     "text": "The well-known author spoke at school.",
      "note": "In a sentence,",
      "then": {
       "text": "well-known",
@@ -46707,7 +46977,7 @@
     {
      "id": "agree-parts-whole-11",
      "format": "choice",
-     "text": "Two thirds of the pizza ___ eaten.",
+     "text": "Two-thirds of the pizza ___ eaten.",
      "options": [
       "was",
       "were"
@@ -46715,7 +46985,7 @@
      "answer": [
       0
      ],
-     "right": "Two thirds of the pizza was eaten.",
+     "right": "Two-thirds of the pizza was eaten.",
      "rule": "given",
      "cycle": true,
      "hint": "Find the noun after of and decide whether it is singular or plural."
@@ -46723,7 +46993,7 @@
     {
      "id": "agree-parts-whole-12",
      "format": "choice",
-     "text": "Two thirds of the students ___ present.",
+     "text": "Two-thirds of the students ___ present.",
      "options": [
       "was",
       "were"
@@ -46731,7 +47001,7 @@
      "answer": [
       1
      ],
-     "right": "Two thirds of the students were present.",
+     "right": "Two-thirds of the students were present.",
      "rule": "given",
      "cycle": true,
      "hint": "Find the noun after of and decide whether it is singular or plural."
@@ -46872,15 +47142,15 @@
     {
      "id": "agree-amounts-6",
      "format": "choice",
-     "text": "Ten minutes ___ quickly.",
+     "text": "Ten minutes ___ plenty of time.",
      "options": [
-      "passes",
-      "pass"
+      "is",
+      "are"
      ],
      "answer": [
       0
      ],
-     "right": "Ten minutes passes quickly.",
+     "right": "Ten minutes is plenty of time.",
      "rule": "given",
      "cycle": true,
      "hint": "A span of time is one unit, so the verb is singular."
@@ -46920,15 +47190,15 @@
     {
      "id": "agree-amounts-9",
      "format": "choice",
-     "text": "Four gallons ___ the tank.",
+     "text": "Four gallons ___ enough to fill the tank.",
      "options": [
-      "fills",
-      "fill"
+      "is",
+      "are"
      ],
      "answer": [
       0
      ],
-     "right": "Four gallons fills the tank.",
+     "right": "Four gallons is enough to fill the tank.",
      "rule": "given",
      "cycle": true,
      "hint": "A volume is one unit, so the verb is singular."
@@ -47491,24 +47761,38 @@
     "definition": "An antecedent is the noun a pronoun stands for. A pronoun is vague when the reader cannot tell which noun it stands for.",
     "example": {
      "text": "When Sam talked to Leo, he was upset.",
-     "note": "The pronoun",
+     "note": "The pronoun he is vague. It could stand for Sam or for Leo, and the reader cannot tell which one was upset. Fixed:",
      "then": {
-      "text": "he",
-      "note": "is vague. It could stand for Sam or for Leo, and the reader cannot tell which one was upset."
+      "text": "When Sam talked to Leo, Leo was upset.",
+      "note": "",
+      "marks": []
      },
-     "marks": []
+     "marks": [],
+     "fix": true
     },
     "how": "Find every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
     "tips": [
      {
       "text": "Ana gave Maya her book.",
-      "note": "Her could mean Ana's book or Maya's book.",
-      "marks": []
+      "note": "Her could mean Ana's book or Maya's book. Fixed:",
+      "then": {
+       "text": "Ana gave her own book to Maya.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      },
      {
       "text": "The dog chased the cat, and it ran away.",
-      "note": "It could mean the dog or the cat.",
-      "marks": []
+      "note": "It could mean the dog or the cat. Fixed:",
+      "then": {
+       "text": "The dog chased the cat until the cat ran away.",
+       "note": "",
+       "marks": []
+      },
+      "marks": [],
+      "fix": true
      }
     ]
    },
@@ -47534,7 +47818,8 @@
      "focus": [
       5
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "When Sam talked to Leo, Leo was upset."
     },
     {
      "id": "vague-antecedents-2",
@@ -47557,7 +47842,8 @@
      "focus": [
       3
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "Ana gave her own book to Maya."
     },
     {
      "id": "vague-antecedents-3",
@@ -47580,7 +47866,8 @@
      "focus": [
       6
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "The dog chased the cat until the cat ran away."
     },
     {
      "id": "vague-antecedents-4",
@@ -47604,7 +47891,8 @@
      "focus": [
       7
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "Leo handed the ball to Sam, and Sam scored."
     },
     {
      "id": "vague-antecedents-5",
@@ -47627,7 +47915,8 @@
      "focus": [
       7
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "When the teacher spoke to the student, the student smiled."
     },
     {
      "id": "vague-antecedents-6",
@@ -47650,7 +47939,8 @@
      "focus": [
       4
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "Maya told Ana that Ana won the prize."
     },
     {
      "id": "vague-antecedents-7",
@@ -47673,7 +47963,8 @@
      "focus": [
       7
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "The book fell on the table, and the table broke."
     },
     {
      "id": "vague-antecedents-8",
@@ -47696,7 +47987,8 @@
      "focus": [
       4
      ],
-     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague."
+     "hint": "List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.",
+     "after": "Sam asked Leo, “Can I borrow your bike?”"
     },
     {
      "id": "vague-antecedents-9",

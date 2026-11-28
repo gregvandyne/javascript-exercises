@@ -23,6 +23,7 @@ import {
 	type Settings
 } from './logic';
 import { SAVE_ERRORS, load, saveSet, store } from './oomba';
+import { t } from './i18n';
 
 export type Activity = {
 	id: string;
@@ -215,4 +216,41 @@ export async function shareActivity(a: Activity): Promise<{ id?: string; error?:
 	}
 	if (r.error === 'notYours') forgetShare(a.id);
 	return { error: SAVE_ERRORS[r.error ?? 'offline'] ?? SAVE_ERRORS.offline };
+}
+
+/** Ask a question in the page's own dialog (ConfirmDialog.ask): the button's value, or null. */
+export type Ask = (title: string, text: string, choices: { value: string; label: string; danger?: boolean }[]) => Promise<string | null>;
+/** Save, minding the students who already have it: an activity saved before (its link, its class code, a class it is
+ *  assigned to) changes for them too, mode and all, so the teacher chooses first: save it for everyone, or save the
+ *  changes as a copy (a new activity with its own link) and put this one back as students have it.
+ *  -> { id } (saved here), { copy } (the new activity, saved), { cancelled }, or { error }. */
+export async function saveMindful(a: Activity, ask: Ask | undefined): Promise<{ id?: string; copy?: Activity; cancelled?: true; error?: string }> {
+	if (!a.setId || !a.shared || !ask) return shareActivity(a);
+	const was = parseItem(JSON.parse(a.shared));
+	const choice = await ask(t('ui.resave.title'), t('ui.resave.text'), [
+		{ value: 'cancel', label: t('ui.resave.cancel') },
+		{ value: 'save', label: t('ui.resave.save') },
+		...(was ? [{ value: 'copy', label: t('ui.resave.copy') }] : [])
+	]);
+	if (choice === 'save') return shareActivity(a);
+	if (choice !== 'copy' || !was) return { cancelled: true };
+	const copy: Activity = {
+		id: newId(),
+		savedAt: Date.now(),
+		title: t('ui.resave.copyTitle', { x: titleOf(a) }).slice(0, 60),
+		kind: a.kind,
+		problems: $state.snapshot(a.problems) as Problem[],
+		settings: $state.snapshot(a.settings) as Settings,
+		plan: $state.snapshot(a.plan) as Plan,
+		...(a.printNote ? { printNote: a.printNote } : {})
+	};
+	// this one goes back to what students have
+	a.problems = was.problems.length ? was.problems : a.problems;
+	a.settings = { ...was.settings, custom: { ...was.settings.custom } };
+	a.plan = was.plan;
+	list.items = [copy, ...list.items];
+	persist();
+	const made = list.items[0];
+	const r = await shareActivity(made);
+	return r.id ? { copy: made } : { error: r.error, copy: made };
 }

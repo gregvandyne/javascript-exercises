@@ -21,7 +21,7 @@ import { classHeader, classBack, studentNotYou } from './schools.js';
 import { zoneNote } from './lessons.js';
 import { gameLiveReady } from './live.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { liveOn, teamsOn as liveTeamsOn } from '../services/classlive-sessions.js';
+import { liveOn, teamsOn as liveTeamsOn, openForClass as liveOpenFor, roleOf as liveRoleOf } from '../services/classlive-sessions.js';
 import { classRuns as liveRuns, classSupport as liveSupport } from '../services/classlive-results.js';
 import { loadClassTeams, presetsFor } from '../services/classlive-teams.js';
 import { shapesSprite, teamText } from '../views/live.js';
@@ -310,9 +310,13 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const runTeams = r => { try { const x = r.teams ? JSON.parse(r.teams) : null; return x && Array.isArray(x.list) ? x.list : []; } catch { return []; } };
   const teacher = S.teaches(req.user, c.id);
   const sup = teacher ? liveSupport(c.id) : [];
-  const livePanel = runs.length || sup.length || (teacher && liveOn()) ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('folders.liveHistory')}</h2>
-    ${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>`
-      : html`<p class="muted">${t('folders.liveHistoryNone')}</p>${liveOn() && liveCanHost(req.user) && !c.archived_at ? html`<p><a class="btn" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a></p>` : ''}`}
+  // A live game open for this class right now (hosted from the class, Live or Oomba's chat): its trace here before it
+  // ends; its results join the list once it is played and ended (chat audit 3: "No live games" while one was open).
+  const openRun = liveOn() && teacher ? liveOpenFor(c.id) : null;
+  const openLine = openRun ? html`<p class="notice" id="live-open">${ico('🟢', { size: 18 })} <span dir="auto">${t('folders.liveOpenNow', { title: openRun.title || t('live.results.title') })}</span>${liveRoleOf(openRun, req.user.id) ? html` <a href="/live/host/${encodeURIComponent(openRun.id)}">${t('folders.liveOpenHost')}</a>` : ''}</p>` : '';
+  const livePanel = runs.length || sup.length || openRun || (teacher && liveOn()) ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('folders.liveHistory')}</h2>
+    ${openLine}${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>`
+      : openRun ? '' : html`<p class="muted">${t('folders.liveHistoryNone')}</p>${liveOn() && liveCanHost(req.user) && !c.archived_at ? html`<p><a class="btn" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a></p>` : ''}`}
     ${liveTable}
     ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
@@ -410,7 +414,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
     const qz = s.kind === L.QUIZ_KIND || s.kind === L.MANIP_KIND || L.HANDIN_KINDS.includes(s.kind) ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
-      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
+      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label && x.label !== 'won' && !/^fixes:/.test(x.label) ? ` ${x.label}` : ''}</span>${/^fixes:/.test(x.label || '') ? html`<span class="st-fixes small muted" dir="auto">${P.scoreLabel(t, x.label)}</span>` : ''}${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
     const marks = x.marks && rubricOf(s).length ? html`<span class="st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${marksText(x.marks)}</span>` : '';
     // A game step ticked "I've played it" with no play recorded here (no time, no score): ☑️ "marked done", never the
@@ -529,12 +533,22 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         <div class="row"><button class="btn btn-primary btn-sm" type="submit">${sc ? `💬 ${t('progress.lesson.update')}` : `✔️ ${t('progress.lesson.send')}`}</button></div>
       </form></details></li>`; })}</ul></section>` : '';
   const lateN = lp.students.filter(lateFor).length;
+  // No students yet: a faded sample row under the empty state, so the teacher sees what each student's row will show
+  // (each step done; a game's score, and Arithmetic Lab's step fixes).
+  const sampleTable = () => {
+    if (!lp.steps.length) return '';
+    const fake = s => (s.kind === 'game' ? { status: 'done', score: 4, label: (s.game_slug || (s.game_id && games.getGame(s.game_id) || {}).slug) === 'arithmetic-lab' ? 'fixes:2' : '', seconds: 240, helped: 0, answer: '', marks: '' } : { status: 'done', score: null, label: '', seconds: 0, helped: 0, answer: '', marks: '' });
+    return html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.lesson.sampleName')}"><table class="tbl gradebook steps">
+      <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
+      <tbody><tr class="gb-sample"><th scope="row" class="gb-name"><i>${t('progress.lesson.sampleName')}</i></th>${lp.steps.map(s => html`<td><span class="st">${icon(s, fake(s))}</span></td>`)}<td class="small muted"></td></tr></tbody></table></div>
+      <p class="small muted gb-sample-note">${t('progress.lesson.sampleNote')}</p>`;
+  };
   const body = html`${classHeader(req, c, 'progress')}
-  <div class="lphead"><div><h2 dir="auto">${l.title}</h2>
+  <div class="lphead"><div><h2 dir="auto">${l.title}</h2>${l.kind === 'game' && l.summary && l.summary.length <= 200 ? html`<p class="lp-sub muted" dir="auto">${l.summary}</p>` : ''}
     <p class="muted lp-meta"><span>${t('progress.lesson.finished', { done: doneN, total: lp.students.length })}</span>${dateChips(t, f, lp.cl, { late: lateN > 0 })}${lp.cl.some ? html`<span class="chip-s">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: lp.cl.picked })}</span>` : ''}</p></div>
     <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
   ${toRead ? html`<p class="notice" id="to-review">${ico('✍️', { size: 18 })} ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
-  ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
+  ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}${sampleTable()}</section>`
     : !lp.steps.length ? html`<section class="panel"><p class="muted">${t('lessons.lesson.noSteps')}</p></section>`
     : html`<section class="panel"><div class="row gb-sort" id="needs-attention" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">${ico('⚠️', { size: 18 })} ${t('progress.lesson.attention')}</button></div><p class="small muted gb-swipe" aria-hidden="true">${t('progress.lesson.swipe')} →</p><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('gradebook.score')}</th><th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>

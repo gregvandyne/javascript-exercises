@@ -108,6 +108,7 @@ test('no page names a hidden game: /, /teachers, /teachers/live, /parents, every
     const m = RE.exec(text);
     assert.equal(m, null, `${lang}${p} names ${m && m[1]}: …${m ? text.slice(Math.max(0, m.index - 80), m.index + 40) : ''}…`);
   }
-  assert.doesNotMatch((await get('/parents')).text, /oomba-parents\.mp4/, 'the parents video (Gulp City in it) is off');
-  assert.doesNotMatch((await get('/teachers/live')).text, /oomba-demo\.mp4/, 'the live demo (a Quest Race in it) is off');
+  // Both videos were re-recorded with only games that stay on the site, so they show with the arcade off.
+  assert.match((await get('/parents')).text, /oomba-parents\.mp4/, 'the parents video shows');
+  assert.match((await get('/teachers/live')).text, /oomba-demo\.mp4/, 'the live demo shows');
 });

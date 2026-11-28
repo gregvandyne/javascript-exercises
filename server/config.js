@@ -139,6 +139,9 @@ const coursesFlag = parseFlag(process.env.COURSES, 'COURSES');
 const publicGames = parseFlag(process.env.PUBLIC_GAMES, 'PUBLIC_GAMES');
 const companion = parseFlag(process.env.COMPANION, 'COMPANION', true);
 const companionWebSearch = parseFlag(process.env.COMPANION_WEB_SEARCH, 'COMPANION_WEB_SEARCH', true);
+// The Builder in the Oomba chat (docs/decisions.md "Builder in the chat (phase 2)"; services/companion-build.js): on by
+// default; COMPANION_BUILD=0 brings back the hand-off card that opens the Builder.
+const companionBuild = parseFlag(process.env.COMPANION_BUILD, 'COMPANION_BUILD', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
 const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
@@ -271,7 +274,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, pictureBooks.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error, figures.error, homeroom.error, arcade.error, coursesFlag.error, publicGames.error, companion.error, companionWebSearch.error,
+    builderWebSearch.error, manipulatives.error, figures.error, homeroom.error, arcade.error, coursesFlag.error, publicGames.error, companion.error, companionWebSearch.error, companionBuild.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -415,6 +418,7 @@ export const config = {
   // checks uploaded pictures (defaults to BUILDER_SCREEN_MODEL, then COMPANION_MODEL). No model names in the code.
   companion: companion.on,
   companionWebSearch: companionWebSearch.on,
+  companionBuild: companionBuild.on,
   companionModel: process.env.COMPANION_MODEL || '',
   companionScreenModel: process.env.COMPANION_SCREEN_MODEL || process.env.BUILDER_SCREEN_MODEL || '',
   // Oomba's background jobs (services/oomba-jobs.js): how many run at once for one teacher and in all; the rest wait.

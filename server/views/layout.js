@@ -378,7 +378,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
   // The greeting uses the name the site already shows this teacher (their own, from the header): the first word.
   if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
-  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
+  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet', 'js.companion-build']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion-build.css?v=${VERSION}">`; }
   // Scripts a feature adds to every page for some people (onEveryPage: Homeroom's "Your class is in Homeroom" prompt).
   if (u && !u.is_guest && !chromeless) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
@@ -432,8 +432,12 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // room"): its page asks for it (companion 'live'), the bubble sits at the bottom left there, clear of the room's
 // controls and the join code, and hides in full screen (public/js/companion.js). Its sub-pages (the teacher's phone
 // view) do not. Studio (/studio/<id>) has its own "Chat with the Builder" beside the game, so no Oomba bubble there:
-// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked").
-const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play|^\/studio(\/|$)/;
+// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked"). The one exception
+// (docs/decisions.md "Builder in the chat (phase 3): Oomba in Studio"): a teacher who builds in the chat, on a game
+// they own, gets the Oomba chat docked in place of Studio's Builder column; the Studio route checks that and asks for
+// it (companion 'studio'). Everyone else, and every other studio page, keeps no bubble there.
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play/;
+const STUDIO = /^\/studio(\/|$)/;
 const OWN_CHAT = [];
 /** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
 export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
@@ -441,6 +445,10 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   const p = req.path || '';
   if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
   if (!companionFor(req.user)) return null;
+  if (STUDIO.test(p)) {
+    const st = companion === 'studio' ? /^\/studio\/([A-Za-z0-9_-]{1,64})$/.exec(p) : null;
+    return st ? { type: 'game', gameId: st[1] } : null;
+  }
   const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
   if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
   if (/^\/manip/.test(p)) return { type: 'tools' };

@@ -259,7 +259,10 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   // A game that ended won without a number (Crossword, Algebra Builder: they finish only when everything is right) keeps
   // label 'won', so a Homeroom lesson can count it (services/scores.js); a score that comes later replaces it.
   const won = s === null && label === 'won' && !(old && (old.label || old.score !== null)) ? { label: 'won' } : {};
-  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...won, ...done(old) }) });
+  // The game's own words for the same score come after the end of the run (BRB.gameOver sends the end, then the score
+  // with its label: Arithmetic Lab's "fixes:2"): they take the place of a bare 'won' or no label.
+  const words = !better && s !== null && old && s === old.score && label && label !== 'won' && (!old.label || old.label === 'won') ? { label: String(label).slice(0, 40) } : {};
+  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...words, ...h, ...won, ...done(old) }) });
 }
 /** A build step: the game the student is making (made once, then reopened). */
 export function buildGame(u, clId, stepId, gameId) {
@@ -566,4 +569,12 @@ export function manipAnswer(u, clId, stepId, i, action, work) {
   q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', st.marks, clId, stepId, u.id);
   const shown = Math.min(hints, Math.max(x.h, x.w));
   return ok({ ...(r ? { correct: r.correct, partial: r.partial, feedback: r.feedback, parts: r.parts } : {}), hint: shown, explain: !!mark || shown >= hints, ...manipOut(qs, st, { ...row, marks: st.marks }) });
+}
+
+/** A score's label as a person reads it: a game's own words, except the coded ones the site words itself ("fixes:2",
+ *  Arithmetic Lab's steps the student got wrong and put right on the way -> "2 step fixes", in the reader's language). */
+export function scoreLabel(t, label) {
+  const m = /^fixes:(\d{1,4})$/.exec(String(label || ''));
+  if (m) return t('progress.lesson.stepFixes', { count: +m[1] });
+  return String(label || '');
 }
