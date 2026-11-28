@@ -110,7 +110,7 @@ Topic count check: 10 topics are written in full below, and 2 topics are shared 
 - Definition: When you list three or more things, put a comma between them. A comma is a small mark that tells the reader to pause.
 - Worked example: "I packed a sandwich an apple and a cookie." With commas: "I packed a sandwich, an apple, and a cookie." The commas split the list into parts.
 - How it works: The commas go between the things in the list, so each thing stands on its own.
-- Tip box: "We saw a lion a tiger and a bear." The list is a lion, a tiger, and a bear. "I like red blue and green." The list is red, blue, and green.
+- Tip box: "We saw a lion a tiger and a bear." With commas: "We saw a lion, a tiger, and a bear." "I like red blue and green." With commas: "I like red, blue, and green."
 
 **Quiz**
 1. "My bag has a book a pencil and a snack." Answer: My bag has a book, a pencil, and a snack. Hint: Put a comma between each thing in a list.
@@ -132,7 +132,7 @@ Topic count check: 10 topics are written in full below, and 2 topics are shared 
 - Definition: Sometimes a sentence starts with a short phrase that tells when or where. Put a comma after that phrase.
 - Worked example: "In the morning we eat breakfast." With a comma: "In the morning, we eat breakfast." The comma comes after the starting phrase.
 - How it works: The comma gives a small pause after the phrase that tells when.
-- Tip box: "After lunch we read books." The phrase is "After lunch." "On Monday we go to the park." The phrase is "On Monday."
+- Tip box: "After lunch we read books." With a comma: "After lunch, we read books." "On Monday we go to the park." With a comma: "On Monday, we go to the park."
 
 **Quiz**
 1. "In the garden the bees buzz all day." Answer: In the garden, the bees buzz all day. Hint: Put a comma after the short phrase at the start.
@@ -496,8 +496,8 @@ Teaching card:
 - Tip box: "Sam likes apples and oranges." And joins two things. "We can walk or ride." Or joins a choice.
 
 Quiz (tap the coordinating conjunction):
-1. "The cat slept and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did with what the dog did.
-2. "We can swim or we can hike." Answer: or. Hint: Look for the small word that gives a choice.
+1. "The cat slept, and the dog played." Answer: and. Hint: Look for the small word that joins what the cat did with what the dog did.
+2. "We can swim, or we can hike." Answer: or. Hint: Look for the small word that gives a choice.
 3. "It was late, so we went home." Answer: so. Hint: Look for the small word that joins a cause with what happened next.
 4. "Leo likes soccer, but he does not like tennis." Answer: but. Hint: Look for the small word that joins two different thoughts.
 5. "The soup was hot, yet Sam ate it all." Answer: yet. Hint: Look for the small word that joins two thoughts that seem to disagree.
@@ -637,9 +637,9 @@ Quiz (tap the action verb):
 
 Teaching card:
 - Definition: A fragment is a group of words that is not a complete sentence. It is missing a subject, a verb, or a complete thought.
-- Worked example: "Ran to the store." This is a fragment. It has a verb but no subject, so we do not know who ran.
+- Worked example: "Ran to the store." This is a fragment. It has a verb but no subject, so we do not know who ran. Fix it: "Sam ran to the store."
 - Explanation: A sentence needs a subject and a verb and a complete thought.
-- Tip box: "The big red ball." This is a fragment. It has no verb. "After the rain stopped." This is a fragment. It does not finish the thought.
+- Tip box: "The big red ball." This is a fragment. It has no verb. Fix it: "The big red ball bounced." "After the rain stopped." This is a fragment. It does not finish the thought. Fix it: "After the rain stopped, we played outside."
 
 Quiz (sentence or fragment?):
 1. "Ran to the store." Answer: Fragment. Hint: Ask: Does it tell who or what? Does it tell what they do? Does it finish the thought?
@@ -766,7 +766,7 @@ Quiz (which sentence shows instead of telling?):
 8. "A) Tom was excited. B) Tom bounced on his toes and clapped." Which sentence shows that Tom is excited? Answer: B. Hint: Look for the sentence with actions that show excitement.
 9. "A) Kai was nervous. B) Kai tapped his pencil and kept looking at the clock." Which sentence shows that Kai is nervous? Answer: B. Hint: Look for the sentence with actions that show nerves.
 10. "A) Leo's stomach growled as he stared at the cookies. B) Leo was hungry." Which sentence shows that Leo is hungry? Answer: A. Hint: Look for the sentence that shows hunger with things you can see and hear.
-11. "A) Mia's eyes went wide and her mouth fell open. B) Mia was surprised." Which sentence shows that Mia is surprised? Answer: A. Hint: Look for the sentence that shows surprise on Mia's face.
+11. "A) Mia's eyes went wide, and her mouth fell open. B) Mia was surprised." Which sentence shows that Mia is surprised? Answer: A. Hint: Look for the sentence that shows surprise on Mia's face.
 12. "A) Sam was happy. B) Sam laughed and danced around the room." Which sentence shows that Sam is happy? Answer: B. Hint: Look for the sentence with actions that show happiness.
 
 ---
@@ -1271,7 +1271,7 @@ See 2.5 Forming Superlative Adjectives above.
 1. Passage: "The town library should stay open on Sundays. A survey found that many families can visit the library only on weekends. Opening on Sundays would let those families use the library when they are free." Which sentence is the claim? Answer: the first sentence. Hint: The claim is the opinion the writer wants to prove.
 2. Same passage. Which sentence is evidence for the claim? Answer: the second sentence. Hint: Evidence is a fact that backs up the claim.
 3. Passage: "Recess should be longer. Children who play outside every day concentrate better in class. A longer break gives them time to run, play, and return ready to learn." Which sentence is the reasoning? Answer: the third sentence. Hint: Reasoning explains how the evidence connects to the claim.
-4. Passage: "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week and members cooked lunch for their class." Which sentence is the claim? Answer: the first sentence. Hint: The claim states what the writer thinks should happen.
+4. Passage: "Every student should learn to cook a simple meal. Cooking teaches planning and measuring. A school cooking club met once a week, and members cooked lunch for their class." Which sentence is the claim? Answer: the first sentence. Hint: The claim states what the writer thinks should happen.
 5. Same passage. Which sentence is evidence? Answer: the third sentence. Hint: Evidence is something that actually happened, a fact that supports the claim.
 6. Passage: "The class trip to the river taught us more than any textbook. We measured the water, counted the fish, and wrote down what we saw. Doing the work ourselves made the science stick." Which sentence is the reasoning? Answer: the third sentence. Hint: Reasoning says why the evidence matters for the claim.
 7. Passage: "The school should plant a vegetable garden. At one school, students who worked in a garden ate twice as many vegetables at lunch. When students grow food, they care more about what they eat, so a garden builds healthy habits." Which sentence is the claim? Answer: the first sentence. Hint: The claim is the opinion the paragraph will prove.
@@ -1379,7 +1379,7 @@ See 2.5 Forming Superlative Adjectives above.
 2. Which sentence formats the citation correctly: "The river is the longest in the state (Lopez, 41)." or "The river is the longest in the state (Lopez 41)."? Answer: "The river is the longest in the state (Lopez 41)." Hint: Check what sits between the name and the page number.
 3. Which sentence formats the citation correctly: "Bees visit hundreds of flowers in one day (Patel 12)." or "Bees visit hundreds of flowers in one day (Patel p. 12)."? Answer: "Bees visit hundreds of flowers in one day (Patel 12)." Hint: Look closely at what comes before the page number.
 4. Which sentence formats the citation correctly: "The moon reflects sunlight (Kim 8)." or "The moon reflects sunlight (Kim, page 8)."? Answer: "The moon reflects sunlight (Kim 8)." Hint: Look closely at what goes inside the parentheses.
-5. Where does the citation go in this sentence: "The first school opened in 1910"? The source is Rivera, page 33. Answer: "The first school opened in 1910 (Rivera 33)." Hint: Find the end of the fact, then check where the period belongs.
+5. Add the citation to this sentence: "The first school opened in 1910." The source is Rivera, page 33. Answer: "The first school opened in 1910 (Rivera 33)." Hint: Find the end of the fact, then check where the period belongs.
 6. What goes inside the parentheses for a book source? Answer: The author's last name and the page number. Hint: Look back at the worked examples and see what each set of parentheses holds.
 7. Which sentence formats the citation correctly: "The trail is safe for families (Lopez 15)." or "The trail is safe for families (Lopez 15.)"? Answer: "The trail is safe for families (Lopez 15)." Hint: Look at which side of the closing parenthesis the period is on.
 8. Which sentence formats the citation correctly: "Rain fills the rivers (Patel 19) ." or "Rain fills the rivers (Patel 19)."? Answer: "Rain fills the rivers (Patel 19)." Hint: Look closely at the space before the period.
@@ -1483,7 +1483,7 @@ See 2.5 Forming Superlative Adjectives above.
 
 **Teaching card**
 - Definition: A comma splice joins two complete sentences with only a comma. A fused sentence joins two complete sentences with nothing at all. Both are errors. Fix them with a period, a semicolon, or a comma plus a FANBOYS conjunction.
-- Example: Comma splice: "The bell rang, the students left." Fused: "The bell rang the students left." Fixed: "The bell rang, so the students left."
+- Example: Comma splice: "The bell rang, the students left." Fixed: "The bell rang, so the students left." Fused: "The bell rang the students left." Fixed: "The bell rang. The students left."
 - How it works: Find the two complete sentences. Then separate them with a period, join them with a semicolon, or join them with a comma and a FANBOYS word.
 - Tip box: "It rained all day, we stayed inside." Fix: "It rained all day, so we stayed inside." "The dog barked the cat ran." Fix: "The dog barked. The cat ran."
 
@@ -1713,7 +1713,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 9. Fill in the blank: "She was tired, ___ she finished the race." Choose so or yet. Answer: yet. Hint: Ask whether finishing is what you would expect from someone who was tired.
 10. Fill in the blank: "We packed lunch, ___ we ate at the park." Choose so or but. Answer: so. Hint: Ask whether eating at the park is a result of packing lunch or a contrast with it.
 11. Fill in the blank: "Maya likes apples ___ oranges." Choose and or or. Answer: and. Hint: Ask whether Maya likes both fruits or must choose one.
-12. Fill in the blank: "The room was dark, ___ the lamp was on." Choose so or but. Answer: but. Hint: Ask whether the lamp being on is a result of the dark room or a contrast with it.
+12. Fill in the blank: "The lamp was on, ___ the room was still dark." Choose so or but. Answer: but. Hint: Ask whether the room staying dark is a result of the lamp being on or a contrast with it.
 
 ### 10.5 Matching Correlative Conjunctions
 
@@ -1743,7 +1743,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 - Definition: A FANBOYS error happens when the wrong conjunction is used, or when two complete sentences are joined with a FANBOYS word but no comma. Fix it by picking the right word and adding the comma.
 - Example: "She was hungry but she waited." The word but is right, but the comma is missing. Fixed: "She was hungry, but she waited." "It rained, so we played outside." The word so is wrong, because playing outside is not a result of rain. Fixed: "It rained, but we played outside."
 - How it works: First check the link. Does the conjunction match the link? Then check the punctuation. Two complete sentences need a comma before the conjunction.
-- Tip box: "We were hungry, so we ate lunch." So fits the result, and the comma is there. "We were hungry, but we ate lunch." But does not fit, because eating lunch does not contrast with being hungry.
+- Tip box: "We were tired, but we kept playing." But fits the contrast, and the comma is there. "We were hungry, but we ate lunch." But does not fit, because eating lunch does not contrast with being hungry. Fixed: "We were hungry, so we ate lunch."
 
 **Quiz**
 1. Fix the error: "She was hungry but she waited." Answer: "She was hungry, but she waited." Hint: Check whether each side of but could stand alone, then check the punctuation.
@@ -1927,7 +1927,7 @@ See 4.2 "A" vs. "An" above.
 
 **Teaching card**
 - Definition: A lot is two words and means a large amount. Alot is not a word at all.
-- Example: "We had a lot of fun at the fair." A lot means a large amount of fun. "Alot of fun" is spelled wrong.
+- Example: "We had a lot of fun at the fair." A lot means a large amount of fun. "We had alot of fun." Alot is spelled wrong. Fixed: "We had a lot of fun."
 - How it works: Always write a lot as two words. If you are tempted to write alot, split it into a lot.
 - Tip box: "She has a lot of books." Two words. "There was a lot of snow." Two words.
 
@@ -2531,9 +2531,9 @@ See 8.5 Identifying Conjunctive Adverbs above.
 
 **Teaching card**
 - Definition: A complete thought has a subject and a verb and makes sense on its own. An incomplete thought is missing a subject, a verb, or a full idea, so it cannot stand alone.
-- Example: "The dog barked." Complete. It has a subject and a verb and makes sense. "When the dog barked." Incomplete. It leaves you waiting for more.
+- Example: "The dog barked." Complete. It has a subject and a verb and makes sense. "When the dog barked." Incomplete. It leaves you waiting for more. Fix it: "When the dog barked, the cat ran."
 - How it works: Check for a subject and a verb, then ask if the idea is finished. If you are left waiting for more, the thought is incomplete.
-- Tip box: "Maya finished her homework." Complete. "After Maya finished her homework." Incomplete. "Because it rained." Incomplete.
+- Tip box: "Maya finished her homework." Complete. "After Maya finished her homework." Incomplete. Fix it: "After Maya finished her homework, she read a book." "Because it rained." Incomplete. Fix it: "Because it rained, we stayed inside."
 
 **Quiz**
 1. Is this thought complete or incomplete: "The dog barked."? Answer: complete. Hint: Check for a subject and a verb, then ask if the idea is finished.
@@ -2555,7 +2555,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 - Definition: A dependent clause has a subject and a verb, but it cannot stand alone. It starts with a subordinating word such as because, when, although, if, or while, and it leaves you waiting for more.
 - Example: "Because it rained, we stayed home." Because it rained is the dependent clause. It has a subject and a verb, but it cannot stand alone.
 - How it works: Find the clause, then ask if it makes sense on its own. If it starts with a subordinating word and leaves you waiting, it is dependent.
-- Tip box: "When the bell rings." Dependent. It needs a main clause. "The bell rings." Independent. It stands alone.
+- Tip box: "When the bell rings." Dependent. It needs a main clause. Fix it: "When the bell rings, we go to lunch." "The bell rings." Independent. It stands alone.
 
 **Quiz**
 1. "Because it rained, we stayed home." Which is the dependent clause? Answer: Because it rained. Hint: Look for the clause that begins with a subordinating word and cannot stand alone.
@@ -2578,7 +2578,7 @@ See 8.5 Identifying Conjunctive Adverbs above.
 **Teaching card**
 - Section 1, Job one: restate the claim. Guiding question: How do I remind the reader what I argued? A conclusion restates the claim in fresh words, so the reader remembers the main point. Worked passage: Claim: "Schools should keep art classes." Conclusion restatement: "Art classes belong in every school." The idea is the same, but the words are new.
 - Section 2, Job two: leave a final thought. Guiding question: What should the reader take away? A conclusion ends with a final thought that gives the reader something to remember, such as a call to action or a look ahead. Worked passage: "If we protect art classes now, the next generation of artists, builders, and thinkers will thank us." The final thought looks ahead and gives the reader a reason to care.
-- Section 3, What a conclusion does not do. Guiding question: What should I avoid? A conclusion should not bring in new evidence, start a new argument, or repeat the essay word for word. Worked passage: "Art classes are good. Art classes are good. Art classes are good." This repeats the same words and adds nothing new, so it fails both jobs.
+- Section 3, What a conclusion does not do. Guiding question: What should I avoid? A conclusion should not bring in new evidence, start a new argument, or repeat the essay word for word. Worked passage: Weak conclusion: "Art classes are good. Art classes are good. Art classes are good." This repeats the same words and adds nothing new, so it fails both jobs.
 
 **Quiz**
 1. Passage: Claim: "Schools should keep art classes." Which restates the claim in fresh words? Answer: "Art classes belong in every school." Hint: A conclusion restates the claim in fresh words.
@@ -3324,9 +3324,9 @@ Quiz:
 
 Teaching card:
 - Definition: Words like that, which, and especially often start a group of words that adds detail, and that group alone is a fragment. A clause starting with that or which needs a main clause to finish the thought.
-- Worked example: "The book that I borrowed was about space." That I borrowed is a clause that adds detail, and the whole sentence is complete. "That I borrowed." Alone, it is a fragment.
+- Worked example: "The book that I borrowed was about space." That I borrowed is a clause that adds detail, and the whole sentence is complete. "That I borrowed." Alone, it is a fragment. Fix it: "The book that I borrowed is due on Monday."
 - How it works: Find the clause that starts with that or which. Ask whether it can stand alone. If it cannot, it is a fragment unless it is joined to a main clause.
-- Tip box: "The kite, which was red, flew high." The whole sentence is complete. "Which was red." Alone, it is a fragment.
+- Tip box: "The kite, which was red, flew high." The whole sentence is complete. "Which was red." Alone, it is a fragment. Fix it: "The ball, which was red, rolled away."
 
 Quiz:
 1. "The book that I borrowed was about space." Answer: sentence. Hint: Look for a main clause with its own subject and verb, then ask whether the words can stand alone.
@@ -3422,7 +3422,7 @@ Quiz:
 Teaching card (three sections):
 - Section 1, What is a hook? Guiding question: Does the first sentence grab the reader? Worked passage: "Most students agree that homework takes too long." This hooks the reader by starting with something many people already believe.
 - Section 2, Why start with agreement? Guiding question: Does it make the reader nod before you argue? Worked passage: "Everyone knows that practice makes a player better. But practice only helps when the drills match the game." The first sentence gets the reader to agree, so the second sentence lands harder.
-- Section 3, What makes a hook weak? Guiding question: Does it just restate the topic? Worked passage: "This essay is about homework." This is a weak hook. It tells the reader the topic but gives no reason to keep reading.
+- Section 3, What makes a hook weak? Guiding question: Does it just restate the topic? Worked passage: Weak hook: "This essay is about homework." This is a weak hook. It tells the reader the topic but gives no reason to keep reading.
 
 Quiz:
 1. Passage: "Most students agree that homework takes too long. They finish one subject and start another, and the evening disappears." Ask: Which sentence is the hook? Answer: the first sentence. Hint: Look for the sentence that grabs the reader and makes them want to read on.
@@ -3537,9 +3537,9 @@ Quiz:
 
 Teaching card:
 - Definition: A misplaced modifier is a describing phrase that sits too far from the word it should describe, so the sentence seems to say something silly. To read it right, you have to spot which word the modifier really belongs to.
-- Worked example: "Running down the hall, the bell surprised the students." The sentence seems to say the bell was running. The modifier running down the hall really belongs to the students, not the bell.
+- Worked example: "Running down the hall, the bell surprised the students." The sentence seems to say the bell was running. The modifier running down the hall really belongs to the students, not the bell. Fixed: "Running down the hall, the students heard the bell."
 - How it works: Find the modifier, then find the word right next to it. Ask whether that word makes sense with the modifier. If it does not, the modifier is misplaced.
-- Tip box: "Covered in mud, Sam washed the dog." Covered in mud describes the dog, not Sam. "The teacher gave a book to the student with a torn cover." With a torn cover describes the book, not the student.
+- Tip box: "Covered in mud, Sam washed the dog." Covered in mud should describe the dog, not Sam. Fixed: "Sam washed the dog, which was covered in mud." "The teacher gave a book to the student with a torn cover." With a torn cover should describe the book, not the student. Fixed: "The teacher gave the student a book with a torn cover."
 
 Quiz:
 1. "Running down the hall, the bell surprised the students." Answer: The sentence seems to say the bell was running. Hint: A misplaced modifier sits next to the wrong word and changes the meaning.
@@ -3559,9 +3559,9 @@ Quiz:
 
 Teaching card:
 - Definition: A dangling modifier is a describing phrase with nothing to describe. The word it should modify is missing from the sentence, so the phrase hangs loose and the sentence seems to say something odd.
-- Worked example: "After reading the book, the movie was disappointing." After reading the book has no reader in the sentence. The sentence seems to say the movie read the book.
+- Worked example: "After reading the book, the movie was disappointing." After reading the book has no reader in the sentence. The sentence seems to say the movie read the book. Fixed: "After we read the book, the movie was disappointing."
 - How it works: Find the opening phrase, then look for the word it should describe. If that word is missing, the modifier is dangling.
-- Tip box: "While walking to school, the rain began." While walking to school has no walker. "To win the prize, hard work is needed." To win the prize has no winner.
+- Tip box: "While walking to school, the rain began." While walking to school has no walker. Fixed: "While Leo was walking to school, the rain began." "To win the prize, hard work is needed." To win the prize has no winner. Fixed: "To win the prize, you need hard work."
 
 Quiz:
 1. "After reading the book, the movie was disappointing." Answer: The modifier dangles because no one in the sentence read the book. Hint: A dangling modifier has no word in the sentence to describe.
@@ -4449,7 +4449,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 - Definition: The names of planets, stars, galaxies, and other specific things in space are capitalized. Earth is capitalized when it names our planet. The everyday words sun and moon stay lowercase.
 - Worked example: "earth orbits the sun." The planet earth needs a capital, but sun stays lowercase, so the sentence becomes "Earth orbits the sun."
 - Explanation: Specific things in space are proper nouns, so they take capital letters.
-- Tip box: "Mars is called the red planet." Mars is capitalized because it names a specific planet. "We sat in the sun all afternoon." Sun stays lowercase, like moon.
+- Tip box: "Mars is called the Red Planet." Mars and its nickname, the Red Planet, are capitalized because they name a specific planet. "We sat in the sun all afternoon." Sun stays lowercase, like moon.
 
 **Quiz**
 1. Fix the capitalization: "earth orbits the sun." Answer: Earth orbits the sun. Hint: A planet's name is capitalized, and the everyday word sun stays lowercase.
@@ -4491,7 +4491,7 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 
 **Teaching card**
 - Definition: In a sentence, capitalize only the parts of a hyphenated word that are proper nouns or proper adjectives, unless the word starts the sentence. In a title, capitalize both parts of a hyphenated word unless the second part is a small word like "and" or "the."
-- Worked example: "the well-known author spoke at school." In a sentence, "well-known" stays lowercase. In the title "The Well-Known Author," both parts are capitalized.
+- Worked example: "The well-known author spoke at school." In a sentence, "well-known" stays lowercase. In the title "The Well-Known Author," both parts are capitalized.
 - Explanation: Each part of a hyphenated word follows the same capitalization rules as a word on its own.
 - Tip box: "She is a first-rate runner." First-rate stays lowercase in a sentence. "My Brother-in-Law" is a title, so Brother and Law are capitalized.
 
@@ -4754,8 +4754,8 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 8. Choose the correct verb: "All of the chairs (was / were) taken." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
 9. Choose the correct verb: "None of the pie (remains / remain)." Answer: remains. Hint: Find the noun after of and decide whether it is singular or plural.
 10. Choose the correct verb: "Most of the pies (is / are) still in the oven." Answer: are. Hint: Find the noun after of and decide whether it is singular or plural.
-11. Choose the correct verb: "Two thirds of the pizza (was / were) eaten." Answer: was. Hint: Find the noun after of and decide whether it is singular or plural.
-12. Choose the correct verb: "Two thirds of the students (was / were) present." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
+11. Choose the correct verb: "Two-thirds of the pizza (was / were) eaten." Answer: was. Hint: Find the noun after of and decide whether it is singular or plural.
+12. Choose the correct verb: "Two-thirds of the students (was / were) present." Answer: were. Hint: Find the noun after of and decide whether it is singular or plural.
 
 ### Topic: Agreement with Math, Money, and Time
 
@@ -4771,10 +4771,10 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 3. Choose the correct verb: "Three hours (is / are) a long time to wait." Answer: is. Hint: A span of time is one unit, so the verb is singular.
 4. Choose the correct verb: "Two plus two (equals / equal) four." Answer: equals. Hint: A math result is one answer, so the verb is singular.
 5. Choose the correct verb: "Fifty cents (buy / buys) one pencil." Answer: buys. Hint: An amount of money is one unit, so the verb is singular.
-6. Choose the correct verb: "Ten minutes (passes / pass) quickly." Answer: passes. Hint: A span of time is one unit, so the verb is singular.
+6. Choose the correct verb: "Ten minutes (is / are) plenty of time." Answer: is. Hint: A span of time is one unit, so the verb is singular.
 7. Choose the correct verb: "Eight pounds (are / is) a lot to carry." Answer: is. Hint: A weight is one unit, so the verb is singular.
 8. Choose the correct verb: "Six weeks (is / are) a long break." Answer: is. Hint: A span of time is one unit, so the verb is singular.
-9. Choose the correct verb: "Four gallons (fills / fill) the tank." Answer: fills. Hint: A volume is one unit, so the verb is singular.
+9. Choose the correct verb: "Four gallons (is / are) enough to fill the tank." Answer: is. Hint: A volume is one unit, so the verb is singular.
 10. Choose the correct verb: "Twenty dollars (were / was) in the wallet." Answer: was. Hint: An amount of money is one unit, so the verb is singular.
 11. Choose the correct verb: "Nine times three (equals / equal) twenty-seven." Answer: equals. Hint: A math result is one answer, so the verb is singular.
 12. Choose the correct verb: "Two years (are / is) a long time to wait for a trip." Answer: is. Hint: A span of time is one unit, so the verb is singular.
@@ -4849,8 +4849,8 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 ### Topic: Identifying Vague Words and Phrases 1
 
 **Teaching card**
-- Section 1, What vague words are. Guiding question: Does the word give the reader a clear picture? Worked passage: "The trip was nice." The word "nice" is vague. It does not say what was good about the trip.
-- Section 2, How to spot them. Guiding question: Could the word mean many different things? Worked passage: "She did a lot of stuff at camp." The phrase "a lot of stuff" is vague. It could mean swimming, hiking, cooking, or anything else.
+- Section 1, What vague words are. Guiding question: Does the word give the reader a clear picture? Worked passage: Vague: "The trip was nice." The word "nice" is vague. It does not say what was good about the trip.
+- Section 2, How to spot them. Guiding question: Could the word mean many different things? Worked passage: Vague: "She did a lot of stuff at camp." Clear: "She swam, hiked, and cooked at camp." The phrase "a lot of stuff" is vague. It could mean swimming, hiking, cooking, or anything else.
 - Section 3, How to replace them. Guiding question: What exact word says what you mean? Worked passage: "The trip was exciting because we climbed a tall hill and cooked dinner over a fire." The exact words replace the vague word "nice" with clear details.
 
 **Quiz**
@@ -4864,15 +4864,15 @@ See the topic "Capitalizing Family Titles" under Rules of Capitalization I above
 8. Passage: "They did things at the museum. They watched a film about volcanoes. They built a model of an erupting mountain." Ask: Which sentence is the most exact? Answer: the third sentence. Hint: Exact words give a clear picture of what they did.
 9. Passage: "The hero climbed a cliff in the rain. The ending surprised everyone in the theater. The movie was awesome." Ask: Which sentence has a vague word? Answer: the third sentence. Hint: Look for a word that does not say what was good about the movie.
 10. Passage: "The hero climbed a cliff in the rain. The ending surprised everyone in the theater. The movie was awesome." Ask: Which sentence is the most exact? Answer: the first sentence. Hint: Exact words give a clear picture of what happened.
-11. Passage: "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home." Ask: Which sentence has a vague word? Answer: the first sentence. Hint: Look for a word that does not say what went wrong.
-12. Passage: "It was a bad day. The bus was late and my lunch spilled. I lost my homework on the way home." Ask: Which sentence is the most exact? Answer: the second sentence. Hint: Exact words give details about what happened.
+11. Passage: "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home." Ask: Which sentence has a vague word? Answer: the first sentence. Hint: Look for a word that does not say what went wrong.
+12. Passage: "It was a bad day. The bus was late, and my lunch spilled. I lost my homework on the way home." Ask: Which sentence is the most exact? Answer: the second sentence. Hint: Exact words give details about what happened.
 
 ### Topic: Recognizing Redundant, Unnecessary, and Wordy Phrases
 
 **Teaching card**
-- Section 1, Redundant phrases. Guiding question: Does one word already say what the other word says? Worked passage: "She returned back to school." The words "returned" and "back" say the same thing, so one of them is redundant.
-- Section 2, Unnecessary words. Guiding question: Does the sentence keep its meaning without this word? Worked passage: "The very unique painting hung in the hall." The word "very" adds nothing, so it is unnecessary.
-- Section 3, Wordy phrases. Guiding question: Can a short phrase say the same thing? Worked passage: "Due to the fact that it rained, the game was moved inside." The short word "because" says the same thing in one word.
+- Section 1, Redundant phrases. Guiding question: Does one word already say what the other word says? Worked passage: Redundant: "She returned back to school." Fixed: "She returned to school." The words "returned" and "back" say the same thing, so one of them is redundant.
+- Section 2, Unnecessary words. Guiding question: Does the sentence keep its meaning without this word? Worked passage: Unnecessary word: "The very unique painting hung in the hall." Fixed: "The unique painting hung in the hall." The word "very" adds nothing, so it is unnecessary.
+- Section 3, Wordy phrases. Guiding question: Can a short phrase say the same thing? Worked passage: Wordy: "Due to the fact that it rained, the game was moved inside." Fixed: "Because it rained, the game was moved inside." The short word "because" says the same thing in one word.
 
 **Quiz**
 1. Passage: "He repeated the question again. The teacher answered it slowly. The class listened quietly." Ask: Which sentence has a redundant phrase? Answer: the first sentence. Hint: Look for two words that say the same thing.
@@ -4925,9 +4925,9 @@ See the topic "Recognizing Redundant, Unnecessary, and Wordy Phrases" under Thes
 
 **Teaching card**
 - Definition: An antecedent is the noun a pronoun stands for. A pronoun is vague when the reader cannot tell which noun it stands for.
-- Worked example: "When Sam talked to Leo, he was upset." The pronoun "he" is vague. It could stand for Sam or for Leo, and the reader cannot tell which one was upset.
+- Worked example: "When Sam talked to Leo, he was upset." The pronoun he is vague. It could stand for Sam or for Leo, and the reader cannot tell which one was upset. Fixed: "When Sam talked to Leo, Leo was upset."
 - Explanation: Find every noun the pronoun could stand for. If more than one fits, the pronoun is vague.
-- Tip box: "Ana gave Maya her book." Her could mean Ana's book or Maya's book. "The dog chased the cat, and it ran away." It could mean the dog or the cat.
+- Tip box: "Ana gave Maya her book." Her could mean Ana's book or Maya's book. Fixed: "Ana gave her own book to Maya." "The dog chased the cat, and it ran away." It could mean the dog or the cat. Fixed: "The dog chased the cat until the cat ran away."
 
 **Quiz**
 1. Read the sentence: "When Sam talked to Leo, he was upset." Ask: What is the antecedent of he? Answer: It is unclear. It could be Sam or Leo. Hint: List every noun the pronoun could stand for. If more than one fits, the pronoun is vague.
