@@ -1564,7 +1564,8 @@
     },
     score: { submit: function (score, label) { var n = Math.floor(+score); if (!isFinite(n) || n < 0) return; send('brb:score', { score: n, label: String(label || '').slice(0, 40) }); } },
     // helped (optional, Oomba Canvas 1.3.0): the teacher showed an answer in this set (those problems are not in the score).
-    gameOver: function (r) { r = r || {}; var m = { won: !!r.won, score: isFinite(+r.score) ? Math.floor(+r.score) : null }; if (r.helped === true) m.helped = true; send('brb:gameover', m); if (r.score != null) BRB.score.submit(r.score); },
+    // r.label (optional, at most 40 characters): a few words that go with the score, as BRB.score.submit's label does.
+    gameOver: function (r) { r = r || {}; var m = { won: !!r.won, score: isFinite(+r.score) ? Math.floor(+r.score) : null }; if (r.helped === true) m.helped = true; send('brb:gameover', m); if (r.score != null) BRB.score.submit(r.score, typeof r.label === 'string' ? r.label : ''); },
     fullscreen: function () { return askFullscreen(); },
     // Start the game over from scratch (a "Try again" after the game could not start): the play page reloads it. Only
     // after a tap (the page checks), so a game can never reload itself in a loop.

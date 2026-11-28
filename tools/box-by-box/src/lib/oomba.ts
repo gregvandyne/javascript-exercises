@@ -23,7 +23,8 @@ type Brb = {
 	assign?: (query: string) => boolean;
 	gameUrl?: string | null;
 	copy?: (what: string | Blob) => Promise<boolean> | null;
-	gameOver?: (o: { won: boolean; score?: number }) => void;
+	gameOver?: (o: { won: boolean; score?: number; label?: string }) => void;
+	params?: { mode?: string };
 	aiVoiceCheck?: (lines: string[], o?: { lang?: string }) => Promise<boolean> | null;
 	speak?: (text: string, o: Record<string, unknown>) => boolean;
 	stopSpeaking?: () => void;
@@ -135,6 +136,15 @@ export const duplicateSet = (id: string) => ask(() => brb()?.duplicateQuestionSe
 // --- assigning to a class (teachers) ---
 
 export const canAssign = () => brb()?.canAssign === true && !!brb()?.assign;
+/** Opened from an Assign button before there was anything to assign (/play/arithmetic-lab?mode=assign): straight to
+ *  making an activity, then Save and assign. */
+export const assignFirst = () => {
+	try {
+		return brb()?.params?.mode === 'assign' && canAssign() && !brb()?.questionSet;
+	} catch {
+		return false;
+	}
+};
 export function assign(setId: string): boolean {
 	try {
 		return brb()?.assign?.(`chapter=${setId}&lock=1`) === true;
@@ -247,8 +257,11 @@ export function wrong(el?: Element | null) {
 	}
 }
 export const tap = () => sound('pop');
-/** The end of a run through the set: the cheer and the confetti, and the finish for a lesson step (once per run). */
-export function finished(score: number) {
+/** The end of a run through the set: the cheer and the confetti, and the finish for a lesson step (once per run).
+ *  fixes: the steps the student got wrong and put right on the way (Guided marks a wrong digit at once, Count up a
+ *  wrong count): they don't change the score, so they go with it as its label ("fixes:2"; the class's progress page
+ *  reads it as "2 step fixes"). */
+export function finished(score: number, fixes = 0) {
 	sound('win');
 	try {
 		if (!reducedMotion()) kit()?.juice?.confetti?.();
@@ -256,7 +269,7 @@ export function finished(score: number) {
 		/* fine */
 	}
 	try {
-		brb()?.gameOver?.({ won: true, score });
+		brb()?.gameOver?.({ won: true, score, ...(fixes > 0 ? { label: `fixes:${Math.min(fixes, 9999)}` } : {}) });
 	} catch {
 		/* no page */
 	}

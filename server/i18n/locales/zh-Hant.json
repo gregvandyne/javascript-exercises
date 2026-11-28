@@ -1330,7 +1330,8 @@
       "fronts": "{title}：正面",
       "backs": "{title}：背面",
       "how": "雙面列印（長邊翻頁），再沿虛線剪下。每張背面都會在它的正面後方。"
-    }
+    },
+    "loading": "正在載入 {title}…"
   },
   "friends": {
     "title": "好友",
@@ -7146,7 +7147,10 @@
       "minutes": "{count, plural, other {# 分鐘}}",
       "swipe": "左右滑動表格，看全部步驟",
       "quizScore": "{total} 題答對 {right} 題（{pct}%）",
-      "helped": "老師顯示了答案"
+      "helped": "老師顯示了答案",
+      "stepFixes": "{count, plural, other {改正了 # 個步驟}}",
+      "sampleName": "範例學生",
+      "sampleNote": "範例：學生開始後，每位學生的那一列會像這樣。算術實驗室還會顯示過程中做錯又改正的步驟數。"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",

@@ -19,6 +19,9 @@ export function importGame(htmlPath, metaPath, ownerId) {
   const fields = { title: meta.title, description: meta.description, icon: meta.icon, cover: meta.cover, category: meta.category, tags: meta.tags, orientation: meta.orientation || 'any', players_max: meta.players_max || 1 };
   if (!g) g = games.createGame(ownerId, { ...fields, slug: meta.slug, source: 'seed' });
   else games.updateMeta(g.id, fields);
+  // The team's own description is kept whole: updateMeta cuts a builder's to 600 characters, which left a longer one
+  // (Arithmetic Lab's: "...and decimal numbers for a") cut off mid-sentence on its page after an update.
+  q.run('UPDATE games SET description=? WHERE id=?', String(meta.description || '').slice(0, 2000), g.id);
   q.run('UPDATE games SET l10n=? WHERE id=?', meta.l10n && typeof meta.l10n === 'object' ? JSON.stringify(meta.l10n) : '', g.id);
   const cur = games.getVersion(g.current_version_id);
   let v = cur;

@@ -1331,7 +1331,8 @@
       "fronts": "{title}: fronts",
       "backs": "{title}: backs",
       "how": "Print on both sides (flip on the long edge), then cut along the dashed lines. Each back lands behind its front."
-    }
+    },
+    "loading": "Loading {title}…"
   },
   "friends": {
     "title": "Friends",
@@ -8278,7 +8279,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Swipe the table sideways to see every step",
       "quizScore": "{right} of {total} right ({pct}%)",
-      "helped": "Teacher showed an answer"
+      "helped": "Teacher showed an answer",
+      "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
+      "sampleName": "Sample student",
+      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
     },
     "student": {
       "doneOf": "{done} of {total} done",

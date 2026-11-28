@@ -1331,7 +1331,8 @@
       "fronts": "{title}: Vorderseiten",
       "backs": "{title}: Rückseiten",
       "how": "Beidseitig drucken (an der langen Kante wenden), dann an den gestrichelten Linien ausschneiden. Jede Rückseite liegt hinter ihrer Vorderseite."
-    }
+    },
+    "loading": "{title} wird geladen…"
   },
   "friends": {
     "title": "Freunde",
@@ -7147,7 +7148,10 @@
       "minutes": "{count, plural, one {# Min.} other {# Min.}}",
       "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen",
       "quizScore": "{right} von {total} richtig ({pct} %)",
-      "helped": "Lehrkraft hat eine Antwort gezeigt"
+      "helped": "Lehrkraft hat eine Antwort gezeigt",
+      "stepFixes": "{count, plural, one {# Schritt verbessert} other {# Schritte verbessert}}",
+      "sampleName": "Beispielschüler",
+      "sampleNote": "Ein Beispiel: So sieht die Zeile jedes Schülers aus, sobald er anfängt. Das Rechenlabor zeigt dazu, wie viele Schritte falsch waren und unterwegs verbessert wurden."
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",

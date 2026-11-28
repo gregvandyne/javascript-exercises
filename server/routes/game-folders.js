@@ -32,6 +32,8 @@ function setAssign(t, g, raw) {
   if (g.slug === TY.SLUG && !gameSets.SET_ID.test(parseParams(opts).chapter || '')) return null;
   const what = gameSets.describe(g.id, parseParams(opts), g.slug);
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
+  // A set with the teacher's own name (Arithmetic Lab): the lesson takes that name, and the label is its subtitle.
+  if (what && what.title) return { opts, what, label, name: what.title, title: what.title, summary: label };
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
 }
 import { zoneNote, assignToField, studentsFrom } from './lessons.js';
@@ -138,6 +140,9 @@ router.get('/teach/assign', requireUser, (req, res) => {
   // Algebra Builder: what students open (from the game's Assign button), or a note to choose it in the game first (the
   // class would otherwise land on the teacher's gallery).
   const sa = setAssign(t, g0, req.query.opts);
+  // Arithmetic Lab with nothing made yet: straight into the game to make one (it opens at Your activities with New
+  // activity open; Save and assign then comes back here with the activity), not a page that says to go and make it.
+  if (sa && !sa.what && g0.slug === 'arithmetic-lab' && g0.source === 'seed') return res.redirect(302, '/play/arithmetic-lab?mode=assign');
   // Mistake Hunt (services/proof-steps.js): the teacher's own passage set is either handed in for a grade or played as practice
   // in the game (the game step below); the teacher picks one, nothing is picked for them.
   const proofSet = g0.slug === PS.SLUG && sa && sa.what ? PS.ownSet(u, parseParams(sa.opts).chapter) : null;
@@ -176,7 +181,7 @@ router.get('/teach/assign', requireUser, (req, res) => {
   const body = html`<div class="pagehead"><h1>${ico('📌', { size: 36 })} ${t('teach.assign.title', { game: g.title })}</h1></div>
   <section class="panel assign-game" aria-labelledby="ag-h">
     <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
-    ${proofSet ? proofForm : sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.label })}</p>` : ''}
+    ${proofSet ? proofForm : sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.name || sa.label })}</p>${sa.name ? html`<p class="small muted assign-sub" dir="auto">${sa.label}</p>` : ''}` : ''}
     ${proofSet ? '' : sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
       : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a></p>` : ''}`
       : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a></p>`
@@ -197,7 +202,7 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   // Typing Zoo: one lesson or test (services/typing.js assignChoices), or the whole game when none is picked.
   const typing = !!g && g.slug === TY.SLUG && g.source === 'seed';
   const tc = typing && !sa ? TY.assignChoice(req.t, b(req).opts) : null;
-  let extra = sa ? { options: sa.opts, title: sa.title } : tc ? { options: tc.value, title: `${g.title}: ${tc.label}` } : {};
+  let extra = sa ? { options: sa.opts, title: sa.title, ...(sa.summary ? { summary: sa.summary } : {}) } : tc ? { options: tc.value, title: `${g.title}: ${tc.label}` } : {};
   // A pass mark (mode=a90-w20): the game reports the step done only for a run that reaches it.
   const pass = typing ? TY.passMode(b(req).passAcc, b(req).passWpm) : null;
   if (pass) extra = { options: `${extra.options ? `${extra.options}&` : ''}mode=${pass.mode}`, title: `${extra.title || g.title} (${TY.passLabel(req.t, pass)})`.slice(0, 100) };

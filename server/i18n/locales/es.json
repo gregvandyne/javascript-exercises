@@ -1330,7 +1330,8 @@
       "fronts": "{title}: frentes",
       "backs": "{title}: reversos",
       "how": "Imprime a doble cara (voltear por el borde largo) y recorta por las líneas discontinuas. Cada reverso queda detrás de su frente."
-    }
+    },
+    "loading": "Cargando {title}…"
   },
   "friends": {
     "title": "Amigos",
@@ -7146,7 +7147,10 @@
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Desliza la tabla hacia un lado para ver todos los pasos",
       "quizScore": "{right} de {total} correctas ({pct} %)",
-      "helped": "El docente mostró una respuesta"
+      "helped": "El docente mostró una respuesta",
+      "stepFixes": "{count, plural, one {# paso corregido} other {# pasos corregidos}}",
+      "sampleName": "Alumno de ejemplo",
+      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino."
     },
     "student": {
       "doneOf": "{done} de {total} hechos",

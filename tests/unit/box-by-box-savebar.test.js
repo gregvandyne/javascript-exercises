@@ -12,7 +12,10 @@ test('the editor form has its own Save, using the same save as Share, with its w
   const ed = src('pages/Editor.svelte');
   assert.match(ed, /<SaveBar \{activity\} \/>\s*<Footer \/>/, 'at the end of the form, before the footer');
   const bar = src('lib/SaveBar.svelte');
-  assert.match(bar, /shareActivity\(activity\)/, 'the same save as Share');
+  // the same save as Share's (which asks first, in the page's own dialog, when students may already have it)
+  assert.match(bar, /saveMindful\(activity, /, 'the same save as Share');
+  assert.match(src('lib/SharePanel.svelte'), /saveMindful\(activity, /);
+  assert.doesNotMatch(bar + src('lib/SharePanel.svelte') + src('lib/activities.svelte.ts'), /\b(confirm|alert)\(/, 'no confirm() or alert()');
   assert.match(bar, /isShared\(activity\)/, 'shows Saved once what is on Oomba matches');
   assert.match(bar, /ui\.save\.preview/);
   assert.match(bar, /ui\.save\.guest/);

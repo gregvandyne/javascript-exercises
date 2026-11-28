@@ -425,8 +425,9 @@
 {:else}
 	<div class="screen">
 		<header class="top">
-			<button type="button" class="back-icon" aria-label={t('ui.home.title')} onclick={() => show({ name: 'home' })}
-				><ArrowLeft size={18} aria-hidden="true" /></button
+			<!-- (a labeled link back to the list, so it isn't taken for the page's own Back just above it, which leaves the game) -->
+			<button type="button" class="back-list" onclick={() => show({ name: 'home' })}
+				><ArrowLeft size={16} aria-hidden="true" /> {t('ui.home.title')}</button
 			>
 			<input class="title" type="text" aria-label={t('ui.ed.title')} placeholder={k.title} bind:value={activity.title} oninput={save} />
 			<div class="top-actions">
@@ -672,19 +673,38 @@
 		border-bottom: 2px solid var(--line);
 		background: var(--paper);
 	}
-	.back-icon {
-		display: grid;
-		place-items: center;
-		width: 2.2rem;
-		height: 2.2rem;
-		border: 0;
+	.back-list {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		min-height: 2.4rem;
+		padding: 0.3rem 0.8rem;
+		border: 2px solid var(--line);
 		border-radius: 999px;
-		background: none;
-		color: var(--muted);
+		background: var(--paper);
+		color: var(--ink);
+		font: inherit;
+		font-size: 0.92rem;
+		font-weight: 700;
+		white-space: nowrap;
 		cursor: pointer;
 	}
-	.back-icon:hover {
+	.back-list:hover {
 		background: var(--paper-low);
+	}
+	@media (max-width: 30rem) {
+		/* a phone: the title on a line of its own under the buttons, and the header scrolls away with the page (three
+		   rows held at the top would take a third of the screen) */
+		.top {
+			position: static;
+		}
+		.title {
+			flex-basis: 100%;
+			order: 2;
+		}
+		.top-actions {
+			order: 1;
+		}
 	}
 	.title {
 		flex: 12rem;
@@ -797,8 +817,23 @@
 	}
 	.group {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1.1rem;
 		padding: 1rem 0 1.2rem;
+	}
+	/* a small phone (320 wide): the ranges' steppers and the choices wrap inside the card instead of poking out */
+	@media (max-width: 26rem) {
+		.range-boxes {
+			flex-wrap: wrap;
+			row-gap: 0.35rem;
+		}
+		.tabs {
+			flex-wrap: wrap;
+			border-radius: 18px;
+		}
+		.tab {
+			flex: 1 1 auto;
+		}
 	}
 	.students,
 	.methods {
