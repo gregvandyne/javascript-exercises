@@ -6,6 +6,9 @@
 	let dialog = $state<HTMLDialogElement>();
 	let q = $state<{ title: string; text: string; choices: Choice[] } | null>(null);
 	let answer: ((v: string | null) => void) | null = null;
+	// (shown: the question on screen now; a close event left over from the one before, which done() closed itself, comes
+	// a moment later and must not answer a question asked since: the play page can ask again at once, audit 5)
+	let shown = false;
 	const uid = `cd${Math.random().toString(36).slice(2, 8)}`;
 
 	export function ask(title: string, text: string, choices: Choice[]): Promise<string | null> {
@@ -16,6 +19,7 @@
 		setTimeout(() => {
 			if (!answer || d.open) return;
 			d.showModal();
+			shown = true;
 			d.querySelector<HTMLButtonElement>('.actions button:last-child')?.focus();
 		});
 		return p;
@@ -24,6 +28,7 @@
 	function done(v: string | null) {
 		const a = answer;
 		answer = null;
+		shown = false;
 		if (dialog?.open) dialog.close();
 		a?.(v);
 	}
@@ -34,7 +39,7 @@
 	class="confirm"
 	aria-labelledby="{uid}-title"
 	aria-describedby="{uid}-text"
-	onclose={() => done(null)}
+	onclose={() => shown && done(null)}
 	onclick={(e) => e.target === dialog && done(null)}
 >
 	{#if q}

@@ -17217,3 +17217,30 @@ Tests: `tests/unit/arithmetic-lab-audit4-browser.test.js` (the game in the produ
 is done with its score), `tests/unit/progress-set-progress.test.js`, and the playthrough tests updated (a new activity
 kept once it changes; Guided's wrong digit). `tests/unit/_box-frame.js` finds a Chromium on the machine as the site's
 browser tests do, so the frame tests run here too.
+
+## Arithmetic Lab and class Progress: audit 5 (28 Nov 2026)
+
+The owner's fifth live audit, two items:
+- **Every way out of a set under way asks first.** Mid-problem, the play page's "Back to Arithmetic Lab" link left with
+  no "Leave this set?" (audit 4 made the game's own buttons ask, but the page's links, outside the sandboxed frame, never
+  knew a set was under way). Now the game tells the page (SDK `BRB.leaveGuard(fn | null)`, docs/sdk.md: `brb:guard`;
+  Arithmetic Lab sets it while a set is started, both players, never in a preview, and clears it on the start and end
+  screens), and while it is on the page asks the game (`brb:leave-ask`), which asks the player in its own dialog ("Leave
+  this set?", Keep going / Leave the set) and answers. It covers every way out of the play page: its Back link, the full
+  screen Back and any other link on it (public/js/play.js, a click listener), the browser's Back (an extra history entry
+  while the guard is on, taken away again when it goes off, so Back is never pressed twice), and inside Homeroom's
+  layer its bar ("Back to my desk"), Escape (on the layer, and on the game's page in it) and Back
+  (public/js/homeroom-player.js asks the page's `window.oombaAskLeave`; the page's own closes, as the teacher bringing
+  everyone back, never ask). A reload or a closed tab gets the browser's own "Leave site?". A game that does not say at
+  once that it is asking (`brb:leave-asking`, within a second) is left as before, so a stuck frame never keeps anyone on
+  the page. The game's dialog no longer lets a close event left over from the last question answer a new one asked at
+  once (ConfirmDialog).
+- **8.12: the empty class Progress page has a sample row.** A class with nothing assigned, or no students, showed only
+  the empty state and "Once something is assigned...". It now shows a faded sample row as a lesson's progress page does
+  (the `gb-sample` row and styles, "Sample student"), under "A sample: this is what you'll see": the class's own
+  assignments as columns (two sample ones, "Sample lesson plan" and "Sample game", when nothing is assigned), steps done
+  with a bar and an answer to read, Work done and Score. It is its own table, not the gradebook (`#gb-lessons`), with
+  no links: never counted, filtered or sorted, and the CSV is built from the class's data, never from the page.
+Tests: `tests/unit/arithmetic-lab-audit5-browser.test.js` (the game answering the page in the production frame, both
+players; on the real play page the Back link, the full screen Back, the browser's Back and closing the tab; Homeroom's
+layer's bar, Escape and Back; the sample row light and dark at 390 and 1280).
