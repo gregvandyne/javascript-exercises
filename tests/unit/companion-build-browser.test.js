@@ -79,7 +79,9 @@ test.before(async () => {
   CO.hooks.create = async params => {
     const last = params.messages.at(-1);
     const after = Array.isArray(last.content) && last.content.some(c => c.type === 'tool_result');
-    return { model: params.model, usage: { input_tokens: 1, output_tokens: 1 }, ...(after ? { stop_reason: 'end_turn', content: [{ type: 'text', text: 'Sure!' }] } : uses('startBuild', { title: 'Regrouping Race', grade: '4', topic: 'regrouping' })) };
+    const said = JSON.stringify(params.messages.at(-1));
+    const first = /harder/.test(said) ? uses('changeGame', { game: 'last' }) : /Thanks/.test(said) ? { stop_reason: 'end_turn', content: [{ type: 'text', text: 'You are welcome!' }] } : uses('startBuild', { title: 'Regrouping Race', grade: '4', topic: 'regrouping' });
+    return { model: params.model, usage: { input_tokens: 1, output_tokens: 1 }, ...(after ? { stop_reason: 'end_turn', content: [{ type: 'text', text: 'Sure!' }] } : first) };
   };
 });
 test.after(async () => { CO.hooks.create = null; CB.hooks.provider = null; autotest.hooks.raw = null; PT.hooks.run = null; if (held) held.open.resolve(); await J.idle(); if (browser) await browser.close(); if (server) { server.closeAllConnections(); server.close(); } });
@@ -144,8 +146,10 @@ test('ask, plan, building and done cards on a laptop and a phone, light and dark
       await shot(page, `building-${tag}-${scheme}`);
       // 4. done: Oomba's words from the real checks, the game's own preview
       held.open.resolve(); held = null;
-      await page.waitForSelector('.ocb-done .ocb-pv iframe', { timeout: 30000 });
-      const frame = page.frameLocator('.ocb-done .ocb-pv iframe');
+      await page.waitForSelector('.ocb-done .ocb-pv', { timeout: 30000 });
+      const key = await page.getAttribute('.ocb-done .ocb-pv', 'data-ocb-pv');
+      await page.waitForSelector(`.ocb-pvl[data-key="${key}"] iframe`, { timeout: 15000 });
+      const frame = page.frameLocator(`.ocb-pvl[data-key="${key}"] iframe`);
       await frame.locator('h1').waitFor({ timeout: 15000 });
       assert.equal(await frame.locator('body').evaluate(b => getComputedStyle(b).backgroundColor), 'rgb(255, 246, 216)', 'the game keeps its own colours');
       const box = await page.locator('.ocb-done .ocb-pv').boundingBox();
@@ -161,4 +165,66 @@ test('ask, plan, building and done cards on a laptop and a phone, light and dark
       await ctx.close();
     }
   }
+});
+
+/** The frame of one preview place: still the same element, how often it loaded, and whether it sits over its box. */
+const frameOf = (page, key) => page.evaluate(k => {
+  const f = document.querySelector(`.ocb-pvl[data-key="${CSS.escape(k)}"] iframe`); if (!f) return null;
+  const box = document.querySelector(`[data-ocb-pv="${CSS.escape(k)}"]`);
+  const a = f.parentElement.getBoundingClientRect(), b = box && box.getBoundingClientRect();
+  window.__seen = window.__seen || new Map();
+  const same = window.__seen.has(k) ? window.__seen.get(k) === f : null;
+  window.__seen.set(k, f);
+  return { same, loads: Number(f.dataset.loads), over: !!b && Math.abs(a.left - b.left) < 2 && Math.abs(a.top - b.top) < 2 && Math.abs(a.width - b.width) < 2, hidden: f.parentElement.hidden };
+}, key);
+
+test('the preview survives a redraw (a new message, a job ending); version 2 loads fresh', { skip, timeout: 180000 }, async () => {
+  const teacher = teacherNow();
+  const { ctx, page, errors } = await pageFor({ width: 1280, height: 800 }, 'light', teacher);
+  await page.goto(`${BASE}/teach`);
+  await page.click('#oc-bubble');
+  await page.waitForSelector('#oc-in', { state: 'visible' });
+  await page.fill('#oc-in', 'Make a grade 4 game about regrouping on their own devices with hints when stuck');
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('.ocb-plan:not(.done) [data-act="buildGo"]', { timeout: 15000 });
+  await page.click('.ocb-plan:not(.done) [data-act="buildGo"]');
+  await page.waitForSelector('.ocb-done .ocb-pv', { timeout: 30000 });
+  const v1 = await page.getAttribute('.ocb-done .ocb-pv', 'data-ocb-pv');
+  await page.waitForFunction(k => { const f = document.querySelector(`.ocb-pvl[data-key="${CSS.escape(k)}"] iframe`); return f && Number(f.dataset.loads) >= 1; }, v1, { timeout: 15000 });
+  const before = await frameOf(page, v1);
+  assert.equal(before.loads, 1); assert.equal(before.over, true, 'the frame sits over its box');
+  // Play it, then a new message: the chat redraws its log; the frame is the same element and did not load again.
+  await page.click(`.ocb-pvl[data-key="${v1}"] .ocb-tap`);
+  const turns0 = await page.locator('.oc-turn').count();
+  await page.fill('#oc-in', 'Thanks!');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(n => document.querySelectorAll('.oc-turn').length >= n + 2 && /You are welcome!/.test(document.querySelector('.oc-log').textContent), turns0, { timeout: 15000 });
+  await page.waitForTimeout(300);
+  let after = await frameOf(page, v1);
+  assert.equal(after.same, true, 'the same frame element after the redraw');
+  assert.equal(after.loads, 1, 'not loaded again');
+  assert.equal(after.over, true, 'still over its box after the redraw');
+  assert.ok(await page.$(`.ocb-pvl.playing[data-key="${v1}"]`), 'still being played');
+  // A change by message: version 2 is built (a job runs, polls and ends: more redraws); its preview is a new frame.
+  await page.fill('#oc-in', 'Make it harder with numbers up to 999');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => document.querySelectorAll('.ocb-done .ocb-pv').length >= 2, null, { timeout: 30000 });
+  const v2 = await page.$$eval('.ocb-done .ocb-pv', els => els.at(-1).dataset.ocbPv);
+  assert.notEqual(v2, v1);
+  await page.waitForFunction(k => { const f = document.querySelector(`.ocb-pvl[data-key="${CSS.escape(k)}"] iframe`); return f && Number(f.dataset.loads) >= 1; }, v2, { timeout: 15000 });
+  const fresh = await frameOf(page, v2);
+  assert.equal(fresh.loads, 1, 'version 2 loads fresh, once');
+  after = await frameOf(page, v1);
+  assert.equal(after.same, true, 'version 1 is still the same frame'); assert.equal(after.loads, 1, 'and never reloaded');
+  // Scrolled away and back: hidden while its box is out of the log, then over it again, never reloaded.
+  await page.evaluate(() => { const l = document.querySelector('.oc-log'); l.scrollTop = l.scrollHeight; });
+  await page.evaluate(k => document.querySelector(`[data-ocb-pv="${CSS.escape(k)}"]`).scrollIntoView({ block: 'center' }), v1);
+  await page.waitForTimeout(200);
+  after = await frameOf(page, v1);
+  assert.equal(after.over, true); assert.equal(after.loads, 1);
+  await page.waitForTimeout(2000);   // a few polling ticks
+  assert.equal((await frameOf(page, v1)).loads, 1);
+  assert.equal((await frameOf(page, v2)).loads, 1);
+  assert.deepEqual(errors, [], 'no page errors');
+  await ctx.close();
 });

@@ -16756,7 +16756,9 @@ Oomba companion chat; kids keep Studio and /build/new unchanged; the companion s
   host it live." A failed playtest, a scan that found something, no browser on the server, a message the Builder's
   screening stopped, or a build that saved nothing each say so plainly instead (and the card has no Assign or Host
   live). The preview is the Builder's own sandboxed frame (SANDBOX, never allow-same-origin), 16:10 with "Tap to play",
-  its address minted per viewer; it keeps the game's own colours in dark mode. Buttons: Play (full screen), Change (puts
+  its address minted per viewer; it keeps the game's own colours in dark mode. The frame lives in one layer outside the
+  chat's redrawn log (on the page, clipped to the log, laid over its card's box after every redraw, scroll and resize),
+  so a new message, a job ending or polling never reloads a game being played; a new version gets a new frame. Buttons: Play (full screen), Change (puts
   "In “title”, " in the box), Assign (asks Oomba, which uses the existing assign tool and card), Host live (the game
   cards' existing /live?game= link: the `hostLive` action only opens question-bank quick games), Open big (/studio/:id).
 - **Change by message**: `changeGame` (offered with the list of games made in this chat in the system prompt) sends the
@@ -16767,8 +16769,11 @@ Oomba companion chat; kids keep Studio and /build/new unchanged; the companion s
   words again. Tests check that no name reaches the chat's AI, the Builder or the Builder's transcript.
 - **Off switch**: COMPANION_BUILD=0, or a teacher whose Builder is turned off, gets the old hand-off card.
 - **Phase 3 (owner decision)**: Studio gets the Oomba chat for teachers, replacing the Builder chat there; kids keep it.
-- Tests: tests/unit/companion-build.test.js (9), tests/unit/companion-build-browser.test.js (1: the four cards at
-  1280x800 and 390x844, light and dark; `COMPANION_SHOTS=<dir>` saves the pictures); oomba-jobs.test.js lists `game` as
+- **Restart**: a `game` job queued again after a restart (oomba-jobs recover) never sends the message again: it waits for
+  the Builder's own build (carried on by runner.recover, or already ended) and reads the result.
+- Tests: tests/unit/companion-build.test.js (10, the restart case included), tests/unit/companion-build-browser.test.js
+  (2: the four cards at 1280x800 and 390x844, light and dark, `COMPANION_SHOTS=<dir>` saves the pictures; the preview
+  survives a redraw and version 2 loads fresh); oomba-jobs.test.js lists `game` as
   a make kind (it makes a new version of the teacher's own game and never changes a class).
 
 ## Grammar Lab listed everywhere (27 Nov 2026)

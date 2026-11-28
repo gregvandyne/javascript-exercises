@@ -75,12 +75,12 @@ function stepsHtml(rows) {
   const li = rows.map(r => `<li class="ocb-s ${r.state}"><span class="ocb-sd" aria-hidden="true">${r.state === 'done' ? '✓' : r.state === 'now' ? '●' : '○'}</span><span>${esc(L(`steps.${r.k}`))}</span>${r.state === 'now' ? `<span class="sr-only">…</span>` : ''}</li>`).join('');
   return `<ol class="ocb-steps">${li}</ol><div class="ocb-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${rows.length}" aria-valuenow="${done}" aria-label="${esc(L('steps.write'))}"><i style="width:${Math.round(done / rows.length * 100)}%"></i></div>`;
 }
-const pvKey = (gameId, vid) => `${gameId}:${vid || ''}`;
-function previewHtml(gameId, vid, title, { over = '', playable = true } = {}) {
-  const key = pvKey(gameId, vid), pv = S.pv.get(key), playing = S.playing.has(key) && playable;
-  const frame = pv ? `<iframe src="${esc(pv.url)}" title="${esc(L('previewOf', { title }))}" sandbox="${esc(pv.sandbox)}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer" loading="lazy"${playing ? '' : ' tabindex="-1"'}></iframe>` : '';
-  const tap = !playing && playable && !over ? `<button type="button" class="ocb-tap" data-c="act" data-act="buildTap" data-turn="" data-v="${esc(key)}">${ic('▶️', 16)} ${esc(L('tap'))}</button>` : '';
-  return `<div class="ocb-pv${playing ? ' playing' : ''}" data-ocb-pv="${esc(key)}">${frame}${over}${tap}</div>`;
+const pvKey = (gameId, vid, slot = '') => `${gameId}:${vid || ''}${slot ? `:${slot}` : ''}`;
+/** The preview's place in the card: an empty box of the right size. The game's frame itself lives in a layer outside
+ *  the chat's redrawn HTML (frames() below), laid over this box, so a redraw never reloads a game being played. */
+function previewHtml(gameId, vid, title, { over = '', playable = true, slot = '' } = {}) {
+  const key = pvKey(gameId, vid, slot);
+  return `<div class="ocb-pv" data-ocb-pv="${esc(key)}" data-game="${esc(gameId)}" data-v="${esc(vid)}" data-title="${esc(title)}" data-play="${playable ? 1 : 0}" data-over="${esc(over)}" role="img" aria-label="${esc(L('previewOf', { title }))}"></div>`;
 }
 const FAILS = ['limit', 'resting', 'tooMany', 'disabled', 'restarting', 'gone', 'notAllowed', 'restart', 'error'];
 export function jobHtml(x, j) {
@@ -93,7 +93,7 @@ export function jobHtml(x, j) {
   const live = S.live.get(j.gameId);
   const rows = (live && live.rows) || defaultRows(j);
   const base = Number(j.base) || 0;
-  const pv = j.mode === 'change' && j.baseId ? previewHtml(j.gameId, j.baseId, j.title, { over: `<div class="ocb-over"><b>${esc(L('vBuilding', { n: base + 1 }))}</b><span>${esc(L('vWorks', { n: base || 1 }))}</span></div>`, playable: false }) : '';
+  const pv = j.mode === 'change' && j.baseId ? previewHtml(j.gameId, j.baseId, j.title, { over: `${L('vBuilding', { n: base + 1 })}\n${L('vWorks', { n: base || 1 })}`, playable: false, slot: `busy-${j.id}` }) : '';
   return `<div class="oc-made oc-job ocb-game" aria-busy="true" data-ocb-job="${esc(j.id)}">${head}${pv}<div data-ocb-steps="${esc(j.id)}">${stepsHtml(rows)}</div><p class="ocb-usually">${esc(L('usually'))}</p></div>`;
 }
 function lineOf(g) {
@@ -118,13 +118,7 @@ function doneHtml(x, j, head) {
 /** A tap on a build card. -> what companion.js's onAct returns (a result with chat, or null when handled here). */
 export async function onAct(act, turn, btn) {
   const chat = S.chat; if (!chat) return null;
-  if (act === 'buildTap' || act === 'buildPlay') {
-    const key = btn && btn.dataset.v; if (!key) return null;
-    S.playing.add(key);
-    const el = document.querySelector(`[data-ocb-pv="${CSS.escape(key)}"]`);
-    if (el) { el.classList.add('playing'); const tap = el.querySelector('.ocb-tap'); if (tap) tap.remove(); const f = el.querySelector('iframe'); if (f) { f.removeAttribute('tabindex'); f.focus(); } if (act === 'buildPlay' && el.requestFullscreen) el.requestFullscreen().catch(() => {}); }
-    return null;
-  }
+  if (act === 'buildPlay') { const key = btn && btn.dataset.v; if (key) play(key, true); return null; }
   if (!turn) return null;
   if (act === 'buildPick') {
     const [k, o] = String((btn && btn.dataset.v) || '').split(':');
@@ -177,22 +171,112 @@ async function poll() {
     const vid = j.state === 'done' && j.game ? j.game.versionId : j.mode === 'change' ? j.baseId : null;
     if (vid) await preview(j.gameId, vid);
   }
+  frames();
 }
-/** This viewer's own preview address for one version (once), put into its card where it is on screen. */
+/** This viewer's own preview address for one version (once). */
 async function preview(gameId, vid) {
   const key = pvKey(gameId, vid);
   if (S.pv.has(key) || S.asked.has(key)) return;
   S.asked.add(key);
   try {
     const r = await api(`/api/companion/build/${encodeURIComponent(gameId)}?v=${encodeURIComponent(vid)}`, { background: true });
-    if (!r.preview) return;
-    S.pv.set(key, r.preview);
-    for (const el of S.chat.root.querySelectorAll(`[data-ocb-pv="${CSS.escape(key)}"]`)) {
-      if (el.querySelector('iframe')) continue;
-      const f = document.createElement('iframe');
-      f.src = r.preview.url; f.title = L('previewOf', { title: r.title || '' }); f.setAttribute('sandbox', r.preview.sandbox); f.setAttribute('allow', 'fullscreen; autoplay'); f.setAttribute('allowfullscreen', ''); f.setAttribute('referrerpolicy', 'no-referrer');
-      if (!S.playing.has(key)) f.tabIndex = -1;
-      el.prepend(f);
-    }
+    if (r.preview) { S.pv.set(key, r.preview); frames(); }
   } catch { S.asked.delete(key); }
+}
+
+// ---------------------------------------------------------------- the frames, kept alive across redraws
+// The chat redraws its whole log (a new message, a job ending, polling), which would reload any frame inside it and
+// restart a game mid-play. So each game frame lives in one layer outside the log (on <body>, fixed, clipped to the
+// log), one frame per preview place (game + version, plus a slot for a change's "building" card), and is laid over
+// its box after every redraw, scroll and resize. A frame is made once and loads again only for a new version.
+const F = new Map();   // key -> { wrap, frame, tap }
+let layer = null;
+const logEl = () => (S.chat && (S.chat.root.querySelector('.oc-log') || document.getElementById('oc-log'))) || null;
+function ensureLayer() {
+  if (layer && layer.isConnected) return layer;
+  layer = document.createElement('div');
+  layer.className = 'ocb-layer';
+  document.body.append(layer);
+  const log = logEl();
+  if (log) {
+    log.addEventListener('scroll', () => sync(), { passive: true });
+    new MutationObserver(() => frames()).observe(log, { childList: true, subtree: true });
+    if (window.ResizeObserver) new ResizeObserver(() => sync()).observe(log);
+    const panel = log.closest('.oc') || log.parentElement;
+    if (panel) new MutationObserver(() => sync()).observe(panel, { attributes: true, subtree: true, attributeFilter: ['hidden', 'class', 'style', 'aria-expanded'] });
+  }
+  window.addEventListener('resize', () => sync());
+  document.addEventListener('fullscreenchange', () => sync());
+  return layer;
+}
+/** A frame for every preview box now in the log (made once per key), then each laid over its box. */
+function frames() {
+  const log = logEl(); if (!log) return;
+  ensureLayer();
+  for (const box of log.querySelectorAll('[data-ocb-pv]')) {
+    const key = box.dataset.ocbPv;
+    const pv = S.pv.get(pvKey(box.dataset.game, box.dataset.v));
+    if (!pv) { preview(box.dataset.game, box.dataset.v); continue; }
+    if (!F.has(key)) F.set(key, makeFrame(key, pv, box));
+  }
+  sync();
+}
+function makeFrame(key, pv, box) {
+  const wrap = document.createElement('div');
+  wrap.className = 'ocb-pvl'; wrap.dataset.key = key;
+  const frame = document.createElement('iframe');
+  frame.title = L('previewOf', { title: box.dataset.title || '' });
+  frame.setAttribute('sandbox', pv.sandbox); frame.setAttribute('allow', 'fullscreen; autoplay'); frame.setAttribute('allowfullscreen', ''); frame.setAttribute('referrerpolicy', 'no-referrer');
+  frame.tabIndex = -1;
+  frame.dataset.loads = '0';
+  frame.addEventListener('load', () => { frame.dataset.loads = String(Number(frame.dataset.loads) + 1); });
+  frame.src = pv.url;
+  wrap.append(frame);
+  let tap = null;
+  if (box.dataset.over) {
+    const over = document.createElement('div'); over.className = 'ocb-over';
+    const [a, b] = box.dataset.over.split('\n');
+    const strong = document.createElement('b'); strong.textContent = a || '';
+    const span = document.createElement('span'); span.textContent = b || '';
+    over.append(strong, span); wrap.append(over);
+  } else if (box.dataset.play === '1') {
+    tap = document.createElement('button'); tap.type = 'button'; tap.className = 'ocb-tap';
+    tap.innerHTML = `${ic('▶️', 16)} ${esc(L('tap'))}`;
+    tap.addEventListener('click', () => play(key, false));
+    wrap.append(tap);
+  }
+  // Scrolling the chat over a preview that is not being played scrolls the chat, as it would over the box.
+  wrap.addEventListener('wheel', e => { if (wrap.classList.contains('playing')) return; const log = logEl(); if (log) { log.scrollTop += e.deltaY; e.preventDefault(); } }, { passive: false });
+  let ty = null;
+  wrap.addEventListener('touchstart', e => { ty = wrap.classList.contains('playing') ? null : e.touches[0].clientY; }, { passive: true });
+  wrap.addEventListener('touchmove', e => { if (ty === null) return; const log = logEl(); const y = e.touches[0].clientY; if (log) log.scrollTop += ty - y; ty = y; }, { passive: true });
+  layer.append(wrap);
+  return { wrap, frame, tap };
+}
+/** Play: the frame takes taps and keys (and, from the Play button, the whole screen). */
+function play(key, full) {
+  frames();
+  const f = F.get(key); if (!f) return;
+  S.playing.add(key);
+  f.wrap.classList.add('playing');
+  if (f.tap) { f.tap.remove(); f.tap = null; }
+  f.frame.removeAttribute('tabindex'); f.frame.focus();
+  if (full && f.wrap.requestFullscreen) f.wrap.requestFullscreen().catch(() => {});
+}
+/** Each frame over its box, clipped to the log's visible part; a frame whose box is not in the log is hidden, kept. */
+function sync() {
+  const log = logEl(); if (!layer || !log) return;
+  const lr = log.getBoundingClientRect();
+  const z = Number(getComputedStyle(log.closest('.oc') || log).zIndex) || 45;
+  Object.assign(layer.style, { left: `${lr.left}px`, top: `${lr.top}px`, width: `${lr.width}px`, height: `${lr.height}px`, zIndex: String(z + 1) });
+  const hist = document.getElementById('oc-hist');   // the chat history list covers the log while it is open
+  const shown = lr.width > 0 && lr.height > 0 && getComputedStyle(log).visibility !== 'hidden' && !(hist && !hist.hidden && hist.getBoundingClientRect().height > 0);
+  for (const [key, f] of F) {
+    if (document.fullscreenElement === f.wrap) { f.wrap.hidden = false; continue; }
+    const box = shown ? log.querySelector(`[data-ocb-pv="${CSS.escape(key)}"]`) : null;
+    if (!box) { f.wrap.hidden = true; continue; }
+    const r = box.getBoundingClientRect();
+    f.wrap.hidden = false;
+    Object.assign(f.wrap.style, { left: `${r.left - lr.left}px`, top: `${r.top - lr.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+  }
 }

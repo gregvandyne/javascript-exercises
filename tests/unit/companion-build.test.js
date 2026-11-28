@@ -330,3 +330,28 @@ test('the live rows follow the Builder\'s steps in order', () => {
   assert.equal(CB.gradeIn('for my 4th grade class'), '4');
   assert.equal(CB.topicIn('Make a grade 4 game about regrouping with hints'), 'regrouping');
 });
+
+test('a game job running at a restart waits for the Builder\'s build and never sends the message twice', async () => {
+  const x = world(); sent = [];
+  // The playthrough is held, so the job's first attempt is still running (after the build) when the server restarts.
+  const gatePT = deferred(); PT.hooks.run = async () => { await gatePT; return PASS(); };
+  const before = usage.turnsUsed(x.teacher.id);
+  await build(x);
+  const row = jobsOf(x.teacher)[0];
+  await until(() => sent.length === 1 && !runner.isBusy(gamesOf(x.teacher)[0].id));
+  assert.equal(q.get('SELECT state FROM oomba_jobs WHERE id=?', row.id).state, 'running');
+  // The restart: this process forgets its running jobs and recover() queues the job again (oomba-jobs.js). The
+  // Builder's build already ended (or runner.recover carries it on): the message must not be sent again.
+  J._reset();
+  assert.equal(J.recover().requeued, 1);
+  await until(() => q.get('SELECT attempt FROM oomba_jobs WHERE id=?', row.id).attempt === 2);
+  gatePT.resolve();
+  const card = await doneCard(x);
+  assert.equal(q.get('SELECT state FROM oomba_jobs WHERE id=?', row.id).state, 'done');
+  assert.equal(card.state, 'done'); assert.equal(card.game.number, 1); assert.equal(card.game.ok, true);
+  assert.equal(sent.length, 1, 'the Builder got the message once');
+  assert.equal(usage.turnsUsed(x.teacher.id), before + 1, 'one build spent');
+  const g = gamesOf(x.teacher)[0];
+  assert.equal(loadChat(g.id).messages.filter(m => m.role === 'user').length, 1, 'one message in the Builder\'s transcript');
+  assert.equal(games.listVersions(g.id).length, 1);
+});

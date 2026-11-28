@@ -40,9 +40,14 @@
 
 .ocb-say{margin:0;font-size:.9rem;line-height:1.45}
 .ocb-pv{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#fff;color-scheme:light;box-shadow:inset 0 0 0 1px var(--line)}
-.ocb-pv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;color-scheme:normal}
-.ocb-pv:not(.playing) iframe{pointer-events:none}
-.ocb-pv:fullscreen{border-radius:0;aspect-ratio:auto}
+/* The frames live in one layer over the chat's log (public/js/companion-build.js frames()), so a redraw never reloads
+   them: the layer is the log's box, clipped; each frame sits over its card's .ocb-pv box. */
+.ocb-layer{position:fixed;overflow:hidden;pointer-events:none;contain:layout paint}
+.ocb-pvl{position:absolute;border-radius:12px;overflow:hidden;background:#fff;color-scheme:light;pointer-events:auto}
+.ocb-pvl[hidden]{display:none}
+.ocb-pvl iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;color-scheme:normal}
+.ocb-pvl:not(.playing) iframe{pointer-events:none}
+.ocb-pvl:fullscreen{border-radius:0}
 .ocb-tap{position:absolute;inset:auto auto 12px 50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 16px;border:0;border-radius:999px;background:rgba(20,24,40,.82);color:#fff;font:inherit;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25)}
 [dir="rtl"] .ocb-tap{transform:translateX(50%);inset:auto 50% 12px auto}
 .ocb-tap:focus-visible{outline:3px solid #fff;outline-offset:2px}
