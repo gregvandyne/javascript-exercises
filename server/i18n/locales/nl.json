@@ -7303,7 +7303,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quizscore: {pct}% goed",
       "quizOverall": "Quizscore over alle lesplannen: {pct}%",
-      "emptyWhat": "Zodra er iets is toegewezen en leerlingen bij de klas komen, krijgt elke leerling hier een rij: hoeveel stappen van elke opdracht ze hebben gedaan, hun scores en antwoorden die op jou wachten."
+      "emptyWhat": "Zodra er iets is toegewezen en leerlingen bij de klas komen, krijgt elke leerling hier een rij: hoeveel stappen van elke opdracht ze hebben gedaan, hun scores en antwoorden die op jou wachten.",
+      "sampleCap": "Een voorbeeld: dit ga je zien",
+      "sampleLesson": "Voorbeeldlesplan",
+      "sampleGame": "Voorbeeldspel"
     },
     "lesson": {
       "finished": "{done} van de {total} leerlingen klaar",

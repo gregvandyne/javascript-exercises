@@ -7303,7 +7303,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz-Ergebnis: {pct} % richtig",
       "quizOverall": "Quiz-Punkte über alle Unterrichtspläne: {pct} %",
-      "emptyWhat": "Sobald etwas zugewiesen ist und Schüler der Klasse beitreten, bekommt jeder Schüler hier eine Zeile: wie viele Schritte jeder Aufgabe er geschafft hat, seine Punkte und Antworten, die du noch lesen musst."
+      "emptyWhat": "Sobald etwas zugewiesen ist und Schüler der Klasse beitreten, bekommt jeder Schüler hier eine Zeile: wie viele Schritte jeder Aufgabe er geschafft hat, seine Punkte und Antworten, die du noch lesen musst.",
+      "sampleCap": "Ein Beispiel: So wird es aussehen",
+      "sampleLesson": "Beispiel-Unterrichtsplan",
+      "sampleGame": "Beispielspiel"
     },
     "lesson": {
       "finished": "{done} von {total} Schülern fertig",

@@ -32,7 +32,7 @@
 		type Step,
 		type Values
 	} from '$lib/logic';
-	import { finished, load, progress, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
+	import { finished, guardLeave, load, progress, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
 	import { hintsFor } from '$lib/hints';
 	import Speaker from '$lib/Speaker.svelte';
 	import { LANG, m, segments, t, tn, tx, type Msg } from '$lib/i18n';
@@ -907,16 +907,25 @@
 	}
 	/** Leaving in the middle of a set (Practice, Back) asks first, in the page's own dialog: the set isn't kept. */
 	async function leave(go: () => void) {
-		// once the set is started, every time (audit 4: a problem not typed in yet, a count or Watch left without a word)
-		const begun = phase === 'feedback' || phase === 'working';
-		if (!begun || preview || !leaveDialog) return go();
+		if (await mayLeave()) go();
+	}
+	/** Once the set is started, every time (audit 4: a problem not typed in yet, a count or Watch left without a word).
+	 *  The play page asks the same before any of its own ways out (audit 5: its Back links, the browser's Back,
+	 *  Homeroom's layer), through BRB.leaveGuard. */
+	const begun = $derived((phase === 'feedback' || phase === 'working') && !preview);
+	async function mayLeave(): Promise<boolean> {
+		if (!begun || !leaveDialog) return true;
 		const done = index + +settled;
 		const yes = await leaveDialog.ask(t('ui.leave.title'), tn('ui.leave.text', sheets.length, { done }), [
 			{ value: 'stay', label: t('ui.leave.stay') },
 			{ value: 'go', label: t('ui.leave.go'), danger: true }
 		]);
-		if (yes === 'go') go();
+		return yes === 'go';
 	}
+	$effect(() => {
+		guardLeave(begun ? mayLeave : null);
+	});
+	$effect(() => () => guardLeave(null));
 	async function onFeedback() {
 		if (!sheet) return;
 		if (fb === 'again') {
