@@ -9374,6 +9374,10 @@
         "need": "Eine Begleitung beim Unterrichten (KI-Chat)",
         "oomba": "Ein Chat in der ganzen App, der weiß, auf welcher Seite Sie sind, auch in Figuren und bei den Arbeitsmitteln. Er findet Spiele nach Klassenstufe, Standard und Zeit und Bücher nach Lesestufe, liest Ihre Unterrichtspläne und Bilder und sucht im Web mit angezeigten Quellen. Ihr Dashboard ändert er nur, wenn Sie bestätigen, mit Rückgängig. Bei der Spracheingabe erscheinen Ihre Worte, während Sie sprechen, und der Ton wird nicht gespeichert. Ihre Schule kann die Grenzen festlegen."
       },
+      "grammar": {
+        "need": "Grammatik und Schreiben üben",
+        "oomba": "Grammar Lab: Grammatik, Zeichensetzung und Schreibfertigkeiten vom Kindergarten bis Klasse 12, ein Thema nach dem anderen, mit Meisterstufen, einer Klasse zugewiesen und im Klassenbericht verfolgt. Kostenlos."
+      },
       "videos": {
         "need": "Kurze Videos zu jedem Werkzeug",
         "oomba": "Einminütige Videos mit Untertiteln, aufgenommen in der echten App."
@@ -9454,7 +9458,7 @@
         },
         "classes": {
           "need": "Einer Klasse zuweisen, mit Klassenberichten",
-          "oomba": "Noch nicht. Jedes Kind sieht seinen eigenen Fortschritt in jeder Einheit und kann sich die Fragen eines gemeisterten Themas noch einmal ansehen."
+          "oomba": "Ja. Weisen Sie eine Einheit, ein Thema oder seinen Korrekturraum einer Klasse, einer Gruppe oder einem Kind zu, mit einem Abgabetag. Der Klassenbericht zeigt die gemeisterten Themen jedes Kindes (Zahlen, nie eine Rangliste), und Sie können festlegen, wo jedes Kind beginnt."
         },
         "free": {
           "need": "Ein kostenloses Angebot",
@@ -11731,7 +11735,9 @@
     },
     "names": {
       "lead": "Ein Abo statt fünf:",
-      "line": "Ein Plan statt fünf. <a href=\"{compare}\">Zum Vergleich</a>"
+      "line": "Ein Plan statt fünf. <a href=\"{compare}\">Zum Vergleich</a>",
+      "leadSix": "Ein Abo statt sechs:",
+      "lineSix": "Ein Plan statt sechs. <a href=\"{compare}\">Zum Vergleich</a>"
     },
     "one": {
       "kicker": "Und noch viel mehr",

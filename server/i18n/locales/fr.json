@@ -9373,6 +9373,10 @@
         "need": "Un compagnon pour enseigner (chat avec IA)",
         "oomba": "Un seul chat dans toute l’appli, qui sait sur quelle page vous êtes, y compris dans Figures et les manipulables. Il trouve des jeux par niveau, norme et durée, et des livres par niveau de lecture, lit vos préparations et vos images, et cherche sur le web en montrant ses sources. Il ne modifie votre tableau de bord que si vous confirmez, avec Annuler. Avec la saisie vocale, vos mots s’affichent pendant que vous parlez, et l’audio n’est pas conservé. Votre école peut fixer ses limites."
       },
+      "grammar": {
+        "need": "S’entraîner en grammaire et en écriture",
+        "oomba": "Grammar Lab : grammaire, ponctuation et écriture de la maternelle à la terminale, un thème à la fois, avec des niveaux de maîtrise, assigné à une classe et suivi dans un rapport de classe. Gratuit."
+      },
       "videos": {
         "need": "De courtes vidéos de chaque outil",
         "oomba": "Des vidéos d’une minute avec sous-titres, enregistrées dans la vraie appli."
@@ -9453,7 +9457,7 @@
         },
         "classes": {
           "need": "Donner à une classe, avec des bilans de classe",
-          "oomba": "Pas encore. Chaque élève voit ses propres progrès dans chaque unité et peut revoir les questions d'une notion maîtrisée."
+          "oomba": "Oui. Assignez une unité, un thème ou sa salle de relecture à une classe, un groupe ou un élève, avec un jour de rendu. Le rapport de classe montre les thèmes maîtrisés par chaque élève (des nombres, jamais un classement), et vous pouvez choisir où chaque élève commence."
         },
         "free": {
           "need": "Une option gratuite",
@@ -11730,7 +11734,9 @@
     },
     "names": {
       "lead": "Un abonnement au lieu de cinq :",
-      "line": "Un seul forfait au lieu de cinq. <a href=\"{compare}\">Voir la comparaison</a>"
+      "line": "Un seul forfait au lieu de cinq. <a href=\"{compare}\">Voir la comparaison</a>",
+      "leadSix": "Un abonnement au lieu de six :",
+      "lineSix": "Un seul forfait au lieu de six. <a href=\"{compare}\">Voir la comparaison</a>"
     },
     "one": {
       "kicker": "Et bien plus",

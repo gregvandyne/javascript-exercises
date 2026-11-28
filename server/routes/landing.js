@@ -72,7 +72,7 @@ export const wantsLanding = req => landingAtRoot() && !req.user;
  *  translated. The three with sourced facts on /compare get a side-by-side card; Blooket and Typing.com are only named. */
 export const NAMED = ['Kahoot!', 'Classroomscreen', 'Blooket', 'Brainingcamp', 'Typing.com'];
 /** Every product this page names now: the five, and NoRedInk while Grammar Lab is open to every visitor (the
- *  trademark line). The strip always shows NAMED only. */
+ *  trademark line). The strip shows the same names (five, or six with NoRedInk). */
 export const namedNow = () => (grammarCompareOn() ? [...NAMED, GRAMMAR_RIVAL.name] : NAMED);
 /** The side-by-side cards: /compare's quotes only (routes/compare.js CELLS), by row. */
 export const VERSUS = [
@@ -204,11 +204,13 @@ export function renderLanding(req, res) {
   </div>
 </section>`;
 
-  // ---- 2. one subscription instead of five (the named products, plain text)
+  // ---- 2. one subscription instead of five, or six with NoRedInk while Grammar Lab is open to every visitor (owner,
+  // 28 Nov 2026: Grammar Lab now stands in for NoRedInk too)
+  const six = grammarCompareOn(), namesLead = six ? 'landing.names.leadSix' : 'landing.names.lead', namesLine = six ? 'landing.names.lineSix' : 'landing.names.line';
   const names = html`<section class="lp-names" aria-labelledby="names-h"><div class="lp-wrap lp-names-in">
-    <h2 id="names-h"${fb('landing.names.lead')}>${t('landing.names.lead')}</h2>
-    <ul>${NAMED.map(n => html`<li lang="en" dir="ltr">${n}</li>`)}</ul>
-    ${TH('p', 'landing.names.line', ' class="lp-names-line"', { compare: lp('/compare') })}
+    <h2 id="names-h"${fb(namesLead)}>${t(namesLead)}</h2>
+    <ul>${namedNow().map(n => html`<li lang="en" dir="ltr">${n}</li>`)}</ul>
+    ${TH('p', namesLine, ' class="lp-names-line"', { compare: lp('/compare') })}
   </div></section>`;
 
   // ---- 3. in one place: ten things teachers buy one by one

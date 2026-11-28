@@ -9374,6 +9374,10 @@
         "need": "Een maatje bij het lesgeven (AI-chat)",
         "oomba": "Eén chat in de hele app die weet op welke pagina je bent, ook in Figuren en bij de rekenmaterialen. Hij vindt games op groep, doel en tijd, en boeken op leesniveau, leest je lesplannen en afbeeldingen, en zoekt op het web met de bronnen erbij. Je dashboard verandert hij alleen als je bevestigt, met Ongedaan maken. Bij spraakinvoer verschijnen je woorden terwijl je praat, en de audio wordt niet bewaard. Je school kan de grenzen instellen."
       },
+      "grammar": {
+        "need": "Grammatica en schrijven oefenen",
+        "oomba": "Grammar Lab: grammatica, interpunctie en schrijfvaardigheid van groep 1 tot het eindexamenjaar, één onderwerp tegelijk, met beheersingsniveaus, toegewezen aan een klas en gevolgd in een klasrapport. Gratis."
+      },
       "videos": {
         "need": "Korte video’s van elk hulpmiddel",
         "oomba": "Video’s van een minuut met ondertiteling, opgenomen in de echte app."
@@ -9454,7 +9458,7 @@
         },
         "classes": {
           "need": "Aan een klas toewijzen, met klasoverzichten",
-          "oomba": "Nog niet. Elke leerling ziet de eigen voortgang in elke eenheid en kan de vragen van een beheerst onderwerp terugkijken."
+          "oomba": "Ja. Wijs een eenheid, een onderwerp of de bijbehorende verbeterkamer toe aan een klas, een groep of één leerling, met een inleverdag. Het klasrapport toont de beheerste onderwerpen per leerling (aantallen, nooit een ranglijst), en je kunt kiezen waar elke leerling begint."
         },
         "free": {
           "need": "Een gratis optie",
@@ -11731,7 +11735,9 @@
     },
     "names": {
       "lead": "Eén abonnement in plaats van vijf:",
-      "line": "Betaal voor één abonnement in plaats van vijf. <a href=\"{compare}\">Bekijk de vergelijking</a>"
+      "line": "Betaal voor één abonnement in plaats van vijf. <a href=\"{compare}\">Bekijk de vergelijking</a>",
+      "leadSix": "Eén abonnement in plaats van zes:",
+      "lineSix": "Betaal voor één abonnement in plaats van zes. <a href=\"{compare}\">Bekijk de vergelijking</a>"
     },
     "one": {
       "kicker": "En nog veel meer",

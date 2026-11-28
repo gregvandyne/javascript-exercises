@@ -9375,6 +9375,10 @@
         "need": "Um companheiro para ensinar (chat com IA)",
         "oomba": "Um só chat no app inteiro que sabe em que página você está, inclusive em Figuras e nos materiais manipuláveis. Ele encontra jogos por ano, habilidade e tempo, e livros por nível de leitura, lê seus planos de aula e imagens, e pesquisa na web mostrando as fontes. Ele só muda o seu painel quando você confirma, com Desfazer. Na entrada por voz, suas palavras aparecem enquanto você fala, e o áudio não é guardado. Sua escola pode definir os limites."
       },
+      "grammar": {
+        "need": "Prática de gramática e escrita",
+        "oomba": "Grammar Lab: gramática, pontuação e habilidades de escrita da educação infantil ao 12º ano, um tema de cada vez, com níveis de domínio, atribuído a uma turma e acompanhado num relatório da turma. Grátis."
+      },
       "videos": {
         "need": "Vídeos curtos de cada ferramenta",
         "oomba": "Vídeos de um minuto com legendas, gravados no app de verdade."
@@ -9455,7 +9459,7 @@
         },
         "classes": {
           "need": "Atribuir a uma turma, com relatórios da turma",
-          "oomba": "Ainda não. Cada aluno vê o próprio progresso em cada unidade e pode rever as perguntas de um tópico dominado."
+          "oomba": "Sim. Atribua uma unidade, um tema ou a sua sala de revisão a uma turma, a um grupo ou a um aluno, com um dia de entrega. O relatório da turma mostra os temas dominados por cada aluno (números, nunca uma classificação), e você pode escolher onde cada aluno começa."
         },
         "free": {
           "need": "Uma opção gratuita",
@@ -11732,7 +11736,9 @@
     },
     "names": {
       "lead": "Uma assinatura em vez de cinco:",
-      "line": "Pague um plano em vez de cinco. <a href=\"{compare}\">Veja a comparação</a>"
+      "line": "Pague um plano em vez de cinco. <a href=\"{compare}\">Veja a comparação</a>",
+      "leadSix": "Uma assinatura em vez de seis:",
+      "lineSix": "Pague um plano em vez de seis. <a href=\"{compare}\">Veja a comparação</a>"
     },
     "one": {
       "kicker": "E muito mais",
