@@ -1871,7 +1871,8 @@
         "help": "help changed",
         "count": "{n} in a set",
         "purpose": "what it is for changed",
-        "more": "+{n} more"
+        "more": "+{n} more",
+        "kit": "moved to the newest kit"
       },
       "saved": "Saved as version {number}.",
       "savedJoined": "Saved to version {number}.",
@@ -3725,7 +3726,7 @@
       "versionN": "version {n}",
       "close": "Close",
       "intro": "Change the activity yourself. Each save makes a new version, checked like any other. The Builder is still there for bigger changes.",
-      "upgradeNote": "Saving here moves this activity to the newest kit, which adds Show answer and Board mode for you.",
+      "upgradeNote": "This activity is on an older kit. Save it to move it to the newest one: kind feedback on every step, hints with the problem's own numbers, stars and sound.",
       "problems": "Problems",
       "inList": "{n} in the list",
       "sameList": "The same list for everyone",
@@ -3786,7 +3787,8 @@
         "gen": "New problems for each student",
         "help": "Help changed",
         "count": "{n} in a set",
-        "purpose": "What it is for changed"
+        "purpose": "What it is for changed",
+        "kit": "Moved to the newest kit"
       },
       "needsFix": "Needs a fix",
       "answerIs": "Answer: {a}",
@@ -5875,7 +5877,7 @@
         "play": "Playtesting on a phone, a tablet and a laptop",
         "scan": "Safety scan"
       },
-      "usually": "Usually 1-2 minutes. You can keep chatting or close this page.",
+      "usually": "This takes a few minutes. You can keep chatting or close this page.",
       "vBuilding": "Version {n} building…",
       "vWorks": "Version {n} still works while you wait.",
       "tap": "Tap to play",
@@ -5952,7 +5954,10 @@
       "showingBigAbove": "Showing big in the preview above",
       "versions": "Versions",
       "versionOf": "Version {n} of {total}",
-      "olderShown": "Showing version {n}. Version {newest} is the newest, and changes go to it."
+      "olderShown": "Showing version {n}. Version {newest} is the newest, and changes go to it.",
+      "etaRange": "Usually {time}. You can keep chatting or close this page.",
+      "etaGuess": "About {time}. You can keep chatting or close this page.",
+      "etaUnder": "Usually less than a minute. You can keep chatting or close this page."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# word} other {# words}}",

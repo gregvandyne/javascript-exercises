@@ -17264,6 +17264,73 @@ is done with its score), `tests/unit/progress-set-progress.test.js`, and the pla
 kept once it changes; Guided's wrong digit). `tests/unit/_box-frame.js` finds a Chromium on the machine as the site's
 browser tests do, so the frame tests run here too.
 
+## Builder: audit 5 fixes (canvas default, upgrade on re-save, build time) (28 Nov 2026)
+The owner's live audit after #712 (Oomba Canvas 1.6.0) and #713 (the chat's builds) found three things still wrong.
+The earlier checks used the stand-in Builder, which builds whatever plan it gets on the canvas, so they hid all three.
+Traced on the real path (the plan the chat sends, the runner's normalisePlan, the plan note the model reads, the routes),
+with the production logs of 28 Nov 12:40 to 12:54 UTC. Tests: `tests/unit/builder-audit5.test.js` (each one fails on the
+live behaviour), and the devices part of `companion-build-audit4.test.js` updated.
+- **The kit is "the newest version", never a number.** `canvaskit.js` `CANVAS_LATEST = latestCanvas()`, the highest
+  version in `CANVAS_VERSIONS` by number (`verCmp`: 1.10.0 after 1.9.0). `PANEL_KIT`, `canvasTag()`, the canvas starter,
+  the CANVAS RULES' pinned tag and every upgrade below read it, so a new kit (1.6.1) is the default the moment its line
+  is added to `CANVAS_VERSIONS` (and `canvas/SHIPPED.json`); nothing else names it.
+- **1. Column arithmetic is always the canvas.** Cause: "On their own devices" from the chat (#713) sends a game plan
+  with no kind of game (`type: null`, the topic as `learn`). With the arcade side off that is `engine: 'classroom',
+  template: ''`, and its plan note tells the model to "start from the classroom starter closest to it": for a maths
+  practice game that is the class quiz, so "Farm Carry Stars" (regrouping addition, grade 4) was a multiple-choice quiz
+  (46 + 29, A to D) with none of the kit; only a message that spelled out digit-by-digit columns made the model pick the
+  canvas. The canvas rules were never even sent (`wantsCanvas` needs `state.canvas`, which only an activity plan sets).
+  Logs: the chat build `Z2UysmzbN7` (12:42:56 to 12:46:16, "companion build ended" ok) was this one. Choice: a game plan
+  whose topic is column arithmetic becomes the classroom activity plan, labelled a game (`plan.game: true`), in
+  `normalisePlan` (`plan.js columnGame`), so every door (the chat's devices plan, Studio's Classroom game, a recovered
+  build) gets it, rather than a class game that embeds the canvas (the canvas is a whole page with its own tag rules,
+  scanner check, self-test, skill check, playthrough and Activity panel; a page around it would lose them). Only when the
+  kind of game was not chosen (or typed words that name no classroom starter) and no look, world or characters were: a
+  teacher who picks Quiz, Bingo or Flashcards gets that. Column arithmetic (`plan.js columnTopic`): a short topic with an
+  operation (adding, subtracting; "regrouping" alone means adding, "borrowing" subtracting), or a whole message with an
+  operation and how it is done in columns (regrouping, carrying, borrowing, columns, digits, place value), never
+  fractions, decimals, money or "add a timer"; multiplying needs the "how" (times tables are facts). The ready generator
+  that fits (`topicFor`, with the skill and digits the words name) goes in the note. It is played `both` (each student on
+  their device, results to Progress, Board mode for the teacher). The note and the later turns' brief say it is a CLASS
+  GAME, never a quiz of its own, made a game by the kit's stars, sound and `task.theme` and stories, and that a later
+  "add a star reward" is a change to the data, never "I cannot" (#713's item). A new game asked for in words alone with
+  no plan gets the same (`prompt.js wantsCanvas`, `claude.js COLUMN_GAME_NOTE`). What #713 needed of a game: Studio's
+  line says "Class game · results go to Progress" (`studio.canvasLine.game`, from `state.classGame`), never "Classroom
+  activity", and "Make it a live game" says what any classroom game says (`buildSetup.play.why.plain`; with the arcade
+  side off no classroom game is live, canvas or not). Assign works as for any game (#713's share then assign). The
+  first message is "Here is my game plan." Other devices topics stay the class game kind of #713.
+- **2. Saving again moves an older activity to the newest kit.** Cause: the owner pressed Studio's "Save version" (the
+  log has `POST /api/studio/QCU41mKm2y/save` at 12:47:33 and no `/activity`), which copies the current page byte for
+  byte, so version 4 still loaded `/vendor/oomba-canvas/1.5.0/` (3-digit problems, no stars or sound, "Right! 0, Not yet.
+  0"). Its toast is the same words as the panel's ("Saved as version 4."). The Activity panel, the only place that moved
+  the kit, cannot be saved without an edit (Save is off with no change). Not the cache (a version's page is its own
+  stored HTML) and not the version line. Now `activity-data.js upgradeCanvas(html)` swaps only the pinned tag for the
+  newest one when the newest kit's self-test takes the data (every newer field is optional), else leaves the page as it
+  was; it runs in Save version (then the page is sanitised and scanned again, as every new page is), in the Builder's
+  own save (`tools.js saveVersion`, like the Oomba Kit's patch releases), and the panel opens an older activity with a
+  pending "Moved to the newest kit" change, so Save works with no edit (label "Activity panel: moved to the newest kit",
+  `kit` in `CHANGE_KEYS`; it does not count as an unsaved edit). The panel's note now names what the newest kit adds.
+  Restore still restores the page as it was.
+- **3. Build time.** Measured: the production logs have only each job's total: `Z2UysmzbN7` 199 s (the quiz) and
+  `hNYOPFI8LG` 353 s (12:48:04 to 12:53:58, the digit-by-digit canvas build); the Builder logged nothing per round and
+  playtests run in this process (no screenshot worker logs). From the code, a teacher is a trusted maker: always Pro,
+  20 rounds, and up to three automatic playtest and fix rounds, each a full browser playtest (about 25 s of play and
+  layouts) plus a playthrough (up to 60 s plus loading), then a model round to fix, then both again; the skill check of
+  #712 is one of the hard findings that starts such a round. So most of 3 to 6 minutes is playtest and fix cycles after
+  the first version, as the card's own "Playtesting" row shows. Done here: (a) every build now logs one line, "builder
+  build ended", with numbers only (total, first version, rounds and model time, playtests and their time, playthroughs
+  and their time, fix rounds, the rest, canvas or not), so the next audit can read where the time went; (b) a chat build
+  of an activity starts with the canvas starter already its draft (`tools.js seedCanvas`, the same data the plan
+  fallback saves, the newest kit), and the model is told not to call start_from_template and to make its changes in one
+  edit: one model round fewer, nothing saved until its first save (still version 1); (c) the estimate is honest: the
+  chat's card said "Usually 1-2 minutes" for every build, whatever the data; it now shows the build's own estimate
+  (`eta.js`, from recent timed builds of the same kind; "About" while it is a first guess), and the first guess for a
+  new Pro build (every teacher's) is 2 to 6 minutes from the two live builds, not 1.5 to 4. Without an estimate the line
+  names no number. New words in the 12 locales (`js.companion-build.etaRange`, `etaGuess`, `etaUnder`, `usually`). Not
+  done: fewer fix rounds or a shorter playtest (they find real problems, and shorter random play on an activity could
+  raise false findings that cost a round), and running the playtest and the playthrough side by side (the browser runs
+  one game at a time).
+
 ## Oomba Canvas 1.6.1: audit 5 (28 Nov 2026)
 
 The owner's fifth live audit played "Barnyard Add-Up" (a Builder classroom activity on Oomba Canvas 1.6.0, column

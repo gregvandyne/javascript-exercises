@@ -111,7 +111,25 @@ export function jobHtml(x, j) {
   const rows = (live && live.rows) || defaultRows(j);
   const base = Number(j.base) || 0;
   const pv = j.mode === 'change' && j.baseId && !inStudio(j.gameId) ? previewHtml(j.gameId, j.baseId, j.title, { over: `${L('vBuilding', { n: base + 1 })}\n${L('vWorks', { n: base || 1 })}`, playable: false, slot: `busy-${j.id}` }) : '';
-  return `<div class="oc-made oc-job ocb-game" aria-busy="true" data-ocb-job="${esc(j.id)}">${head}${pv}<div data-ocb-steps="${esc(j.id)}">${stepsHtml(rows)}</div><p class="ocb-usually">${esc(L('usually'))}</p></div>`;
+  return `<div class="oc-made oc-job ocb-game" aria-busy="true" data-ocb-job="${esc(j.id)}">${head}${pv}<div data-ocb-steps="${esc(j.id)}">${stepsHtml(rows)}</div><p class="ocb-usually" data-ocb-eta="${esc(j.id)}">${esc(etaLine(live && live.eta))}</p></div>`;
+}
+let minutesF = null;
+/** 2 -> "2 minutes", (2, 6) -> "2–6 minutes", in the reader's language (the browser's own plurals and ranges). */
+function minutes(lo, hi = lo) {
+  try {
+    const loc = document.documentElement.lang || undefined;
+    if (!minutesF) minutesF = new Intl.NumberFormat(loc, { style: 'unit', unit: 'minute', unitDisplay: 'long' });
+    if (lo === hi) return minutesF.format(hi);
+    return typeof minutesF.formatRange === 'function' ? minutesF.formatRange(lo, hi) : `${new Intl.NumberFormat(loc).format(lo)}-${minutesF.format(hi)}`;
+  } catch { return lo === hi ? `${hi} min` : `${lo}-${hi} min`; }
+}
+/** The card's time line from the build's own estimate (GET /api/companion/build/:gameId eta: recent real builds of this
+ *  kind, or a first guess that says "About"); before the first answer, no number at all. */
+function etaLine(e) {
+  if (!e) return L('usually');
+  if (e.show === 'under') return L('etaUnder');
+  const time = e.show === 'range' ? minutes(e.lo, e.hi) : minutes(e.hi);
+  return L(e.guess ? 'etaGuess' : 'etaRange', { time });
 }
 function lineOf(g) {
   const parts = [L('line.version', { n: g.number })];
@@ -207,6 +225,8 @@ async function poll() {
         if (r.rows) S.live.set(j.gameId, r);
         const box = S.chat.root.querySelector(`[data-ocb-steps="${CSS.escape(j.id)}"]`);
         if (box && r.rows) box.innerHTML = stepsHtml(r.rows);
+        const line = S.chat.root.querySelector(`[data-ocb-eta="${CSS.escape(j.id)}"]`);
+        if (line && r.rows) line.textContent = etaLine(r.eta);
       } catch { /* the next tick asks again */ }
     }
     const vid = j.state === 'done' && j.game ? (S.cardV.get(j.id) || j.game.versionId) : j.mode === 'change' ? j.baseId : null;

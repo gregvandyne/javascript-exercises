@@ -1870,7 +1870,8 @@
         "help": "ayuda cambiada",
         "count": "{n} por serie",
         "purpose": "uso cambiado",
-        "more": "+{n} más"
+        "more": "+{n} más",
+        "kit": "pasada al kit más nuevo"
       },
       "saved": "Guardado como versión {number}.",
       "savedJoined": "Guardado en la versión {number}.",
@@ -3629,7 +3630,7 @@
       "versionN": "versión {n}",
       "close": "Cerrar",
       "intro": "Cambia la actividad tú mismo. Cada vez que guardas se crea una versión nueva, revisada como cualquier otra. El Builder sigue ahí para cambios más grandes.",
-      "upgradeNote": "Al guardar aquí, la actividad pasa al kit más nuevo, que te añade Mostrar respuesta y Modo pizarra.",
+      "upgradeNote": "Esta actividad usa un kit más antiguo. Guárdala para pasarla al más nuevo: comentarios amables en cada paso, pistas con los números del propio problema, estrellas y sonido.",
       "problems": "Problemas",
       "inList": "{n} en la lista",
       "sameList": "La misma lista para todos",
@@ -3690,7 +3691,8 @@
         "gen": "Problemas nuevos para cada estudiante",
         "help": "Ayuda cambiada",
         "count": "{n} por serie",
-        "purpose": "Uso cambiado"
+        "purpose": "Uso cambiado",
+        "kit": "Pasada al kit más nuevo"
       },
       "needsFix": "Hay que arreglarlo",
       "answerIs": "Respuesta: {a}",
@@ -5416,7 +5418,7 @@
         "play": "Probándolo en un teléfono, una tableta y un portátil",
         "scan": "Revisión de seguridad"
       },
-      "usually": "Suele tardar 1-2 minutos. Puedes seguir conversando o cerrar esta página.",
+      "usually": "Esto tarda unos minutos. Puedes seguir conversando o cerrar esta página.",
       "vBuilding": "Construyendo la versión {n}…",
       "vWorks": "La versión {n} sigue funcionando mientras esperas.",
       "tap": "Toca para jugar",
@@ -5493,7 +5495,10 @@
       "showingBigAbove": "Se ve en grande en la vista previa de arriba",
       "versions": "Versiones",
       "versionOf": "Versión {n} de {total}",
-      "olderShown": "Se muestra la versión {n}. La versión {newest} es la más reciente, y los cambios van a ella."
+      "olderShown": "Se muestra la versión {n}. La versión {newest} es la más reciente, y los cambios van a ella.",
+      "etaRange": "Suele tardar {time}. Puedes seguir conversando o cerrar esta página.",
+      "etaGuess": "Unos {time}. Puedes seguir conversando o cerrar esta página.",
+      "etaUnder": "Suele tardar menos de un minuto. Puedes seguir conversando o cerrar esta página."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palabra} other {# palabras}}",

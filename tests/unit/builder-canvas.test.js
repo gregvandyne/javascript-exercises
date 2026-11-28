@@ -108,7 +108,7 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
   for (const code of CODES) { const st = {}; assert.equal(prompt.wantsCanvas(st, tFor(code)('studio.canvasLine.toCanvasAsk'), arcade), true, code); assert.equal(st.canvas, true); }
   const st = { canvas: true }; prompt.wantsCanvas(st, tFor('fr')('studio.canvasLine.toArcadeAsk'), activity); assert.equal(st.canvas, undefined, 'the switch back clears it');
   const claude = fs.readFileSync(path.join(ROOT, 'server/builder/claude.js'), 'utf8');
-  assert.match(claude, /wantsCanvas\(st, ctx\.text, cur\) \? \[\{ type: 'text', text: CANVAS_RULES \}\]/, 'one block, no cache point of its own, only when wantsCanvas');
+  assert.match(claude, /wantsCanvas\(st, ctx\.text, cur, \{ plan: ctx\.plan \}\) \? \[\{ type: 'text', text: CANVAS_RULES \}\]/, 'one block, no cache point of its own, only when wantsCanvas');
 });
 
 test('the CANVAS RULES tell the Builder that lesson activities keep worksheets by themselves (Oomba Canvas 1.4.0)', () => {

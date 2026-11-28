@@ -57,7 +57,17 @@ export const CANVAS_VERSIONS = Object.freeze({
   // Activity panel.
   '1.6.1': 'sha384-avTlb7CXYHwa6k4Ti5bPx0Wm5b9gTK9+55IWQ58Xs3w2jHnD3QUn8XdZa08mZ+fq',
 });
-export const CANVAS_LATEST = '1.6.1';
+/** The newest version in CANVAS_VERSIONS (by number, never by the order the lines are in). Every new activity starts on it
+ *  (canvasTag(), the CANVAS RULES), and an older one moves to it when it is saved again (activity-data.js upgradeCanvas):
+ *  shipping a version is adding its line above, nothing else names it (docs/decisions.md "Builder: audit 5 fixes"). */
+export const latestCanvas = (versions = CANVAS_VERSIONS) => Object.keys(versions).sort(verCmp).pop();
+/** Compare two version numbers ('1.4.1' < '1.6.0' < '1.10.0'): < 0, 0 or > 0. */
+export function verCmp(a, b) {
+  const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0);
+  return 0;
+}
+export const CANVAS_LATEST = latestCanvas();
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 
