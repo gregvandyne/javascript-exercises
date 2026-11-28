@@ -195,7 +195,7 @@ router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) =
   if (!on || on.id !== b.id) return res.status(409).json({ error: req.t('errors.api.badRequest'), ...runState(x.u, x.tp, x.p) });
   const r = GL.answerRun(x.u, x.tp, b.marked);
   if (!r) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const out = { result: r.result, kind: r.kind, levelDone: r.levelDone, mastered: r.mastered, summary: r.summary, question: r.question, hint: r.hint };
+  const out = { result: r.result, kind: r.kind, levelDone: r.levelDone, mastered: r.mastered, summary: r.summary, question: r.question, hint: r.hint, ...(r.after ? { after: r.after } : {}) };
   // The next topic, worked out now: never a mastered one (this unit first, then the band's other units).
   if (r.mastered) out.closing = closingOf(x.u, x.tp, x.p, r.summary, r.win);
   res.json(out);
