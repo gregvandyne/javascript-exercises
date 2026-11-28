@@ -15500,7 +15500,8 @@
       "allEmptyForTeachers": "まだレッスンを作っていません。"
     },
     "liveOpenNow": "ライブゲームが開いています：{title}。遊んで終了すると、ここに結果が表示されます。",
-    "liveOpenHost": "ホスト画面へ"
+    "liveOpenHost": "ホスト画面へ",
+    "liveEndedEmpty": "終了しました。参加した人はいません"
   },
   "library": {
     "title": "おはなしライブラリー",

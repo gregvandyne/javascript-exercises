@@ -15502,7 +15502,8 @@
       "allEmptyForTeachers": "עדיין לא בניתם שיעור."
     },
     "liveOpenNow": "משחק חי פתוח עכשיו: {title}. התוצאות שלו יופיעו כאן אחרי שישחקו בו והוא יסתיים.",
-    "liveOpenHost": "למסך המנחה"
+    "liveOpenHost": "למסך המנחה",
+    "liveEndedEmpty": "הסתיים, אף אחד לא הצטרף"
   },
   "library": {
     "title": "ספריית הסיפורים",

@@ -139,7 +139,8 @@ export function lateSteps(classId, lessons, { userId = null } = {}) {
  *  own signed-in students): { runs: [{ id, title, mode, ended_at, players, linked }], by: Map 'runId:userId' ->
  *  { right, total } | null (played; nothing to mark) }. Newest first, at most `limit`. */
 export function classLive(classId, limit = 8) {
-  const runs = q.all('SELECT id, title, mode, ended_at, players, class_lesson_id, step_id FROM live_runs WHERE class_id=? ORDER BY ended_at DESC LIMIT ?', classId, limit);
+  // A run nobody joined is no column (classlive-results.js EMPTY_RUN).
+  const runs = q.all('SELECT id, title, mode, ended_at, players, class_lesson_id, step_id FROM live_runs WHERE class_id=? AND started_at<>0 ORDER BY ended_at DESC LIMIT ?', classId, limit);
   if (!runs.length) return { runs: [], by: new Map() };
   const rows = q.all(`SELECT run_id run, user_id u, correct, answered, marks FROM live_run_scores WHERE run_id IN (${runs.map(() => '?').join(',')})`, ...runs.map(r => r.id));
   return { runs: runs.map(r => ({ id: r.id, title: r.title, mode: r.mode, ended_at: r.ended_at, players: r.players, linked: !!(r.class_lesson_id && r.step_id) })), by: liveResults(rows) };

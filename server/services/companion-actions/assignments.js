@@ -13,7 +13,7 @@ import * as GC from '../gclassroom.js';
 import { siteBase } from '../email.js';
 import { tFor } from '../../i18n/index.js';
 import { toolOf } from '../../../public/js/manip-data.js';
-import { no, clean, fold, whichClass, className, assignmentIn, someStudents, ownIn, ownLessons, clNow, isoDay, fmtDay, dayParam, assignedLink, CLASS_REF, ASSIGNMENT, P } from './shared.js';
+import { no, clean, fold, whichClass, className, assignmentIn, someStudents, ownIn, ownLessons, ownPlans, clNow, isoDay, fmtDay, dayParam, assignedLink, CLASS_REF, ASSIGNMENT, P } from './shared.js';
 
 const STUDENTS = { type: 'array', maxItems: 30, items: { type: 'string' }, description: 'Only for some students: the placeholders exactly as written, like [student 1]. Leave out for the whole class.' };
 const DUE = P('The due day as YYYY-MM-DD (work it out from today), only when the teacher gave one.');
@@ -132,7 +132,7 @@ export default [
     params: { classRef: CLASS_REF, lesson: P('Words of the lesson\'s title as the teacher wrote them.'), due: DUE, opens: OPENS, students: STUDENTS },
     plan(u, ctx, p) {
       const w = whichClass(u, ctx, p.classRef); if (!w.c) return w;
-      const l = ownIn(ctx, ownLessons(u, w.c.school_id), p.lesson, 'lesson'); if (!l.it) return l;
+      const l = ownIn(ctx, ownPlans(u, w.c.school_id), p.lesson, 'lesson plan'); if (!l.it) return l;
       const days = daysOf(p); if (days.error) return days;
       if (L.classLessons(w.c.id).some(x => x.lesson_id === l.it.id)) return no(`${clean(ctx, w.c.name)} already has "${clean(ctx, l.it.title)}" assigned.`);
       const s = someStudents(ctx, w.c, p.students); if (s.error) return s;

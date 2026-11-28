@@ -15500,7 +15500,8 @@
       "allEmptyForTeachers": "Todavía no has creado ninguna lección."
     },
     "liveOpenNow": "Hay un juego en directo abierto ahora: {title}. Sus resultados aparecen aquí cuando se juega y se termina.",
-    "liveOpenHost": "Ir a la pantalla del anfitrión"
+    "liveOpenHost": "Ir a la pantalla del anfitrión",
+    "liveEndedEmpty": "Terminado, nadie se unió"
   },
   "library": {
     "title": "Biblioteca de cuentos",

@@ -95,6 +95,13 @@ export const itemRow = it => ({ ...(it.q ? { q: it.q } : { i: it.i }), right: it
   ...(it.choices ? { choices: it.choices, answer: it.answer, secs: it.secs, counts: it.counts } : {}), ...(it.cat ? { cat: it.cat } : {}) });
 
 /** Save an ended session (one transaction). Class runs: scores for the class's active students. */
+/** A class's room that ended before it was started, with nobody in it (chat audit 4: hosted from the chat, nobody
+ *  joined): kept as a run with no players and started_at 0 (never scores), for the class's Live games history only. */
+export const emptyClassRun = (s, sum = summary(s)) => !s.startedAt && s.audience === 'class' && !!s.classId && !sum.players.length && !sum.guests;
+/** Such a run (started_at 0): listed in the class's Live games history ("Ended, no one joined"), never as a played game
+ *  (the gradebook, the host's results list, the weekly digest, the teach loop). */
+export const EMPTY_RUN = 'started_at=0';
+export const isEmptyRun = r => !!r && r.started_at === 0;
 export function save(s, sum = summary(s)) {
   const id = s.id;
   const ownerId = s.owner || s.host.userId;
@@ -104,7 +111,7 @@ export function save(s, sum = summary(s)) {
     q.run(`INSERT OR REPLACE INTO live_runs(id, host_id, class_id, class_lesson_id, step_id, audience, mode, game_id, version_id, set_id, title,
       started_at, ended_at, players, guests, items, scored_by, teams, settings) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     id, ownerId, classRun ? s.classId : null, classRun ? s.clId : null, classRun ? s.stepId : null, s.audience, s.mode,
-    s.gameId, s.versionId, s.setId, s.title, s.startedAt || s.createdAt, s.endedAt || Date.now(), sum.players.length, sum.guests,
+    s.gameId, s.versionId, s.setId, s.title, s.startedAt || (emptyClassRun(s, sum) ? 0 : s.createdAt), s.endedAt || Date.now(), sum.players.length, sum.guests,
     // The question texts the host wrote (or a starter set's): never anything a player sent.
     JSON.stringify(sum.items.map(itemRow)),
     sum.scoredBy,
@@ -215,7 +222,7 @@ export function csv({ players = [], items = [] }) {
 }
 /** A class's recent runs (the class progress page's "Live games" panel); teams: the run's team list or ''. */
 export const classRuns = (classId, limit = 10) => q.all('SELECT id, title, mode, started_at, ended_at, players, guests, teams FROM live_runs WHERE class_id=? ORDER BY ended_at DESC LIMIT ?', classId, limit);
-export const hostRuns = (hostId, limit = 20) => q.all('SELECT id, title, mode, audience, class_id, started_at, ended_at, players, guests FROM live_runs WHERE host_id=? ORDER BY ended_at DESC LIMIT ?', hostId, limit);
+export const hostRuns = (hostId, limit = 20) => q.all(`SELECT id, title, mode, audience, class_id, started_at, ended_at, players, guests FROM live_runs WHERE host_id=? AND NOT (${EMPTY_RUN}) ORDER BY ended_at DESC LIMIT ?`, hostId, limit);
 
 // ---------------------------------------------------------------- reports (fixed reasons; never who reported)
 /** A player's report: the host, game and version, set, and the question texts. -> the report id. */

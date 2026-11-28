@@ -15502,7 +15502,8 @@
       "allEmptyForTeachers": "Você ainda não criou nenhuma aula."
     },
     "liveOpenNow": "Há um jogo ao vivo aberto agora: {title}. Os resultados aparecem aqui quando ele for jogado e encerrado.",
-    "liveOpenHost": "Ir para a tela do anfitrião"
+    "liveOpenHost": "Ir para a tela do anfitrião",
+    "liveEndedEmpty": "Terminado, ninguém entrou"
   },
   "library": {
     "title": "Biblioteca de histórias",

@@ -127,7 +127,7 @@ export function classSummary(c, t = now(), zone = FALLBACK_TZ, { names = false }
     if (P.hasOpenWork(p) && !started) notStarted.push(p);
   }
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
-  const live = q.get('SELECT COUNT(*) n FROM live_runs WHERE class_id=? AND ended_at>=? AND ended_at<=?', c.id, t - WEEK, t).n;
+  const live = q.get('SELECT COUNT(*) n FROM live_runs WHERE class_id=? AND ended_at>=? AND ended_at<=? AND started_at<>0', c.id, t - WEEK, t).n;
   const recent = q.get(`SELECT COUNT(*) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL
     JOIN class_members m ON m.class_id=cl.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
     WHERE cl.class_id=? AND p.updated_at>=? AND p.updated_at<=? AND ${L.assignedSql('cl.id', 'p.user_id')}`, c.id, t - WEEK, t).n;

@@ -52,7 +52,7 @@ import * as GSETS from './game-sets.js';
 import * as LES from './lessons.js';
 import { liveGameOf } from '../live/live-games.js';
 import * as C from './oomba-chat.js';
-import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.js';
+import { studentNames, namesFrom, scrub, screenLesson, wholeNames } from '../builder/lesson.js';
 import { allow } from './ratelimit.js';
 import * as SR from '../builder/search.js';
 import { prefilter } from '../builder/screen.js';
@@ -77,6 +77,8 @@ import * as LD from './lesson-draft.js';
 import * as AC from './companion-actions/index.js';
 import * as J from './oomba-jobs.js';
 import * as CB from './companion-build.js';
+import * as SA from './set-assign.js';
+import { ownPlans, fitsWords, madeIn, termsOf as namingWords } from './companion-actions/shared.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -96,6 +98,9 @@ export const limitsOf = u => CS.settingsFor(u);
 // ---------------------------------------------------------------- names and words
 /** The teacher's words with their students' names, emails, phone numbers and links taken out. */
 export function cleanText(u, text, names = studentNames(u)) { return scrub(String(text || ''), names).text; }
+/** A title of the teacher's own thing the app gives the AI (a lesson plan, an activity, a game folder): only a student's
+ *  whole name is taken out of it (chat audit 4: "Test 881 Assign" reached the AI as "[student] 881 Assign"). */
+export function titleText(u, text, names = studentNames(u)) { return scrub(String(text || ''), wholeNames(names), { contacts: false }).text; }
 
 // Placeholders (docs/decisions.md "Points from the Oomba chat"): in a teacher's message each student's name becomes
 // "[student 1]", "[student 2]"... instead of "[student]", so Oomba can say which student a point is for without ever
@@ -762,8 +767,8 @@ const TOOLS_MORE = [
   { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
   { name: 'howTo', description: `How to do something on Oomba Academy that you cannot do yourself: the real steps, with links to the teacher's own pages and the buttons' real names. Show the steps as a numbered list exactly as given (links and bold kept; translate the plain words only). Tasks: ${H.TASKS.join(', ')}.`, input_schema: { type: 'object', required: ['task'], properties: { task: { type: 'string', enum: H.TASKS } } } },
   { name: 'createClass', description: 'Make a new class for the teacher (they are its teacher; no students are added). The teacher sees "Create class ...?" with Create and Not now; nothing is made until they tap Create, and Undo deletes it while it has no students. Use it when they ask for a class, a test class or a practice class. When they did not say a name, use "Test class" for a test or practice class.', input_schema: { type: 'object', properties: { name: str('The class name, short, no student names.'), grade: str('K or 1 to 12, optional.'), school: str('The school\'s name, only when the teacher is at more than one.') } } },
-  { name: 'assign', description: 'Assign a game, a Story Library book or (when findLesson lists Grammar Lab) a Grammar Lab unit or topic to one of the teacher\'s classes, to the whole class or to some of its students, optionally due on a day, when the teacher asks ("assign Word Hunt to 4B, due Friday", "give [student 1] and [student 2] the fractions game"). Use the id of a game from searchGames or a book from searchBooks (search first when you have none). The teacher sees "Assign ... to <class>?" with Assign and Not now: nothing is assigned until they tap Assign, and Undo takes it off the class again. When the teacher has several classes and did not say which, the app asks them.', input_schema: { type: 'object', required: ['kind', 'id'], properties: { kind: { type: 'string', enum: ['game', 'book', 'grammar'] }, id: str('The game\'s id (searchGames or findLesson), the book\'s id (searchBooks), or a Grammar Lab id (findLesson).'), classRef: str('The class: its id or its name as the teacher wrote it. Leave out to use the page\'s class or ask.'), students: { type: 'array', maxItems: 30, items: { type: 'string' }, description: 'Only for some students: the placeholders exactly as written, like [student 1]. Leave out for the whole class.' }, due: str('The due day as YYYY-MM-DD, only when the teacher gave one (work out the date from today).') } } },
-  { name: 'findLesson', description: 'Find a game or lesson plan the teacher names ("assign Sum Racer", "where is Identifying Adjectives"): their own game folders, the class\'s assignments, Oomba\'s games (with games that are turned off right now) and, when the teacher has it, Grammar Lab units and topics. Use it whenever the teacher names one, before saying it is not on Oomba. Its result says what to tell the teacher.', input_schema: { type: 'object', required: ['name'], properties: { name: str('The lesson\'s name as the teacher wrote it.'), classRef: str('A class id or name, optional.') } } },
+  { name: 'assign', description: 'Assign a game, a Story Library book or (when findLesson lists Grammar Lab) a Grammar Lab unit or topic to one of the teacher\'s classes, to the whole class or to some of its students, optionally due on a day, when the teacher asks ("assign Word Hunt to 4B, due Friday", "give [student 1] and [student 2] the fractions game"). Use the id of a game from searchGames or a book from searchBooks (search first when you have none). A game that opens at the teacher\'s own activity or set (Arithmetic Lab, Algebra Builder, Crossword, Atlas Quest, Mistake Hunt) is assigned with one of their saved ones: pass set (findLesson lists them as yourActivities; with none named, assign lists them to offer). The teacher sees "Assign ... to <class>?" with Assign and Not now: nothing is assigned until they tap Assign, and Undo takes it off the class again. When the teacher has several classes and did not say which, the app asks them.', input_schema: { type: 'object', required: ['kind', 'id'], properties: { kind: { type: 'string', enum: ['game', 'book', 'grammar'] }, id: str('The game\'s id (searchGames or findLesson), the book\'s id (searchBooks), or a Grammar Lab id (findLesson).'), classRef: str('The class: its id or its name as the teacher wrote it. Leave out to use the page\'s class or ask.'), students: { type: 'array', maxItems: 30, items: { type: 'string' }, description: 'Only for some students: the placeholders exactly as written, like [student 1]. Leave out for the whole class.' }, due: str('The due day as YYYY-MM-DD, only when the teacher gave one (work out the date from today).'), set: str('For a game that opens at the teacher\'s own activity or set: its id or title (findLesson yourActivities, or the list assign gave).') } } },
+  { name: 'findLesson', description: 'Find a game or lesson plan the teacher names ("assign Sum Racer", "where is Identifying Adjectives", "the regrouping lesson plan"): their own lesson plans (lessonPlans, assigned with doAction assignLesson), their saved activities of games like Arithmetic Lab (yourActivities, assigned with assign and set), their own game folders, the class\'s assignments, Oomba\'s games (with games that are turned off right now) and, when the teacher has it, Grammar Lab units and topics. Each result says its type. Use it whenever the teacher names one, before saying it is not on Oomba. Its result says what to tell the teacher.', input_schema: { type: 'object', required: ['name'], properties: { name: str('The lesson\'s name as the teacher wrote it.'), classRef: str('A class id or name, optional.') } } },
   { name: 'classProgress', description: 'A class\'s progress report, read only, in counts: each assignment (how many finished, started, not started, late, answers to read), Needs a look reasons, Grammar Lab and course progress where there is some. Students are placeholders like "Student A" (the page shows the names): never guess a name, never rank or compare students. Use it when the teacher asks how a class is doing or for a progress report.', input_schema: { type: 'object', properties: { classRef: str('The class id or name; the page\'s class (or the only one) when left out.') } } },
   { name: 'makeBoard', description: `Make a Manipulatives board now (saved in the teacher's My boards; the card opens it). Use it for "set up a board showing 245", "a number line board for halves". The app checks every item with the tool's own rules and reads the board back: its result says what is on it (landed) or why nothing could be made. Only after it shows made: true, say what is on the board. If nothing could be made, say why in one line and offer the closest thing the tool can show. Tools (one item each):\n${CM.boardCatalog()}`, input_schema: { type: 'object', required: ['tool', 'items'], properties: { tool: { type: 'string', enum: CM.BOARD_TOOL_LIST }, title: str('A short title, under 60 characters.'), steps: { type: 'array', items: { type: 'string' }, description: '1 to 4 short steps for the students.' }, items: { type: 'array', items: { type: 'object' }, description: 'Items in the tool\'s own settings, like {"value": 245, "box": "none"} (box: "answer", "build" or "none").' } } } },
   { name: 'makeWorksheet', description: 'Make a Figures worksheet or test now, with its questions, in one step (the card opens it). Use it from any page for "a worksheet with ...", or to turn an attached lesson plan into a worksheet: put the plan\'s own problems in items. Each item is {"gen": "<generator id>"} or a figure question of your own: {"kind", "question", "data", "answerType": "number", "answerKey"} or {"kind", "question", "data", "answerType": "choice", "choices", "correct"}; for a question where students plot a point on a number line: {"plot": {"from", "to", "step", "at", "label"}, "question"}. Call figuresKinds first for the kinds, their data fields and the generators (unless this answer already did). The app checks every question (drawn to scale, answers worked out, the range and number kind the teacher asked for) and reads the worksheet back; nothing that cannot be drawn is swapped for another question. Report only what is under landed, and say each reason under notLanded in one line.', input_schema: { type: 'object', required: ['title', 'items'], properties: { title: str('A short title that matches the questions (their range, their topic).'), grade: str('K or 1 to 12.'), purpose: { type: 'string', enum: ['worksheet', 'test'] }, units: { type: 'string', enum: FC.UNITS }, items: { type: 'array', maxItems: 12, items: { type: 'object' } } } } },
@@ -838,8 +843,25 @@ export function assignPlan(u, ctx, i) {
     if (!g || (gameHidden(g) && !mayOpenHidden(u, g))) return { error: 'There is no game with that id: search for it first. Nothing was assigned.' };
     const lg = liveGameOf(g);
     if (lg && !lg.play) return { error: 'That game is played live, with the teacher hosting: it cannot be assigned. Offer to open Live instead. Nothing was assigned.' };
-    if (g.source === 'seed' && GSETS.SET_GAMES.has(g.slug) && !GSETS.OPEN_SET_GAMES.has(g.slug)) return { error: `That game needs the teacher's own questions first: they assign it from its Assign page (/teach/assign?id=${g.id}). Nothing was assigned.` };
     item = { id: g.id, title: games.localizeGame(g).title || g.title };
+    // Chat audit 4: Arithmetic Lab (and every game that opens at the teacher's own activity or set) is assigned with
+    // one of their saved activities, exactly as its Assign page assigns it (set-assign.js: the same options, the
+    // activity's name, its label under it). None saved: refused, with the activity editor to open.
+    if (SA.needsSet(g)) {
+      const sets = GSETS.listMine(g.id, u.id, g.slug);
+      if (!sets.length) {
+        const href = SA.editorHref(g); if (ctx.links) ctx.links.add(href);
+        return { error: `The teacher has no saved activities for ${item.title} yet, so there is nothing of theirs to assign. Say so, and offer to open the activity editor, where they make one and can assign it: [Open the activity editor](${href}). Nothing was assigned.` };
+      }
+      const set = pickSet(sets, i.set, ctx.text);
+      if (!set) {
+        if (i.set) return { error: `None of the teacher's saved activities for ${item.title} has that name. Theirs: ${sets.slice(0, 8).map(x => `"${titleText(u, x.title || x.label, ctx.names)}"`).join(', ')}. Nothing was assigned.` };
+        return { offer: { game: item.title, activities: sets.slice(0, 8).map(x => ({ set: x.id, title: titleText(u, x.title || x.label, ctx.names), label: x.label })) } };
+      }
+      const sa = SA.setAssign(tFor(ctx.lang), g, SA.setOptions(set.id));
+      if (!sa || !sa.what) return { error: 'That activity could not be read. Nothing was assigned.' };
+      item = { id: g.id, title: sa.title || item.title, opts: sa.opts, summary: sa.summary || '' };
+    }
   } else {
     const b = LIB.getBook(String(i.id || ''));
     if (!b) return { error: 'There is no book with that id: search for it first. Nothing was assigned.' };
@@ -867,12 +889,21 @@ export function assignPlan(u, ctx, i) {
     if (!students.includes(inClass[0].id)) students.push(inClass[0].id);
   }
   const due = DUE_DAY.test(String(i.due || '')) ? String(i.due) : '';
-  const plan = { id: uid(10), kind, itemId: item.id, title: cleanText(u, item.title, ctx.names), classId: c.id, className: cleanText(u, c.name, ctx.names), students, due, state: 'open', ...(gl ? { gl: { what: gl.what, unit: gl.unit, band: gl.band, topic: gl.topic || null } } : {}) };
+  const plan = { id: uid(10), kind, itemId: item.id, title: titleText(u, item.title, ctx.names), ...(item.opts ? { opts: item.opts, optTitle: item.title, summary: item.summary || '' } : {}), classId: c.id, className: cleanText(u, c.name, ctx.names), students, due, state: 'open', ...(gl ? { gl: { what: gl.what, unit: gl.unit, band: gl.band, topic: gl.topic || null } } : {}) };
   // A draft the teacher built in the chat: the card's Assign shares it with this class first (companion-build.js).
   if (kind === 'game' && CB.needsShare(u, item.id, c.id)) return { plan: { ...plan, share: true, lang: ctx.lang || 'en' } };
   const tried = VC.dryRun(() => runAssign(u, plan));
   if (!tried.ok) return { error: assignWhy(tried.code) };
   return { plan };
+}
+/** Which of the teacher's saved sets they mean: by id or title (the AI's set), else the one their message names, else
+ *  their only one. -> the set | null (several and none named: offered) */
+function pickSet(sets, ref, words) {
+  const r = String(ref || '').trim(), name = x => x.title || x.label;
+  if (r) return sets.find(x => x.id === r) || sets.find(x => fold(name(x)) === fold(r)) || (sets.filter(x => fold(name(x)).includes(fold(r))).length === 1 ? sets.find(x => fold(name(x)).includes(fold(r))) : null) || (sets.filter(x => fitsWords(name(x), r)).length === 1 ? sets.find(x => fitsWords(name(x), r)) : null);
+  const said = sets.filter(x => x.title && fold(words).includes(fold(x.title)));
+  if (said.length === 1) return said[0];
+  return sets.length === 1 ? sets[0] : null;
 }
 /** A Grammar Lab id from findLesson ("topic:<unit>:<band>:<topic>" or "unit:<unit>:<band>") checked: { what, unit,
  *  band, topic, title } | null. */
@@ -884,7 +915,7 @@ const assignWhy = code => ({ alreadyAssigned: 'The class already has it assigned
 /** The assignment itself (the Assign pages' own services). -> { ok, classLesson } | { ok: false, code } */
 function runAssign(u, p) {
   const dueAt = p.due || null;
-  if (p.kind === 'game') return GF.assignGame(u, p.classId, p.itemId, { dueAt, students: p.students });
+  if (p.kind === 'game') return GF.assignGame(u, p.classId, p.itemId, { dueAt, students: p.students, ...(p.opts ? { options: p.opts, title: p.optTitle || p.title, summary: p.summary || '' } : {}) });
   if (p.kind === 'grammar') { if (!CM.mayGrammar(u)) return { ok: false, code: 'notFound' }; return CM.runGrammar(u, { ...p.gl, classId: p.classId, students: p.students, due: dueAt }); }
   if (p.students.length) return { ok: false, code: 'someStudents' };
   return LIB.assignStory(u, p.classId, p.itemId, { dueAt });
@@ -1189,6 +1220,7 @@ export function runTool(name, input, ctx) {
       const r = assignPlan(u, ctx, i);
       if (r.error) return { result: { error: r.error }, step: { k: 'assignNo' } };
       if (r.ask) { ctx.out.ask = r.ask; return { result: { askedWhich: true, note: 'The teacher picks the class on the card. Ask in one short sentence; nothing is assigned yet.' }, step: { k: 'which' } }; }
+      if (r.offer) return { result: { assigned: false, game: r.offer.game, activities: r.offer.activities, note: `${r.offer.game} is assigned with one of the teacher's own saved activities. Offer these (askChoice with their titles, or name them), then call assign again with set. Nothing is assigned yet.` }, step: { k: 'assignPick', n: r.offer.activities.length } };
       ctx.out.assign = r.plan;
       return { result: { waitingForTeacher: true, checked: true, title: r.plan.title, className: r.plan.className, students: r.plan.students.length ? `${r.plan.students.length} students` : 'the whole class', due: r.plan.due || null, ...(r.plan.share ? { sharesFirst: 'The game is not shared with that class yet: Assign on the card shares it with that class only (never public), then assigns it.' } : {}), note: 'Checked: this can be assigned. Nothing is assigned yet: the teacher sees Assign and Not now on a card. Say so in one short sentence, never that it is assigned.' }, step: { k: 'assign', q: clip(r.plan.title, 40) } };
     }
@@ -1502,14 +1534,47 @@ function findLessonTool(i, ctx) {
     for (const c of CM.closestOpen(x.id)) { const g = searchGames({}).find(y => y.id === c.id) || null; if (g) { ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g }); closest.push({ id: g.id, title: g.title, sameTopic: c.shared }); } }
   }
   for (const gl of f.grammarLab) ctx.seen.set(`gl:${glId(gl)}`, gl);
-  const found = catalog.length + f.mine.length + f.assigned.length + f.hidden.length + f.grammarLab.length;
+  // Chat audit 4: the teacher's own lesson plans (one made in this chat a moment ago too) and their saved activities of
+  // a set game (Arithmetic Lab's "Test 881 Assign"): what the assign tools can take, each labelled with its type.
+  const plans = lessonPlansFor(u, name0, ctx);
+  const acts = activitiesFor(u, name0, ctx);
+  const found = catalog.length + f.mine.length + f.assigned.length + f.hidden.length + f.grammarLab.length + plans.length + acts.length;
   if (found) ctx.out.found = true;
-  const note = off.length
-    ? `${off.map(x => x.title).join(', ')}: turned off on Oomba right now, so students cannot play it (the app says so first, in its own words; never say it does not exist). ${closest.length ? 'Offer the closest open lesson of the same topic as a card ([[game:<id>]]).' : 'No open lesson on Oomba shares its topic: say so, and offer to make a Figures worksheet or a Manipulatives board for it.'}`
-    : found ? 'Show what fits. To assign a Grammar Lab unit or topic, call assign with kind "grammar" and its id.' : 'Not found anywhere the teacher can reach. Say so plainly and offer to look for the topic instead, or to build a lesson if they want one (build only when they ask).';
-  return { result: { yourFolders: f.mine.map(({ id, ...x }) => x), assignedToClass: f.assigned, catalog: catalog.map(({ gameId, ...g }) => g), turnedOff: off.map(x => ({ title: x.title, ...(x.folder ? { folder: x.folder } : {}) })), closestOpen: closest, ...(CM.mayGrammar(u) ? { grammarLab: f.grammarLab.map(x => ({ id: glId(x), what: x.what, title: x.title, band: x.band })) } : {}), note }, step: { k: 'find', n: found, q: clip(name0, 40) } };
+  // Asked for a lesson plan by name: only a lesson plan is one (never a game offered as "the closest match").
+  const askedPlan = /\b(lesson|plan|lessons|plans)\b/i.test(name0) || /\blesson plan/i.test(String(ctx.text || ''));
+  const vocab = askedPlan && !plans.length ? ' The teacher has no lesson plan of their own with that name: say so plainly. Never offer a game as a lesson plan or as the closest match to one; a game here may be offered only called a game.' : ' Each result has its type: never offer a game as a lesson plan, or a lesson plan as a game.';
+  const how = [plans.length ? 'To assign one of their lesson plans, call doAction assignLesson with its title.' : '', acts.length ? 'To assign one of their saved activities, call assign with kind "game", the game\'s id and set.' : '', f.grammarLab.length ? 'To assign a Grammar Lab unit or topic, call assign with kind "grammar" and its id.' : ''].filter(Boolean).join(' ');
+  const note = (off.length
+    ? `${off.map(x => x.title).join(', ')}: turned off on Oomba right now, so students cannot play it (the app says so first, in its own words; never say it does not exist). ${closest.length ? 'Offer the closest open game of the same topic as a card ([[game:<id>]]).' : 'No open game on Oomba shares its topic: say so, and offer to make a Figures worksheet or a Manipulatives board for it.'}`
+    : found ? `Show what fits. ${how}`.trim() : 'Not found anywhere the teacher can reach. Say so plainly and offer to look for the topic instead, or to build a lesson plan if they want one (build only when they ask).') + vocab;
+  return { result: { lessonPlans: plans, yourActivities: acts, yourFolders: f.mine.map(({ id, ...x }) => ({ type: 'game', ...x })), assignedToClass: f.assigned, catalog: catalog.map(({ gameId, ...g }) => ({ type: 'game', ...g })), turnedOff: off.map(x => ({ title: x.title, ...(x.folder ? { folder: x.folder } : {}) })), closestOpen: closest, ...(CM.mayGrammar(u) ? { grammarLab: f.grammarLab.map(x => ({ id: glId(x), what: x.what, title: x.title, band: x.band })) } : {}), note }, step: { k: 'find', n: found, q: clip(name0, 40) } };
 }
 const glId = x => `${x.what}:${x.unit}:${x.band}${x.topic ? `:${x.topic}` : ''}`;
+/** The teacher's own lesson plans that fit the words (the one this conversation made first; "the lesson plan you just
+ *  made": that one). Titles keep everything but a student's whole name. */
+function lessonPlansFor(u, words, ctx) {
+  const all = ownPlans(u), made = madeIn(ctx), w = fold(words);
+  let hit = all.filter(l => fold(l.title) === w || (w.length >= 3 && fold(l.title).includes(w)) || fitsWords(l.title, words));
+  if (!hit.length && !namingWords(words).length) hit = made.map(id => all.find(l => l.id === id)).filter(Boolean).slice(0, 1);
+  hit.sort((a, b) => (made.includes(b.id) ? 1 : 0) - (made.includes(a.id) ? 1 : 0));
+  return hit.slice(0, 6).map(l => ({ type: 'lesson plan', title: titleText(u, l.title, ctx.names), steps: l.steps || 0, ...(l.grade ? { grade: l.grade } : {}), ...(l.assigned ? { assignedToClasses: l.assigned } : {}), ...(made.includes(l.id) ? { madeInThisChat: true } : {}) }));
+}
+/** The teacher's saved activities and sets of the games that open at one (game-sets.js SET_GAMES) that fit the words:
+ *  by the activity's title, or every one of a game the words name ("Arithmetic Lab"). */
+function activitiesFor(u, words, ctx) {
+  const out = [], w = fold(words);
+  for (const slug of GSETS.SET_GAMES.keys()) {
+    const g = games.getGameBySlug(slug);
+    if (!g || !SA.needsSet(g) || g.status !== 'published' || (gameHidden(g) && !mayOpenHidden(u, g))) continue;
+    const gt = games.localizeGame(g).title || g.title, named = w.includes(fold(gt)) || w.includes(fold(slug.replace(/-/g, ' ')));
+    for (const x of GSETS.listMine(g.id, u.id, slug)) {
+      const t = x.title || x.label;
+      if (named || fold(t) === w || (w.length >= 3 && fold(t).includes(w)) || (x.title && fitsWords(x.title, words))) out.push({ type: 'saved activity', game: gt, id: slug, set: x.id, title: titleText(u, t, ctx.names), label: x.label });
+      if (out.length >= 8) return out;
+    }
+  }
+  return out;
+}
 /** Grammar Lab units and topics for these words (companion-make.js findByName's own search, the class's band first, or
  *  the grade asked for), each kept for assign. */
 function glFound(u, words, ctx, grade = null) {
@@ -1560,19 +1625,22 @@ async function lessonTool(i, ctx) {
   const schools = S.schoolsOf(u.id).filter(x => x.role === 'admin' || x.role === 'teacher');
   const school = (pc && schools.find(x => x.id === pc.school_id)) || schools[0];
   if (!school) return { result: { error: 'The teacher has no school on Oomba, so a lesson cannot be saved. Nothing was made.' }, step: { k: 'lessonNo' } };
-  const args = { topic, grade: gradeNum(i.grade) === null ? '' : gradeLabel(gradeNum(i.grade)), subject: clip(String(i.subject || ''), 40), minutes: Number(i.minutes) || 40 };
+  // Chat audit 4: on a class page the class's grade when the teacher gave none ("I didn't set a grade for it").
+  const gr = gradeNum(i.grade) !== null ? gradeNum(i.grade) : pc && gradeNum(pc.grade) !== null ? gradeNum(pc.grade) : null;
+  const args = { topic, grade: gr === null ? '' : gradeLabel(gr), subject: clip(String(i.subject || ''), 40), minutes: Number(i.minutes) || 40 };
+  const gradeNote = gradeNum(i.grade) === null && args.grade ? ` Grade ${args.grade}: the grade of the class page the teacher is on.` : '';
   // Several makes in one answer: the draft (the slow AI part) and the save are a job; the card fills in when it is done.
   if (asJob) {
     const jb = queueJob(ctx, 'lesson', { schoolId: school.id, args, lang: ctx.lang }, topic);
     if (jb.error) return { result: { made: false, error: jb.error }, step: { k: 'lessonNo' } };
-    return { result: { started: true, made: false, topic, note: JOB_STARTED }, step: { k: 'job', q: clip(topic, 40) } };
+    return { result: { started: true, made: false, topic, grade: args.grade || null, note: `${JOB_STARTED}${gradeNote}` }, step: { k: 'job', q: clip(topic, 40) } };
   }
   let d;
   try { d = await LD.draft(u, school.id, { ...args, locale: ctx.lang, t: tFor(ctx.lang) }); } catch { return { result: { error: 'The lesson could not be drafted right now. Nothing was made.' }, step: { k: 'lessonNo' } }; }
   const dry = VC.dryRun(() => LD.save(u, school.id, d, { ...args, lang: ctx.lang }));
   if (!dry || !dry.ok) return { result: { error: 'The lesson could not be saved. Nothing was made.' }, step: { k: 'lessonNo' } };
   ctx.out.made = { kind: 'lesson', schoolId: school.id, d, args };
-  return { result: { made: true, title: cleanText(u, d.draft.title || topic, ctx.names), steps: (d.draft.steps || []).map(s => ({ kind: s.kind, title: cleanText(u, s.title || '', ctx.names), minutes: s.minutes || null })), saved: dry.saved, planned: dry.planned, note: 'Checked: this lesson plan is saved in the teacher\'s lessons with your answer; the card opens it. Say what it covers in one or two sentences.' }, step: { k: 'lessonMade', n: dry.saved } };
+  return { result: { made: true, title: cleanText(u, d.draft.title || topic, ctx.names), grade: args.grade || null, steps: (d.draft.steps || []).map(s => ({ kind: s.kind, title: cleanText(u, s.title || '', ctx.names), minutes: s.minutes || null })), saved: dry.saved, planned: dry.planned, note: `Checked: this lesson plan is saved in the teacher's lessons with your answer; the card opens it. Say what it covers in one or two sentences.${gradeNote} To assign it later, doAction assignLesson finds it by its title.` }, step: { k: 'lessonMade', n: dry.saved } };
 }
 /** Which of the teacher's own books a rename, duplicate, delete or paint-again means: bookId (checked: their own), the
  *  book of the page they are on, or their words (findMyBooks' matching). Several that fit: a choice card of their titles
@@ -1633,7 +1701,7 @@ function system(u, lang, page, settings) {
     `Write in ${L[lang] || 'English (US)'} unless the teacher writes in another language. Plain words. Never use em dashes.`,
     // docs/decisions.md "Teachers say lessons": the words teachers see everywhere else on their pages.
     // Chat audit 3 (owner): one vocabulary in every reply and card: game, lesson plan, worksheet.
-    'Words: say exactly three words for what teachers use. A "game" is one playable thing on Oomba (an Oomba game, a game the teacher or a student built, a live game, a classroom activity). A "lesson plan" is a lesson with several steps (read, play, build steps), made in the lesson builder, by makeLesson or on the Hub. A "worksheet" is a Figures worksheet or test. Never call a game a "lesson", and never call a lesson plan a "game". Tools and markers keep their own names ([[game:<id>]], [[lesson:<id>]], searchGames, findLesson). Call the class page where a teacher runs class (the "homeroom" page type) "the Hub", or "Hub" where a label is short (its tab, Everyone to the Hub); it used to be called Homeroom, so never say Homeroom to the teacher.',
+    'Words: say exactly three words for what teachers use. A "game" is one playable thing on Oomba (an Oomba game, a game the teacher or a student built, a live game, a classroom activity). A "lesson plan" is a lesson with several steps (read, play, build steps), made in the lesson builder, by makeLesson or on the Hub. A "worksheet" is a Figures worksheet or test. Never call a game a "lesson", and never call a lesson plan a "game". When the teacher asks for a lesson plan, offer only lesson plans a tool returned; never offer a game as the closest lesson plan (a game is offered only as a game, called a game). Tools and markers keep their own names ([[game:<id>]], [[lesson:<id>]], searchGames, findLesson). Call the class page where a teacher runs class (the "homeroom" page type) "the Hub", or "Hub" where a label is short (its tab, Everyone to the Hub); it used to be called Homeroom, so never say Homeroom to the teacher.',
     'Classes: name a class by its full name as the tools and "The page now" give it (className, with its subject when it has one), never shortened to the words the teacher typed (a grade and a letter alone).',
     'Students\' names are never sent to you: a placeholder like "[student 1]" stands where one was (the same number is the same student in this chat; a plain "[student]" is someone Oomba cannot give points to). Never ask for, guess or repeat a student\'s name, and never ask for students\' work, answers or photos of people.',
     'Points: when the teacher asks to give a point to a student or the whole class, call givePoint (target "class" or the placeholder exactly as written, and the reason). The card in the chat shows who got it, with Undo, or a short choice when something is unclear. In your answer say it briefly ("Done!" only when the result shows it landed, or "Pick on the card"), never the placeholder. If the teacher named someone who is not a placeholder, that person is not one of their students: say so calmly and give nothing. The dashboard gives one point at a time: when the teacher asks for several, pass count (the app says so first). A class with no students gets no point: givePoint says so at once.',
@@ -1643,6 +1711,7 @@ function system(u, lang, page, settings) {
     'Formats: Figures draws one figure per question and checks a number or a multiple-choice answer. It cannot check a point students plot online, and has no column addition or regrouping box. The app asks the teacher first when a request needs one (makeWorksheet says askedFirst); say the limit in one short sentence before anything is built. A figure that cannot be drawn (sides that make no triangle, a point past the end of the line) is never swapped for another question: say its one-line reason (tellTeacher) and offer one that can be drawn.',
     'Finding and building are separate: when the teacher names a game or a lesson plan ("assign Sum Racer"), call findLesson before anything else; never say it is not on Oomba before it. A game that is turned off right now is named as turned off, with the closest open game of the same topic, and never goes in a lesson plan. Build only when the teacher asks to build; never make a lesson plan with the name of one you could not find.',
     'Missing details: "build a lesson plan" with no topic, "assign it" with nothing clear: ask in one short question in plain words (topic and grade; which game, lesson plan or worksheet). Never guess from earlier messages, and offer only what a tool of this answer returned.',
+    'Offers: offer to assign only what the assign tools can take: a game or book from a search, a lesson plan of the teacher\'s own (findLesson lessonPlans, doAction assignLesson; one makeLesson just made is one of them), a saved activity of a game like Arithmetic Lab (assign with set) or a Grammar Lab unit or topic. Never offer something and then take it back: check with findLesson first when unsure.',
     ...(CM.mayGrammar(u) ? [`${GRAMMAR_LAB_LINE} Recommend it for grammar, punctuation, capitalization and sentence work ("practice for commas" is its Commas unit): findLesson and searchGames list its units and topics (pick the class's grade band), assign takes kind "grammar" with that id, and classProgress counts what students mastered. Only offer units and topics a tool returned.`] : []),
     'Progress: for how a class is doing or a progress report, call classProgress (counts only; students are placeholders like "Student A" the page names). It reads the class now: only when it says students: 0, say the class has no students and how to add them; otherwise never.',
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
@@ -2027,7 +2096,10 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         const made = saveMade(user, m, lang);
         if (!made) log('warn', 'companion make did not land', { turn: turnId, kind: m.kind });
         const verify = made ? { ok: true, landed: 1, notLanded: [] } : { ok: false, landed: 0, notLanded: [{ code: 'gone' }] };
-        return { note: { ...note, made: made || { kind: m.kind, failed: true } }, verify, ...(made ? {} : { correction: tFor(lang)('js.companion.made.failed') }) };
+        // A board made here has Undo like any other board change (chat audit 4): it comes off My boards again while it is
+        // still as Oomba made it.
+        const undoable = made && made.kind === 'board' ? { change: { kind: 'made', what: 'board', id: made.id, title: made.title }, undo: { kind: 'made', what: 'board', id: made.id, state: m.plan.state } } : {};
+        return { note: { ...note, made: made || { kind: m.kind, failed: true } }, verify, ...undoable, ...(made ? {} : { correction: tFor(lang)('js.companion.made.failed') }) };
       }
       if (!fig) {
         // A board: built and read back at the tool; the card says what was left out (the page puts the board on).
@@ -2056,6 +2128,18 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   }
 }
 
+/** Undo a board Oomba made: deleted (manipulatives.js deleteBoard, My boards' own Delete) while it is still as made;
+ *  a board the teacher has changed since stays (kept). */
+function undoMade(u, data) {
+  if (data.what !== 'board') return { ok: false, code: 'notFound' };
+  const b = M.ownBoard(u, data.id);
+  if (!b) return { ok: true, skipped: 1 };
+  if (b.state !== data.state) return { ok: true, skipped: 1 };
+  const r = M.deleteBoard(u, b.id);
+  if (!r.ok) return { ok: false, code: 'notFound' };
+  audit(u.id, 'companion.board.undo', b.id, {});
+  return { ok: true, skipped: 0 };
+}
 /** A make saved for real and read back (companion-make.js saveBoard / saveSheet, lesson-draft.js save): the card's
  *  made, or null when it did not land. The same for a make in the answer and a make in a job. m: { kind, plan } or, for a
  *  lesson, { kind, schoolId, d, args }. */
@@ -2130,6 +2214,7 @@ export const surface = C.defineSurface({
     if (data && data.kind === 'assign') return undoAssign(u, data);
     if (data && data.kind === 'action') return AC.undoAction(u, data);
     if (data && data.kind === 'book') return SB.undoChange(u, data.bookId, data);
+    if (data && data.kind === 'made') return undoMade(u, data);
     return undoProposal(u, data);
   },
   // "Ask Oomba about this" on a Figures question: ref "<worksheet>:<question>", only the teacher's own.

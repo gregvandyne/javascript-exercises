@@ -15501,7 +15501,8 @@
       "allEmptyForTeachers": "Sie haben noch keine Lektion gebaut."
     },
     "liveOpenNow": "Gerade ist ein Live-Spiel offen: {title}. Die Ergebnisse erscheinen hier, sobald es gespielt und beendet ist.",
-    "liveOpenHost": "Zum Bildschirm der Spielleitung"
+    "liveOpenHost": "Zum Bildschirm der Spielleitung",
+    "liveEndedEmpty": "Beendet, niemand ist beigetreten"
   },
   "library": {
     "title": "Geschichtenbibliothek",

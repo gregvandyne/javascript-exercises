@@ -90,7 +90,7 @@ function pieceSettings(slug, ps) {
  * board's cells (a drafted board's grid); a board made by hand is one "free" description of what is on it. Only kinds,
  * numbers and answer keys: never sticky notes, pen marks, typed text, typed answers or labels.
  */
-export function boardContext(slug, st) {
+export function boardContext(slug, st, { labels = null } = {}) {
   const objects = Array.isArray(st.objects) ? st.objects : [], pieces = Array.isArray(st.pieces) ? st.pieces : [];
   const steps = stepsOf(st).map(s => clip(s.text, 140)).slice(0, M.LIMITS.steps);
   const cellOf = x => (Number.isInteger(x && x.cell) ? x.cell : Number.isInteger(x && x.st && x.st.cell) ? x.st.cell : null);
@@ -103,6 +103,7 @@ export function boardContext(slug, st) {
     const item = { box, ...main.reduce((s, o) => ({ ...s, ...objSettings(o) }), {}), ...pieceSettings(slug, ps) };
     if (main.some(o => o.k === 'frac-eq')) Object.assign(item, objSettings(main.find(o => o.k === 'frac-eq')));
     if (ans && ans.st && ans.st.key) item.answerKey = clip(ans.st.key, 40);
+    if (labels && labels.has(c)) item.label = labels.get(c);
     return item;
   });
   const free = objects.filter(o => cellOf(o) === null), loose = pieces.filter(p => cellOf(p) === null);
@@ -149,7 +150,7 @@ export function workflowRules(ctx) {
     `On this tool one item is: ${PRACTICE_TABLE[tl.slug]}.`,
     `Settings for an item on this tool: ${PRACTICE_HELP[tl.slug]}`,
     'box: "answer" when students write an answer under the item, "build" when they build or set it themselves, "none" for something to look at or talk about.',
-    `items: at most ${PRACTICE_MAX}, every item different. steps: 1 to ${STEPS_MAX} short steps for the students, in order, one idea each, under 100 characters. title: under 60 characters. label: optional, at most 4 words; usually leave it out.`,
+    `items: at most ${PRACTICE_MAX}, every item different. steps: 1 to ${STEPS_MAX} short steps for the students, in order, one idea each, under 100 characters. title: under 60 characters. label: optional, at most 4 words, shown above the item ("+ 15"); usually leave it out. The read-back lists each item's label: check it there, never send the board again only to check.`,
     'Board text is for children: US English, plain and friendly. No names of people, no links, no brands or product names.',
     'To clear the board (take everything off), call changeBoard with clear: true and nothing else; never send the current board back for that.',
     'changeBoard takes the WHOLE new board: keep the title, steps and every item the teacher did not ask to change exactly as they are now, and change only what they asked for. Use only the settings listed for this tool; numbers as numbers, lists as arrays. Its result is the board read back as the page will show it: after it, say in one to three short sentences what is on the board now, only from that result, and say plainly what was left out and why.',
@@ -170,7 +171,11 @@ export { PRACTICE_MAX };
  *  the same form the AI sees the board in, so the tool's result says what will actually be on it. */
 export function readBack(slug, change) {
   const st = parse(change.state, {});
-  const board = boardContext(slug, st);
+  // Each item's label as the board shows it (the text the draft put above its cell: "+ 15"), so a check of the labels
+  // is a real check (chat audit 4: "the read-back didn't list them"). Only the board Oomba just built: its own words.
+  const labels = new Map();
+  for (const x of (st.__ann && Array.isArray(st.__ann.texts) ? st.__ann.texts : [])) if (x && x.by === 't' && Number.isInteger(x.cell) && x.cell >= 0 && !labels.has(x.cell)) labels.set(x.cell, clip(x.text, 40));
+  const board = boardContext(slug, st, { labels });
   while (say(board).length > CHAT.CONTEXT_MAX && board.items.length) board.items.pop();
   return { title: change.title, ...board };
 }

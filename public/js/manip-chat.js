@@ -11,10 +11,27 @@ import { t, api, esc } from '/js/app.js';
 import * as BUS from '/js/oomba-bus.js';
 
 let A = null;   // the attached board: { ctx, waiting, undo: Map, undone: Set }
+// The board before each of Oomba's changes, kept for this tab (sessionStorage) so Undo is still there after a reload or
+// a slow answer (chat audit 4: no Undo for that step). Only on this device, only for this tab; never sent anywhere.
+const SNAP_KEY = slug => `oomba-manip-undo:${slug}`;
+const SNAP_MAX = 5;
+function loadSnaps(slug) {
+  try { const v = JSON.parse(sessionStorage.getItem(SNAP_KEY(slug)) || '[]'); return Array.isArray(v) ? v.filter(x => x && typeof x.id === 'string' && x.snap) : []; } catch { return []; }
+}
+/** Keep (or with snap null, drop) one change's board-before for this tab. */
+function keepSnap(id, snap, undone = false) {
+  if (!A) return;
+  try {
+    const list = loadSnaps(A.ctx.slug).filter(x => x.id !== id);
+    if (snap) list.push({ id, snap, undone });
+    sessionStorage.setItem(SNAP_KEY(A.ctx.slug), JSON.stringify(list.slice(-SNAP_MAX)));
+  } catch { /* storage full or off: Undo works until the page reloads */ }
+}
 
 /** ctx: { slug, name, get() -> { boardId, title, state, empty }, snapshot(), apply(state, title), restore(snapshot), layout() } */
 export function attach(ctx) {
   A = { ctx, waiting: false, undo: new Map(), undone: new Set(), failed: new Set() };
+  for (const x of loadSnaps(ctx.slug)) { A.undo.set(x.id, x.snap); if (x.undone) A.undone.add(x.id); }
   const here = m => !!(m && m.tool === ctx.slug);
   BUS.setPage({
     kind: 'manip',
@@ -63,13 +80,13 @@ function put(x) {
   const now = A.ctx.snapshot(), key = v => JSON.stringify(v);
   if (key(now.state) === key(snap.state) && key(want) !== key(snap.state)) { try { A.ctx.restore(snap); } catch { /* as it is */ } failed(); return; }
   A.failed.delete(x.id);
-  A.undo.set(x.id, snap); A.undone.delete(x.id);
+  A.undo.set(x.id, snap); A.undone.delete(x.id); keepSnap(x.id, snap);
   m.applied = true;
   api('/api/companion/chat/act', { method: 'POST', body: { turnId: x.id, act: 'manipApplied' }, background: true }).catch(() => {});
   rerender();
 }
-function undo(id) { const snap = A && A.undo.get(id); if (!snap) return; A.ctx.restore(snap); A.undone.add(id); rerender(); }
-function redo(x) { const m = x.note.manip; if (!A || !m.state) return; const snap = A.ctx.snapshot(); A.ctx.apply(typeof m.state === 'string' ? JSON.parse(m.state) : m.state, m.title); A.undo.set(x.id, snap); A.undone.delete(x.id); rerender(); }
+function undo(id) { const snap = A && A.undo.get(id); if (!snap) return; A.ctx.restore(snap); A.undone.add(id); keepSnap(id, snap, true); rerender(); }
+function redo(x) { const m = x.note.manip; if (!A || !m.state) return; const snap = A.ctx.snapshot(); A.ctx.apply(typeof m.state === 'string' ? JSON.parse(m.state) : m.state, m.title); A.undo.set(x.id, snap); A.undone.delete(x.id); keepSnap(x.id, snap); rerender(); }
 const rerender = () => BUS.whenChat(c => c.render());
 /** "What changed" under one of Oomba's answers on this board, with Undo, Redo or "Put it on my board". */
 function card(x) {

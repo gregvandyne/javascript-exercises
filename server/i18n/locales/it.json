@@ -15501,7 +15501,8 @@
       "allEmptyForTeachers": "Non hai ancora creato una lezione."
     },
     "liveOpenNow": "Ora c’è un gioco dal vivo aperto: {title}. I risultati compaiono qui quando è stato giocato e chiuso.",
-    "liveOpenHost": "Vai allo schermo di chi conduce"
+    "liveOpenHost": "Vai allo schermo di chi conduce",
+    "liveEndedEmpty": "Terminato, nessuno si è unito"
   },
   "library": {
     "title": "Biblioteca delle storie",

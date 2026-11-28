@@ -129,7 +129,7 @@ test('refused: a live-only game, a game that needs the teacher\'s own questions,
   const x = world();
   const tryOne = async input => { const calls = standIn((p, i) => (i === 0 ? toolUse('assign', input) : 'No.')); await say(x, 'Assign this game', { type: 'dashboard', classId: x.A.id }); return resultOf(calls); };
   assert.match((await tryOne({ kind: 'game', id: 'brain-board' })).error, /played live/);
-  assert.match((await tryOne({ kind: 'game', id: 'crossword' })).error, /own questions first/);
+  assert.match((await tryOne({ kind: 'game', id: 'crossword' })).error, /no saved activities for Crossword yet.*\/play\/crossword/, 'chat audit 4: none saved, the activity editor offered');
   assert.match((await tryOne({ kind: 'game', id: 'word-hunt', classRef: 'Room 99' })).error, /not one of the teacher's classes/);
   assert.equal(openAssignments(x.A).length, 0);
 });

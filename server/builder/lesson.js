@@ -13,6 +13,7 @@
 // Reading reuses Crossword's readers and limits (services/docx-text.js, services/pdf-text.js, crossword-doc.js capText's
 // idea): no new library, no AI. A PDF whose text cannot be read here (a scan, a font without a map) is turned away: the
 // file never goes to the model.
+import fs from 'node:fs';
 import { q } from '../db.js';
 import * as S from '../services/schools.js';
 import { docxText } from '../services/docx-text.js';
@@ -76,6 +77,17 @@ export function readLessonFile({ kind, buf }) {
 // with a capital letter, as a name is ("Will", "May"), so "will" and "may" in a sentence stay. Full names, display
 // names and usernames are matched in any case.
 const COMMON = new Set(['will', 'may', 'mark', 'grace', 'hope', 'joy', 'rose', 'june', 'april', 'august', 'summer', 'faith', 'max', 'bill', 'art', 'sky', 'river', 'ruby', 'pearl', 'amber', 'jack', 'sage', 'dawn', 'eve', 'ray', 'rich', 'frank', 'gay', 'guy', 'king', 'young', 'long', 'brown', 'green', 'white', 'black', 'gray', 'grey', 'page', 'chase', 'case', 'hunter', 'miles', 'lane', 'love', 'star', 'honey', 'sunny', 'bear', 'fox', 'wolf', 'drew', 'rob', 'pat', 'sue', 'don', 'dean', 'reed', 'cliff', 'glen', 'heath', 'holly', 'iris', 'ivy', 'lily', 'poppy', 'daisy', 'robin', 'jay', 'wren', 'kit', 'sonny', 'gene', 'lou', 'van', 'del', 'ben', 'tom', 'sam', 'dot', 'nick', 'pete', 'ted', 'tim', 'val', 'norm', 'carol', 'harmony', 'melody', 'destiny', 'precious', 'justice', 'unique', 'liberty', 'serenity', 'trinity', 'neve', 'even', 'add', 'odd', 'one', 'two', 'ten', 'the', 'and', 'student', 'students', 'class', 'teacher']);
+// Common English words (chat audit 4, owner-approved rule): a SURNAME on its own that is one of these ("Test", "Brown",
+// "Rose", "King", "Young") is not taken out, so "rename 4b math to 4b math test" and an activity called "Test 881 Assign"
+// stay as typed. The full name ("Jamie Test") and the first name ("Jamie") are always taken out, and so is a surname
+// that is not a common word ("Okafor"). The list is the site's own sight-word list (library/sight-words.json: Fry's
+// 1,000 Instant Words and the Dolch words), the most common words of written English.
+export const COMMON_WORDS = (() => {
+  try {
+    const w = JSON.parse(fs.readFileSync(new URL('../library/sight-words.json', import.meta.url), 'utf8'));
+    return new Set([...(w.fry || []), ...Object.values(w.dolch || {}).flat()].map(x => String(x).toLocaleLowerCase()));
+  } catch { return new Set(); }
+})();
 const LETTER = '[\\p{L}\\p{M}\\p{N}_]';
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const fold = s => String(s || '').normalize('NFC').replace(/\s+/g, ' ').trim();
@@ -97,17 +109,27 @@ export function studentNames(user) {
 /** Names -> the patterns to take out: each whole name, and each part of a name of two or more words. */
 export function namesFrom(list) {
   const out = new Map();
-  const put = (name, strict) => { const k = name.toLocaleLowerCase(); const was = out.get(k); if (!was || (was.strict && !strict)) out.set(k, { name, strict }); };
+  // part: a piece of a longer name (a first name, a surname, a username's word), never a whole name; a name that is both
+  // stays whole (and loose wins over strict, as before).
+  const put = (name, strict, part = false) => {
+    const k = name.toLocaleLowerCase(), was = out.get(k);
+    if (!was) { out.set(k, { name, strict, ...(part ? { part: true } : {}) }); return; }
+    out.set(k, { name: was.strict && !strict ? name : was.name, strict: was.strict && strict, ...(was.part && part ? { part: true } : {}) });
+  };
   const weak = p => [...p].length <= 2 || COMMON.has(p.toLocaleLowerCase());
   for (const n of list.map(fold).filter(Boolean)) {
     if ([...n].length < 2) continue;
     const words = n.split(/[\s-]+/u).filter(p => /\p{L}/u.test(p));
     // a one-word name that is also an everyday word ("Will") only with its capital; any other whole name in any case
     put(n, words.length <= 1 && !/[_.\d]/.test(n) && weak(n));
+    // the surname of a name of two or more words (its last word): left out on its own when it is a common English word
+    // (never when the same word is also one of the name's other parts, a first name)
+    const sp = n.split(/\s+/u), last = sp.length > 1 && !/[_.\d]/.test(n) ? sp[sp.length - 1].split('-') : [];
+    const plainWord = p => last.includes(p) && COMMON_WORDS.has(p.toLocaleLowerCase()) && !sp.slice(0, -1).some(w => w.split('-').includes(p));
     // the parts of a name of two or more words ("Ana-Maria O'Neil": Ana, Maria, O'Neil)
-    if (words.length > 1) for (const p of words) if ([...p].length >= 2) put(p, weak(p));
+    if (words.length > 1) for (const p of words) if ([...p].length >= 2 && !plainWord(p)) put(p, weak(p), true);
     // a username's parts ("bright_otter42"): often everyday words, so only with a capital letter
-    if (/[_.]/.test(n)) for (const p of n.split(/[_.\s-]+/u)) if ([...p].length >= 3 && /\p{L}/u.test(p)) put(p.replace(/\d+$/, '') || p, true);
+    if (/[_.]/.test(n)) for (const p of n.split(/[_.\s-]+/u)) if ([...p].length >= 3 && /\p{L}/u.test(p)) put(p.replace(/\d+$/, '') || p, true, true);
   }
   return [...out.values()].sort((a, b) => b.name.length - a.name.length).slice(0, 20000);
 }
@@ -190,3 +212,6 @@ export function screenLesson(text) {
   for (let i = 0; i < s.length; i += 4000) { const c = prefilter(s.slice(Math.max(0, i - 200), i + 4000), { personal: false }); if (c) return c; }
   return null;
 }
+/** A name list without the pieces of longer names (namesFrom's part): a student's whole name (and a one-word name or a
+ *  username) only. For titles of the teacher's own things the app hands the AI (chat audit 4). */
+export const wholeNames = names => (names || []).filter(n => !n.part);

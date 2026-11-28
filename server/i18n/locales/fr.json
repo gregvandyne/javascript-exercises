@@ -15500,7 +15500,8 @@
       "allEmptyForTeachers": "Vous n’avez pas encore créé de leçon."
     },
     "liveOpenNow": "Un jeu en direct est ouvert : {title}. Ses résultats s’affichent ici une fois qu’il a été joué et terminé.",
-    "liveOpenHost": "Aller à l’écran de l’animateur"
+    "liveOpenHost": "Aller à l’écran de l’animateur",
+    "liveEndedEmpty": "Terminé, personne ne s’est joint"
   },
   "library": {
     "title": "Bibliothèque d’histoires",
