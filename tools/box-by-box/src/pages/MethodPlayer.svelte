@@ -10,7 +10,8 @@
 	import Keypad from '$lib/Keypad.svelte';
 	import FloatingKeypad, { type Rect } from '$lib/FloatingKeypad.svelte';
 	import Footer from '$lib/Footer.svelte';
-	import { formOf, kindInfo, levelInfo, problemsForRun, showAnswer, type Playable, type Problem, type Values } from '$lib/logic';
+	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import { formOf, kindInfo, levelInfo, numbersOf, problemsForRun, showAnswer, type Playable, type Problem, type Values } from '$lib/logic';
 	import {
 		allFilled,
 		buildWork,
@@ -50,6 +51,11 @@
 	const kind = $derived(kindInfo(activity.kind));
 	const method = $derived(activity.settings.method);
 	const mInfo = $derived(methodInfo(activity.kind, method));
+	/** Decimals: the start screen's example is a decimal one (2.3 is 2 + 0.3), not 46 = 40 + 6. */
+	const decimals = $derived(numbersOf((activity.plan as { numbers?: unknown } | undefined)?.numbers) === 'decimal');
+	const introSteps = $derived(
+		decimals && activity.kind === 'multiply' && method === 'area' ? [t('ui.method.multiply.area.1dec'), ...mInfo.steps.slice(1, -1), t('ui.method.multiply.area.3dec')] : mInfo.steps
+	);
 	let runs = 0;
 	const makeProblems = () => (fresh && runs++ > 0 ? fresh() : problemsForRun(activity));
 
@@ -58,7 +64,10 @@
 	let index = $state(0);
 	let rightCount = $state(0);
 	let wrongCount = $state(0);
+	/** Steps got wrong and put right on the way, this run (they don't change the score; the teacher sees them). */
+	let fixes = $state(0);
 	let firstTry = $state(true);
+	let leaveDialog = $state<ConfirmDialog>();
 	let fb = $state<'right' | 'again' | 'reveal'>('right');
 	let sticky = $state(false);
 	// What has been typed, replaced (never changed in place) on each change, so the work worked out from it depends on
@@ -124,6 +133,18 @@
 	const work = $derived<WorkT | undefined>(problem ? buildWork(method, activity.kind, problem, values, form) : undefined);
 	const fields = $derived<Field[]>(work?.fields ?? []);
 	const fieldOf = (id: string | null) => (id ? fields.find((f) => f.id === id) : undefined);
+	// a field the page copies (the remainder: what's left on the last rung) follows its source as it is typed
+	$effect(() => {
+		if (!work || phase !== 'working') return;
+		for (const f of fields)
+			if (f.copyOf) {
+				const want = work.closed ? norm(values[f.copyOf] ?? '') : '';
+				if ((values[f.id] ?? '') !== want) {
+					put(f.id, want);
+					if (want) reach(f.id);
+				}
+			}
+	});
 	const narrow = $derived(W <= 760);
 	const level = $derived(activity.settings.level);
 	const info = $derived(level === 'custom' ? undefined : levelInfo(level));
@@ -135,7 +156,10 @@
 	const settled = $derived(phase === 'feedback' && fb !== 'again');
 
 	/** The page writes it: everything in Watch, a division's products in Count up. */
-	const isAuto = (f: Field | undefined) => !!f && (way === 'watch' || (way === 'countUp' && !!f.countUp && 'auto' in f.countUp));
+	const isAuto = (f: Field | undefined) => !!f && (way === 'watch' || !!f.copyOf || (way === 'countUp' && !!f.countUp && 'auto' in f.countUp));
+	/** A field the student can work now: not the page's, and (the quotient and what follows) not before the ladder ends. */
+	const workable = (f: Field | undefined) =>
+		!!f && !isAuto(f) && (f.role === 'choice' || f.expect !== null) && (!!work?.closed || ['choice', 'product', 'difference', 'cell', 'sum'].includes(f.role));
 	const isCount = (f: Field | undefined) => !!f && way === 'countUp' && !!f.countUp && !('auto' in f.countUp);
 	const firstEmpty = $derived(fields.find((f) => !values[f.id]));
 	/** Count up: the field being worked (a count keeps it while its value changes). */
@@ -227,7 +251,9 @@
 		if (!f) return allFilled(work, values) ? [m('q.pressCheck')] : [];
 		const typing = f.role !== 'choice' && norm(values[f.id] ?? '').length < (f.expect?.length ?? 0);
 		const n = f.nudgeSay?.(values[f.id] ?? '');
-		return flags.markNow && !typing && fieldWrong(f, values) ? [m('q.notQuite'), ...(n ? [n] : askOf(f))] : askOf(f);
+		if (flags.markNow && !typing && fieldWrong(f, values)) return [m('q.notQuite'), ...(n ? [n] : askOf(f))];
+		// a number of groups that could still take another digit: Enter (or Next) says it's done
+		return f.role === 'choice' && way === 'type' && values[f.id] && current === f.id ? [...askOf(f), m('q.lad.enterDone')] : askOf(f);
 	});
 	const prompt = $derived(tx(promptLines));
 	const sayLines = $derived(sayAll(promptLines));
@@ -316,6 +342,7 @@
 		index = 0;
 		rightCount = 0;
 		wrongCount = 0;
+		fixes = 0;
 		reported = false;
 		reset();
 	}
@@ -339,6 +366,7 @@
 		if (!v) return false;
 		if (flags.markNow && fieldWrong(f, values)) {
 			misses += 1;
+			fixes += 1;
 			if (f.role === 'choice') nudgeMsg = f.nudgeSay?.(v) ?? null;
 			inputOf(f.id)?.select();
 			return false;
@@ -364,8 +392,14 @@
 		nudgeMsg = null;
 		tipMsg = null;
 		if (choose && f.id === active?.id) return;
-		// on by itself once all its digits are in (a choice: once its squares are full)
-		if (f.role === 'choice' ? v.length >= f.len : f.expect !== null && norm(v).length >= f.expect.length) commit(f);
+		// on by itself once all its digits are in (a choice: once its squares are full, or no more digits could fit: 20
+		// groups of 7 from 945 can't take a third digit, as 200 × 7 is more than 945)
+		if (f.role === 'choice' ? v.length >= f.len || choiceFull(f, v) : f.expect !== null && norm(v).length >= f.expect.length) commit(f);
+	}
+	function choiceFull(f: Field, v: string): boolean {
+		const c = f.countUp && 'choose' in f.countUp ? f.countUp.choose : null;
+		if (!c || !v || v.includes('.')) return false;
+		return c.f.read(`${v}0`) * c.divisor > c.left;
 	}
 	function onInput(f: Field, e: Event) {
 		if (busy || phase !== 'working' || isAuto(f)) {
@@ -384,9 +418,14 @@
 			if (canCheck) return check();
 			commit(f);
 		} else if (e.key === 'Tab' && way === 'type') {
+			// in the order the work is done (a rung's groups, product, what's left; the quotient once the ladder ends),
+			// never past a field the page writes or one that can't be worked yet
 			const i = fields.findIndex((x) => x.id === f.id);
-			const to = e.shiftKey ? fields[i - 1] : fields[i + 1];
-			if (to && (shown(to.id) || !e.shiftKey)) {
+			const to = e.shiftKey ? fields.slice(0, i).reverse().find(workable) : fields.slice(i + 1).find(workable);
+			if (!e.shiftKey && f.role === 'choice' && values[f.id] && flags.markNow) {
+				e.preventDefault();
+				commit(f);
+			} else if (to) {
 				e.preventDefault();
 				if (!e.shiftKey && flags.markNow && fieldWrong(f, values)) return commit(f);
 				focusField(to.id);
@@ -425,7 +464,7 @@
 					at = f.id;
 					await wait(STEP_MS / 2);
 					toldLines = f.tell ?? [];
-					fill(f, f.expect ?? watchVals[f.id] ?? '');
+					fill(f, f.copyOf ? norm(values[f.copyOf] ?? '') : (f.expect ?? watchVals[f.id] ?? ''));
 					await wait(STEP_MS * 1.6);
 					await tick();
 					f = fields.find((x) => !values[x.id]);
@@ -468,6 +507,7 @@
 			if (n) {
 				nudgeMsg = n;
 				fails += 1;
+				fixes += 1;
 				return;
 			}
 			nudgeMsg = null;
@@ -478,6 +518,7 @@
 			if (Number(typed) !== skip.by * skip.times) {
 				nudgeMsg = m('q.skip.notItMul', { x: typed, a: skip.by, b: skip.times });
 				fails += 1;
+				fixes += 1;
 				typed = '';
 				return;
 			}
@@ -491,6 +532,7 @@
 		if (count !== skip.times) {
 			nudgeMsg = m(count < skip.times ? 'q.skip.mulSoFar' : 'q.skip.mulTooFar', { b: skip.times }, count);
 			fails += 1;
+			fixes += 1;
 			return;
 		}
 		const sk = skip;
@@ -522,7 +564,7 @@
 		if (!f) return nextProblem();
 		toldLines = f.tell ?? [];
 		at = f.id;
-		fill(f, watchVals[f.id] ?? f.expect ?? '');
+		fill(f, f.copyOf ? norm(values[f.copyOf] ?? '') || (watchVals[f.id] ?? '') : (watchVals[f.id] ?? f.expect ?? ''));
 		watchShown = true;
 		await tick();
 		inputOf(f.id)?.closest('.num')?.scrollIntoView?.({ block: 'nearest', behavior: still ? 'auto' : 'smooth' });
@@ -582,6 +624,28 @@
 		else soundWrong(feedbackEl);
 		feedbackBtn?.focus();
 	}
+	/** Give up after a Check that didn't pass: the answer is shown, as after a second try (it counts as wrong). */
+	async function giveUp() {
+		if (!work || phase !== 'feedback' || fb !== 'again') return;
+		fb = 'reveal';
+		if (scored) wrongCount++;
+		before = { ...values };
+		values = { ...watchVals };
+		await tick();
+		soundWrong(feedbackEl);
+		feedbackBtn?.focus();
+	}
+	/** Leaving in the middle of a set (Practice, Back) asks first, in the page's own dialog: the set isn't kept. */
+	async function leave(go: () => void) {
+		const begun = phase === 'feedback' || (phase === 'working' && (index > 0 || Object.values(values).some(Boolean)));
+		if (!begun || preview || !leaveDialog) return go();
+		const done = index + +settled;
+		const yes = await leaveDialog.ask(t('ui.leave.title'), tn('ui.leave.text', problems.length, { done }), [
+			{ value: 'stay', label: t('ui.leave.stay') },
+			{ value: 'go', label: t('ui.leave.go'), danger: true }
+		]);
+		if (yes === 'go') go();
+	}
 	async function onFeedback() {
 		if (!work) return;
 		if (fb === 'again') {
@@ -605,7 +669,7 @@
 			phase = 'over';
 			if (!reported) {
 				reported = true;
-				finished(rightCount);
+				finished(rightCount, fixes);
 			}
 		}
 	}
@@ -654,6 +718,14 @@
 	const sq = $derived(work ? Math.round(Math.max(26, Math.min(50, (Math.min(W, 1400) - 48) / (workWidth(work) + 1), H / 13))) : 40);
 	const toGo = $derived(phase === 'over' ? 0 : problems.length - index - +settled);
 	const ROLE = (r: string) => t(`ui.field.${r}`);
+	/** A field's accessible name: a rung's fields by their step ("What's left, step 2"), a part by its product ("Box
+	 *  for 40 × 20", "Line for 9 × 10"), the rest by what they are. */
+	function fieldLabel(f: Field): string {
+		if (f.what) return t(f.role === 'cell' ? 'ui.field.cellOf' : 'ui.field.lineOf', { e: f.what });
+		const n = /^[qpr](\d+)$/.exec(f.id);
+		if (n && (f.role === 'choice' || f.role === 'product' || f.role === 'difference')) return t('ui.field.step', { f: ROLE(f.role), n: Number(n[1]) + 1 });
+		return ROLE(f.role);
+	}
 	/** The squares of a field: its digits, lined up on the right, and which of them are wrong. */
 	function squares(f: Field) {
 		const v = values[f.id] ?? '';
@@ -688,16 +760,16 @@
 		<input
 			data-field={f.id}
 			type="text"
-			pattern="[0-9]*"
+			pattern={f.point ? '[0-9.,]*' : '[0-9]*'}
 			autocomplete="off"
 			spellcheck="false"
 			maxlength={f.len}
 			inputmode={canType ? (f.point ? 'decimal' : 'numeric') : 'none'}
-			aria-label={f.role === 'choice' || f.role === 'product' || f.role === 'difference' ? t('ui.field.step', { f: ROLE(f.role), n: Number(f.id.slice(1)) + 1 }) : ROLE(f.role)}
+			aria-label={fieldLabel(f)}
 			aria-invalid={wrongNow}
 			value={values[f.id] ?? ''}
 			readonly={!canType}
-			tabindex={canType ? undefined : -1}
+			tabindex={canType && workable(f) ? undefined : -1}
 			onfocus={(e) => {
 				if (!canType) return;
 				current = f.id;
@@ -717,7 +789,7 @@
 
 <header class="bar" bind:offsetHeight={barH}>
 	{#if extra}
-		<button type="button" class="extra" onclick={extra.onclick}>{extra.label}</button>
+		<button type="button" class="extra" onclick={() => leave(extra.onclick)}>{extra.label}</button>
 	{/if}
 	<h1>{title}</h1>
 	{#if preview}<span class="chip preview">{t('ui.preview')}</span>{/if}
@@ -729,7 +801,7 @@
 				<span class="chip good" title={t('ui.player.right')}><Check size={14} aria-hidden="true" /> {rightCount}</span>
 				<span class="chip bad" title={t('ui.player.wrong')}><X size={14} aria-hidden="true" /> {wrongCount}</span>
 			{/if}
-			{#if phase !== 'over'}<span class="chip">{toGo} to go</span>{/if}
+			{#if phase !== 'over'}<span class="chip">{t('ui.player.toGo', { n: toGo })}</span>{/if}
 		</div>
 		{#if way !== 'watch' && phase !== 'over'}
 			<button type="button" class="pad-toggle" aria-pressed={padOpen} onpointerdown={(e) => e.preventDefault()} onclick={() => setPad(!padOpen)}
@@ -744,7 +816,7 @@
 		{#if phase === 'setup'}
 			<h2>{kind.title}: {mInfo.label}</h2>
 			<ol class="steps">
-				{#each mInfo.steps as s (s)}<li>{s}</li>{/each}
+				{#each introSteps as s (s)}<li>{s}</li>{/each}
 			</ol>
 			<p class="level-line">
 				{#each segments('ui.player.planned', planned) as x, i (i)}{#if x.v === 'level'}<b>{levelLabel}</b>{:else if x.v === 'n'}{planned}{:else}{x.s}{/if}{/each}{#if level !== 'custom'}{t('ui.colon')}{kind.studentLevelText?.[level] && method !== 'area' && method !== 'partial'
@@ -762,6 +834,7 @@
 				<p class="final">
 					{#each segments('ui.player.final') as x, i (i)}{#if x.v === 'r'}<b class="good-text">{rightCount}</b>{:else if x.v === 'w'}<b class="bad-text">{wrongCount}</b>{:else}{x.s}{/if}{/each}
 				</p>
+				{#if fixes > 0}<p class="fixes">{tn('ui.player.fixes', fixes)}</p>{/if}
 			{:else}
 				<p class="final">{tn('ui.player.watched', problems.length)}</p>
 			{/if}
@@ -795,9 +868,12 @@
 						>
 						{t('ui.fb.tryAgainLine')}{:else}<b>{t('ui.fb.answerIs', { x: showAnswer(work.answer) })}</b> {t('ui.fb.oneWay')}{/if}
 				</p>
-				<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
-					{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < problems.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
-				</button>
+				<span class="fb-actions">
+					{#if fb === 'again'}<button type="button" class="btn-ghost give-up" onclick={giveUp}>{t('ui.fb.giveUp')}</button>{/if}
+					<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
+						{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < problems.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
+					</button>
+				</span>
 			</div>
 		{:else}
 			{#if hintOpen && hintShown && hints.length}
@@ -867,6 +943,8 @@
 		{/if}
 	</div>
 {/if}
+
+<ConfirmDialog bind:this={leaveDialog} />
 
 <style>
 	.paper {
@@ -1237,6 +1315,21 @@
 	}
 	.feedback .btn-primary {
 		padding: 0.75rem 1.2rem;
+		font-size: 1rem;
+	}
+	.fb-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-inline-start: auto;
+	}
+	.give-up {
+		color: var(--ink);
+		font-size: 0.95rem;
+	}
+	.fixes {
+		margin: -0.75rem 0 1.25rem;
+		color: var(--muted);
 		font-size: 1rem;
 	}
 	@media (max-width: 760px) {

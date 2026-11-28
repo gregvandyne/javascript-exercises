@@ -188,9 +188,13 @@
 			{#each work.rows as p, i (p.id)}
 				<span class="row" style:grid-row={3 + i}>
 					{#if work.sum && i === rows - 1}<span class="sq sign-sq" aria-hidden="true">+</span>{/if}
-					{@render slot(p.id)}
+					{#if p.zero}{@render digits('0', 1, p.id, 'zero-line')}{:else}{@render slot(p.id)}{/if}
 				</span>
-				<span class="label" class:dim={!lit(p.id)} class:faint={!shown(p.id)} style:grid-row={3 + i} style:grid-column={P + 2}>{p.bottom} × {p.top}</span>
+				{#if p.zero}
+					<span class="label zero-label" style:grid-row={3 + i} style:grid-column={P + 2}>{t('ui.pp.zeroLine', { e: `${p.bottom} × ${p.top}` })}</span>
+				{:else}
+					<span class="label" class:dim={!lit(p.id)} class:faint={!shown(p.id)} style:grid-row={3 + i} style:grid-column={P + 2}>{p.bottom} × {p.top}</span>
+				{/if}
 			{/each}
 			{#if work.sum}
 				<span class="rule" style:grid-row={2 + rows} style:grid-column="1 / span {P + 1}" aria-hidden="true"></span>
@@ -414,5 +418,11 @@
 		color: var(--muted);
 		font-size: 0.55em;
 		white-space: nowrap;
+	}
+	.zero-label {
+		font-style: italic;
+	}
+	.pp :global(.zero-line) {
+		color: var(--ink-soft);
 	}
 </style>
