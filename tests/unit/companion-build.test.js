@@ -203,7 +203,10 @@ test('Build it spends one build and starts one job; the card follows the Builder
   assert.equal(card.game.say, 'I played it on a phone, a tablet, and a laptop and every round worked, and the safety scan passed. Students only see it when you assign it or host it live.');
   // The Builder got the teacher's words exactly, with the plan.
   assert.equal(sent.at(-1).text, 'Make a grade 4 game about regrouping. Use big friendly numbers.');
-  assert.equal(sent.at(-1).plan.kind, 'activity'); assert.deepEqual(sent.at(-1).plan.help, ['guided']);
+  // On their own devices: the class game kind (a game plan played on each device), never the Canvas activity kind
+  // (audit 4: it was labelled "Classroom activity" in Studio and could not be made live).
+  assert.equal(sent.at(-1).plan.kind, undefined); assert.equal(sent.at(-1).plan.play, 'solo');
+  assert.deepEqual(sent.at(-1).plan.help, ['guided']); assert.equal(sent.at(-1).plan.grade, '4'); assert.equal(sent.at(-1).plan.chat, true);
   assert.equal(usage.turnsUsed(x.teacher.id), before + 1, 'still one build');
   // The preview: the Builder's own sandboxed frame, minted for this viewer.
   const v = await (await get(`/api/companion/build/${g[0].id}?v=${card.game.versionId}`, x.tc)).json();

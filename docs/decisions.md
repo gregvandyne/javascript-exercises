@@ -16822,6 +16822,57 @@ shows the Oomba companion chat where "Chat with the Builder" was. Kids, and ever
   tests/unit/companion-studio-browser.test.js (2: the docked chat, a change loads the big preview once and the compact
   card, laptop and phone, light and dark, `STUDIO_SHOTS=<dir>` saves pictures; a student's Studio unchanged).
 
+## Builder in the chat: audit 4 fixes (28 Nov 2026)
+
+The owner built a game in the Oomba chat and changed it in Studio on the live site and listed what went wrong. Each item,
+its cause and the fix (tests: tests/unit/companion-build-audit4.test.js, companion-build-audit4-browser.test.js):
+
+- **The first build was "Version 2"; Version 1 was an unrelated "Equivalent fractions" activity.** Not POST
+  /api/studio/new (Build it makes an empty game): the Builder starts from a starter (start_from_template), which saved
+  the bare starter as version 1, and its first edit was version 2. Now, for a first build from the chat (the plan carries
+  `chat: true`, builder/plan.js keeps it), the starter is a draft, not a version (builder/tools.js): edit_game works on
+  it, the model reads it as "the starter, not saved yet: your first save is version 1" (prompt.js sourceBlock), and the
+  first save is Version 1. A starter the Builder never changed is saved at the end as before (tools.js flushDraft,
+  agent.js), so a build never loses it. Studio's own builds and every game made before are unchanged.
+- **Assign on a fresh game failed** ("published and shared with this class first"). The done card's Assign no longer
+  sends a chat message: it brings the existing assign card (companion.js's own, Assign / Not now) for the teacher's
+  class, or first a choice of class when they have several. For a draft (or a private game) of their own the card says
+  "It isn't shared with 4b math yet. Assign shares it with 4b math only (never with everyone), then assigns it." and its
+  Assign shares it first: publish.js `publish(user, game, 'class', { classIds: [that class] })`, the same function and
+  checks as Studio's Publish (the safety scan, the playthrough, a person's look for a flagged version), never public;
+  then the assignment (game-folders.js assignGame). If publishing refuses or waits for a review, the chat says why in
+  plain words and nothing is assigned. Not now shares nothing. The same holds when the AI's assign tool picks such a
+  game (companion.js assignPlan: `share: true`).
+- **"On their own devices" was labelled "Classroom activity" and could not be made live.** The chat's Build it sent the
+  classroom activity (Oomba Canvas) plan for both places. Now only On the board uses the activity plan (played on the
+  board); On their own devices builds the class game kind, a game plan as /build/new's Classroom game makes it (played
+  "on my own", on each device), with the teacher's words sent word for word (`brief: true`, which runner.submit already
+  honours for a game plan, chat audit 3) and, new, the grade and the help as plan fields of a chat game plan
+  (`grade`, `help`; planNote says "Grade: 4" and "Help: a short hint after a wrong try"). Studio then shows no
+  "Classroom activity" line, and "Make it a live game" is the usual message (where the arcade side is off, a plain
+  classroom game still says why it cannot be live, as every classroom game does).
+- **"Add a star reward at the end of the game" saved nothing.** The game was a Canvas activity (the item above), whose
+  rules let the Builder change only the activity's data block, so it said it could not and saved no version; the card
+  then said only "nothing changed". A game for devices is now a plain game that takes such a change. And when the
+  Builder really saves nothing, the card says what it said ("It said: “…”", its reply and any question, short) and has
+  Try again (once), which sends the same words to the Builder again as a new change.
+- **Studio's version picker** said "Version 2 of 3" while the preview still showed version 3 after "Something went
+  wrong" (the preview address request failed; the picker kept the new pick). Now a failed switch is tried once more, then
+  the picker goes back to the version shown and says "Couldn't show version 2 right now, so the preview stays as it
+  was." The safety line under the preview is the shown version's own ("Safety check passed for version 2."), without the
+  newest version's Fix it.
+- **"Your game is ready" never came after leaving mid-build.** The layout's notice is drawn when a page opens, so a build
+  that ended while the teacher was on a page was never told. Now, when a game's card in the chat is done (on any page,
+  or first seen done on a page), the page asks GET /api/companion/build/news, which returns the layout's own notice
+  (builder/turns.js notices) and marks it told, so it shows once (not for the game open in Studio, whose page shows it).
+- **No way to earlier versions from the chat**: the done card has Versions ("Version 3 of 3", a select). Picking one shows
+  it in the card's own preview ("Showing version 1. Version 3 is the newest, and changes go to it."); Play plays that one.
+  GET /api/companion/build/:gameId lists the versions.
+- **Studio's "Make it a live game"** goes through the chat (studio.js send, docked: POST /api/companion/build/studio, as
+  the other buttons since phase 3), now for a class game too (it was the activity's "can't be played live" line).
+- Strings: `js.companion-build.asg.*`, `say.nothingSaid`, `versions`, `versionOf`, `olderShown`, `say.nothing` (now
+  names Try again) and `js.studio.dock.showFailed`, in the 12 full locales.
+
 ## Grammar Lab listed everywhere (27 Nov 2026)
 
 Grammar Lab is open to every visitor in production (GRAMMAR_LAB=1, GRAMMAR_LAB_USERS=*), so it is listed like a course.

@@ -546,6 +546,7 @@ export function languageBlock(code) {
 /** The separate, cached block that carries the current game source to the model. */
 export function sourceBlock(version, game) {
   if (!version) return 'CURRENT GAME: none yet. Nothing has been built for this game.';
+  if (version.draft) return `CURRENT GAME (the starter, not saved yet: your first save is version 1; title "${game.title}"). Edits must copy "find" text exactly from this:\n<current_game>\n${version.html}\n</current_game>`;
   return `CURRENT GAME (version ${version.number}, title "${game.title}"). Edits must copy "find" text exactly from this:\n<current_game>\n${version.html}\n</current_game>`;
 }
 

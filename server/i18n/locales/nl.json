@@ -3060,7 +3060,8 @@
         "sees": "Studio, versie {n}",
         "hello": "Vertel me wat ik in dit spel moet veranderen en ik stuur het naar de Bouwer. Elke nieuwe versie verschijnt in de grote voorvertoning.",
         "versionOf": "Versie {n} van {total}",
-        "versionLabel": "Versie in de voorvertoning"
+        "versionLabel": "Versie in de voorvertoning",
+        "showFailed": "Versie {n} kon nu niet getoond worden, dus de voorbeeldweergave blijft zoals hij was. Probeer het opnieuw."
       }
     },
     "character": {
@@ -5436,7 +5437,8 @@
         "scanFail": "De veiligheidscontrole vond iets om te verbeteren, dus het is nog niet klaar voor je leerlingen. Vertel me wat ik moet veranderen, of tik op Wijzigen.",
         "noPlay": "De veiligheidscontrole is geslaagd, maar deze server kon het niet testen, dus ik heb het nog niet gespeeld.",
         "refused": "De veiligheidscontrole van de Builder heeft dat bericht tegengehouden, dus er is niets gebouwd. {why}",
-        "nothing": "De Builder heeft deze keer geen nieuwe versie bewaard, dus er is niets veranderd. Probeer het op een andere manier te zeggen."
+        "nothing": "De Builder heeft deze keer geen nieuwe versie bewaard, dus er is niets veranderd. Tik op Opnieuw proberen, of zeg het me op een andere manier.",
+        "nothingSaid": "De Builder heeft deze keer geen nieuwe versie bewaard, dus er is niets veranderd. Hij zei: „{said}” Tik op Opnieuw proberen, of zeg het me op een andere manier."
       },
       "dev": {
         "phone": "een telefoon",
@@ -5452,7 +5454,14 @@
         "big": "Groot openen",
         "showBig": "Groot tonen"
       },
-      "assignText": "Wijs ‘{title}’ toe aan mijn klas.",
+      "asg": {
+        "noClass": "Je hebt nog geen klas om het aan toe te wijzen. Maak eerst een klas en tik dan opnieuw op Toewijzen.",
+        "which": "Welke klas moet het krijgen?",
+        "pick": "„{title}” aan welke klas toewijzen?",
+        "share": "Het is nog niet gedeeld met {class}. Toewijzen deelt het alleen met {class} (nooit met iedereen) en wijst het daarna toe.",
+        "notShared": "Ik kon het niet met de klas delen, dus er is niets toegewezen. {why}",
+        "waiting": "Het is nog niet met de klas gedeeld, dus er is niets toegewezen. {why}"
+      },
       "changeText": "In ‘{title}’: ",
       "fail": {
         "limit": "Geen bouwbeurten meer vandaag, dus er is niets gebouwd. Morgen krijg je nieuwe.",
@@ -5479,7 +5488,10 @@
       "answered": "Gekozen: {list}",
       "retry": "Opnieuw proberen",
       "showingBig": "Groot te zien aan de linkerkant",
-      "showingBigAbove": "Groot te zien in de voorvertoning hierboven"
+      "showingBigAbove": "Groot te zien in de voorvertoning hierboven",
+      "versions": "Versies",
+      "versionOf": "Versie {n} van {total}",
+      "olderShown": "Versie {n} wordt getoond. Versie {newest} is de nieuwste, en wijzigingen gaan naar die versie."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# woord} other {# woorden}}",

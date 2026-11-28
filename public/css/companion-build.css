@@ -59,3 +59,8 @@
 .ocb-changed ul{margin:4px 0 0;padding-inline-start:18px;display:flex;flex-direction:column;gap:2px}
 .ocb-warn{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--warn,#C77700) 55%,var(--line))}
 .ocb-big{margin:0;display:flex;gap:6px;align-items:center;font-size:.85rem;font-weight:800;color:var(--text-2)}
+/* The done card's Versions (audit 4): which version the card's preview shows; the newest is the one changes go to. */
+.ocb-vers{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0;font-size:.82rem;font-weight:700;color:var(--muted)}
+.ocb-vers span{display:inline-flex;align-items:center;gap:4px}
+.ocb-vers select{min-height:36px;max-width:100%;padding:4px 8px;border-radius:10px;border:2px solid var(--line);background:var(--card-2);color:var(--text);font:inherit;font-weight:700}
+.ocb-vers select:focus-visible{outline:3px solid var(--accent-line);outline-offset:2px}

@@ -3060,7 +3060,8 @@
         "sees": "Studio, Version {n}",
         "hello": "Sag mir, was ich an diesem Spiel ändern soll, und ich schicke es an den Baumeister. Jede neue Version erscheint in der großen Vorschau.",
         "versionOf": "Version {n} von {total}",
-        "versionLabel": "Version in der Vorschau"
+        "versionLabel": "Version in der Vorschau",
+        "showFailed": "Version {n} konnte gerade nicht gezeigt werden, die Vorschau bleibt wie sie war. Versuch es noch einmal."
       }
     },
     "character": {
@@ -5436,7 +5437,8 @@
         "scanFail": "Die Sicherheitsprüfung hat etwas zum Beheben gefunden, deshalb ist es noch nicht bereit für die Klasse. Sag mir, was ich ändern soll, oder tippe auf Ändern.",
         "noPlay": "Die Sicherheitsprüfung ist bestanden, aber dieser Server konnte es nicht testen. Ich habe es also noch nicht gespielt.",
         "refused": "Die Sicherheitsprüfung des Builders hat diese Nachricht gestoppt, deshalb wurde nichts gebaut. {why}",
-        "nothing": "Der Builder hat diesmal keine neue Version gespeichert, also hat sich nichts geändert. Versuch es mit anderen Worten."
+        "nothing": "Der Builder hat diesmal keine neue Version gespeichert, also hat sich nichts geändert. Tippe auf Noch einmal versuchen oder sag es mir anders.",
+        "nothingSaid": "Der Builder hat diesmal keine neue Version gespeichert, also hat sich nichts geändert. Er hat gesagt: „{said}“ Tippe auf Noch einmal versuchen oder sag es mir anders."
       },
       "dev": {
         "phone": "einem Handy",
@@ -5452,7 +5454,14 @@
         "big": "Groß öffnen",
         "showBig": "Groß zeigen"
       },
-      "assignText": "Weise „{title}“ meiner Klasse zu.",
+      "asg": {
+        "noClass": "Du hast noch keine Klasse, der du es zuweisen kannst. Lege zuerst eine Klasse an und tippe dann noch einmal auf Zuweisen.",
+        "which": "Welche Klasse soll es bekommen?",
+        "pick": "„{title}“ welcher Klasse zuweisen?",
+        "share": "Es ist noch nicht mit {class} geteilt. Zuweisen teilt es nur mit {class} (nie mit allen) und weist es dann zu.",
+        "notShared": "Ich konnte es nicht mit der Klasse teilen, deshalb wurde nichts zugewiesen. {why}",
+        "waiting": "Es ist noch nicht mit der Klasse geteilt, deshalb wurde nichts zugewiesen. {why}"
+      },
       "changeText": "In „{title}“: ",
       "fail": {
         "limit": "Heute sind keine Bauvorgänge mehr übrig, deshalb wurde nichts gebaut. Morgen gibt es neue.",
@@ -5479,7 +5488,10 @@
       "answered": "Gewählt: {list}",
       "retry": "Noch einmal versuchen",
       "showingBig": "Groß links zu sehen",
-      "showingBigAbove": "Groß in der Vorschau oben zu sehen"
+      "showingBigAbove": "Groß in der Vorschau oben zu sehen",
+      "versions": "Versionen",
+      "versionOf": "Version {n} von {total}",
+      "olderShown": "Version {n} wird gezeigt. Version {newest} ist die neueste, und Änderungen gehen an sie."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# Wort} other {# Wörter}}",

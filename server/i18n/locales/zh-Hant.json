@@ -3059,7 +3059,8 @@
         "sees": "工作室，第 {n} 版",
         "hello": "告訴我這個遊戲要改什麼，我會傳給小幫手。每個新版本都會顯示在大預覽中。",
         "versionOf": "第 {n} 版，共 {total} 版",
-        "versionLabel": "預覽中的版本"
+        "versionLabel": "預覽中的版本",
+        "showFailed": "現在無法顯示第 {n} 版，所以預覽維持原樣。請再試一次。"
       }
     },
     "character": {
@@ -5435,7 +5436,8 @@
         "scanFail": "安全檢查發現需要修正的地方，所以還不能給學生用。告訴我要改什麼，或點「修改」。",
         "noPlay": "安全檢查通過了，但這台伺服器無法試玩，所以我還沒有玩過。",
         "refused": "Builder 的安全檢查擋下了這則訊息，所以沒有製作任何東西。{why}",
-        "nothing": "這次 Builder 沒有儲存新版本，所以什麼都沒有改變。換個說法試試看。"
+        "nothing": "這次 Builder 沒有儲存新版本，所以什麼都沒有改變。點「再試一次」，或換個說法告訴我。",
+        "nothingSaid": "這次 Builder 沒有儲存新版本，所以什麼都沒有改變。它說：「{said}」點「再試一次」，或換個說法告訴我。"
       },
       "dev": {
         "phone": "手機",
@@ -5451,7 +5453,14 @@
         "big": "放大開啟",
         "showBig": "放大顯示"
       },
-      "assignText": "把「{title}」指派給我的班級。",
+      "asg": {
+        "noClass": "你還沒有可以指派的班級。請先建立一個班級，再點一次「指派」。",
+        "which": "要給哪個班級？",
+        "pick": "要把「{title}」指派給哪個班級？",
+        "share": "這還沒有和 {class} 分享。「指派」只會和 {class} 分享（絕不會分享給所有人），然後再指派。",
+        "notShared": "我沒辦法和班級分享，所以沒有指派任何東西。{why}",
+        "waiting": "這還沒有和班級分享，所以沒有指派任何東西。{why}"
+      },
       "changeText": "在「{title}」中，",
       "fail": {
         "limit": "今天的製作次數已用完，所以沒有製作任何東西。明天會再有。",
@@ -5478,7 +5487,10 @@
       "answered": "已選擇：{list}",
       "retry": "再試一次",
       "showingBig": "在左側放大顯示",
-      "showingBigAbove": "在上方的預覽中放大顯示"
+      "showingBigAbove": "在上方的預覽中放大顯示",
+      "versions": "版本",
+      "versionOf": "第 {n} 版，共 {total} 版",
+      "olderShown": "正在顯示第 {n} 版。第 {newest} 版是最新的，修改會套用到那一版。"
     },
     "storybook-setup": {
       "words": "{count} 個字",
