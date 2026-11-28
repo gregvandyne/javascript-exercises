@@ -7305,7 +7305,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Score du quiz : {pct} % de bonnes réponses",
       "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %",
-      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture."
+      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture.",
+      "sampleCap": "Un exemple : voici ce que vous verrez",
+      "sampleLesson": "Plan de cours exemple",
+      "sampleGame": "Jeu exemple"
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",

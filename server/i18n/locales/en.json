@@ -8437,7 +8437,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz score: {pct}% right",
       "quizOverall": "Quiz score across lesson plans: {pct}%",
-      "emptyWhat": "Once something is assigned and students join the class, each student gets a row here: how many steps of each assignment they’ve done, their scores, and answers waiting for you to read."
+      "emptyWhat": "Once something is assigned and students join the class, each student gets a row here: how many steps of each assignment they’ve done, their scores, and answers waiting for you to read.",
+      "sampleCap": "A sample: this is what you’ll see",
+      "sampleLesson": "Sample lesson plan",
+      "sampleGame": "Sample game"
     },
     "lesson": {
       "finished": "{done} of {total} students done",

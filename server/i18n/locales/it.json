@@ -7306,7 +7306,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Punteggio del quiz: {pct}% di risposte giuste",
       "quizOverall": "Punteggio dei quiz in tutti i piani di lezione: {pct}%",
-      "emptyWhat": "Quando assegni qualcosa e gli studenti entrano nella classe, ogni studente ha qui una riga: quanti passaggi di ogni compito ha fatto, i suoi punteggi e le risposte che aspettano di essere lette."
+      "emptyWhat": "Quando assegni qualcosa e gli studenti entrano nella classe, ogni studente ha qui una riga: quanti passaggi di ogni compito ha fatto, i suoi punteggi e le risposte che aspettano di essere lette.",
+      "sampleCap": "Un esempio: ecco cosa vedrai",
+      "sampleLesson": "Piano di lezione di esempio",
+      "sampleGame": "Gioco di esempio"
     },
     "lesson": {
       "finished": "Studenti che hanno finito: {done} su {total}",

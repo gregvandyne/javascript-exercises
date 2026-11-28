@@ -7307,7 +7307,10 @@
       "reviewLink": "{title} ({count})",
       "quizTitle": "Nota do quiz: {pct}% de acertos",
       "quizOverall": "Pontuação dos questionários em todos os planos de aula: {pct}%",
-      "emptyWhat": "Quando você atribuir algo e os alunos entrarem na turma, cada aluno terá uma linha aqui: quantos passos de cada tarefa fez, suas pontuações e as respostas esperando sua leitura."
+      "emptyWhat": "Quando você atribuir algo e os alunos entrarem na turma, cada aluno terá uma linha aqui: quantos passos de cada tarefa fez, suas pontuações e as respostas esperando sua leitura.",
+      "sampleCap": "Um exemplo: é isto que você vai ver",
+      "sampleLesson": "Plano de aula de exemplo",
+      "sampleGame": "Jogo de exemplo"
     },
     "lesson": {
       "finished": "{done} de {total} alunos concluíram",

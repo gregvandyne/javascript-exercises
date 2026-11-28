@@ -7305,7 +7305,10 @@
       "reviewLink": "{title}（{count}）",
       "quizTitle": "測驗成績：答對 {pct}%",
       "quizOverall": "所有教案的測驗得分：{pct}%",
-      "emptyWhat": "指派了作業、學生加入班級後，每位學生在這裡都會有一列：每項作業完成了幾個步驟、分數，以及等你閱讀的答案。"
+      "emptyWhat": "指派了作業、學生加入班級後，每位學生在這裡都會有一列：每項作業完成了幾個步驟、分數，以及等你閱讀的答案。",
+      "sampleCap": "範例：之後會看到這樣的畫面",
+      "sampleLesson": "範例教案",
+      "sampleGame": "範例遊戲"
     },
     "lesson": {
       "finished": "{total} 位學生中有 {done} 位完成",

@@ -25,6 +25,7 @@ type Brb = {
 	copy?: (what: string | Blob) => Promise<boolean> | null;
 	gameOver?: (o: { won: boolean; score?: number; label?: string }) => void;
 	setProgress?: (o: { done: number; total: number; score: number; label?: string }) => boolean;
+	leaveGuard?: (ask: (() => Promise<boolean>) | null) => boolean;
 	params?: { mode?: string };
 	aiVoiceCheck?: (lines: string[], o?: { lang?: string }) => Promise<boolean> | null;
 	speak?: (text: string, o: Record<string, unknown>) => boolean;
@@ -270,6 +271,16 @@ export function wrong(el?: Element | null) {
 	}
 }
 export const tap = () => sound('pop');
+/** While a set is under way, the play page asks this before it leaves (its Back links, the browser's Back, Homeroom's
+ *  layer: BRB.leaveGuard, audit 5): ask() puts "Leave this set?" in the game's own dialog, true to leave. null: nothing
+ *  under way any more. */
+export function guardLeave(ask: (() => Promise<boolean>) | null) {
+	try {
+		brb()?.leaveGuard?.(ask);
+	} catch {
+		/* an older page */
+	}
+}
 const fixesLabel = (fixes: number) => (fixes > 0 ? { label: `fixes:${Math.min(fixes, 9999)}` } : {});
 /** A problem settled (right, or its answer shown): done of total so far, the score so far, for a lesson step
  *  (BRB.setProgress: the class's progress page shows it, started from the first one, and the step is done once every
