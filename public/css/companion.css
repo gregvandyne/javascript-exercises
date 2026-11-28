@@ -14,6 +14,13 @@ body.oc-hide #oc-root,body.oc-hide .oc-bubble{display:none!important}
 body.dash-page .oc{top:0}
 /* The live host room: the bubble ends the room's top bar, never over its controls or the join code. */
 .lv-bar .oc-bubble{position:static;width:44px;height:44px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:auto}
+/* Studio with Oomba (docs/decisions.md "Builder in the chat (phase 3)"): the panel in Studio's column, always open (no Minimize or
+   Close), a card like the preview beside it; the page does not narrow for it. */
+.st-dock #oc-root{flex:1;display:flex;flex-direction:column;min-height:0}
+.st-dock .oc{position:relative;inset:auto;top:auto;bottom:auto;width:auto;flex:1;min-height:0;z-index:auto;border:0;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+@media (max-width:960px){body.studio-docked .oc-who h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.st-dock .oc-head [data-c="min"],.st-dock .oc-head [data-c="close"],.st-dock .oc-bubble{display:none}
+@media (min-width:900px){body.oc-docked.oc-on #main{max-width:1500px;margin-inline:auto}}
 .lv-bar .oc-bubble .oc-mark{width:44px;height:44px}
 body.lv-projector .oc{top:0}
 .dash-w.oc-hl{box-shadow:0 0 0 4px var(--spark),0 0 0 9px color-mix(in srgb,var(--spark) 40%,transparent);transition:box-shadow .3s}

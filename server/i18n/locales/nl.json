@@ -1888,6 +1888,9 @@
         "selfTest": "Niet opgeslagen: de controle van de activiteit vond een probleem.",
         "scan": "Niet opgeslagen: de veiligheidscontrole is mislukt."
       }
+    },
+    "dock": {
+      "label": "Chat met Oomba"
     }
   },
   "publish": {
@@ -3051,6 +3054,13 @@
         "anyway": "Toch publiceren",
         "confirm": "Publiceren terwijl het niet helemaal is uitgespeeld? Spelers kunnen vast komen te zitten.",
         "checking": "Je spel wordt eerst helemaal uitgespeeld…"
+      },
+      "dock": {
+        "title": "Oomba · {title}",
+        "sees": "Studio, versie {n}",
+        "hello": "Vertel me wat ik in dit spel moet veranderen en ik stuur het naar de Bouwer. Elke nieuwe versie verschijnt in de grote voorvertoning.",
+        "versionOf": "Versie {n} van {total}",
+        "versionLabel": "Versie in de voorvertoning"
       }
     },
     "character": {
@@ -4375,7 +4385,8 @@
       "chAnswers": "Elk antwoord uitgerekend uit zijn figuur",
       "greetLine": "Vertel wat dit werkblad nodig heeft: het onderwerp, het leerjaar, hoeveel vragen.",
       "greetLineTest": "Vertel wat deze toets moet behandelen: het onderwerp, het leerjaar, hoeveel vragen.",
-      "greetLineHas": "Vraag me vragen aan te passen, meer toe te voegen of eenheden of leerjaar te wijzigen."
+      "greetLineHas": "Vraag me vragen aan te passen, meer toe te voegen of eenheden of leerjaar te wijzigen.",
+      "loading": "Het werkblad wordt geladen…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4525,11 +4536,11 @@
       "historyDelete": "Deze chat verwijderen",
       "historyDeleteAsk": "Deze chat definitief verwijderen? Hij kan niet worden teruggehaald.",
       "historyDeleteOk": "Verwijderen",
-      "hello": "Hoi! Ik ben Oomba, je hulpje bij het lesgeven. Vraag me om een les, een boek, een wijziging in je dashboard of hulp bij een lesplan.",
+      "hello": "Hoi! Ik ben Oomba, je hulpje bij het lesgeven. Vraag me om een spel, een boek, een werkblad, een wijziging in je dashboard of hulp bij een lesplan.",
       "idea": {
         "game": {
-          "label": "Een les zoeken",
-          "text": "Geef me een les over breuken voor groep 5, ongeveer 10 minuten"
+          "label": "Een spel zoeken",
+          "text": "Geef me een spel over breuken voor groep 5, ongeveer 10 minuten"
         },
         "book": {
           "label": "Een boek zoeken",
@@ -4607,7 +4618,7 @@
         "explain": "Nagekeken hoe Oomba Academy werkt",
         "page": "Deze pagina gelezen",
         "dash": "Je indeling {q} gelezen ({n} widgets)",
-        "games": "Lessen gezocht: {q}",
+        "games": "Spellen gezocht: {q}",
         "books": "In de Story Library gezocht",
         "booksLevel": "Leesniveau {q} gekoppeld",
         "lessons": "Lesplannen en werkbladen gezocht",
@@ -4656,7 +4667,7 @@
         "sheetMade": "Een werkblad gemaakt en gecontroleerd ({n, plural, one {# vraag} other {# vragen}})",
         "sheetNo": "Dat werkblad kon niet gemaakt worden",
         "lessonMade": "Een lesplan gemaakt en gecontroleerd ({n, plural, one {# stap} other {# stappen}})",
-        "lessonNo": "Die les kon niet gemaakt worden",
+        "lessonNo": "Dat lesplan kon niet gemaakt worden",
         "lessonAsk": "Naar het onderwerp gevraagd",
         "kinds": "Gekeken wat Figures kan tekenen",
         "find": "Gezocht naar ‘{q}’",
@@ -4713,7 +4724,7 @@
         "openDash": "Dashboard openen"
       },
       "hand": {
-        "builder": "Klasactiviteit in de Builder",
+        "builder": "Spel in de Builder",
         "figures": "Werkblad in Figures",
         "manipulatives": "Bord in de Manipulatieven",
         "open": {
@@ -4728,7 +4739,7 @@
         "help": "Hulp",
         "length": "Duur",
         "fromPlan": "Uit je plan",
-        "filled": "Oomba heeft je beschrijving ingevuld. Controleer die en druk dan op de knop om het te maken.",
+        "filled": "De beschrijving van Oomba staat klaar: het is het eerste bericht aan de Builder. Kies wat je wilt en controleer het voordat je de Builder opent.",
         "makeNow": "Nu maken",
         "makeText": "Maak dit nu:"
       },
@@ -4791,7 +4802,7 @@
         "lessonTopic": "Graag. Over welk onderwerp, en voor welke groep?",
         "sheetTopic": "Graag. Wat moet het werkblad oefenen, en voor welke groep?",
         "boardTopic": "Graag. Welk hulpmiddel (bijvoorbeeld MAB-blokken of een getallenlijn), en wat moet het laten zien?",
-        "assignWhat": "Welke les moet ik toewijzen? Noem de naam, en de klas als je er meer dan één hebt."
+        "assignWhat": "Welk spel, lesplan of werkblad zal ik toewijzen? Noem de naam, en de klas als je er meer dan één hebt."
       },
       "cls": {
         "default": "Testklas",
@@ -4818,7 +4829,11 @@
         "assigned": "Toegewezen",
         "declined": "Niet toegewezen",
         "done": "“{title}” is toegewezen aan {class}.",
-        "open": "Spellen van de klas bekijken"
+        "open": "Spellen van de klas bekijken",
+        "openLesson": "Lesplannen van de klas bekijken",
+        "openSheet": "Werkbladen van de klas bekijken",
+        "openBook": "Boeken van de klas bekijken",
+        "openAll": "Toewijzingen van de klas bekijken"
       },
       "book": {
         "adding": "Toevoegen aan je boek",
@@ -4920,12 +4935,12 @@
         "open": {
           "board": "Open het bord",
           "sheet": "Open het werkblad",
-          "lesson": "Open de les"
+          "lesson": "Het lesplan openen"
         },
         "no": {
           "board": "Het bord is niet gemaakt. Er is niets bewaard.",
           "sheet": "Het werkblad is niet gemaakt. Er is niets bewaard.",
-          "lesson": "De les is niet gemaakt. Er is niets bewaard."
+          "lesson": "Het lesplan is niet gemaakt. Er is niets bewaard."
         }
       },
       "pts": {
@@ -4934,7 +4949,8 @@
       },
       "rep": {
         "empty": "{name} heeft nog geen leerlingen, dus er is nog geen voortgang.",
-        "which": "Voor welke klas moet het overzicht zijn?"
+        "which": "Voor welke klas moet het overzicht zijn?",
+        "noWork": "{name} heeft {count, plural, one {# leerling} other {# leerlingen}} en nog niets toegewezen, dus er is nog geen voortgang."
       },
       "find": {
         "hidden": "{title} staat op Oomba, maar dat spel staat nu uit, dus leerlingen kunnen het niet spelen.",
@@ -5042,9 +5058,9 @@
             "unassign": "Dit haalt het uit de klas. Het werk van de leerlingen blijft bewaard.",
             "students": "Leerlingen zien dit.",
             "classroom": "Dit plaatst het in Google Classroom: de leerlingen daar zien het.",
-            "deleteSheet": "Dit verwijdert het werkblad voorgoed. Lessen die al zijn toegewezen houden hun vragen.",
+            "deleteSheet": "Hiermee wordt het werkblad voorgoed verwijderd. Wat al is toegewezen, houdt de vragen.",
             "deleteBoard": "Dit verwijdert het bord voorgoed.",
-            "deleteLesson": "Dit verwijdert de les voorgoed, met de toewijzingen en het werk van de leerlingen daarin."
+            "deleteLesson": "Hiermee wordt het lesplan voorgoed verwijderd, met de toewijzingen en het werk van de leerlingen erin."
           },
           "due": {
             "ask": "De datums van ‘{title}’ in {class} wijzigen?",
@@ -5059,8 +5075,8 @@
           },
           "seeWork": "Bekijk het werk",
           "lesson": {
-            "ask": "De les ‘{title}’ toewijzen aan {class}?",
-            "done": "De les ‘{title}’ is toegewezen aan {class}."
+            "ask": "Het lesplan ‘{title}’ toewijzen aan {class}?",
+            "done": "Het lesplan ‘{title}’ is toegewezen aan {class}."
           },
           "sheet": {
             "ask": "Het werkblad ‘{title}’ toewijzen aan {class}?",
@@ -5110,14 +5126,14 @@
             "deletedBoard": "Het bord ‘{title}’ is verwijderd.",
             "openBoard": "Open het bord",
             "allBoards": "Mijn borden",
-            "copyLesson": "Een kopie maken van de les ‘{title}’?",
+            "copyLesson": "Een kopie maken van het lesplan ‘{title}’?",
             "copiedLesson": "Kopie gemaakt: ‘{title}’.",
-            "deleteLesson": "De les ‘{title}’ verwijderen?",
+            "deleteLesson": "Het lesplan ‘{title}’ verwijderen?",
             "inClasses": "{count, plural, one {Hij is toegewezen aan # klas.} other {Hij is toegewezen aan # klassen.}}",
             "withWork": "{count, plural, one {# leerling heeft er werk in.} other {# leerlingen hebben er werk in.}}",
-            "deletedLesson": "De les ‘{title}’ is verwijderd.",
-            "openLesson": "Open de les",
-            "allLessons": "Mijn lessen"
+            "deletedLesson": "Het lesplan ‘{title}’ is verwijderd.",
+            "openLesson": "Het lesplan openen",
+            "allLessons": "Mijn lesplannen"
           }
         },
         "homeroom": {
@@ -5208,13 +5224,16 @@
             "ask": "Een livespel starten voor {class}?",
             "what": "{count, plural, one {# kant-en-klare vraag} other {# kant-en-klare vragen}} uit de vragenbank.",
             "done": "Het livespel voor {class} is open: leerlingen doen mee via hun klaspagina.",
-            "open": "Het scherm voor de spelleider openen"
+            "open": "Het scherm voor de spelleider openen",
+            "results": "De resultaten komen op de voortgangspagina van de klas zodra het spel gespeeld en beëindigd is.",
+            "progress": "Voortgang van de klas bekijken"
           },
           "end": {
             "ask": "Het livespel “{title}” stoppen?",
             "players": "{count, plural, =0 {Er doet nog niemand mee.} one {Er doet # speler mee.} other {Er doen # spelers mee.}}",
             "done": "Het livespel “{title}” is gestopt.",
-            "results": "De uitslag bekijken"
+            "results": "De uitslag bekijken",
+            "notPlayed": "Niemand heeft het gespeeld, dus er zijn geen resultaten."
           }
         },
         "dashboard": {
@@ -5315,6 +5334,152 @@
       "line0": "Waarmee kan ik helpen?",
       "line1": "Waar werken we aan?",
       "line2": "Waar beginnen we?"
+    },
+    "companion-build": {
+      "reply": {
+        "ask": "Drie snelle tikken en ik laat je een plan zien. Er wordt niets gebouwd tot jij het zegt.",
+        "plan": "Hier is het plan. Het is nog niet gebouwd: tik op Bouw het als het klopt.",
+        "building": "Ik bouw het nu. De kaart hieronder laat elke stap zien zodra die gebeurt.",
+        "change": "Ik heb je woorden precies zo naar de Builder gestuurd als je ze schreef. Versie {n} wordt gebouwd op de kaart hieronder, en versie {prev} werkt nog terwijl je wacht.",
+        "lesson": "Ik maak nu het lesplan. De kaart hieronder vult zich zodra het klaar is.",
+        "noSchool": "Een lesplan wordt bewaard bij de lessen van een school, en dit account heeft nog geen school op Oomba, dus er is niets gemaakt."
+      },
+      "q": {
+        "kind": "Wat zal ik maken?",
+        "use": "Waar spelen ze?",
+        "help": "Hoeveel hulp?"
+      },
+      "opt": {
+        "game": {
+          "label": "Een spel voor je leerlingen.",
+          "text": "Elke leerling speelt op een apparaat en krijgt meteen feedback. Goed om te oefenen."
+        },
+        "lesson": {
+          "label": "Een lesplan voor jou.",
+          "text": "Stappen om de les te geven: een opwarmer, uitleg, oefenen en een exitticket."
+        },
+        "devices": {
+          "label": "Op hun eigen apparaat.",
+          "text": "Elke leerling speelt in zijn eigen tempo."
+        },
+        "board": {
+          "label": "Op het bord.",
+          "text": "De hele klas speelt samen op één scherm."
+        },
+        "show": {
+          "label": "Eerst voordoen.",
+          "text": "Een uitgewerkt voorbeeld, daarna proberen ze het zelf."
+        },
+        "hints": {
+          "label": "Hints als ze vastzitten.",
+          "text": "Een tip na een foute poging, nooit het antwoord."
+        },
+        "own": {
+          "label": "Helemaal zelf.",
+          "text": "Geen hints, zoals een korte toets."
+        }
+      },
+      "showPlan": "Laat het plan zien",
+      "planKind": "Spelplan",
+      "grade": "Groep {g}",
+      "gradeK": "Kleuters",
+      "short": {
+        "devices": "Op hun apparaten",
+        "board": "Op het bord",
+        "show": "Eerst voordoen",
+        "hints": "Hints als ze vastzitten",
+        "own": "Helemaal zelf"
+      },
+      "does": {
+        "devices": "Elke leerling speelt op zijn eigen apparaat, in zijn eigen tempo.",
+        "board": "De hele klas speelt samen op het bord.",
+        "topic": "Ze oefenen {topic}.",
+        "show": "Ze zien eerst een uitgewerkt voorbeeld en proberen er dan zelf een.",
+        "hints": "Na een foute poging krijgen ze een tip, nooit het antwoord.",
+        "own": "Geen hints: het werkt als een korte toets.",
+        "feedback": "Elk antwoord krijgt meteen feedback.",
+        "boardRun": "Jij leidt elke ronde vanaf het bord.",
+        "fresh": "Elke keer dat het gespeeld wordt nieuwe opgaven."
+      },
+      "tell": "Wat ik de Builder vertel",
+      "build": "Bouw het",
+      "change": "Wijzigen",
+      "uses": "Gebruikt 1 van de bouwbeurten van vandaag (nog {left})",
+      "noneLeft": "Geen bouwbeurten meer vandaag. Morgen krijg je nieuwe.",
+      "steps": {
+        "safe": "Je bericht op veiligheid gecontroleerd",
+        "plan": "Het spel gepland",
+        "write": "Het spel wordt geschreven",
+        "play": "Testen op een telefoon, een tablet en een laptop",
+        "scan": "Veiligheidscontrole"
+      },
+      "usually": "Meestal 1-2 minuten. Je kunt verder chatten of deze pagina sluiten.",
+      "vBuilding": "Versie {n} wordt gebouwd…",
+      "vWorks": "Versie {n} werkt nog terwijl je wacht.",
+      "tap": "Tik om te spelen",
+      "previewOf": "Voorbeeld van {title}",
+      "line": {
+        "version": "Versie {n}",
+        "sizes": "{count, plural, one {getest op # schermgrootte} other {getest op # schermgroottes}}",
+        "played": "tot het einde gespeeld",
+        "playFail": "de test vond een probleem",
+        "noPlay": "nog niet getest",
+        "scanPass": "veiligheidscontrole geslaagd",
+        "scanFail": "de veiligheidscontrole vond iets om te verbeteren"
+      },
+      "say": {
+        "devices": "Ik heb het gespeeld op {devices}, elke ronde werkte en de veiligheidscontrole is geslaagd.",
+        "played": "Ik heb het tot het einde gespeeld, elke ronde werkte en de veiligheidscontrole is geslaagd.",
+        "students": "Leerlingen zien het pas als je het toewijst of live start.",
+        "playFail": "Ik heb het gespeeld en {why}, dus het is nog niet klaar voor je leerlingen. Vertel me wat ik moet veranderen, of tik op Wijzigen.",
+        "noEnd": "het kwam niet tot het einde",
+        "scanFail": "De veiligheidscontrole vond iets om te verbeteren, dus het is nog niet klaar voor je leerlingen. Vertel me wat ik moet veranderen, of tik op Wijzigen.",
+        "noPlay": "De veiligheidscontrole is geslaagd, maar deze server kon het niet testen, dus ik heb het nog niet gespeeld.",
+        "refused": "De veiligheidscontrole van de Builder heeft dat bericht tegengehouden, dus er is niets gebouwd. {why}",
+        "nothing": "De Builder heeft deze keer geen nieuwe versie bewaard, dus er is niets veranderd. Probeer het op een andere manier te zeggen."
+      },
+      "dev": {
+        "phone": "een telefoon",
+        "tablet": "een tablet",
+        "laptop": "een laptop"
+      },
+      "changed": "Wat er veranderd is",
+      "btn": {
+        "play": "Spelen",
+        "change": "Wijzigen",
+        "assign": "Toewijzen",
+        "host": "Live starten",
+        "big": "Groot openen",
+        "showBig": "Groot tonen"
+      },
+      "assignText": "Wijs ‘{title}’ toe aan mijn klas.",
+      "changeText": "In ‘{title}’: ",
+      "fail": {
+        "limit": "Geen bouwbeurten meer vandaag, dus er is niets gebouwd. Morgen krijg je nieuwe.",
+        "resting": "De Builder rust nu, dus er is niets gebouwd. Probeer het later nog eens.",
+        "tooMany": "Er lopen al twee bouwbeurten. Probeer het opnieuw als er een klaar is.",
+        "disabled": "Bouwen staat uit voor dit account, dus er is niets gebouwd.",
+        "restarting": "Oomba werd opnieuw gestart, dus er is niets gebouwd. Probeer het over een minuut nog eens.",
+        "gone": "Dat spel is er niet meer, dus er is niets gebouwd.",
+        "notAllowed": "Dit account kan nu niet bouwen in de chat, dus er is niets gebouwd.",
+        "restart": "Oomba werd opnieuw gestart tijdens het bouwen. Probeer het nog eens.",
+        "error": "Er ging iets mis tijdens het bouwen, dus er is niets nieuws bewaard."
+      },
+      "err": {
+        "chatBusy": "Oomba is nog aan het antwoorden. Probeer het zo nog eens.",
+        "cap": "Er wordt nu veel gemaakt. Probeer het opnieuw als een paar kaarten klaar zijn.",
+        "noBuilds": "Geen bouwbeurten meer vandaag. Morgen krijg je nieuwe.",
+        "needPick": "Kies bij elke vraag een antwoord.",
+        "buildOff": "Bouwen in de chat staat uit voor dit account.",
+        "notFound": "Die kaart is er niet meer.",
+        "other": "Dat lukte niet. Probeer het nog eens."
+      },
+      "sent": "Naar de Builder gestuurd: die bouwt het op de kaart hieronder.",
+      "redone": "Gewijzigd: de nieuwe kaart staat hieronder.",
+      "answered": "Gekozen: {list}",
+      "retry": "Opnieuw proberen",
+      "showingBig": "Groot te zien aan de linkerkant",
+      "showingBigAbove": "Groot te zien in de voorvertoning hierboven"
     },
     "storybook-setup": {
       "words": "{count, plural, one {# woord} other {# woorden}}",
@@ -15260,9 +15425,7 @@
     "progressEmptyTextForTeachers": "Wijs een les toe op het tabblad Lessen, dan zie je hier hoe elke leerling ervoor staat.",
     "studentEmptyText": "Je leerkracht zet hier spellen klaar.",
     "liveHistory": "Eerdere livespellen",
-    "liveHistoryForTeachers": "Geschiedenis van livelessen",
     "liveHistoryNone": "Nog geen livespellen met deze klas.",
-    "liveHistoryNoneForTeachers": "Nog geen livelessen met deze klas.",
     "allGames": "Al mijn spellen",
     "allGamesForTeachers": "Al mijn lessen",
     "assignedTo": "Toegewezen aan {class}",
@@ -15316,7 +15479,9 @@
       "collectionEmpty": "Deze collectie is nog leeg",
       "allEmpty": "Je hebt nog geen spel gebouwd.",
       "allEmptyForTeachers": "Je hebt nog geen les gebouwd."
-    }
+    },
+    "liveOpenNow": "Er is nu een livespel open: {title}. De resultaten staan hier zodra het gespeeld en beëindigd is.",
+    "liveOpenHost": "Naar het hostscherm"
   },
   "library": {
     "title": "Verhalenbibliotheek",

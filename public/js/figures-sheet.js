@@ -144,6 +144,8 @@ function draw(wait = false) {
       ${moreMenu({ label: t('js.figures-sheet.moreN', { n: i + 1 }), btnId: `fg-mb-${it.id}`, items: menuItem('up', t('js.figures-sheet.up'), { icon: '↑', attrs: i ? ' aria-keyshortcuts="Alt+ArrowUp"' : ' disabled' })
         + menuItem('down', t('js.figures-sheet.down'), { icon: '↓', attrs: i < items.length - 1 ? ' aria-keyshortcuts="Alt+ArrowDown"' : ' disabled' })
         + menuItem('swap', t('js.figures-sheet.swapMenu'), { icon: '⇄' }) + menuItem('ask', t('js.figures-sheet.askOomba'), { icon: '💬' }) + menuSep() + menuItem('del', t('js.figures-sheet.delete'), { danger: true, icon: '🗑' }) })}</div></li>`).join('')
+    // a saved worksheet not read yet: a neutral line, never "No questions yet" before it is known
+    : !W && P.id ? `<li class="fg-empty muted">${esc(t('js.figures-sheet.loading'))}</li>`
     : `<li class="fg-empty muted">${esc(t(chat && chat.state().chat.pending ? 'js.figures-sheet.draftingHere' : 'js.figures-sheet.empty'))}</li>`;
   if (had && document.getElementById(had)) document.getElementById(had).focus({ preventScroll: true });
   for (const b of app.querySelectorAll('[data-tab]')) { const on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
@@ -343,11 +345,13 @@ function chatUi() {
   BUS.whenChat(c => { chat = c; draw(); if (opener) opener.addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
 }
 async function boot() {
+  // The server sends the worksheet with the page (its real title and questions on the first paint); read it only when not.
+  if (P.worksheet) W = P.worksheet;
   shell();
   assignUi();
   lessonUi();
   chatUi();
-  if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
+  if (!W && P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
   BUS.setPage(BUS.page());   // the "Sees:" line takes the worksheet's title
   draw();
   app.addEventListener('click', e => {

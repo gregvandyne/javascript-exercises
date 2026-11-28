@@ -95,7 +95,11 @@ export function assignmentIn(ctx, c, ref) {
 export const clNow = id => q.get('SELECT * FROM class_lessons WHERE id=? AND removed_at IS NULL', String(id || '')) || null;
 // Links for a change card.
 export const classLink = (classId, t, view = '') => ({ href: `/class/${encodeURIComponent(classId)}${view}`, label: t('js.companion.act.openClass') });
-export const assignedLink = (classId, t) => ({ href: `/class/${encodeURIComponent(classId)}?view=assigned`, label: t('js.companion.asg.open') });
+/** The class's assigned list (?view=assigned holds every assignment), named for what was assigned (chat audit 3: the
+ *  card said "See the class's games" for a lesson plan): game, lesson, sheet, book, or 'all' for anything else. */
+const ASSIGNED_LABEL = { game: 'open', lesson: 'openLesson', sheet: 'openSheet', book: 'openBook', all: 'openAll' };
+export const assignedLabel = what => `js.companion.asg.${ASSIGNED_LABEL[what] || 'openAll'}`;
+export const assignedLink = (classId, t, what = 'all') => ({ href: `/class/${encodeURIComponent(classId)}?view=assigned`, label: t(assignedLabel(what)) });
 
 // ---------------------------------------------------------------- the teacher's own things (worksheets, boards, lessons)
 /** One of the teacher's own things ({ id, title }) by its id or words of its title; with no words, `here` (the page's

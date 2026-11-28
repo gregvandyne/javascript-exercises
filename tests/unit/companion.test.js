@@ -263,6 +263,8 @@ test('uploads: a lesson plan\'s text with names taken out (the file is not kept)
     assert.ok(up.json.removed >= 3);
     const row = q.get('SELECT * FROM oomba_files WHERE id=?', up.json.file.id);
     assert.doesNotMatch(row.text, NAMES); assert.doesNotMatch(row.text, /555/); assert.equal(row.bytes, null, 'no file bytes kept');
+    // (the hand-off card: with building in the chat off, COMPANION_BUILD=0; on, companion-build.test.js)
+    config.companionBuild = false;
     const calls = standIn((p, i) => (i === 0 ? toolUse('readUpload', { fileId: up.json.file.id }) : i === 1 ? toolUse('startBuild', { tool: 'builder', title: 'Fraction line', grade: '3', brief: 'Place halves and thirds on a number line, guided then on my own.', practice: 'Fractions on a number line' })
       : 'Your plan places halves and thirds on a number line. Here is what I would hand the Builder.'));
     const r = await say(paid, { text: 'Make a game from this', file: up.json.file.id, page: { type: 'class', classId: cls.id } });
@@ -272,11 +274,12 @@ test('uploads: a lesson plan\'s text with names taken out (the file is not kept)
     for (const c of calls) assert.doesNotMatch(JSON.stringify(c), NAMES);
     const last = (await chatOf(paid)).turns.at(-1);
     assert.equal(last.note.handoff.tool, 'builder');
-    assert.equal(last.note.handoff.href, `/build/new?for=class&class=${cls.id}`);
+    assert.equal(last.note.handoff.href, `/build/new?for=class&class=${cls.id}&kind=classgame`);
     assert.deepEqual(last.note.steps.map(s => s.k), ['read', 'brief']);
     const h = await as(paid)('/api/companion/chat/act', { body: { turnId: last.id, act: 'handoff' } });
     assert.equal(h.json.handoff.brief, 'Place halves and thirds on a number line, guided then on my own.');
     assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='companion.handoff'"));
+    config.companionBuild = true;
     // A picture: a JPEG, checked by the stand-in. A person: refused, nothing kept.
     const tiny = tinyJpeg();
     const n0 = q.get("SELECT COUNT(*) n FROM oomba_files WHERE kind='image'").n;

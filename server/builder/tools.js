@@ -332,7 +332,7 @@ export function toolbox(ctx) {
     }
     const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt });
     steps.info({ probs: rep.problems.length }, row);
-    ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true, ...(pt && pt.code !== 'busy' ? { played: pt.ok ? (pt.endless ? 'endless' : 'pass') : 'fail' } : {}) });
+    ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true, ...(pt && pt.code !== 'busy' ? { played: pt.ok ? (pt.endless ? 'endless' : 'pass') : 'fail' } : {}), ...(rep.facts.views && rep.facts.views.length ? { views: rep.facts.views } : {}) });
     return { ran: true, version: cur.number, ...rep };
   }
 

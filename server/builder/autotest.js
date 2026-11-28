@@ -131,6 +131,8 @@ export function buildReport(raw, o = {}) {
     errors: errors.length, scenes: scenes.slice(0, 8), fps, inputs: raw.inputs || 0, playSecs: Math.round((raw.playMs || 0) / 1000),
     motion: { idle: round(idle), play: round(avgPlay), max: round(maxPlay) }, layout: layout.map(v => v.problems.length),
   };
+  // The sizes the layout was checked at (snapshot.js LAYOUT_VIEWS keys), so a card can say where it was really played.
+  Object.defineProperty(facts, 'views', { value: [...new Set((raw.layout || []).map(v => String((v && v.key) || '').replace(/:end$/, '')).filter(Boolean))], enumerable: false });
 
   // Each issue: hard ones always start a fix round; a soft one (it may be a false alarm: the score check) starts one
   // only the first time this build sees it (claude.js), so the AI is never asked twice about something it judged fine.
