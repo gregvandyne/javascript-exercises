@@ -134,6 +134,8 @@ test('the Courses section on Learn: Typing Zoo always, Grammar Lab by its own ga
       assert.match(h, /id="learn-courses"[\s\S]*?<h2 id="learn-courses-h">[\s\S]*?Courses<\/h2>/, `COURSES ${courses}: the section`);
       assert.match(h, /id="learn-course-typing"[\s\S]*?src="\/covers\/typing-zoo.jpg"[\s\S]*?Learn to touch type, one key at a time/, 'Typing Zoo, its cover and line');
       assert.doesNotMatch(h, /id="learn-course-grammar-lab"/, 'Grammar Lab off: not there');
+      const afterCourses = h.slice(h.indexOf('</section>', h.indexOf('id="learn-courses"')));
+      assert.doesNotMatch(afterCourses, /\/(g|play)\/typing-zoo\b/, 'Typing Zoo is not listed again in the game rows below');
       set(true, ['*']);
       h = (await get('/learn')).text;
       assert.match(h, /id="learn-course-grammar-lab"[\s\S]*?src="\/covers\/grammar-lab.jpg"/);

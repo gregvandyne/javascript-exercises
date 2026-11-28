@@ -120,7 +120,9 @@ test('Learn (\'/\' and /learn) is every open game by topic, from both shelves, e
     const listed = topicSlugs(s);
     assert.equal(new Set(listed).size, listed.length, `${who}: each game once`);
     for (const x of PLAY) assert.ok(listed.includes(x), `${who}: ${x} (Play shelf)`);
-    for (const x of openLearn) assert.ok(listed.includes(x), `${who}: ${x} (Learn shelf)`);
+    // Typing Zoo is a course card in the Courses section above the rows, so it is not listed again in them.
+    for (const x of openLearn.filter(x => x !== 'typing-zoo')) assert.ok(listed.includes(x), `${who}: ${x} (Learn shelf)`);
+    if (openLearn.includes('typing-zoo')) { assert.ok(!listed.includes('typing-zoo'), `${who}: Typing Zoo not in the rows`); assert.match(s, /id="learn-course-typing"/, `${who}: Typing Zoo in Courses`); }
     assert.equal(hero(s), undefined, `${who}: no hero (it would show one game twice)`);
     for (const id of ['featured', 'popular', 'rated', 'new', 'two', 'from-learn', 'keep', 'playing']) assert.doesNotMatch(s, new RegExp(`id="${id}-h"`), `${who}: no #${id}`);
     assert.deepEqual(slugsIn(section(s, 'sec-live')).sort(), Object.keys(LIVE_GAMES).sort(), `${who}: the live modes under Live class games`);
