@@ -494,7 +494,11 @@ async function liveShots({ person, shot }, ids) {
   await until(async () => (await host.locator('#lv-roster li').count()) >= STUDENTS.length, 'everyone in the roster');
   await liveFrame(host);
   await host.waitForTimeout(1200);
+  // The board in a 1152 x 720 window (still 16:10, saved 1024 and 2048 wide like the other desktop shots): at 1024 x 640
+  // its Start and End lesson buttons sat below the picture's edge, and /teachers/live showed them cut in half.
+  await host.setViewportSize({ width: 1152, height: 720 }); await host.waitForTimeout(800);
   made.push({ slug: 'live-lobby', kind: 'desk', png: await shot(host, 'live-lobby-desk', { names: true }) });
+  await host.setViewportSize({ width: 1024, height: 640 }); await host.waitForTimeout(400);
   {
     // The same projector page on a phone (it takes over the host's line; the laptop page reloads after).
     const p = await person('phone', 'MsRivera');
