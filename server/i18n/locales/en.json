@@ -4748,7 +4748,8 @@
       "chAnswers": "Every answer worked out from its figure",
       "greetLine": "Tell me what this worksheet needs: the topic, the grade, how many questions.",
       "greetLineTest": "Tell me what this test should cover: the topic, the grade, how many questions.",
-      "greetLineHas": "Ask me to change some questions, add more, or change the units or the grade."
+      "greetLineHas": "Ask me to change some questions, add more, or change the units or the grade.",
+      "loading": "Loading the worksheet…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4928,11 +4929,11 @@
       "historyDelete": "Delete this chat",
       "historyDeleteAsk": "Delete this chat for good? It can't be brought back.",
       "historyDeleteOk": "Delete",
-      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a lesson, a book, a change to your dashboard or help with a lesson plan.",
+      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a worksheet, a change to your dashboard or help with a lesson plan.",
       "idea": {
         "game": {
-          "label": "Find a lesson",
-          "text": "Give me a lesson for 3rd grade fractions, about 10 minutes"
+          "label": "Find a game",
+          "text": "Give me a game for 3rd grade fractions, about 10 minutes"
         },
         "book": {
           "label": "Find a book",
@@ -5010,7 +5011,7 @@
         "explain": "Looked up how Oomba Academy works",
         "page": "Read this page",
         "dash": "Read your {q} layout ({n} widgets)",
-        "games": "Searched lessons: {q}",
+        "games": "Searched games: {q}",
         "books": "Searched the Story Library",
         "booksLevel": "Matched reading level {q}",
         "lessons": "Searched lesson plans and worksheets",
@@ -5064,7 +5065,7 @@
         "sheetMade": "Made and checked a worksheet ({n, plural, one {# question} other {# questions}})",
         "sheetNo": "Couldn't make that worksheet",
         "lessonMade": "Made and checked a lesson plan ({n, plural, one {# step} other {# steps}})",
-        "lessonNo": "Couldn't make that lesson",
+        "lessonNo": "Couldn't make that lesson plan",
         "lessonAsk": "Asked for the topic",
         "kinds": "Looked up what Figures can draw",
         "find": "Looked for “{q}”",
@@ -5121,7 +5122,7 @@
         "openDash": "Open the dashboard"
       },
       "hand": {
-        "builder": "Classroom activity in the Builder",
+        "builder": "Game in the Builder",
         "figures": "Worksheet in Figures",
         "manipulatives": "Board in the Manipulatives",
         "open": {
@@ -5136,7 +5137,7 @@
         "help": "Help",
         "length": "Length",
         "fromPlan": "From your plan",
-        "filled": "Oomba filled in your brief. Check it, then press the button to make it.",
+        "filled": "Oomba's brief is ready: it is the Builder's first message. Pick what you like, then check it before you open the Builder.",
         "makeNow": "Make it now",
         "makeText": "Make this now:"
       },
@@ -5205,7 +5206,7 @@
         "lessonTopic": "Happy to build one. What topic is it on, and for which grade?",
         "sheetTopic": "Happy to make one. What should the worksheet practice, and for which grade?",
         "boardTopic": "Happy to set one up. Which tool (for example base-ten blocks or a number line), and what should it show?",
-        "assignWhat": "Which lesson should I assign? Tell me its name, and the class if you have more than one."
+        "assignWhat": "Which game, lesson plan or worksheet should I assign? Tell me its name, and the class if you have more than one."
       },
       "cls": {
         "default": "Test class",
@@ -5232,7 +5233,11 @@
         "assigned": "Assigned",
         "declined": "Not assigned",
         "done": "Assigned “{title}” to {class}.",
-        "open": "See the class's games"
+        "open": "See the class's games",
+        "openLesson": "See the class's lesson plans",
+        "openSheet": "See the class's worksheets",
+        "openBook": "See the class's books",
+        "openAll": "See the class's assignments"
       },
       "book": {
         "adding": "Adding to your book",
@@ -5378,12 +5383,12 @@
         "open": {
           "board": "Open the board",
           "sheet": "Open the worksheet",
-          "lesson": "Open the lesson"
+          "lesson": "Open the lesson plan"
         },
         "no": {
           "board": "The board wasn't made. Nothing was saved.",
           "sheet": "The worksheet wasn't made. Nothing was saved.",
-          "lesson": "The lesson wasn't made. Nothing was saved."
+          "lesson": "The lesson plan wasn't made. Nothing was saved."
         }
       },
       "pts": {
@@ -5392,7 +5397,8 @@
       },
       "rep": {
         "empty": "{name} has no students yet, so there's no progress to report.",
-        "which": "Which class should the report be for?"
+        "which": "Which class should the report be for?",
+        "noWork": "{name} has {count, plural, one {# student} other {# students}} and nothing assigned yet, so there is no progress to report yet."
       },
       "find": {
         "hidden": "{title} is on Oomba, but that game is turned off right now, so students can't play it.",
@@ -5500,9 +5506,9 @@
             "unassign": "This takes it off the class. Students' work is kept.",
             "students": "Students will see this.",
             "classroom": "This posts to Google Classroom: students there will see it.",
-            "deleteSheet": "This deletes the worksheet for good. Lessons already assigned keep their questions.",
+            "deleteSheet": "This deletes the worksheet for good. Assignments already made keep their questions.",
             "deleteBoard": "This deletes the board for good.",
-            "deleteLesson": "This deletes the lesson for good, with its assignments and the students' work in them."
+            "deleteLesson": "This deletes the lesson plan for good, with its assignments and the students' work in them."
           },
           "due": {
             "ask": "Change the dates of “{title}” in {class}?",
@@ -5517,8 +5523,8 @@
           },
           "seeWork": "See the work",
           "lesson": {
-            "ask": "Assign the lesson “{title}” to {class}?",
-            "done": "Assigned the lesson “{title}” to {class}."
+            "ask": "Assign the lesson plan “{title}” to {class}?",
+            "done": "Assigned the lesson plan “{title}” to {class}."
           },
           "sheet": {
             "ask": "Assign the worksheet “{title}” to {class}?",
@@ -5568,14 +5574,14 @@
             "deletedBoard": "Deleted the board “{title}”.",
             "openBoard": "Open the board",
             "allBoards": "See my boards",
-            "copyLesson": "Make a copy of the lesson “{title}”?",
+            "copyLesson": "Make a copy of the lesson plan “{title}”?",
             "copiedLesson": "Made a copy: “{title}”.",
-            "deleteLesson": "Delete the lesson “{title}”?",
+            "deleteLesson": "Delete the lesson plan “{title}”?",
             "inClasses": "{count, plural, one {It is assigned to # class.} other {It is assigned to # classes.}}",
             "withWork": "{count, plural, one {# student has work in it.} other {# students have work in it.}}",
-            "deletedLesson": "Deleted the lesson “{title}”.",
-            "openLesson": "Open the lesson",
-            "allLessons": "See my lessons"
+            "deletedLesson": "Deleted the lesson plan “{title}”.",
+            "openLesson": "Open the lesson plan",
+            "allLessons": "See my lesson plans"
           }
         },
         "homeroom": {
@@ -5666,13 +5672,16 @@
             "ask": "Start a live game for {class}?",
             "what": "{count, plural, one {# ready question} other {# ready questions}} from the question bank.",
             "done": "The live game for {class} is open: students join from their class page.",
-            "open": "Open the host screen"
+            "open": "Open the host screen",
+            "results": "Its results go on the class's Progress page once the game is played and ended.",
+            "progress": "See the class's Progress"
           },
           "end": {
             "ask": "End the live game “{title}”?",
             "players": "{count, plural, =0 {Nobody has joined yet.} one {# player is in it.} other {# players are in it.}}",
             "done": "Ended the live game “{title}”.",
-            "results": "See the results"
+            "results": "See the results",
+            "notPlayed": "Nobody played it, so it has no results."
           }
         },
         "dashboard": {
@@ -16737,9 +16746,7 @@
     "progressEmptyTextForTeachers": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
     "studentEmptyText": "Your teacher will add games here.",
     "liveHistory": "Live games history",
-    "liveHistoryForTeachers": "Live lessons history",
     "liveHistoryNone": "No live games with this class yet.",
-    "liveHistoryNoneForTeachers": "No live lessons with this class yet.",
     "allGames": "All my games",
     "allGamesForTeachers": "All my lessons",
     "assignedTo": "Assigned to {class}",
@@ -16793,7 +16800,9 @@
       "collectionEmpty": "Nothing in this collection yet",
       "allEmpty": "You haven't built a game yet.",
       "allEmptyForTeachers": "You haven't built a lesson yet."
-    }
+    },
+    "liveOpenNow": "A live game is open now: {title}. Its results show here once it is played and ended.",
+    "liveOpenHost": "Go to the host screen"
   },
   "library": {
     "title": "Story Library",

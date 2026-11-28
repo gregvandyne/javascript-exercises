@@ -4374,7 +4374,8 @@
       "chAnswers": "Cada respuesta calculada a partir de su figura",
       "greetLine": "Dime qué necesita esta hoja: el tema, el grado y cuántas preguntas.",
       "greetLineTest": "Dime qué debe cubrir esta prueba: el tema, el grado y cuántas preguntas.",
-      "greetLineHas": "Pídeme cambiar preguntas, agregar más o cambiar las unidades o el grado."
+      "greetLineHas": "Pídeme cambiar preguntas, agregar más o cambiar las unidades o el grado.",
+      "loading": "Cargando la hoja de trabajo…"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4524,11 +4525,11 @@
       "historyDelete": "Borrar este chat",
       "historyDeleteAsk": "¿Borrar este chat para siempre? No se puede recuperar.",
       "historyDeleteOk": "Borrar",
-      "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme una lección, un libro, un cambio en tu panel o ayuda con un plan de clase.",
+      "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme un juego, un libro, una hoja de trabajo, un cambio en tu panel o ayuda con un plan de clase.",
       "idea": {
         "game": {
-          "label": "Buscar una lección",
-          "text": "Dame una lección de fracciones para 3.º, de unos 10 minutos"
+          "label": "Buscar un juego",
+          "text": "Dame un juego de fracciones para 3.º, de unos 10 minutos"
         },
         "book": {
           "label": "Buscar un libro",
@@ -4606,7 +4607,7 @@
         "explain": "Consultó cómo funciona Oomba Academy",
         "page": "Leyó esta página",
         "dash": "Leyó tu diseño {q} ({n} widgets)",
-        "games": "Buscó lecciones: {q}",
+        "games": "Busqué juegos: {q}",
         "books": "Buscó en la Story Library",
         "booksLevel": "Relacionó el nivel de lectura {q}",
         "lessons": "Buscó planes de clase y hojas de trabajo",
@@ -4655,7 +4656,7 @@
         "sheetMade": "Creó y comprobó una hoja de trabajo ({n, plural, one {# pregunta} other {# preguntas}})",
         "sheetNo": "No pudo crear esa hoja de trabajo",
         "lessonMade": "Creó y comprobó un plan de lección ({n, plural, one {# parte} other {# partes}})",
-        "lessonNo": "No pudo crear esa lección",
+        "lessonNo": "No pude hacer ese plan de clase",
         "lessonAsk": "Preguntó el tema",
         "kinds": "Consultó lo que Figures puede dibujar",
         "find": "Buscó «{q}»",
@@ -4712,7 +4713,7 @@
         "openDash": "Abrir el panel"
       },
       "hand": {
-        "builder": "Actividad de clase en el Builder",
+        "builder": "Juego en el Builder",
         "figures": "Hoja de trabajo en Figures",
         "manipulatives": "Tablero en los Manipulativos",
         "open": {
@@ -4727,7 +4728,7 @@
         "help": "Ayuda",
         "length": "Duración",
         "fromPlan": "De tu plan",
-        "filled": "Oomba escribió tu descripción. Revísala y luego toca el botón para crearlo.",
+        "filled": "La descripción de Oomba está lista: es el primer mensaje para el Builder. Elige lo que quieras y revísala antes de abrir el Builder.",
         "makeNow": "Crearlo ahora",
         "makeText": "Crea esto ahora:"
       },
@@ -4790,7 +4791,7 @@
         "lessonTopic": "Con gusto la creo. ¿Sobre qué tema es y para qué grado?",
         "sheetTopic": "Con gusto la hago. ¿Qué debe practicar la hoja de trabajo y para qué grado?",
         "boardTopic": "Con gusto lo preparo. ¿Qué herramienta (por ejemplo, bloques de base diez o una recta numérica) y qué debe mostrar?",
-        "assignWhat": "¿Qué lección debo asignar? Dime su nombre, y la clase si tienes más de una."
+        "assignWhat": "¿Qué juego, plan de clase u hoja de trabajo asigno? Dime su nombre, y la clase si tienes más de una."
       },
       "cls": {
         "default": "Clase de prueba",
@@ -4817,7 +4818,11 @@
         "assigned": "Asignado",
         "declined": "No asignado",
         "done": "«{title}» asignado a {class}.",
-        "open": "Ver los juegos de la clase"
+        "open": "Ver los juegos de la clase",
+        "openLesson": "Ver los planes de clase de la clase",
+        "openSheet": "Ver las hojas de trabajo de la clase",
+        "openBook": "Ver los libros de la clase",
+        "openAll": "Ver lo asignado a la clase"
       },
       "book": {
         "adding": "Añadiendo a tu libro",
@@ -4919,12 +4924,12 @@
         "open": {
           "board": "Abrir el tablero",
           "sheet": "Abrir la hoja de trabajo",
-          "lesson": "Abrir la lección"
+          "lesson": "Abrir el plan de clase"
         },
         "no": {
           "board": "El tablero no se creó. No se guardó nada.",
           "sheet": "La hoja de trabajo no se creó. No se guardó nada.",
-          "lesson": "La lección no se creó. No se guardó nada."
+          "lesson": "No se hizo el plan de clase. No se guardó nada."
         }
       },
       "pts": {
@@ -4933,7 +4938,8 @@
       },
       "rep": {
         "empty": "{name} todavía no tiene estudiantes, así que no hay progreso que informar.",
-        "which": "¿De qué clase debe ser el informe?"
+        "which": "¿De qué clase debe ser el informe?",
+        "noWork": "{name} tiene {count, plural, one {# estudiante} other {# estudiantes}} y aún nada asignado, así que todavía no hay progreso que informar."
       },
       "find": {
         "hidden": "{title} está en Oomba, pero ese juego está desactivado ahora, así que los estudiantes no pueden jugarlo.",
@@ -5041,9 +5047,9 @@
             "unassign": "Esto lo quita de la clase. Se conserva el trabajo de los estudiantes.",
             "students": "Los estudiantes lo verán.",
             "classroom": "Esto publica en Google Classroom: los estudiantes de allí lo verán.",
-            "deleteSheet": "Esto borra la hoja de trabajo para siempre. Las lecciones ya asignadas conservan sus preguntas.",
+            "deleteSheet": "Esto borra la hoja de trabajo para siempre. Lo que ya se asignó conserva sus preguntas.",
             "deleteBoard": "Esto borra el tablero para siempre.",
-            "deleteLesson": "Esto borra la lección para siempre, con sus asignaciones y el trabajo de los estudiantes en ellas."
+            "deleteLesson": "Esto borra el plan de clase para siempre, con lo asignado y el trabajo de los estudiantes."
           },
           "due": {
             "ask": "¿Cambiar las fechas de «{title}» en {class}?",
@@ -5058,8 +5064,8 @@
           },
           "seeWork": "Ver el trabajo",
           "lesson": {
-            "ask": "¿Asignar la lección «{title}» a {class}?",
-            "done": "Se asignó la lección «{title}» a {class}."
+            "ask": "¿Asignar el plan de clase «{title}» a {class}?",
+            "done": "Asigné el plan de clase «{title}» a {class}."
           },
           "sheet": {
             "ask": "¿Asignar la hoja de trabajo «{title}» a {class}?",
@@ -5109,14 +5115,14 @@
             "deletedBoard": "Se borró el tablero «{title}».",
             "openBoard": "Abrir el tablero",
             "allBoards": "Ver mis tableros",
-            "copyLesson": "¿Hacer una copia de la lección «{title}»?",
+            "copyLesson": "¿Hacer una copia del plan de clase «{title}»?",
             "copiedLesson": "Copia hecha: «{title}».",
-            "deleteLesson": "¿Borrar la lección «{title}»?",
+            "deleteLesson": "¿Borrar el plan de clase «{title}»?",
             "inClasses": "{count, plural, one {Está asignada a # clase.} other {Está asignada a # clases.}}",
             "withWork": "{count, plural, one {# estudiante tiene trabajo en ella.} other {# estudiantes tienen trabajo en ella.}}",
-            "deletedLesson": "Se borró la lección «{title}».",
-            "openLesson": "Abrir la lección",
-            "allLessons": "Ver mis lecciones"
+            "deletedLesson": "Borré el plan de clase «{title}».",
+            "openLesson": "Abrir el plan de clase",
+            "allLessons": "Ver mis planes de clase"
           }
         },
         "homeroom": {
@@ -5207,13 +5213,16 @@
             "ask": "¿Empezar un juego en vivo para {class}?",
             "what": "{count, plural, one {# pregunta lista} other {# preguntas listas}} del banco de preguntas.",
             "done": "El juego en vivo de {class} está abierto: los estudiantes entran desde la página de su clase.",
-            "open": "Abrir la pantalla del anfitrión"
+            "open": "Abrir la pantalla del anfitrión",
+            "results": "Sus resultados pasan a la página de Progreso de la clase cuando el juego se juega y se termina.",
+            "progress": "Ver el progreso de la clase"
           },
           "end": {
             "ask": "¿Terminar el juego en vivo «{title}»?",
             "players": "{count, plural, =0 {Todavía no ha entrado nadie.} one {Hay # jugador.} other {Hay # jugadores.}}",
             "done": "Terminó el juego en vivo «{title}».",
-            "results": "Ver los resultados"
+            "results": "Ver los resultados",
+            "notPlayed": "Nadie lo jugó, así que no tiene resultados."
           }
         },
         "dashboard": {
@@ -15259,9 +15268,7 @@
     "progressEmptyTextForTeachers": "Asigna una lección en la pestaña Lecciones y aquí verás cómo va cada alumno.",
     "studentEmptyText": "Tu docente añadirá juegos aquí.",
     "liveHistory": "Historial de juegos en directo",
-    "liveHistoryForTeachers": "Historial de lecciones en vivo",
     "liveHistoryNone": "Aún no hay juegos en directo con esta clase.",
-    "liveHistoryNoneForTeachers": "Aún no hay lecciones en vivo con esta clase.",
     "allGames": "Todos mis juegos",
     "allGamesForTeachers": "Todas mis lecciones",
     "assignedTo": "Asignados a {class}",
@@ -15315,7 +15322,9 @@
       "collectionEmpty": "Esta colección aún está vacía",
       "allEmpty": "Todavía no has creado ningún juego.",
       "allEmptyForTeachers": "Todavía no has creado ninguna lección."
-    }
+    },
+    "liveOpenNow": "Hay un juego en directo abierto ahora: {title}. Sus resultados aparecen aquí cuando se juega y se termina.",
+    "liveOpenHost": "Ir a la pantalla del anfitrión"
   },
   "library": {
     "title": "Biblioteca de cuentos",

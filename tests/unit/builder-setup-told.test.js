@@ -123,3 +123,10 @@ test('only a classroom activity\'s plan takes an edited message: an arcade plan 
   assert.match(r.chat[0].text, /^Here is my game plan\./);
   assert.doesNotMatch(r.chat[0].text, /casino/);
 });
+
+test('a game plan with a brief from Oomba\'s chat (brief: true): the brief is the first message, word for word (chat audit 3)', async () => {
+  const brief = 'A matching game: students match equivalent fractions (1/2 and 2/4) in rounds of six pairs.';
+  const r = await first({ plan: { look: '2d', told: `Here is my game plan. Make it 2D.\n\n${brief}`, brief: true } });
+  assert.ok(r.chat[0].text.includes(brief), r.chat[0].text);
+  assert.doesNotMatch(r.chat[0].text, /I described my lesson/);
+});

@@ -11,11 +11,23 @@ import * as FS from './figures-steps.js';
 import * as F from './figures.js';
 import * as games from './games.js';
 import { draftLesson } from './lesson-ai.js';
+import { gameHidden, mayOpenHidden } from './game-focus.js';
+import { liveGameOf } from '../live/live-games.js';
+
+/** May a drafted lesson step use this game for this teacher? Published, not an official game hidden right now (unless
+ *  the teacher may open it anyway: game-focus.js mayOpenHidden), and not an Oomba Live game hosted live only (it can't
+ *  be a step students play on their own). Chat audit 3: a plan used Sum Racer while the chat said it was off. */
+export function stepGameOk(u, g) {
+  if (!g || g.status !== 'published') return false;
+  if (gameHidden(g) && !mayOpenHidden(u, g)) return false;
+  const lg = liveGameOf(g);
+  return !(lg && !lg.play);
+}
 
 /** The games the draft may use (the teacher's, their school's, the site's) and the figure catalog for a Figures teacher. */
 export function catalogs(u, schoolId) {
   const pick = L.gamesForPicker(u, schoolId);
-  const catalog = [...pick.school, ...pick.site].map(g => ({ ...g, ...(games.getGame(g.id) || {}) })).map(g => ({ id: g.id, title: g.title, description: g.description, tags: g.tags }));
+  const catalog = [...pick.school, ...pick.site].map(g => ({ ...g, ...(games.getGame(g.id) || {}) })).filter(g => stepGameOk(u, g)).map(g => ({ id: g.id, title: g.title, description: g.description, tags: g.tags }));
   return { catalog, figures: F.canMake(u) ? F.figureCatalog() : [] };
 }
 /** The AI's draft (no write). args: { topic, grade, subject, minutes, locale, t } -> { draft, ai, report } */
@@ -28,7 +40,9 @@ export function save(u, schoolId, d, { topic = '', subject = '', grade = '', fol
   const r = L.createLesson(u, schoolId, { title: d.draft.title || topic, folderId: folderId || null, summary: d.draft.summary, subject: subject || d.draft.subject || '', grade: grade || d.draft.grade || '', objectives: d.draft.objectives });
   if (!r.ok) return r;
   const planned = d.draft.steps || [];
-  for (const s of planned) {
+  for (const s0 of planned) {
+    // checked again at the save: a game step naming a game the teacher may not use becomes a written step
+    const s = s0.kind === 'game' && !stepGameOk(u, games.getGame(s0.gameId)) ? { ...s0, kind: 'text', gameId: null } : s0;
     if (s.kind === L.FIGURES_KIND) { FS.draftedStep(u, r.lesson.id, s, { lang }); continue; }
     L.addStep(u, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
   }
