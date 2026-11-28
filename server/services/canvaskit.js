@@ -43,8 +43,15 @@ export const CANVAS_VERSIONS = Object.freeze({
   // 1.4.1 (worksheets and the phone layout included); printing is unchanged. Older activities move to it when saved from
   // the Activity panel.
   '1.5.0': 'sha384-pC29UCsCFenEhGEJyPtDdEjcSPAGl1alD09bHQHxNTVEBfPWQYRJNAjpTF2AJvg7',
+  // 1.6.0: the owner's fourth audit (docs/decisions.md "Builder class games: audit 4 quality"): a wrong step box gets
+  // kind feedback and counts as a Not yet, Check reads it, Clear empties it, a full box starts again; no digit is lost
+  // when the kit moves to the next box; hints with the problem's own digits that answer the last mistake, one Hint
+  // label; stars for each problem and on the end card, a sound switch, carried digits over their column; the theme
+  // (task.theme, a problem's story) on screen; the column generator's regroup and lo / hi. Older activities move to it
+  // when saved from the Activity panel.
+  '1.6.0': 'sha384-ioxwXH9v6wHfH9G0kKO56xJDq6Zd497VMi9MlJSGPhrQ/0ldSmHadAGIYQEyKhrs',
 });
-export const CANVAS_LATEST = '1.5.0';
+export const CANVAS_LATEST = '1.6.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

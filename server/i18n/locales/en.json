@@ -3147,7 +3147,8 @@
         "sees": "Studio, version {n}",
         "hello": "Tell me what to change in this game and I will send it to the Builder. Each new version shows in the big preview.",
         "versionOf": "Version {n} of {total}",
-        "versionLabel": "Version in the preview"
+        "versionLabel": "Version in the preview",
+        "showFailed": "Couldn't show version {n} right now, so the preview stays as it was. Try again."
       }
     },
     "character": {
@@ -5894,7 +5895,8 @@
         "scanFail": "The safety scan found something to fix, so it isn't ready for students yet. Tell me what to change, or tap Change.",
         "noPlay": "The safety scan passed, but this server couldn't playtest it, so I haven't played it yet.",
         "refused": "The Builder's safety check stopped that message, so nothing was built. {why}",
-        "nothing": "The Builder didn't save a new version this time, so nothing changed. Try saying it another way."
+        "nothing": "The Builder didn't save a new version this time, so nothing changed. Tap Try again, or tell me another way to say it.",
+        "nothingSaid": "The Builder didn't save a new version this time, so nothing changed. It said: “{said}” Tap Try again, or tell me another way to say it."
       },
       "dev": {
         "phone": "a phone",
@@ -5910,7 +5912,14 @@
         "big": "Open big",
         "showBig": "Show it big"
       },
-      "assignText": "Assign “{title}” to my class.",
+      "asg": {
+        "noClass": "You have no class to assign it to yet. Make a class first, then tap Assign again.",
+        "which": "Which class should get it?",
+        "pick": "Assign “{title}” to which class?",
+        "share": "It isn't shared with {class} yet. Assign shares it with {class} only (never with everyone), then assigns it.",
+        "notShared": "I couldn't share it with the class, so nothing was assigned. {why}",
+        "waiting": "It isn't shared with the class yet, so nothing was assigned. {why}"
+      },
       "changeText": "In “{title}”, ",
       "fail": {
         "limit": "No builds left today, so nothing was built. You get more tomorrow.",
@@ -5937,7 +5946,10 @@
       "answered": "Picked: {list}",
       "retry": "Try again",
       "showingBig": "Showing big on the left",
-      "showingBigAbove": "Showing big in the preview above"
+      "showingBigAbove": "Showing big in the preview above",
+      "versions": "Versions",
+      "versionOf": "Version {n} of {total}",
+      "olderShown": "Showing version {n}. Version {newest} is the newest, and changes go to it."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# word} other {# words}}",
@@ -8421,7 +8433,8 @@
       "toReviewList": "Answers to review:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz score: {pct}% right",
-      "quizOverall": "Quiz score across lesson plans: {pct}%"
+      "quizOverall": "Quiz score across lesson plans: {pct}%",
+      "emptyWhat": "Once something is assigned and students join the class, each student gets a row here: how many steps of each assignment they’ve done, their scores, and answers waiting for you to read."
     },
     "lesson": {
       "finished": "{done} of {total} students done",
@@ -8447,7 +8460,8 @@
       "helped": "Teacher showed an answer",
       "stepFixes": "{count, plural, one {# step fix} other {# step fixes}}",
       "sampleName": "Sample student",
-      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way."
+      "sampleNote": "A sample: each student’s row looks like this once they start. Arithmetic Lab adds how many steps they got wrong and fixed on the way.",
+      "partDone": "{done} of {total} answered"
     },
     "student": {
       "doneOf": "{done} of {total} done",

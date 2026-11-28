@@ -3059,7 +3059,8 @@
         "sees": "Studio, version {n}",
         "hello": "Dites-moi quoi changer dans ce jeu et je l’enverrai au Constructeur. Chaque nouvelle version s’affiche dans le grand aperçu.",
         "versionOf": "Version {n} sur {total}",
-        "versionLabel": "Version dans l’aperçu"
+        "versionLabel": "Version dans l’aperçu",
+        "showFailed": "Impossible d’afficher la version {n} pour l’instant, l’aperçu reste comme avant. Réessaie."
       }
     },
     "character": {
@@ -5435,7 +5436,8 @@
         "scanFail": "Le contrôle de sécurité a trouvé quelque chose à corriger, il n’est donc pas encore prêt pour les élèves. Dis-moi quoi changer, ou appuie sur Modifier.",
         "noPlay": "Le contrôle de sécurité est réussi, mais ce serveur n’a pas pu le tester. Je ne l’ai donc pas encore joué.",
         "refused": "Le contrôle de sécurité du Builder a arrêté ce message, rien n’a donc été construit. {why}",
-        "nothing": "Le Builder n’a pas enregistré de nouvelle version cette fois, rien n’a donc changé. Essaie de le dire autrement."
+        "nothing": "Le Builder n’a pas enregistré de nouvelle version cette fois, rien n’a donc changé. Touche Réessayer, ou dis-le-moi autrement.",
+        "nothingSaid": "Le Builder n’a pas enregistré de nouvelle version cette fois, rien n’a donc changé. Il a dit : « {said} » Touche Réessayer, ou dis-le-moi autrement."
       },
       "dev": {
         "phone": "un téléphone",
@@ -5451,7 +5453,14 @@
         "big": "Ouvrir en grand",
         "showBig": "Afficher en grand"
       },
-      "assignText": "Assigne « {title} » à ma classe.",
+      "asg": {
+        "noClass": "Tu n’as pas encore de classe à qui l’assigner. Crée d’abord une classe, puis touche à nouveau Assigner.",
+        "which": "Quelle classe doit le recevoir ?",
+        "pick": "Assigner « {title} » à quelle classe ?",
+        "share": "Il n’est pas encore partagé avec {class}. Assigner le partage seulement avec {class} (jamais avec tout le monde), puis l’assigne.",
+        "notShared": "Je n’ai pas pu le partager avec la classe, rien n’a donc été assigné. {why}",
+        "waiting": "Il n’est pas encore partagé avec la classe, rien n’a donc été assigné. {why}"
+      },
       "changeText": "Dans « {title} », ",
       "fail": {
         "limit": "Plus de constructions aujourd’hui, rien n’a donc été construit. Tu en auras d’autres demain.",
@@ -5478,7 +5487,10 @@
       "answered": "Choisi : {list}",
       "retry": "Réessayer",
       "showingBig": "Affiché en grand à gauche",
-      "showingBigAbove": "Affiché en grand dans l’aperçu au-dessus"
+      "showingBigAbove": "Affiché en grand dans l’aperçu au-dessus",
+      "versions": "Versions",
+      "versionOf": "Version {n} sur {total}",
+      "olderShown": "La version {n} est affichée. La version {newest} est la plus récente, et les changements vont sur elle."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# mot} other {# mots}}",
@@ -7289,7 +7301,8 @@
       "toReviewList": "Réponses à corriger :",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Score du quiz : {pct} % de bonnes réponses",
-      "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %"
+      "quizOverall": "Score aux quiz sur tous les plans de cours : {pct} %",
+      "emptyWhat": "Dès que quelque chose est assigné et que des élèves rejoignent la classe, chaque élève a ici une ligne : combien d'étapes de chaque devoir il a faites, ses scores et les réponses qui attendent ta lecture."
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",
@@ -7315,7 +7328,8 @@
       "helped": "L'enseignant a montré une réponse",
       "stepFixes": "{count, plural, one {# étape corrigée} other {# étapes corrigées}}",
       "sampleName": "Élève exemple",
-      "sampleNote": "Un exemple : la ligne de chaque élève ressemblera à ceci dès qu’il commence. Labo d’arithmétique ajoute combien d’étapes il a ratées puis corrigées en chemin."
+      "sampleNote": "Un exemple : la ligne de chaque élève ressemblera à ceci dès qu’il commence. Labo d’arithmétique ajoute combien d’étapes il a ratées puis corrigées en chemin.",
+      "partDone": "{done} sur {total} répondus"
     },
     "student": {
       "doneOf": "{done} sur {total} terminées",

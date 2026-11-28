@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { TOOLS, TOOL_IDS, selfTest, deal, cleanProblem, seeded } from '../../canvas/src/logic.js';
+import { TOOLS, TOOL_IDS, selfTest, deal, cleanProblem, seeded, fitsRegroup, themeOf } from '../../canvas/src/logic.js';
 import { WORDS, wordsFor } from '../../canvas/src/words.js';
 import { TOKENS } from '../../canvas/src/style.js';
 import { CANVAS_VERSIONS, CANVAS_LATEST, canvasTag, checkCanvas, canvasKit, canvasVersion, selfTestHtml, activityData, withActivityData } from '../../server/services/canvaskit.js';
@@ -151,9 +151,9 @@ test('the server runs the kit\'s own frozen file: an activity page passes, a bro
 });
 
 // ---------------------------------------------------------------- the frozen file
-test('Oomba Canvas 1.0.0 to 1.5.0: the hashes in canvaskit.js and canvas/SHIPPED.json match the files, and a fresh build makes the latest\'s bytes', async () => {
-  assert.deepEqual(Object.keys(CANVAS_VERSIONS), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0']); assert.equal(CANVAS_LATEST, '1.5.0');
-  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0'], 'all seven are locked');
+test('Oomba Canvas 1.0.0 to 1.6.0: the hashes in canvaskit.js and canvas/SHIPPED.json match the files, and a fresh build makes the latest\'s bytes', async () => {
+  assert.deepEqual(Object.keys(CANVAS_VERSIONS), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0', '1.6.0']); assert.equal(CANVAS_LATEST, '1.6.0');
+  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0', '1.6.0'], 'all eight are locked');
   const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions;
   for (const [v, h] of Object.entries(CANVAS_VERSIONS)) {
     const f = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'));
@@ -179,7 +179,7 @@ test('Oomba Canvas 1.0.0 is byte-for-byte what shipped: its manifest, and every 
   for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
   const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
   assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.0.0 folder');
-  assert.equal(canvasKit('1.0.0').version, '1.0.0'); assert.equal(canvasKit('1.1.0').version, '1.1.0'); assert.equal(canvasKit('1.2.0').version, '1.2.0'); assert.equal(canvasKit('1.3.0').version, '1.3.0'); assert.equal(canvasKit('1.4.0').version, '1.4.0'); assert.equal(canvasKit('1.4.1').version, '1.4.1'); assert.equal(canvasKit('1.5.0').version, '1.5.0');
+  assert.equal(canvasKit('1.0.0').version, '1.0.0'); assert.equal(canvasKit('1.1.0').version, '1.1.0'); assert.equal(canvasKit('1.2.0').version, '1.2.0'); assert.equal(canvasKit('1.3.0').version, '1.3.0'); assert.equal(canvasKit('1.4.0').version, '1.4.0'); assert.equal(canvasKit('1.4.1').version, '1.4.1'); assert.equal(canvasKit('1.5.0').version, '1.5.0'); assert.equal(canvasKit('1.6.0').version, '1.6.0');
 });
 test('Oomba Canvas 1.1.0 is byte-for-byte what shipped (1.2.0 is in new files): its manifest, and every file the manifest names', () => {
   const dir = path.join(ROOT, 'public/vendor/oomba-canvas/1.1.0'), h = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
@@ -256,7 +256,73 @@ test('Oomba Canvas 1.5.0 is the Crossword look: the dotted mint board, the probl
   // style only: 1.5.0's script is 1.4.1's but for its version, its header comment and its styles
   const js = v => fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'), 'utf8').replace(/^\/\/ ---- style\.js[\s\S]*?(?=^\/\/ ---- teach\.js)/m, '').replace(/^\/\/ 1\.5\.0: .*\n(\/\/ .*\n)?/m, '').replace(/^\/\*! Oomba Canvas [\d.]+ /, '').replace(/const VERSION = '[\d.]+';/, '');
   assert.equal(js('1.5.0'), js('1.4.1'), 'no behavior changes');
-  assert.equal(canvasKit('1.5.0').version, '1.5.0');
+  assert.equal(canvasKit('1.5.0').version, '1.5.0'); assert.equal(canvasKit('1.6.0').version, '1.6.0');
+});
+test('Oomba Canvas 1.5.0 is byte-for-byte what shipped (1.6.0 is in new files): its manifest, and every file the manifest names', () => {
+  const dir = path.join(ROOT, 'public/vendor/oomba-canvas/1.5.0'), h = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
+  // the manifest as it shipped (the Crossword look, #570)
+  assert.equal(h(fs.readFileSync(path.join(dir, 'manifest.json'))), 'sha384-o/HKraZi2l7fudaUZXP/4J8jUYFQLxzv80f1OfA6Il5qPUczF7DRKgZMQ0lniE2R');
+  const m = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  assert.equal(m.version, '1.5.0');
+  for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
+  const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
+  assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.5.0 folder');
+});
+
+// ---------------------------------------------------------------- 1.6.0: the owner's fourth audit (docs/decisions.md)
+test('1.6.0: the column generator keeps the skill: regroup "some" / "all" / "none", the digits, and lo / hi inside them', () => {
+  const A = T('digits.add'), S = T('digits.sub');
+  const R = (tool, a, b) => { const c = []; let carry = 0; const x = String(a).split('').reverse().map(Number), y = String(b).split('').reverse().map(Number);
+    if (tool === 'digits.add') for (let i = 0; i < Math.max(x.length, y.length); i++) { const s = (x[i] || 0) + (y[i] || 0) + carry; carry = s >= 10 ? 1 : 0; c.push(carry); }
+    else for (let i = 0; i < x.length; i++) { const t = x[i] - carry, b2 = y[i] || 0; carry = t < b2 ? 1 : 0; c.push(carry); }
+    return c; };
+  for (let i = 1; i <= 200; i++) {
+    const some = A.gen(seeded(i), { digits: 2, regroup: 'some' }), all = A.gen(seeded(i), { digits: 2, regroup: 'all' }), none = A.gen(seeded(i), { digits: 2, regroup: 'none' });
+    for (const p of [some, all, none]) { assert.ok(p.a >= 10 && p.a <= 99 && p.b >= 10 && p.b <= 99, `${p.a} + ${p.b}: two digits`); }
+    assert.ok(R('digits.add', some.a, some.b).some(Boolean), `${some.a} + ${some.b} carries`);
+    assert.deepEqual(R('digits.add', all.a, all.b), [1, 1], `${all.a} + ${all.b} carries in both columns`);
+    assert.ok(!R('digits.add', none.a, none.b).some(Boolean), `${none.a} + ${none.b} never carries`);
+    const big = A.gen(seeded(i), { digits: 2, lo: 50, hi: 99, regroup: 'some' });
+    assert.ok(big.a >= 50 && big.a <= 99 && big.b >= 50 && big.b <= 99, '"bigger numbers": larger, still two digits');
+    const sub = S.gen(seeded(i), { digits: 3, regroup: 'some' });
+    assert.ok(sub.a >= sub.b && sub.a >= 100 && R('digits.sub', sub.a, sub.b).some(Boolean), `${sub.a} − ${sub.b} borrows`);
+  }
+  assert.equal(A.gen(seeded(3), { digits: 2, lo: 5, hi: 500 }).a <= 99, true, 'lo and hi never change the number of digits');
+  assert.deepEqual([fitsRegroup('digits.add', 40, 37, 'some'), fitsRegroup('digits.add', 42, 15, 'some'), fitsRegroup('digits.add', 21, 64, 'some')], [false, false, false], 'the audit\'s three');
+  assert.deepEqual([fitsRegroup('digits.add', 46, 38, 'some'), fitsRegroup('digits.add', 46, 38, 'all'), fitsRegroup('digits.add', 68, 57, 'all')], [true, false, true]);
+  assert.equal(selfTest({ gen: { tool: 'digits.add', digits: 2, regroup: 'some' } }).ok, true);
+  assert.match(selfTest({ gen: { tool: 'digits.add', digits: 2, regroup: 'lots' } }).problems[0].why, /regroup must be "some"/);
+  assert.match(selfTest({ gen: { tool: 'digits.add', digits: 1, regroup: 'all', lo: 1, hi: 4 } }).problems[0].why, /cannot be kept with these numbers/);
+});
+test('1.6.0: hints with the problem\'s own digits, for the column of the last mistake', () => {
+  const add = cleanProblem({ tool: 'digits.add', a: 46, b: 38 }).p, A = T('digits.add'), W = WORDS.en;
+  const say = x => W[x.k].replace(/\{(\w+)\}/g, (m, k) => { const v = x.v[k]; return typeof v === 'string' && v in W ? W[v] : String(v); });
+  assert.deepEqual(A.hints(add).map(say), ['Ones: Add 6 + 8. Is it 10 or more?', 'Ones: 6 + 8 = 14. Write 4 and carry 1 to the next column (Tens).', 'Tens: 4 + 3 + 1 = 8. Write 8 in this column.']);
+  assert.deepEqual(A.hints(add, { ans: [4, 7] }).map(say)[1], 'Tens: 4 + 3 + 1 = 8. Write 8 in this column.', 'the first box not right yet: the tens');
+  assert.deepEqual(A.hints(add, { ans: [null, null] }, 1).map(say)[0], 'Tens: Add 4 + 3, then the 1 you carried. Is it 10 or more?', 'focus: the column of the last mistake');
+  assert.equal(say(A.hints(cleanProblem({ tool: 'digits.add', a: 957, b: 868 }).p, null, 2)[1]), 'Hundreds: 9 + 8 + 1 = 18. Write 8 here and 1 in the box on its left.');
+  const sub = cleanProblem({ tool: 'digits.sub', a: 503, b: 128 }).p, S = T('digits.sub');
+  assert.deepEqual(S.hints(sub).map(say).slice(0, 2), ['Ones: 3 − 8. Is 3 big enough to take away 8?', 'Ones: 3 is less than 8, so take 1 from the next column (Tens). Now 13 − 8 = 5. Write 5 in this column.']);
+  assert.match(say(S.hints(sub, null, 1)[0]), /^Tens: Its top digit is 0 and it gave 1 away, so first take 1 from the next column \(Hundreds\): it becomes 9\. Now 9 − 2 = 7\./);
+  const mul = cleanProblem({ tool: 'digits.mul', a: 47, b: 6 }).p;
+  assert.equal(say(T('digits.mul').hints(mul)[1]), 'Ones: 7 × 6 = 42. Write 2 and carry 4 to the next column (Tens).');
+  // every language has every new word, with the same values (the words test below), and none uses an em dash
+  for (const l of Object.keys(WORDS)) for (const k of ['hAdd10', 'hSub0', 'fbStep', 'endStars', 'sound']) assert.ok(WORDS[l][k] && !WORDS[l][k].includes('—'), `${l}.${k}`);
+});
+test('1.6.0: a problem\'s story ({a} and {b}) and the theme are data the kit checks', () => {
+  const p = cleanProblem({ tool: 'digits.add', a: 46, b: 38, story: 'The farm packs {a} eggs, then {b} more. How many eggs?' }).p;
+  assert.deepEqual(T('digits.add').task(p), { text: 'The farm packs 46 eggs, then 38 more. How many eggs?' });
+  assert.equal(cleanProblem({ tool: 'digits.add', a: 46, b: 38, story: 'The farm packs 46 eggs.' }).p, undefined, 'a story without {a} and {b}');
+  assert.match(cleanProblem({ tool: 'digits.add', a: 46, b: 38, story: '<b>{a}</b> {b}' }).why, /no < >/);
+  const g = T('digits.add').gen(seeded(5), { digits: 2, story: 'A crate holds {a} eggs and another {b}. How many?' });
+  assert.match(T('digits.add').task(cleanProblem(g).p).text, /^A crate holds \d\d eggs and another \d\d\. How many\?$/);
+  assert.deepEqual(themeOf({ icon: '🐔', cheers: ['Egg-cellent!', ' ', 'x'.repeat(90)], end: 'Done!', other: 1 }), { icon: '🐔', cheers: ['Egg-cellent!', 'x'.repeat(60)], end: 'Done!' });
+  assert.equal(themeOf({ icon: 'farm' }), null, 'an icon is one emoji, not a word');
+  const base = { problems: [{ tool: 'digits.add', a: 23, b: 45 }] };
+  assert.equal(selfTest({ ...base, task: { title: 'Farm', theme: { icon: '👩‍🌾', cheers: ['Yee-haw!'], end: 'All packed.' } } }).ok, true, 'a ZWJ emoji is one icon');
+  assert.match(selfTest({ ...base, task: { theme: { cheers: 'yay' } } }).problems[0].why, /cheers must be up to 4 short lines/);
+  assert.match(selfTest({ ...base, task: { theme: { icon: 'cow' } } }).problems[0].why, /icon must be one emoji/);
+  assert.match(selfTest({ ...base, task: { theme: [] } }).problems[0].why, /task\.theme must be/);
 });
 test('1.1.0: config.supports, the help modes an activity offers; the self-test checks them; 1.0.0 ignores them', () => {
   const base = { config: { support: 'count', supports: ['count', 'guided'] }, problems: [{ tool: 'digits.add', a: 23, b: 45 }] };
@@ -299,13 +365,13 @@ test('the kit\'s colours are a copy of the site\'s tokens (light and dark)', () 
 test('the scanner admits exactly the pinned Oomba Canvas tag and refuses altered ones', () => {
   const page = tag => `<title>A</title>${tag}<div id="oc-app"></div><script>Oc.activity({})</script>`;
   // both pinned versions: a new activity pins 1.1.0, and every activity saved on 1.0.0 keeps working
-  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0']) {
+  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0', '1.6.0']) {
     const good = scanVersion(page(canvasTag(v)));
     assert.equal(good.status, 'pass', `${v}: ${JSON.stringify(good.issues)}`);
     assert.deepEqual(checkCanvas(page(canvasTag(v))).issues, [], v);
     assert.equal(canvasVersion(page(canvasTag(v))), v);
   }
-  assert.equal(canvasTag(), canvasTag('1.5.0'));
+  assert.equal(canvasTag(), canvasTag('1.6.0'));
   const swapped = canvasTag('1.0.0').replace(CANVAS_VERSIONS['1.0.0'], CANVAS_VERSIONS['1.1.0']);
   assert.equal(scanVersion(page(swapped)).status, 'fail', 'one version\'s file with the other\'s hash');
   const h = CANVAS_VERSIONS[CANVAS_LATEST];

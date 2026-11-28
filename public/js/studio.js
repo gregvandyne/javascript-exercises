@@ -306,6 +306,13 @@ function renderSafety() {
   renderActs();
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
+  // An earlier version in the preview (the Version picker): its own safety status, without the newest one's Fix it.
+  const o = shownOf();
+  if (o) {
+    const key = o.safety === 'pass' ? 'pass' : o.safety === 'flag' ? 'flag' : o.safety === 'fail' ? 'fail' : 'checking';
+    box.innerHTML = `${key === 'checking' ? '' : `${ico({ pass: '✅', flag: '⚠️', fail: '⛔' }[key])} `}${E(`js.studio.safety.${key}`, { number: o.number })}`;
+    return;
+  }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
   const fixBtn = `<button class="btn btn-sm" type="button" data-act="fix">${ico('🛠️')} ${E('js.studio.fixButton')}</button>`;
   if (c.safety === 'pass') box.innerHTML = `${ico('✅')} ${E('js.studio.safety.pass', { number: c.number })}${playedLine(c)}`;
@@ -2107,14 +2114,31 @@ function versionPicker() {
 }
 const numberOf = vid => { const v = (S.versions || []).find(x => x.id === vid); return v ? v.number : S.current ? S.current.number : 0; };
 /** Show one version big (the picker, or Show it big on an older card): its preview address is this viewer's own. */
+// The picker and the preview stay in step (docs/decisions.md "Builder in the chat: audit 4 fixes"): the picker only
+// moves once the version is in the preview; a failed switch is tried once more, then the picker goes back to the
+// version shown and says so plainly. The safety line under the preview is the shown version's own.
+let showing = 0;
 async function dockShow(vid) {
   if (!vid || vid === shownVersion) return;
-  if (S.current && vid === S.current.id && S.preview) { setPreview(S.preview, vid); renderLive(); return; }
-  try {
-    const r = await api(`/api/companion/build/${encodeURIComponent(ID)}?v=${encodeURIComponent(vid)}`, { background: true });
-    if (r.preview && r.preview.url) { asStudent(false); stopLoud(); S.shownUrl = r.preview.url; $('#st-empty').hidden = true; shownVersion = vid; frame.src = r.preview.url; dockShown(); renderLive(); }
-  } catch (e) { toast(e.message, { bad: true }); }
+  const ask = ++showing;
+  if (S.current && vid === S.current.id && S.preview) { asStudent(false); setPreview(S.preview, vid); renderLive(); renderSafety(); return; }
+  const url = `/api/companion/build/${encodeURIComponent(ID)}?v=${encodeURIComponent(vid)}`;
+  let r = null, err = null;
+  for (let i = 0; i < 2 && !r; i++) {
+    try { r = await api(url, { background: true }); } catch (e) { err = e; if (e.signedOut || e.status === 404) break; await new Promise(res => setTimeout(res, 600)); }
+  }
+  if (ask !== showing) return;   // another version was picked meanwhile
+  if (r && r.preview && r.preview.url) {
+    asStudent(false); stopLoud(); S.shownUrl = r.preview.url; $('#st-empty').hidden = true; shownVersion = vid; frame.src = r.preview.url;
+    dockShown(); renderLive(); renderSafety();
+    return;
+  }
+  renderLive();   // back to the version shown
+  if (err && err.signedOut) return failed(err);
+  toast(t('js.studio.dock.showFailed', { n: numberOf(vid) }), { bad: true, ms: 5000 });
 }
+/** The version in the preview now ({ id, number, safety }): the current one, or one picked in the Version picker. */
+function shownOf() { return DOCK && shownVersion && S.current && shownVersion !== S.current.id ? (S.versions || []).find(v => v.id === shownVersion) || null : null; }
 function dockShown() { BUS.refresh(); }
 /** A Studio button's fixed words, into the one chat and on to this game's Builder (no AI in between). */
 async function dockSend(text) {

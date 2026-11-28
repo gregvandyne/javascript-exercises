@@ -467,7 +467,7 @@ export async function run(ctx) {
   // The AI's last change did not save (an edit whose text was not found, a version refused by a check) and nothing saved
   // after it: whatever the AI wrote, the builder hears it in the app's own words, with the version the game is still on.
   if (!aborted() && lastTry && !lastTry.saved) {
-    const cur = ctx.tools.current ? ctx.tools.current() : null;
+    const c0 = ctx.tools.current ? ctx.tools.current() : null, cur = c0 && !c0.draft ? c0 : null;
     ctx.emit('text', { text: '\n\n' + (cur ? t('builder.lastNotSaved', { n: cur.number }) : t('builder.lastNotSavedNone')) });
   }
   return { model, tokensIn, tokensOut, ...(found.count ? { searches: found.count } : {}), ...(auto.seen.size || auto.left2fix ? { autotest: { left: still } } : {}) };

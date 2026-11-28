@@ -890,6 +890,8 @@ export function assignPlan(u, ctx, i) {
   }
   const due = DUE_DAY.test(String(i.due || '')) ? String(i.due) : '';
   const plan = { id: uid(10), kind, itemId: item.id, title: titleText(u, item.title, ctx.names), ...(item.opts ? { opts: item.opts, optTitle: item.title, summary: item.summary || '' } : {}), classId: c.id, className: cleanText(u, c.name, ctx.names), students, due, state: 'open', ...(gl ? { gl: { what: gl.what, unit: gl.unit, band: gl.band, topic: gl.topic || null } } : {}) };
+  // A draft the teacher built in the chat: the card's Assign shares it with this class first (companion-build.js).
+  if (kind === 'game' && CB.needsShare(u, item.id, c.id)) return { plan: { ...plan, share: true, lang: ctx.lang || 'en' } };
   const tried = VC.dryRun(() => runAssign(u, plan));
   if (!tried.ok) return { error: assignWhy(tried.code) };
   return { plan };
@@ -919,11 +921,17 @@ function runAssign(u, p) {
   return LIB.assignStory(u, p.classId, p.itemId, { dueAt });
 }
 /** Assign on the card: assigned now, read back (the class's assignment as saved), with Undo. */
-function assignAct(u, row, turn, a) {
+function assignAct(u, row, turn, a, shared = false) {
   const p = turn.note.assign;
   if (!p || p.state !== 'open') return { ok: false, code: 'notFound' };
   if (a === 'assignNo') return markNote(u, row, turn.id, { ...turn.note, assign: { ...p, state: 'declined' } });
-  if (!allow(`asg-chat:${u.id}`, 120, 3600e3)) return { ok: false, code: 'slow' };
+  if (!shared && !allow(`asg-chat:${u.id}`, 120, 3600e3)) return { ok: false, code: 'slow' };
+  // A game built in the chat, not shared with the class yet: shared with it first (publish.js's checks), or the plain
+  // reason why not (companion-build.js shareForAssign).
+  if (p.share && !shared && CB.needsShare(u, p.itemId, p.classId)) {
+    return CB.shareForAssign(u, p).then(s => (s.ok ? assignAct(u, row, turn, a, true)
+      : C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...turn.note, assign: { ...p, state: 'declined' } } } }, text: s.message, apply: () => ({}) })));
+  }
   return C.addTurn(u, SURFACE, KEY, {
     mark: { id: turn.id, fields: { note: { ...turn.note, assign: { ...p, state: 'assigned' } } } }, text: '',
     apply: () => {
@@ -1214,7 +1222,7 @@ export function runTool(name, input, ctx) {
       if (r.ask) { ctx.out.ask = r.ask; return { result: { askedWhich: true, note: 'The teacher picks the class on the card. Ask in one short sentence; nothing is assigned yet.' }, step: { k: 'which' } }; }
       if (r.offer) return { result: { assigned: false, game: r.offer.game, activities: r.offer.activities, note: `${r.offer.game} is assigned with one of the teacher's own saved activities. Offer these (askChoice with their titles, or name them), then call assign again with set. Nothing is assigned yet.` }, step: { k: 'assignPick', n: r.offer.activities.length } };
       ctx.out.assign = r.plan;
-      return { result: { waitingForTeacher: true, checked: true, title: r.plan.title, className: r.plan.className, students: r.plan.students.length ? `${r.plan.students.length} students` : 'the whole class', due: r.plan.due || null, note: 'Checked: this can be assigned. Nothing is assigned yet: the teacher sees Assign and Not now on a card. Say so in one short sentence, never that it is assigned.' }, step: { k: 'assign', q: clip(r.plan.title, 40) } };
+      return { result: { waitingForTeacher: true, checked: true, title: r.plan.title, className: r.plan.className, students: r.plan.students.length ? `${r.plan.students.length} students` : 'the whole class', due: r.plan.due || null, ...(r.plan.share ? { sharesFirst: 'The game is not shared with that class yet: Assign on the card shares it with that class only (never public), then assigns it.' } : {}), note: 'Checked: this can be assigned. Nothing is assigned yet: the teacher sees Assign and Not now on a card. Say so in one short sentence, never that it is assigned.' }, step: { k: 'assign', q: clip(r.plan.title, 40) } };
     }
     // Oomba does it (services/companion-actions/): checked like the page's own route and in a dry run; a card, and
     // nothing changes until the teacher taps Do it. One action per answer.

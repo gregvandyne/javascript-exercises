@@ -144,6 +144,8 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   // the server starts the game itself with the characters they picked (tools.js planFallback), so a child never ends
   // up with no game. Not after a stop, a delete or a ban.
   const why = job.ac.signal.aborted ? String(job.ac.signal.reason) : '';
+  // A chat build's starter the Builder never changed (tools.js draft): saved now, as it always was.
+  if (plan && plan.chat && (!why || why === 'timeout') && !turns.versionsSince(game.id, job.base).length) { try { tb.flushDraft(); } catch { /* nothing saved */ } }
   if (plan && (!why || why === 'timeout') && !turns.versionsSince(game.id, job.base).length) {
     let r = null; try { r = await tb.planFallback(); } catch { r = null; }
     if (job.handedOff || job.ended) return;

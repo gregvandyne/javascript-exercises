@@ -3059,7 +3059,8 @@
         "sees": "Estudio, versión {n}",
         "hello": "Dime qué cambiar en este juego y se lo enviaré al Constructor. Cada versión nueva aparece en la vista previa grande.",
         "versionOf": "Versión {n} de {total}",
-        "versionLabel": "Versión en la vista previa"
+        "versionLabel": "Versión en la vista previa",
+        "showFailed": "No se pudo mostrar la versión {n} ahora, así que la vista previa sigue igual. Inténtalo de nuevo."
       }
     },
     "character": {
@@ -5435,7 +5436,8 @@
         "scanFail": "La revisión de seguridad encontró algo que corregir, así que todavía no está listo para tus estudiantes. Dime qué cambiar o toca Cambiar.",
         "noPlay": "La revisión de seguridad salió bien, pero este servidor no pudo probarlo, así que todavía no lo he jugado.",
         "refused": "La revisión de seguridad del Builder detuvo ese mensaje, así que no se construyó nada. {why}",
-        "nothing": "Esta vez el Builder no guardó una versión nueva, así que nada cambió. Prueba a decirlo de otra forma."
+        "nothing": "Esta vez el Builder no guardó una versión nueva, así que nada cambió. Toca Intentar de nuevo o dímelo de otra forma.",
+        "nothingSaid": "Esta vez el Builder no guardó una versión nueva, así que nada cambió. Dijo: «{said}» Toca Intentar de nuevo o dímelo de otra forma."
       },
       "dev": {
         "phone": "un teléfono",
@@ -5451,7 +5453,14 @@
         "big": "Abrir en grande",
         "showBig": "Verla en grande"
       },
-      "assignText": "Asigna «{title}» a mi clase.",
+      "asg": {
+        "noClass": "Todavía no tienes una clase a la que asignarlo. Crea una clase primero y vuelve a tocar Asignar.",
+        "which": "¿Qué clase debería recibirlo?",
+        "pick": "¿A qué clase asignar «{title}»?",
+        "share": "Todavía no está compartido con {class}. Asignar lo comparte solo con {class} (nunca con todo el mundo) y luego lo asigna.",
+        "notShared": "No pude compartirlo con la clase, así que no se asignó nada. {why}",
+        "waiting": "Todavía no está compartido con la clase, así que no se asignó nada. {why}"
+      },
       "changeText": "En «{title}», ",
       "fail": {
         "limit": "Hoy no quedan construcciones, así que no se construyó nada. Mañana tendrás más.",
@@ -5478,7 +5487,10 @@
       "answered": "Elegido: {list}",
       "retry": "Intentar de nuevo",
       "showingBig": "Se ve en grande a la izquierda",
-      "showingBigAbove": "Se ve en grande en la vista previa de arriba"
+      "showingBigAbove": "Se ve en grande en la vista previa de arriba",
+      "versions": "Versiones",
+      "versionOf": "Versión {n} de {total}",
+      "olderShown": "Se muestra la versión {n}. La versión {newest} es la más reciente, y los cambios van a ella."
     },
     "storybook-setup": {
       "words": "{count, plural, one {# palabra} other {# palabras}}",
@@ -7289,7 +7301,8 @@
       "toReviewList": "Respuestas por revisar:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Nota del quiz: {pct} % de aciertos",
-      "quizOverall": "Puntuación de cuestionarios en todos los planes de clase: {pct} %"
+      "quizOverall": "Puntuación de cuestionarios en todos los planes de clase: {pct} %",
+      "emptyWhat": "Cuando asignes algo y los alumnos se unan a la clase, cada alumno tendrá aquí una fila: cuántos pasos de cada tarea ha hecho, sus puntuaciones y las respuestas que esperan a que las leas."
     },
     "lesson": {
       "finished": "{done} de {total} estudiantes terminaron",
@@ -7315,7 +7328,8 @@
       "helped": "El docente mostró una respuesta",
       "stepFixes": "{count, plural, one {# paso corregido} other {# pasos corregidos}}",
       "sampleName": "Alumno de ejemplo",
-      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino."
+      "sampleNote": "Un ejemplo: la fila de cada alumno se verá así cuando empiece. Laboratorio de aritmética añade cuántos pasos tuvo mal y corrigió por el camino.",
+      "partDone": "{done} de {total} respondidas"
     },
     "student": {
       "doneOf": "{done} de {total} hechos",

@@ -101,7 +101,9 @@ async function ptCanvas(o) {
         if (after.right !== before + 1) { out.why = { code: 'answer', text: `problem ${n}: the right answer was not accepted`, n }; return out; }
       } else {
         // the set is not known here (an older kit with a generator): Check twice shows the worked answer
-        checkBtn().click(); await sleep(30); if (T.state().phase === 'work') { checkBtn().click(); await sleep(30); }
+        // (1.6.0: an empty Check is not a try; the kit's giveUp() shows it the same way)
+        if (typeof T.giveUp === 'function') T.giveUp();
+        else { checkBtn().click(); await sleep(30); if (T.state().phase === 'work') { checkBtn().click(); await sleep(30); } }
       }
     }
     // Next (or, on the last problem, the results card)

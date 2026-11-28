@@ -94,7 +94,8 @@ const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ 
 // ================================================================ student actions
 router.post('/api/progress/:clid/:sid/done', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.markDone(req.user, req.params.clid, req.params.sid, b(req).done !== false && b(req).done !== '0')));
 router.post('/api/progress/:clid/:sid/answer', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.answer(req.user, req.params.clid, req.params.sid, b(req).answer)));
-/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label, helped }. Never for a hosted-live
+/** From the play page: { event: 'start' | 'time' | 'score' | 'end' | 'progress', seconds, score, label, helped, done, total }
+ *  ('progress': BRB.setProgress, a set game's questions answered so far). Never for a hosted-live
  *  step (Quest Race, Would You Rather Live…): only the teacher's live run writes that cell (services/progress.js). */
 router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
   const { event, seconds, score, label } = b(req), helped = b(req).helped === true;
@@ -102,7 +103,8 @@ router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 
   const c = P.context(u, clid, sid);
   if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
-    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, b(req).won === true ? 'won' : '', helped) : { ok: false, code: 'notFound' };
+    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped)
+    : event === 'progress' ? P.gameProgress(u, clid, sid, { done: b(req).done, total: b(req).total, score, label: typeof label === 'string' ? label : '' }) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, b(req).won === true ? 'won' : '', helped) : { ok: false, code: 'notFound' };
   send(req, res, r);
 });
 /** Flashcards (services/flash-progress.js): each card's state on the student's own assigned set, from Learn and Test:
@@ -222,8 +224,8 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const body = html`
   ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><div class="small muted gbhelp-text"><p>${t('progress.gradebook.text')}</p><p><b>${t('gradebook.workDone')}:</b> ${t('gradebook.help.workDone')}</p><p><b>${t('gradebook.score')}:</b> ${t('gradebook.help.score')}</p><p><b>${ico('⏰', { size: 18 })} ${t('lessons.class.late')}:</b> ${t('gradebook.help.late')} ${zoneNote(t, c.school_id)}</p><p>${t('gradebook.help.names')}</p></div></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>${ico('⬇️', { size: 18 })} ${t('progress.gradebook.csv')}</a></div>` : ''}
   ${toReview.length ? html`<p class="notice gb-review" id="to-review">${ico('✍️', { size: 18 })} <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
-  ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.progressEmptyText') })}</section>`
-    : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
+  ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.progressEmptyText') })}<p class="small muted gb-empty-what">${t('progress.gradebook.emptyWhat')}</p></section>`
+    : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}<p class="small muted gb-empty-what">${t('progress.gradebook.emptyWhat')}</p></section>`
     : html`<section class="panel">${gb.students.length > 8 ? nameFilter(t, 'gb-lessons') : ''}${table}<p class="small muted gb-key"><span>${ico('✅', { size: 18 })} ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">${ico('⏰', { size: 18 })} ${t('progress.key.late')}</span><span>${ico('🎯', { size: 18 })} ${t('gradebook.key.score')}</span><span>${ico('✍️', { size: 18 })} ${t('progress.key.toRead')}</span>${gb.anyRubric ? html`<span>${ico('📏', { size: 18 })} ${t('rubrics.gradebook.key')}</span>` : ''}</p></section>`}`;
   // Courses: per-student completion status, step progress and recorded check scores for every registered
   // course, for this class's students only (the same roster the gradebook above is built from, and the
@@ -414,7 +416,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
     const qz = s.kind === L.QUIZ_KIND || s.kind === L.MANIP_KIND || L.HANDIN_KINDS.includes(s.kind) ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
-      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label && x.label !== 'won' && !/^fixes:/.test(x.label) ? ` ${x.label}` : ''}</span>${/^fixes:/.test(x.label || '') ? html`<span class="st-fixes small muted" dir="auto">${P.scoreLabel(t, x.label)}</span>` : ''}${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
+      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label && x.label !== 'won' && !P.codedLabel(x.label) ? ` ${x.label}` : ''}</span>${P.codedLabel(x.label) ? html`<span class="st-fixes small muted" dir="auto">${P.scoreLabel(t, x.label)}</span>` : ''}${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
     const marks = x.marks && rubricOf(s).length ? html`<span class="st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${marksText(x.marks)}</span>` : '';
     // A game step ticked "I've played it" with no play recorded here (no time, no score): ☑️ "marked done", never the

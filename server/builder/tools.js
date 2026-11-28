@@ -81,9 +81,24 @@ export function applyEdits(html, edits) {
 export function toolbox(ctx) {
   const steps = ctx.steps || NO_STEPS;
   const game = () => games.getGame(ctx.gameId);
-  const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
+  const saved = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
+  // A first build from the Oomba chat (plan.chat, docs/decisions.md "Builder in the chat: audit 4 fixes"): a starter is
+  // a draft, not a saved version, until the Builder's first save, so the teacher's Version 1 is the game made for them
+  // (it was the bare starter, an unrelated "Equivalent fractions" activity, and the chat's game became Version 2).
+  // edit_game works on the draft; a draft never saved is saved at the end as before (flushDraft, agent.js).
+  const draftOn = !!(ctx.plan && ctx.plan.chat === true);
+  let draft = null;
+  const current = () => saved() || draft;
 
   const stopped = () => !!(ctx.signal && ctx.signal.aborted);
+  // A classroom activity's skill check (skill.js): the teacher's words (the setup's topic and their messages) and the
+  // version this build started from, so its problems are checked against what was asked (regrouping, the digits).
+  const base0 = current();
+  const skillCtx = () => {
+    const tp = ctx.plan && ctx.plan.topic;
+    const topic = tp ? (tp.text || (tp.id ? tFor('en')(`buildSetup.canvas.topics.${tp.id}`) : '')) : '';
+    return { requests: Array.isArray(ctx.requests) ? ctx.requests : [], topic: String(topic || ''), before: base0 ? base0.html : null };
+  };
   // A build from the setup steps that draws the 2D art (ctx.plan, plan.js planArt2d): the world and the characters they
   // picked. start_from_template starts with exactly these, and no version of this build is saved without them: the
   // model can never swap the picked animals for the kit's own characters.
@@ -116,6 +131,7 @@ export function toolbox(ctx) {
     const n0 = cleanNote(stripLinks(notes), 200);
     const note = (n0 && cleanText(n0, 200).ok && n0) || 'New version';
     const v = games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
+    draft = null;
     // The safety program (not AI) ran, and the version is saved. k (flag/fail): how many things it listed at that level.
     const listed = (report.issues || []).filter(i => i.level === report.status).length;
     steps.start('check', { st: report.status, v: v.number, ...(listed ? { k: listed } : {}) });
@@ -131,6 +147,8 @@ export function toolbox(ctx) {
     if (report.status === 'flag') forModel += ` Please also look at: ${modelIssues(report).join(' ')}`;
     const tips = styleTips(report, ctx.requests);
     if (tips.length) forModel += ` The style check (the game still works; fix these so it looks and plays like a first-party Oomba game, but the builder's own choices always win: never undo a colour, character, creature, theme or plain look they asked for): ${tips.join(' ')}`;
+    // A classroom activity's skill check (skill.js): saved, but fix it before finishing (the playtest lists it too)
+    if (canvas) { const sk = autotest.canvasSkillText(html, skillCtx()); if (sk) forModel += ` Skill check (fix this now, before you finish): ${sk}`; }
     return { ok: true, forModel, event, version: v, report };
   }
 
@@ -178,8 +196,8 @@ export function toolbox(ctx) {
     // same two moments on every device (phone and tablet, portrait and landscape, desktop) as two contact sheets, with
     // the layout problems found at each size (snapshot.js VIEWS).
     async playtest_game() {
-      const cur = current(); const g = game();
-      if (!cur) return { ok: false, forModel: 'There is no game yet. Build it with write_game first.' };
+      const cur = saved(); const g = game();
+      if (!cur) return { ok: false, forModel: draft ? 'The starter is not saved yet: make it theirs with edit_game first (that saves version 1), then playtest.' : 'There is no game yet. Build it with write_game first.' };
       // The AI really asked for a playtest, so it gets a row; without screenshots that row says it couldn't run
       // (ok:false) and never claims a test happened. shown: the failure is on the card (the next round reads it).
       const row = steps.start('playtest', { v: cur.number });
@@ -284,7 +302,13 @@ export function toolbox(ctx) {
       if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
       if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
-      const r = saveVersion(html, (input && input.notes) || `Started from ${k2 ? worldById(k2.world).name : info ? info.title : key}`);
+      const startNote = (input && input.notes) || `Started from ${k2 ? worldById(k2.world).name : info ? info.title : key}`;
+      let r;
+      if (draftOn && !saved()) {
+        draft = { id: null, number: 0, draft: true, game_id: ctx.gameId, html, notes: startNote };
+        if (k2 && ctx.state) ctx.state.kit2 = k2;
+        r = { ok: true, forModel: `Started from ${info ? info.title : key}, NOT saved as a version yet: it is only the starting point, and your first save is version 1 (never leave the starter's own example content in it).` };
+      } else r = saveVersion(html, startNote);
       if (k2 && r.version && ctx.state) ctx.state.kit2 = k2;   // remembered: the next turns are Kit 2 turns
       if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''}${a2.friends ? ` and ${a2.friends.length} friend${a2.friends.length > 1 ? 's' : ''} in the game too (CONFIG.friends2d: ${a2.friends.join(', ')})` : ''} (CONFIG.world, CONFIG.hero2d, CONFIG.friends2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
@@ -310,7 +334,7 @@ export function toolbox(ctx) {
    *  opts.playthrough (default on): then also play it all the way through (services/playthrough.js), keep that result on
    *  the version (publishing needs a pass) and add a failure to the report. */
   async function autoPlaytest(opts = {}) {
-    const cur = current(), g = game();
+    const cur = saved(), g = game();
     if (!cur || !g || stopped()) return { ran: false };
     if (!autotest.hooks.raw && !snapshot.enabled()) return { ran: false };
     const row = steps.start('autotest', { v: cur.number });
@@ -330,7 +354,7 @@ export function toolbox(ctx) {
       if (stopped()) return { ran: false };
       playthrough.record(cur.id, pt);
     }
-    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt });
+    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt, skill: skillCtx() });
     steps.info({ probs: rep.problems.length }, row);
     ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true, ...(pt && pt.code !== 'busy' ? { played: pt.ok ? (pt.endless ? 'endless' : 'pass') : 'fail' } : {}), ...(rep.facts.views && rep.facts.views.length ? { views: rep.facts.views } : {}) });
     return { ran: true, version: cur.number, ...rep };
@@ -361,11 +385,22 @@ export function toolbox(ctx) {
     return r;
   }
 
+  /** A chat build's starter that was never saved (the Builder ended without a change): saved now as a version, as
+   *  start_from_template always did, so the build is not lost. -> the saveVersion result (its event sent), or null. */
+  function flushDraft() {
+    if (!draft || saved()) return null;
+    const d = draft;
+    const r = saveVersion(d.html, d.notes, { evenIfStopped: true });
+    if (r.event) ctx.emit(r.event[0], r.event[1]);
+    return r;
+  }
+
   return {
     current,
     game,
     autoPlaytest,
     planFallback,
+    flushDraft,
     /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */
     exec(name, input) {
       if (stopped()) return { ok: false, forModel: 'Stopped.' };

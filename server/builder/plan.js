@@ -31,6 +31,7 @@ import { BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS } from './catalog.js';
 import { config } from '../config.js';
 import { tEn, lookup, CODES } from '../i18n/index.js';
 import { figureWords, planText } from './figures.js';
+import { statedSkill } from './skill.js';
 
 export const PLAN_VERSION = 1;
 // characters: as many as they like ("Select all" on every group picks everyone there is), with room to grow.
@@ -259,7 +260,13 @@ export function topicFor(text, grade = '') {
   if (!hit) { const w = TOPIC_WORDS.find(([, re]) => re.test(s)); hit = w ? topicById(w[0]) : null; }
   // "adding fractions" is not column addition (the kit has no fraction sums): no suggestion, the model picks
   if (hit && /\bfraction/.test(s) && !/fraction/i.test(hit.id)) hit = null;
-  if (hit && hit.id === 'addColumns' && ['4', '5', '6', '7', '8'].includes(gradeOf(grade))) hit = topicById('bigAdd');
+  if (hit && hit.id === 'addColumns' && ['4', '5', '6', '7', '8'].includes(gradeOf(grade)) && !statedSkill([s]).digits) hit = topicById('bigAdd');
+  // the skill in their words (skill.js): "regrouping", "carrying in both columns", "no regrouping", "two-digit": a column
+  // generator keeps it (logic.js gen: regroup, digits), so every problem of the set practises what was asked
+  if (hit && /^digits\.(add|sub)$/.test(hit.gen.tool)) {
+    const sk = statedSkill([s]);
+    if (sk.regroup || sk.digits) hit = { ...hit, gen: { ...hit.gen, ...(sk.digits ? { digits: Math.min(4, sk.digits) } : {}), ...(sk.regroup ? { regroup: sk.regroup } : {}) } };
+  }
   return hit;
 }
 /** The chips for a grade, in order (no grade, or one with no chips: the middle grades' chips). */
@@ -343,6 +350,15 @@ export function normalisePlan(raw, { forKid = false } = {}) {
   };
   // Made from a class (?for=class): only that it was, never which class (the Studio offers "Make it a classroom activity").
   if (raw.forClass === true) plan.forClass = true;
+  // A first build from the Oomba chat (services/companion-build.js builderPlan; docs/decisions.md "Builder in the chat:
+  // audit 4 fixes"): chat (its starter is a draft until the first save, tools.js), the class's grade and the help the
+  // teacher picked (planNote names them).
+  if (raw.chat === true) {
+    plan.chat = true;
+    const gr = String(raw.grade ?? '').trim().toUpperCase();
+    if (gr === 'K' || (/^\d{1,2}$/.test(gr) && +gr >= 1 && +gr <= 12)) plan.grade = gr === 'K' ? 'K' : String(+gr);
+    if (raw.help !== undefined) plan.help = helpOf(raw.help);
+  }
   // How it is played: a known answer this plan allows; Live where it cannot be (a ready-made 3D world, a tool for the
   // board) becomes this viewer's default for it. Not answered: no play at all (the Builder decides, as before the step).
   if (PLAYS.includes(raw.play)) plan.play = raw.play === 'live' && liveNot(plan) ? playDefault(plan, { forKid }) : raw.play;
@@ -359,7 +375,7 @@ function activityPlan(raw) {
     v: PLAN_VERSION, kind: 'activity', topic: chip ? { id: chip.id } : text ? { text } : null, tool: chip ? chip.gen.tool : '',
     help, support: help[0], purpose: purposeOf(raw.purpose), played: CANVAS_PLAYS.includes(raw.played) ? raw.played : 'devices', grade,
     type: null, look: null, world: null, characters: [], learn: [], notes: clean(raw.notes, LIMITS.notes), ...(raw.forClass === true ? { forClass: true } : {}),
-    ...(lesson ? { lesson } : {}),
+    ...(lesson ? { lesson } : {}), ...(raw.chat === true ? { chat: true } : {}),
   };
   // the plan flag for figures (builder/figures.js): the topic, the lesson or the note calls for science, maths or graph
   // figures, in any site language; then the FIGURE RULES go with the build
@@ -697,6 +713,8 @@ export function canvasActivity(plan, t = tEn) {
 }
 const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
 const who = id => { const c = setupCharacter(id); return c ? `${c.id} (${c.name})` : id; };
+/** A chat build's help (plan.help, the SUPPORTS levels), as the plan note says it for a game (not a Canvas activity). */
+const GAME_HELP = { watch: 'a worked example first, then they try one', count: 'counting up step by step', guided: 'a short hint after a wrong try, never the answer', own: 'no hints, like a quick check' };
 const PLAY_BRIEF = { live: 'LIVE (Oomba Live, a teacher or grown-up hosts)', screen: 'on one screen (not live)', solo: 'on my own (not live)' };
 /** One line for the transcript of later turns (builder/claude.js historyToMessages): what was pack and what was custom. */
 export function planBrief(plan) {
@@ -740,6 +758,8 @@ export function planNote(plan) {
   lines.push(plan.play === 'live' ? '- How it is played: LIVE with their class or group on Oomba Live (everyone on their own device; a teacher or grown-up hosts it from the big screen).'
     : plan.play === 'screen' ? '- How it is played: ON ONE SCREEN (the class together on the board, or one device passed around). Not a live game.'
       : plan.play === 'solo' ? '- How it is played: ON MY OWN (one player on one device). Not a live game.' : '- How it is played: not chosen (you decide; a game is live only when they ask for it).');
+  if (plan.grade) lines.push(`- Grade: ${plan.grade === 'K' ? 'kindergarten' : plan.grade} (numbers, words and pace for this grade).`);
+  if (plan.help) lines.push(`- Help: ${plan.help.map(h => GAME_HELP[h] || h).join(', ')}.`);
   if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
   const how = [];
   if (e.engine === 'kit2') {

@@ -16,18 +16,25 @@ export const GAME = () => fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic
 
 let chromium = null;
 try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
+// (Playwright's own browser, else a Chromium on the machine, as the site's browser tests find it)
+const LOCAL = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].filter((p) => p && fs.existsSync(p) && fs.statSync(p).isFile());
+let launchOpts = {};
 let ok = false;
-if (chromium) { try { const b = await chromium.launch(); await b.close(); ok = true; } catch { ok = false; } }
+if (chromium) {
+  for (const o of [{}, ...LOCAL.map((executablePath) => ({ executablePath, args: ['--no-sandbox'] }))]) {
+    try { const b = await chromium.launch(o); await b.close(); ok = true; launchOpts = o; break; } catch { ok = false; }
+  }
+}
 export const skip = ok ? false : 'no Chromium on this machine';
 
 let browser = null;
 export async function closeBrowser() { if (browser) await browser.close(); browser = null; }
 
-/** Open the game. o: { lang, set (a question set's item), tts (INIT.tts), print, canAssign, phone, voice: 'ok'|'no'|'none',
+/** Open the game. o: { lang, set (a question set's item), saveData (the game save it starts with: { key: JSON text }), tts (INIT.tts), print, canAssign, phone, voice: 'ok'|'no'|'none',
  *  printReply(doc) -> { html } | { error } (the page's answer), save, params (BRB.params), mySets (My worksheets),
  *  width/height (the phone's size), dark }. Every brb:* message the frame posts is kept (msgs(type)); a set save is answered as the page does. */
 export async function openGame(o = {}) {
-  browser ||= await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+  browser ||= await chromium.launch({ ...launchOpts, args: [...(launchOpts.args || []), '--autoplay-policy=no-user-gesture-required'] });
   const phone = o.phone !== false;
   const scheme = o.dark ? { colorScheme: 'dark' } : {};
   const ctx = await browser.newContext(phone ? { viewport: { width: o.width || 390, height: o.height || 844 }, hasTouch: true, isMobile: true, reducedMotion: 'reduce', ...scheme } : { viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce', ...scheme });
@@ -37,7 +44,7 @@ export async function openGame(o = {}) {
   const init = {
     user: { displayName: 'T', avatar: 'x', lang, dir: ['ar', 'he'].includes(lang) ? 'rtl' : 'ltr', isGuest: false },
     game: { id: 'g', title: 'Arithmetic Lab', url: 'https://oomba.test/play/arithmetic-lab' },
-    save: {}, canSave: true,
+    save: o.saveData || {}, canSave: true,
     ...(o.set ? { set: { id: 's-abcdefghjk', items: [o.set], mine: false } } : {}),
     ...(o.tts ? { tts: o.tts } : {}),
     ...(o.print ? { print: true } : {}),

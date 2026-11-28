@@ -81,13 +81,14 @@
   .bb-tile:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
   .bb-grid.mine .bb-tile.can .f { animation: bb-glow 2s ease-in-out infinite; }
   /* scores (projector) */
-  .bb-side { width: clamp(170px, 21vw, 300px); padding: 12px; display: flex; flex-direction: column; gap: 10px; align-self: center; max-height: 100%; overflow: hidden; --g: var(--g-tools); }
+  .bb-side { width: clamp(200px, 24vw, 320px); padding: 12px; display: flex; flex-direction: column; gap: 10px; align-self: center; max-height: 100%; overflow: hidden; --g: var(--g-tools); }
   .bb-wh { display: flex; align-items: center; gap: 10px; }
   .bb-side h2 { margin: 0; font-size: clamp(15px, 1.8vw, 22px); font-weight: 800; }
-  .bb-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-  .bb-rows li { display: flex; align-items: center; gap: 8px; background: var(--card2); color: var(--ink); border-radius: var(--r-sm); padding: 5px 10px; font-weight: 800; font-size: clamp(13px, 1.6vw, 20px); }
+  .bb-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .bb-rows li { display: flex; align-items: center; gap: 6px; background: var(--card2); color: var(--ink); border-radius: var(--r-sm); padding: 4px 8px; font-weight: 800; font-size: clamp(12px, 1.4vw, 18px); line-height: 1.15; }
   .bb-rows li:first-child { background: color-mix(in srgb, var(--spark) 32%, var(--card)); }
-  .bb-rows li .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* a team name is never cut: it fits the wider column, or wraps cleanly */
+  .bb-rows li .nm { flex: 1; min-width: 0; white-space: normal; overflow-wrap: break-word; }
   .bb-rows li .tm { flex: none; width: 14px; height: 14px; border-radius: 4px; background: var(--team); box-shadow: 0 0 0 2px var(--card); }
   .bb-rows li canvas { width: 28px; height: 28px; flex: none; }
   /* the lobby: everyone who has joined, as small cards on one widget */
