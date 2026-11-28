@@ -84,6 +84,14 @@ export function toolbox(ctx) {
   const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
 
   const stopped = () => !!(ctx.signal && ctx.signal.aborted);
+  // A classroom activity's skill check (skill.js): the teacher's words (the setup's topic and their messages) and the
+  // version this build started from, so its problems are checked against what was asked (regrouping, the digits).
+  const base0 = current();
+  const skillCtx = () => {
+    const tp = ctx.plan && ctx.plan.topic;
+    const topic = tp ? (tp.text || (tp.id ? tFor('en')(`buildSetup.canvas.topics.${tp.id}`) : '')) : '';
+    return { requests: Array.isArray(ctx.requests) ? ctx.requests : [], topic: String(topic || ''), before: base0 ? base0.html : null };
+  };
   // A build from the setup steps that draws the 2D art (ctx.plan, plan.js planArt2d): the world and the characters they
   // picked. start_from_template starts with exactly these, and no version of this build is saved without them: the
   // model can never swap the picked animals for the kit's own characters.
@@ -131,6 +139,8 @@ export function toolbox(ctx) {
     if (report.status === 'flag') forModel += ` Please also look at: ${modelIssues(report).join(' ')}`;
     const tips = styleTips(report, ctx.requests);
     if (tips.length) forModel += ` The style check (the game still works; fix these so it looks and plays like a first-party Oomba game, but the builder's own choices always win: never undo a colour, character, creature, theme or plain look they asked for): ${tips.join(' ')}`;
+    // A classroom activity's skill check (skill.js): saved, but fix it before finishing (the playtest lists it too)
+    if (canvas) { const sk = autotest.canvasSkillText(html, skillCtx()); if (sk) forModel += ` Skill check (fix this now, before you finish): ${sk}`; }
     return { ok: true, forModel, event, version: v, report };
   }
 
@@ -330,7 +340,7 @@ export function toolbox(ctx) {
       if (stopped()) return { ran: false };
       playthrough.record(cur.id, pt);
     }
-    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt });
+    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt, skill: skillCtx() });
     steps.info({ probs: rep.problems.length }, row);
     ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true, ...(pt && pt.code !== 'busy' ? { played: pt.ok ? (pt.endless ? 'endless' : 'pass') : 'fail' } : {}), ...(rep.facts.views && rep.facts.views.length ? { views: rep.facts.views } : {}) });
     return { ran: true, version: cur.number, ...rep };

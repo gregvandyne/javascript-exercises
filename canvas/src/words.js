@@ -719,6 +719,96 @@ const WORDS_141 = {
   ar: { newShort: 'جديدة' }, he: { newShort: 'חדש' },
 };
 for (const l of Object.keys(WORDS_141)) Object.assign(WORDS[l], WORDS_141[l]);
+// 1.6.0: the sound switch, stars, a wrong step box, an empty Check, and the column hints with the problem's own digits.
+// Each language gives the hints' parts once (co: its colon, J: its full stop after a sum, sp: the space between
+// sentences) and the keys are put together from them the same way in every language, so their {values} always match.
+const HINT_PARTS = {
+  en: { co: ': ', J: '.', sp: ' ', addN: 'Add {x} + {y}.', addCN: 'Add {x} + {y}, then the {c} you carried.', q10: 'Is it 10 or more?', mulN: 'Multiply {x} × {y}.', mulCN: 'Multiply {x} × {y}, then add the {c} you carried.',
+    carry: 'Write {d} and carry {k} to the next column ({next}).', top: 'Write {d} here and {k} in the box on its left.', write: 'Write {s} in this column.', subN: 'Is {x} big enough to take away {y}?',
+    subC: 'This column gave 1 to the column on its right, so its top digit is now {x}.', sub10: '{x} is less than {y}, so take 1 from the next column ({next}). Now {t} − {y} = {s}.',
+    sub0: 'Its top digit is 0 and it gave 1 away, so first take 1 from the next column ({next}): it becomes 9. Now 9 − {y} = {s}.',
+    hLast: 'Now check every box once more, from the ones to the left.', sound: 'Sound', soundOn: 'Sound is on', soundOff: 'Sound is off', starsN: '{n} stars', endStars: '{n} of {total} stars',
+    fbStep: '{n} is not it yet for this step. Have another go, or press Hint.', fbEmptyHow: 'Tap a box, then type a digit.' },
+  es: { co: ': ', J: '.', sp: ' ', addN: 'Suma {x} + {y}.', addCN: 'Suma {x} + {y} y luego el {c} que llevas.', q10: '¿Da 10 o más?', mulN: 'Multiplica {x} × {y}.', mulCN: 'Multiplica {x} × {y} y luego suma el {c} que llevas.',
+    carry: 'Escribe {d} y lleva {k} a la columna siguiente ({next}).', top: 'Escribe {d} aquí y {k} en la casilla de su izquierda.', write: 'Escribe {s} en esta columna.', subN: '¿Es {x} suficiente para quitarle {y}?',
+    subC: 'Esta columna prestó 1 a la de su derecha, así que su cifra de arriba ahora es {x}.', sub10: '{x} es menor que {y}, así que pide 1 a la columna siguiente ({next}). Ahora {t} − {y} = {s}.',
+    sub0: 'Su cifra de arriba es 0 y ya prestó 1, así que primero pide 1 a la columna siguiente ({next}): queda en 9. Ahora 9 − {y} = {s}.',
+    hLast: 'Ahora revisa cada casilla otra vez, de las unidades hacia la izquierda.', sound: 'Sonido', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', starsN: '{n} estrellas', endStars: '{n} de {total} estrellas',
+    fbStep: '{n} todavía no es la respuesta de este paso. Inténtalo otra vez o pulsa Pista.', fbEmptyHow: 'Toca una casilla y escribe una cifra.' },
+  fr: { co: ' : ', J: '.', sp: ' ', addN: 'Additionne {x} + {y}.', addCN: 'Additionne {x} + {y}, puis la retenue {c}.', q10: 'Est-ce 10 ou plus ?', mulN: 'Multiplie {x} × {y}.', mulCN: 'Multiplie {x} × {y}, puis ajoute la retenue {c}.',
+    carry: 'Écris {d} et reporte {k} dans la colonne suivante ({next}).', top: 'Écris {d} ici et {k} dans la case à sa gauche.', write: 'Écris {s} dans cette colonne.', subN: '{x} est-il assez grand pour enlever {y} ?',
+    subC: 'Cette colonne a prêté 1 à celle de droite, donc son chiffre du haut vaut maintenant {x}.', sub10: '{x} est plus petit que {y}, donc emprunte 1 à la colonne suivante ({next}). Maintenant {t} − {y} = {s}.',
+    sub0: 'Son chiffre du haut est 0 et il a déjà prêté 1, donc emprunte d’abord 1 à la colonne suivante ({next}) : il devient 9. Maintenant 9 − {y} = {s}.',
+    hLast: 'Vérifie encore chaque case, des unités vers la gauche.', sound: 'Son', soundOn: 'Son activé', soundOff: 'Son coupé', starsN: '{n} étoiles', endStars: '{n} étoiles sur {total}',
+    fbStep: '{n} n’est pas encore la réponse de cette étape. Réessaie, ou appuie sur Indice.', fbEmptyHow: 'Touche une case, puis tape un chiffre.' },
+  de: { co: ': ', J: '.', sp: ' ', addN: 'Rechne {x} + {y}.', addCN: 'Rechne {x} + {y} und dann plus den Übertrag {c}.', q10: 'Sind es 10 oder mehr?', mulN: 'Rechne {x} × {y}.', mulCN: 'Rechne {x} × {y} und addiere dann den Übertrag {c}.',
+    carry: 'Schreib {d} hin und übertrage {k} in die nächste Spalte ({next}).', top: 'Schreib {d} hierhin und {k} in das Kästchen links daneben.', write: 'Schreib {s} in diese Spalte.', subN: 'Ist {x} groß genug, um {y} abzuziehen?',
+    subC: 'Diese Spalte hat 1 an die Spalte rechts abgegeben, darum ist ihre obere Ziffer jetzt {x}.', sub10: '{x} ist kleiner als {y}, also borg dir 1 aus der nächsten Spalte ({next}). Jetzt {t} − {y} = {s}.',
+    sub0: 'Ihre obere Ziffer ist 0 und hat schon 1 abgegeben, also borg dir zuerst 1 aus der nächsten Spalte ({next}): Sie wird zu 9. Jetzt 9 − {y} = {s}.',
+    hLast: 'Prüf jetzt noch einmal jedes Kästchen, von den Einern nach links.', sound: 'Ton', soundOn: 'Ton an', soundOff: 'Ton aus', starsN: '{n} Sterne', endStars: '{n} von {total} Sternen',
+    fbStep: '{n} ist für diesen Schritt noch nicht richtig. Versuch es noch einmal oder drück auf Tipp.', fbEmptyHow: 'Tippe auf ein Kästchen und gib eine Ziffer ein.' },
+  it: { co: ': ', J: '.', sp: ' ', addN: 'Somma {x} + {y}.', addCN: 'Somma {x} + {y} e poi il riporto {c}.', q10: 'Fa 10 o più?', mulN: 'Moltiplica {x} × {y}.', mulCN: 'Moltiplica {x} × {y} e poi aggiungi il riporto {c}.',
+    carry: 'Scrivi {d} e riporta {k} nella colonna dopo ({next}).', top: 'Scrivi {d} qui e {k} nella casella alla sua sinistra.', write: 'Scrivi {s} in questa colonna.', subN: '{x} basta per togliere {y}?',
+    subC: 'Questa colonna ha prestato 1 a quella a destra, quindi la sua cifra in alto ora è {x}.', sub10: '{x} è minore di {y}, quindi prendi in prestito 1 dalla colonna dopo ({next}). Ora {t} − {y} = {s}.',
+    sub0: 'La sua cifra in alto è 0 e ha già prestato 1, quindi prima prendi in prestito 1 dalla colonna dopo ({next}): diventa 9. Ora 9 − {y} = {s}.',
+    hLast: 'Ora controlla di nuovo ogni casella, dalle unità verso sinistra.', sound: 'Suono', soundOn: 'Suono attivo', soundOff: 'Suono spento', starsN: '{n} stelle', endStars: '{n} stelle su {total}',
+    fbStep: '{n} non è ancora la risposta di questo passo. Riprova, oppure premi Aiuto.', fbEmptyHow: 'Tocca una casella e scrivi una cifra.' },
+  pt: { co: ': ', J: '.', sp: ' ', addN: 'Some {x} + {y}.', addCN: 'Some {x} + {y} e depois o {c} que vai.', q10: 'Dá 10 ou mais?', mulN: 'Multiplique {x} × {y}.', mulCN: 'Multiplique {x} × {y} e depois some o {c} que vai.',
+    carry: 'Escreva {d} e leve {k} para a próxima coluna ({next}).', top: 'Escreva {d} aqui e {k} na casa à esquerda.', write: 'Escreva {s} nesta coluna.', subN: '{x} é suficiente para tirar {y}?',
+    subC: 'Esta coluna emprestou 1 para a coluna da direita, então o algarismo de cima agora é {x}.', sub10: '{x} é menor que {y}, então pegue 1 emprestado da próxima coluna ({next}). Agora {t} − {y} = {s}.',
+    sub0: 'O algarismo de cima é 0 e já emprestou 1, então primeiro pegue 1 emprestado da próxima coluna ({next}): ele vira 9. Agora 9 − {y} = {s}.',
+    hLast: 'Agora confira cada casa de novo, das unidades para a esquerda.', sound: 'Som', soundOn: 'Som ligado', soundOff: 'Som desligado', starsN: '{n} estrelas', endStars: '{n} de {total} estrelas',
+    fbStep: '{n} ainda não é a resposta deste passo. Tente de novo ou toque em Dica.', fbEmptyHow: 'Toque em uma casa e digite um algarismo.' },
+  nl: { co: ': ', J: '.', sp: ' ', addN: 'Tel {x} + {y}.', addCN: 'Tel {x} + {y} en dan de {c} die je onthield.', q10: 'Is het 10 of meer?', mulN: 'Reken {x} × {y}.', mulCN: 'Reken {x} × {y} en tel er dan de {c} bij die je onthield.',
+    carry: 'Schrijf {d} op en onthoud {k} voor de volgende kolom ({next}).', top: 'Schrijf {d} hier en {k} in het vakje links ervan.', write: 'Schrijf {s} in deze kolom.', subN: 'Is {x} groot genoeg om er {y} af te halen?',
+    subC: 'Deze kolom heeft 1 uitgeleend aan de kolom rechts, dus het bovenste cijfer is nu {x}.', sub10: '{x} is kleiner dan {y}, dus leen 1 van de volgende kolom ({next}). Nu {t} − {y} = {s}.',
+    sub0: 'Het bovenste cijfer is 0 en heeft al 1 uitgeleend, dus leen eerst 1 van de volgende kolom ({next}): het wordt 9. Nu 9 − {y} = {s}.',
+    hLast: 'Kijk nu nog een keer elk vakje na, van de eenheden naar links.', sound: 'Geluid', soundOn: 'Geluid aan', soundOff: 'Geluid uit', starsN: '{n} sterren', endStars: '{n} van de {total} sterren',
+    fbStep: '{n} is nog niet het antwoord op deze stap. Probeer het nog eens of druk op Tip.', fbEmptyHow: 'Tik op een vakje en typ een cijfer.' },
+  ru: { co: ': ', J: '.', sp: ' ', addN: 'Сложи {x} + {y}.', addCN: 'Сложи {x} + {y}, потом прибавь перенос {c}.', q10: 'Получилось 10 или больше?', mulN: 'Умножь {x} × {y}.', mulCN: 'Умножь {x} × {y}, потом прибавь перенос {c}.',
+    carry: 'Запиши {d} и перенеси {k} в следующий столбец ({next}).', top: 'Запиши {d} здесь и {k} в клетку слева.', write: 'Запиши {s} в этот столбец.', subN: 'Хватит ли {x}, чтобы вычесть {y}?',
+    subC: 'Этот столбец отдал 1 столбцу справа, поэтому верхняя цифра теперь {x}.', sub10: '{x} меньше, чем {y}, поэтому займи 1 у следующего столбца ({next}). Теперь {t} − {y} = {s}.',
+    sub0: 'Верхняя цифра 0, и она уже отдала 1, поэтому сначала займи 1 у следующего столбца ({next}): получится 9. Теперь 9 − {y} = {s}.',
+    hLast: 'Теперь ещё раз проверь каждую клетку, от единиц влево.', sound: 'Звук', soundOn: 'Звук включён', soundOff: 'Звук выключен', starsN: 'Звёзд: {n}', endStars: 'Звёзд: {n} из {total}',
+    fbStep: '{n} пока не ответ на этот шаг. Попробуй ещё раз или нажми «Подсказка».', fbEmptyHow: 'Нажми на клетку и введи цифру.' },
+  ja: { co: '：', J: '。', sp: '', addN: '{x} + {y} をたしてみよう。', addCN: '{x} + {y} に、くり上がりの {c} もたしてみよう。', q10: '10 いじょうになるかな？', mulN: '{x} × {y} をかけてみよう。', mulCN: '{x} × {y} をかけて、くり上がりの {c} をたそう。',
+    carry: '{d} をかいて、{k} をつぎの位（{next}）にくり上げよう。', top: 'ここに {d}、その左のマスに {k} をかこう。', write: 'この位に {s} をかこう。', subN: '{x} から {y} はひけるかな？',
+    subC: 'この位は右の位に 1 をかしたので、上の数字はいま {x} だよ。', sub10: '{x} は {y} より小さいので、つぎの位（{next}）から 1 かりよう。{t} − {y} = {s}。',
+    sub0: '上の数字は 0 で、もう 1 かしているので、まずつぎの位（{next}）から 1 かりよう。9 になるよ。9 − {y} = {s}。',
+    hLast: 'さいごに、一の位から左へ、マスをもう一度たしかめよう。', sound: 'おと', soundOn: 'おと：オン', soundOff: 'おと：オフ', starsN: 'ほし {n} こ', endStars: 'ほし {total} こ中 {n} こ',
+    fbStep: '{n} は、このステップのこたえではないよ。もう一度やってみるか、「ヒント」をおそう。', fbEmptyHow: 'マスをタップして、数字を入れよう。' },
+  'zh-Hant': { co: '：', J: '。', sp: '', addN: '算算 {x} + {y}。', addCN: '算算 {x} + {y}，再加上進位的 {c}。', q10: '是 10 或更多嗎？', mulN: '算算 {x} × {y}。', mulCN: '算算 {x} × {y}，再加上進位的 {c}。',
+    carry: '寫 {d}，把 {k} 進位到下一位（{next}）。', top: '在這裡寫 {d}，在左邊的格子寫 {k}。', write: '在這一位寫 {s}。', subN: '{x} 夠減 {y} 嗎？',
+    subC: '這一位借了 1 給右邊那一位，所以上面的數字現在是 {x}。', sub10: '{x} 比 {y} 小，所以向下一位（{next}）借 1。現在 {t} − {y} = {s}。',
+    sub0: '上面的數字是 0，而且已經借出 1，所以先向下一位（{next}）借 1，它會變成 9。現在 9 − {y} = {s}。',
+    hLast: '最後從個位往左，再檢查每一格一次。', sound: '聲音', soundOn: '聲音已開啟', soundOff: '聲音已關閉', starsN: '{n} 顆星', endStars: '{total} 顆星中的 {n} 顆',
+    fbStep: '{n} 還不是這一步的答案。再試一次，或按「提示」。', fbEmptyHow: '點一個格子，再輸入一個數字。' },
+  ar: { co: ': ', J: '.', sp: ' ', addN: 'اجمع {x} + {y}.', addCN: 'اجمع {x} + {y} ثم أضف {c} المحمول.', q10: 'هل الناتج 10 أو أكثر؟', mulN: 'اضرب {x} × {y}.', mulCN: 'اضرب {x} × {y} ثم أضف {c} المحمول.',
+    carry: 'اكتب {d} واحمل {k} إلى الخانة التالية ({next}).', top: 'اكتب {d} هنا و {k} في المربع الذي على يساره.', write: 'اكتب {s} في هذه الخانة.', subN: 'هل {x} كبير بما يكفي لنطرح منه {y}؟',
+    subC: 'أعطت هذه الخانة 1 للخانة التي على يمينها، لذلك صار رقمها العلوي {x}.', sub10: '{x} أصغر من {y}، لذلك استلف 1 من الخانة التالية ({next}). الآن {t} − {y} = {s}.',
+    sub0: 'رقمها العلوي 0 وقد أعطى 1، لذلك استلف أولًا 1 من الخانة التالية ({next}): يصبح 9. الآن 9 − {y} = {s}.',
+    hLast: 'الآن تحقّق من كل مربع مرة أخرى، من الآحاد نحو اليسار.', sound: 'الصوت', soundOn: 'الصوت يعمل', soundOff: 'الصوت متوقف', starsN: 'النجوم: {n}', endStars: 'النجوم: {n} من {total}',
+    fbStep: '{n} ليس جواب هذه الخطوة بعد. حاول مرة أخرى أو اضغط تلميح.', fbEmptyHow: 'اضغط على مربع ثم اكتب رقمًا.' },
+  he: { co: ': ', J: '.', sp: ' ', addN: 'חברו {x} + {y}.', addCN: 'חברו {x} + {y} ואז הוסיפו את ה־{c} שהעברתם.', q10: 'יצא 10 או יותר?', mulN: 'הכפילו {x} × {y}.', mulCN: 'הכפילו {x} × {y} ואז הוסיפו את ה־{c} שהעברתם.',
+    carry: 'כתבו {d} והעבירו {k} לעמודה הבאה ({next}).', top: 'כתבו {d} כאן ו־{k} בתיבה שמשמאלה.', write: 'כתבו {s} בעמודה הזו.', subN: 'האם {x} מספיק גדול כדי להחסיר ממנו {y}?',
+    subC: 'העמודה הזו נתנה 1 לעמודה שמימינה, ולכן הספרה העליונה שלה היא עכשיו {x}.', sub10: '{x} קטן מ־{y}, אז קחו 1 מהעמודה הבאה ({next}). עכשיו {t} − {y} = {s}.',
+    sub0: 'הספרה העליונה שלה היא 0 והיא כבר נתנה 1, אז קודם קחו 1 מהעמודה הבאה ({next}): היא תהיה 9. עכשיו 9 − {y} = {s}.',
+    hLast: 'עכשיו בדקו שוב כל תיבה, מהאחדות שמאלה.', sound: 'צליל', soundOn: 'הצליל פועל', soundOff: 'הצליל כבוי', starsN: '{n} כוכבים', endStars: '{n} מתוך {total} כוכבים',
+    fbStep: '{n} עדיין לא התשובה לשלב הזה. נסו שוב, או לחצו על רמז.', fbEmptyHow: 'לחצו על תיבה ואז הקלידו ספרה.' },
+};
+for (const [l, P] of Object.entries(HINT_PARTS)) {
+  const at = s => `{place}${P.co}${s}`, then = (a, b) => `${a}${P.sp}${b}`;
+  const sum = (op, c) => `{x} ${op} {y}${c ? ' + {c}' : ''} = {s}${P.J}`;
+  const W = { hLast: P.hLast, sound: P.sound, soundOn: P.soundOn, soundOff: P.soundOff, starsN: P.starsN, endStars: P.endStars, fbStep: P.fbStep, fbEmptyHow: P.fbEmptyHow };
+  for (const [m, op, n, cn] of [['Add', '+', P.addN, P.addCN], ['Mul', '×', P.mulN, P.mulCN]]) {
+    W[`h${m}1`] = at(m === 'Add' ? then(n, P.q10) : n); W[`h${m}C1`] = at(m === 'Add' ? then(cn, P.q10) : cn);
+    for (const [k, c] of [['', false], ['C', true]]) {
+      W[`h${m}${k}10`] = at(then(sum(op, c), P.carry)); W[`h${m}${k}Top`] = at(then(sum(op, c), P.top)); W[`h${m}${k}2`] = at(then(sum(op, c), P.write));
+    }
+  }
+  Object.assign(W, { hSub1: at(then(`{x} − {y}${P.J}`, P.subN)), hSubC1: at(then(P.subC, P.subN)), hSub10: at(then(P.sub10, P.write)), hSub0: at(then(P.sub0, P.write)), hSub2: at(then(`{x} − {y} = {s}${P.J}`, P.write)) });
+  Object.assign(WORDS[l], W);
+}
 export const WORD_LANGS = Object.keys(WORDS);
 /** The table for a site language: the language, its base ('en-GB' -> 'en'), then English, key by key. */
 export function wordsFor(lang) {

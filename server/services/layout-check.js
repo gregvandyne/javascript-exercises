@@ -105,11 +105,12 @@ export function layoutProblems(opts) {
   return found.sort((a, b) => a.rank - b.rank).slice(0, 6).map(f => f.s);
 }
 
-/** In an Oomba Canvas activity: play the set to its end card (Check twice shows the worked answer, then Next), so the
- *  results card's layout is checked too. -> true when the end card is on screen. Self-contained (frame.evaluate). */
+/** In an Oomba Canvas activity: play the set to its end card (Check twice shows the worked answer, then Next; from 1.6.0,
+ *  where an empty Check is not a try, the kit's own __brbTest.giveUp() shows it), so the results card's layout is checked
+ *  too. -> true when the end card is on screen. Self-contained (frame.evaluate). */
 export function canvasToEnd() {
   if (!window.OombaCanvas || !document.querySelector('.oc')) return false;
-  const end = document.querySelector('.oc-end');
-  for (let i = 0; i < 80 && end && end.hidden; i++) { const y = document.querySelector('.oc-fb .oc-btn'); if (y) y.click(); const b = document.querySelector('.oc-band .oc-primary'); if (!b) break; b.click(); }
+  const end = document.querySelector('.oc-end'), T = window.__brbTest, give = T && typeof T.giveUp === 'function' ? T.giveUp : null;
+  for (let i = 0; i < 80 && end && end.hidden; i++) { const y = document.querySelector('.oc-fb .oc-btn'); if (y) y.click(); if (give) give(); const b = document.querySelector('.oc-band .oc-primary'); if (!b) break; b.click(); }
   return !!(end && !end.hidden);
 }

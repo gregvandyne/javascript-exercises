@@ -16988,6 +16988,77 @@ The owner's third chat audit, its quick items (the Builder in the chat, phase 2,
   data keep their names.
 Tests: `tests/unit/companion-audit3.test.js`, `tests/unit/builder-setup-told.test.js` (a brief's first message).
 
+## Builder class games: audit 4 quality (28 Nov 2026)
+The owner played three Builder-made "regrouping addition, grade 4" games ("Farm Sums: Carry the Ten" v2 and v3,
+"Regroup and Add"). All three were Oomba Canvas activities on the column-addition tool (`digits.add`, Guided help); the
+arithmetic was always right, the guided steps, read-aloud, Try new ones and Print worksheet were liked. What was wrong
+was in the kit or the Builder's rules, so it is fixed there (Oomba Canvas 1.6.0 and the Builder's checks) and every
+future activity gets it.
+- **Wrong answers got no feedback (kit).** A full step box was checked at once, but a wrong one only got a faint yellow
+  outline: no line, nothing counted. Check then read only the answer boxes, so with only a step box filled it said
+  "Not yet. Nothing is there yet." 1.6.0: a wrong step box gets a kind line ("Not yet. 9 is not it yet for this step.
+  Have another go, or press Hint."), a soft red mark (and "Not yet" in its accessible name), and counts as a Not yet
+  (the ✗ chip, now every Not yet in the set, and the problem's stars), but never uses up one of the two Checks. Check
+  with nothing in the answer checks a step box that has digits; "Nothing is there yet. Tap a box, then type a digit."
+  only when nothing is anywhere, and that is not a try (so two empty Checks no longer show the answer: the platform's
+  layout check gets to the end card with the kit's new `__brbTest.giveUp()`, `layout-check.js canvasToEnd`). A wrong
+  answer box after a Check is marked too. Clear empties the step boxes not done (done ones stay). Typing in a full step
+  box starts it again (8 then 9 is 9, not 89). A right step box chooses the next one, and after the last one the ones
+  answer box.
+- **Lost keypresses (kit).** The cause: tapping a digit box that was already chosen let go of it. After the ones digit
+  the kit chooses the Tens box by itself; a student then taps the Tens box (as most do), which unchose it, and the digit
+  typed next went nowhere (the first Tens digit lost, 5 of 6 problems). The same in a 3-digit game: tapping the
+  Hundreds box the kit had moved to, then typing, left it empty, so a digit "disappeared". No code path ever cleared
+  another box. 1.6.0: tapping a box always chooses it (the figure answer box too), and the move to the next box happens
+  in the same paint as the digit. A Chromium test (`tests/unit/canvas-entry-browser.test.js`, in the production game
+  frame) types every digit of 2-, 3- and 4-digit answers with a click on each box, with the kit moving on, with a click
+  on the box it moved to, with double taps, with the keypad, from the left, and on a 390 px touch phone.
+- **Problems that did not practise the skill (Builder).** A "regrouping" set had 40 + 37, 42 + 15 and 21 + 64, and
+  "make the numbers bigger" became three-digit sums up to 1910. The column generator now keeps a skill: `regroup`
+  ("some": every problem carries or borrows at least once; "all": in every column that can; "none": never) and `lo` /
+  `hi` (each number's range, always inside `digits`); the self-test refuses a `regroup` it cannot keep. The CANVAS
+  RULES say: practise exactly what was asked (regrouping in every problem; "both columns" is "all"), keep the digits
+  asked for, "bigger numbers" means larger numbers with the same digits (digits 2, lo 50, hi 99), and write what was
+  asked in a top-level `"skill": { "regroup", "digits" }` block. A typed setup topic tunes the ready generator the same
+  way (`plan.js topicFor`: "regrouping addition" gets `regroup: "some"`, named digits are kept, also for grade 4 and
+  up), so the stand-in Builder and the plan fallback follow it too. A deterministic check (`server/builder/skill.js`)
+  reads every problem the activity deals (fixed ones and three sets from its generator, with the kit the page pins)
+  against the teacher's words (the setup's topic and their messages, the newest mention winning; "carry" alone in a
+  story is not maths) or the skill block, and against the digits the version this build started from had when nobody
+  asked for more. A mismatch is told to the model at the save ("Skill check (fix this now, before you finish): ...
+  problem 2: 40 + 37 needs no regrouping...") and is a hard finding of the automatic playtest, so a fix round runs
+  before the build ends. It never blocks a save (it reads words, and the Activity panel's teacher may want a mix).
+- **Hints (kit).** They were three fixed lines for every column problem, and the button read "🙋 Stuck?" while lit
+  (problem 1, after a Not yet) and "💡 Hint" otherwise. 1.6.0: one "💡 Hint" label (it still lights up); column hints
+  use the problem's own digits for the column the student is on: the column of the last mistake (a wrong answer box,
+  a wrong step box), else the first box not right yet: a nudge ("Ones: Add 6 + 8. Is it 10 or more?"), the worked line
+  ("Ones: 6 + 8 = 14. Write 4 and carry 1 to the next column (Tens)."), then the next column's. Subtraction names the
+  borrow (and a 0 that already gave 1 away), multiplication the carry. A new mistake starts the hints again for its
+  column. The Builder's own hints for the tool come after the kit's line for the mistake.
+- **It feels like a game (kit and rules).** Stars for each problem (3 first time with no hint, 2 after one Not yet or a
+  hint, 1 after more, none when the kit or the teacher showed the answer), a ⭐ chip, the stars on the right-answer line
+  and on the end card ("⭐⭐⭐ ⭐⭐☆", "5 of 6 stars") with the confetti that was there; a 🔊/🔇 switch that is the site's own
+  `BRB.sfx.mute` (kept for every game), a brighter sound for three stars; a carried digit shown small over its column
+  once its step is done. The theme is data the kit shows: `task.theme { icon, cheers, end }` (the icon in the Now bar
+  and on the end card, a cheer after each right answer, the end card's line) and a column problem's or generator's
+  `story` ("The farm packs {a} eggs, then {b} more. How many eggs?", {a} and {b} required, so the Activity panel can
+  change the numbers); the CANVAS RULES ask the Builder to carry a named theme through title, say, theme and stories.
+  No timer (the rules keep "calm and education first"), and no leaderboard or ranking ("No leaderboards", 25 Nov):
+  stars are the student's own, on their device; the result sent is unchanged (`BRB.gameOver({ won, score })`). "No
+  stars, plays or favorite counts" (27 Nov) is about rating stars on game cards, not these.
+- **Versions.** Oomba Canvas 1.6.0 in new files (`public/vendor/oomba-canvas/1.6.0/`), locked in `CANVAS_VERSIONS` and
+  `canvas/SHIPPED.json`; `CANVAS_LATEST` and `PANEL_KIT` 1.6.0 (new activities start on it; older ones move when saved
+  from the Activity panel, which now keeps a generator's `regroup` and `story`). 1.0.0 to 1.5.0 stay byte for byte (a
+  lock test for 1.5.0's folder joins the others). Every new field is optional: 1.5.0 data works unchanged. New kit
+  words are in all 12 kit languages (the hints are put together from per-language parts, so their values always
+  match). The playthrough uses `giveUp()` only when the set is unknown. The arcade SYSTEM_PROMPT and TOOLS are
+  untouched; the CANVAS RULES are regenerated from docs/canvas-api.md.
+- **Not done here.** The Studio's Activity panel does not offer `regroup`, `story` or the theme yet (it keeps them);
+  the end-to-end check used the repository's stand-in (mock Builder, `canvasActivity`) and fixtures: no model key here.
+Tests: `tests/unit/canvas-entry-browser.test.js` (Chromium), `tests/unit/builder-skill.test.js`, the 1.6.0 parts of
+`tests/unit/canvas-kit.test.js`, `builder-canvas` (the save's skill note), `builder-layout-check` (1.6.0 at 390 and
+1280), and the version lines in `builder-activity-panel` and `builder-figures`.
+
 ## Arithmetic Lab: audit 4 fixes (28 Nov 2026)
 
 The owner's fourth live audit, the Arithmetic Lab items and lesson-step credit (the game in `tools/box-by-box`, rebuilt
