@@ -121,12 +121,14 @@ const wake = job => { const w = job.waiters.splice(0); for (const f of w) f(); }
  * game's plan too when it carries brief: true, a brief from Oomba's chat). It is
  * sent instead of the sentence (the plan and its LESSON CONTEXT still go with it), with the names of this teacher's
  * students taken out, and screened like any typed message (emails, phone numbers and links are refused there).
+ * one: a build from the Oomba chat (services/companion-build.js): every save of this build is one version (the first
+ * save adds it, later saves of the same build replace it: builder/tools.js), kept on the row as request.one.
  * A plan only ever starts a game's first build: it is dropped when the game already has a version or is building.
  * -> { status, body, code?, job? }: 202 with the job when a build started. compat: the streamed POST of old pages and
  * runTurn, which answers builder.errors.busy while the game is building. Steps 3-6 never await, so two requests at
  * once can never start two builds: the second one sees the first job.
  */
-export async function submit({ user, game, text = '', pro = false, uploadIds = [], cid = null, continueOf = null, t = tEn, provider = null, compat = false, plan = null }) {
+export async function submit({ user, game, text = '', pro = false, uploadIds = [], cid = null, continueOf = null, t = tEn, provider = null, compat = false, plan = null, one = false }) {
   const err = (status, key, code, vars) => fail(t, status, key, code, vars);
   // 1. Checks, in the order the Builder always had.
   if (!user.builder_enabled) return err(403, 'builder.errors.disabled', 'disabled');
@@ -153,14 +155,14 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   if (cur) {
     if (cid && cid === cur.cid && !compat) return { status: 202, body: { ok: true, turn: { id: cur.id, status: cur.phase === 'screening' ? 'queued' : 'running' } }, job: cur, retried: true };
     if (compat) return err(409, 'builder.errors.busy', 'busy');
-    return followUp(cur, { user, game, text, cid, wanted, pro, t, provider });
+    return followUp(cur, { user, game, text, cid, wanted, pro, t, provider, one });
   }
   // A follow-up sent again after its build ended (its answer was lost): it was stored then, so it gets that answer.
   const had = cid && !compat && sent(game.id, cid, user.id); if (had) return had;
-  return begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, plan });
+  return begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, plan, one });
 }
 /** submit steps 3b-8: a new build for an idle game. prescreened: a follow-up's screening, when its build ended meanwhile. */
-function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, prescreened = null, plan = null }) {
+function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, prescreened = null, plan = null, one = false }) {
   const err = (status, key, code, vars) => fail(t, status, key, code, vars);
   // 3b. Builds no longer need an open tab: at most 2 at once per builder.
   let mine = 0; for (const j of jobs.values()) if (j.userId === user.id) mine++;
@@ -182,7 +184,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   // 5. The row (queued, not charged yet).
   let row;
   try {
-    row = turns.create({ gameId: game.id, userId: user.id, request: { text, uploadIds: wanted.map(u => u.id), cid, ...(orig ? { continueOf: orig.id } : {}), ...(plan ? { plan } : {}) }, locale: t.locale || 'en', pro });
+    row = turns.create({ gameId: game.id, userId: user.id, request: { text, uploadIds: wanted.map(u => u.id), cid, ...(orig ? { continueOf: orig.id } : {}), ...(plan ? { plan } : {}), ...(one ? { one: true } : {}) }, locale: t.locale || 'en', pro });
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) return err(409, 'studio.api.builderWorking', 'builderWorking');
     throw e;
@@ -377,7 +379,7 @@ function carryOver(job) {
       const charge = takeTurn(job.userId, day, { pro: !!job.pro, turnId: id });
       // The provider follows the pool this message is charged to (a forced provider, e.g. in tests, stays).
       const kind = job.providerArg ? job.provider : providerKind(providerName(charge ? charge.pool : 'free'));
-      return charge ? turns.create({ id, gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
+      return charge ? turns.create({ id, gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids], ...(job.request && job.request.one ? { one: true } : {}) }, locale: job.locale, pro: job.pro,
         chain: job.chain + 1, attempt: 1, chargedDay: day, provider: kind, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
         chargedTo: charge.source, weight: charge.weight }) : null;
     });

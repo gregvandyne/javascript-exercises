@@ -53,11 +53,11 @@
     },
     "build": {
       "ready": "Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
-      "readyForTeachers": "Ihre Lektion „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
+      "readyForTeachers": "Ihr Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
       "question": "Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
       "stopped": "„{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
       "many": "Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>",
-      "manyForTeachers": "Der Baumeister hat Neuigkeiten zu einigen Ihrer Lektionen. <a href=\"{href}\">Zum Lektionsordner</a>"
+      "manyForTeachers": "Der Baumeister hat Neuigkeiten zu einigen Ihrer Spiele. <a href=\"{href}\">Zum Lektionsordner</a>"
     },
     "shortPasswordGrownup": "Ihr Passwort ist kürzer als {min} Zeichen. Bitte <a href=\"{href}\">wählen Sie ein längeres</a>."
   },
@@ -1849,6 +1849,8 @@
     "canvasLine": {
       "activity": "Klassenaktivität · Ergebnisse gehen in den Fortschritt",
       "board": "Klassenaktivität · an der Tafel",
+      "game": "Spiel · Ergebnisse gehen in den Fortschritt",
+      "gameBoard": "Spiel · an der Tafel",
       "arcade": "Arcade-Spiel · für deine Klasse gemacht",
       "toArcade": "Zum Arcade-Spiel machen",
       "toArcadeAsk": "Mach lieber ein Arcade-Spiel daraus: ein Quiz-, Lauf- oder Fangspiel mit denselben Aufgaben.",
@@ -3044,6 +3046,7 @@
       "animal2dUse": "Mach dieses Tier zum Helden: {name}.",
       "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}",
       "activityEdit": "Lektion bearbeiten",
+      "activityEditGame": "Spiel bearbeiten",
       "asStudent": "Als Schüler",
       "activitySaveFirst": "Speichern oder verwerfen Sie zuerst Ihre Änderungen im Aktivitätsbereich.",
       "play": {
@@ -11967,7 +11970,8 @@
       "submit": "Zuweisen",
       "note": "Ihre Klasse bekommt einen Unterrichtsplan mit einem Schritt, der diese Lektion startet. Sie können ihn später in der Bibliothek der Unterrichtspläne ändern.",
       "none": "Sie haben noch keine Klasse. Legen Sie zuerst im Klassenraum eine an.",
-      "liveOnly": "Das ist eine Live-Lektion für die Klasse: Starten Sie sie auf dem großen Bildschirm, statt sie zuzuweisen."
+      "liveOnly": "Das ist eine Live-Lektion für die Klasse: Starten Sie sie auf dem großen Bildschirm, statt sie zuzuweisen.",
+      "shareFirst": "Es ist noch mit keiner Klasse geteilt. Zuweisen teilt es nur mit der Klasse, die Sie wählen (nie mit allen), und weist es dann zu."
     },
     "home": {
       "hello": "Hallo, {name}",

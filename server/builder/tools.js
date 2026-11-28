@@ -89,6 +89,18 @@ export function toolbox(ctx) {
   const draftOn = !!(ctx.plan && ctx.plan.chat === true);
   let draft = null;
   const current = () => saved() || draft;
+  // A build from the Oomba chat (ctx.one; docs/decisions.md "Builder in the chat and Studio: audit 5 fixes") makes ONE
+  // version, however many times the Builder saves: its first save adds it, and every later save of the same build (the
+  // automatic playtest's fix rounds, a second edit) replaces it, so a first build is "Version 1 of 1" and each change
+  // adds exactly one. Before, the real Builder (claude.js) saved its edit and then each fix round, so the first build
+  // showed "Version 2 of 2" (or "3 of 3") while the stand-in, which saves once, showed 1. ctx.base: the newest version
+  // number when this build was charged (none yet: 0). A version that was published, sent for a check or reviewed meanwhile is kept.
+  const buildVersion = () => {
+    if (!ctx.one) return null;
+    const g = game(), v = saved();
+    if (!g || !v || v.number <= (Number(ctx.base) || 0) || v.id === g.published_version_id || v.id === g.pending_version_id) return null;
+    return (v.review_status || 'none') === 'none' ? v : null;
+  };
 
   const stopped = () => !!(ctx.signal && ctx.signal.aborted);
   // A classroom activity's skill check (skill.js): the teacher's words (the setup's topic and their messages) and the
@@ -130,7 +142,10 @@ export function toolbox(ctx) {
     // Shown on the version card: no links or site names (the model may have read web pages), nothing the filter refuses.
     const n0 = cleanNote(stripLinks(notes), 200);
     const note = (n0 && cleanText(n0, 200).ok && n0) || 'New version';
-    const v = games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
+    const mine = buildVersion();
+    const v = mine
+      ? games.replaceVersion(mine.id, html, { notes: note, safetyStatus: report.status, safetyReport: report, replay: true })
+      : games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
     draft = null;
     // The safety program (not AI) ran, and the version is saved. k (flag/fail): how many things it listed at that level.
     const listed = (report.issues || []).filter(i => i.level === report.status).length;

@@ -52,11 +52,11 @@
     },
     "build": {
       "ready": "你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
-      "readyForTeachers": "你的課程「{title}」做好了！<a href=\"{href}\">打開看看</a>",
+      "readyForTeachers": "你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
       "question": "小幫手有個關於「{title}」的問題。<a href=\"{href}\">打開看看</a>",
       "stopped": "「{title}」還沒做完就停下來了。<a href=\"{href}\">打開來繼續做</a>",
       "many": "你有幾個遊戲收到小幫手的新消息。<a href=\"{href}\">看看我的遊戲</a>",
-      "manyForTeachers": "你有幾個課程收到 Builder 的新消息。<a href=\"{href}\">看看課程資料夾</a>"
+      "manyForTeachers": "你有幾個遊戲收到 Builder 的新消息。<a href=\"{href}\">看看課程資料夾</a>"
     },
     "shortPasswordGrownup": "密碼少於 {min} 個字元。請<a href=\"{href}\">改用較長的密碼</a>。"
   },
@@ -1848,6 +1848,8 @@
     "canvasLine": {
       "activity": "課堂活動 · 結果進入「學習進度」",
       "board": "課堂活動 · 在黑板上",
+      "game": "遊戲 · 結果進入「學習進度」",
+      "gameBoard": "遊戲 · 在黑板上",
       "arcade": "街機遊戲 · 為你的班級做的",
       "toArcade": "改成街機遊戲",
       "toArcadeAsk": "改成街機遊戲：用同樣題目的問答、跑酷或接東西遊戲。",
@@ -3043,6 +3045,7 @@
       "animal2dUse": "讓這隻動物當主角：{name}。",
       "sparks": "{n, plural, other {火花包 # 次}}",
       "activityEdit": "編輯課程",
+      "activityEditGame": "編輯遊戲",
       "asStudent": "以學生身分",
       "activitySaveFirst": "請先儲存或復原活動面板中的修改。",
       "play": {
@@ -11966,7 +11969,8 @@
       "submit": "指派",
       "note": "你的班級會收到一份只有一個步驟、播放這個課程的教案。之後可以在教案庫修改。",
       "none": "你還沒有班級。請先在教室建立一個。",
-      "liveOnly": "這是全班即時課程：請在大螢幕上主持，而不是指派。"
+      "liveOnly": "這是全班即時課程：請在大螢幕上主持，而不是指派。",
+      "shareFirst": "這還沒有和任何班級分享。「指派」只會和你選的班級分享（絕不會分享給所有人），然後再指派。"
     },
     "home": {
       "hello": "你好，{name}",

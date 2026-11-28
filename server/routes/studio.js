@@ -191,7 +191,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
     // every new version (public/js/studio.js), so it always says where this version stands.
     liveClass: liveOn() && cur ? liveClassState(user, g, cur, t, chat.state) : null,
     // A classroom activity (Oomba Canvas): one line under the safety line, with its fixed switch (canvasLineState).
-    canvasLine: cur ? canvasLineState(cur, t, chat.state) : null,
+    canvasLine: cur ? canvasLineState(cur, t, chat.state, { game: CB.docksIn(user, g) }) : null,
     // The Activity panel (public/js/activity-panel/): a classroom activity's data, edited without a Builder message.
     activity: cur ? activityPanelState(user, g, cur, t) : null,
   };
@@ -228,6 +228,10 @@ export function liveClassState(user, g, cur, t, state = {}) {
     line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
     host: `/live?game=${g.id}`, ask: t('live.entry.studioAskText'), fixAsk: first ? t('live.entry.studioFixText', { issue: t(`live.check.${first.code}`) }) : '',
     why: line === 'off' && not ? t(`buildSetup.play.why.${not}`) : '', chose: play ? play.how : '',
+    // offer: "Make it a live game" is shown only where live play can work (docs/decisions.md "Builder in the chat and
+    // Studio: audit 5 fixes"): a game that cannot be live (a plain classroom game while the arcade side is off, a
+    // ready-made 3D world, a tool for the board, the survey) gets no button, never an offer that only says why not.
+    offer: !(line === 'off' && not),
   };
 }
 
@@ -237,11 +241,13 @@ export function liveClassState(user, g, cur, t, state = {}) {
  * game"; for an arcade game that came from a class's setup steps (state.fromClass), "Make it a classroom activity".
  * Each switch is a fixed Builder message in the builder's language (prompt.js wantsCanvas knows them), like "Make it live".
  */
-export function canvasLineState(cur, t, state = {}) {
+export function canvasLineState(cur, t, state = {}, { game = false } = {}) {
   if (canvasVersion(cur.html)) {
     const board = /"board"\s*:\s*true/.test(cur.html);
-    // While the arcade is hidden (ARCADE off, services/game-focus.js) the line has no "Make it an arcade game" switch.
-    if (!config.arcade) return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: '', ask: '' };
+    // While the arcade is hidden (ARCADE off, services/game-focus.js) the line has no "Make it an arcade game" switch,
+    // and nothing to tell it apart from, so it says game, as the Oomba chat does (game: also a game made in the chat,
+    // docked in Studio; docs/decisions.md "Builder in the chat and Studio: audit 5 fixes").
+    if (!config.arcade || game) return { kind: 'activity', label: t(board ? 'studio.canvasLine.gameBoard' : 'studio.canvasLine.game'), button: '', ask: '', game: true };
     return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: t('studio.canvasLine.toArcade'), ask: t('studio.canvasLine.toArcadeAsk') };
   }
   if (state && state.fromClass) return { kind: 'arcade', label: t('studio.canvasLine.arcade'), button: t('studio.canvasLine.toCanvas'), ask: t('studio.canvasLine.toCanvasAsk') };

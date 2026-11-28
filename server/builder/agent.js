@@ -110,7 +110,10 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   // The builder's own words for this game (every message so far and this one): the style check never undoes what they asked for.
   const requests = [...chat.messages.filter(m => m && m.role === 'user' && typeof m.text === 'string').map(m => m.text), text, ...job.waiting.map(e => e.text)].filter(Boolean).slice(-40);
-  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests, plan });
+  // A build from the Oomba chat (request.one, or a chat plan): all its saves are one version (tools.js), so the teacher's
+  // card counts one version per build (docs/decisions.md "Builder in the chat and Studio: audit 5 fixes").
+  const one = !!((job.request && job.request.one) || (plan && plan.chat));
+  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests, plan, one, base: job.base });
   // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
   // carried messages). Resumed attempts get a fresh one from now.
   const words = text || job.waiting.map(e => e.text).join('\n');

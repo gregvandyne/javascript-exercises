@@ -52,11 +52,11 @@
     },
     "build": {
       "ready": "¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
-      "readyForTeachers": "¡Tu lección “{title}” está lista! <a href=\"{href}\">Ábrela</a>",
+      "readyForTeachers": "¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
       "question": "El Constructor tiene una pregunta sobre “{title}”. <a href=\"{href}\">Ábrelo</a>",
       "stopped": "“{title}” se detuvo antes de terminar. <a href=\"{href}\">Ábrelo para seguir</a>",
       "many": "Algunos de tus juegos tienen noticias del Constructor. <a href=\"{href}\">Ver Mis juegos</a>",
-      "manyForTeachers": "El Constructor tiene noticias de algunas de tus lecciones. <a href=\"{href}\">Ver la Carpeta de lecciones</a>"
+      "manyForTeachers": "El Constructor tiene noticias de algunos de tus juegos. <a href=\"{href}\">Ver la Carpeta de lecciones</a>"
     },
     "shortPasswordGrownup": "Su contraseña tiene menos de {min} caracteres. Por favor, <a href=\"{href}\">elija una más larga</a>."
   },
@@ -1848,6 +1848,8 @@
     "canvasLine": {
       "activity": "Actividad de clase · los resultados van a Progreso",
       "board": "Actividad de clase · en la pizarra",
+      "game": "Juego · los resultados van a Progreso",
+      "gameBoard": "Juego · en la pizarra",
       "arcade": "Juego arcade · hecho para tu clase",
       "toArcade": "Hazlo un juego arcade",
       "toArcadeAsk": "Mejor hazlo un juego arcade: un juego de preguntas, de correr o de atrapar con los mismos problemas.",
@@ -3043,6 +3045,7 @@
       "animal2dUse": "Que el héroe sea este animal: {name}.",
       "sparks": "{n, plural, one {# mensaje de Paquetes Chispa} other {# mensajes de Paquetes Chispa}}",
       "activityEdit": "Editar lección",
+      "activityEditGame": "Editar juego",
       "asStudent": "Como estudiante",
       "activitySaveFirst": "Primero guarda o deshaz los cambios del panel de actividad.",
       "play": {
@@ -11966,7 +11969,8 @@
       "submit": "Asignar",
       "note": "Tu clase recibe un plan de clase de un paso que abre esta lección. Puedes cambiarlo después en la Biblioteca de planes de clase.",
       "none": "Todavía no tienes clases. Primero crea una en Mi aula.",
-      "liveOnly": "Es una lección en vivo para la clase: dirígela en la pantalla grande en lugar de asignarla."
+      "liveOnly": "Es una lección en vivo para la clase: dirígela en la pantalla grande en lugar de asignarla.",
+      "shareFirst": "Todavía no está compartido con ninguna clase. Asignar lo comparte solo con la clase que elijas (nunca con todo el mundo) y luego lo asigna."
     },
     "home": {
       "hello": "Hola, {name}",

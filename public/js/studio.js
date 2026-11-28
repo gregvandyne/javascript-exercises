@@ -223,8 +223,8 @@ function waitingText() {
 //   - the activity switch (a fixed Builder message): "🎮 Make it an arcade game", or, for an arcade game made from a
 //     class, "🧮 Make it a classroom activity";
 //   - the live button: "📡 Live game" (Spark, the Publish yellow) when the game is live, doing the one thing to do next
-//     (Host it, Publish it, or Fix it); "📡 Make it a live game" (plain) when not, which sends the fixed message or,
-//     where this game cannot be live yet, says why (nothing is sent).
+//     (Host it, Publish it, or Fix it); "📡 Make it a live game" (plain) when not, which sends the fixed message; none
+//     at all where this game cannot be live (liveClass.offer false).
 // A small line under the row says where it stands ("Classroom activity · results go to Progress", "Ready to host live").
 function renderActs() {
   const C = S.canvasLine, L = S.liveClass;
@@ -235,25 +235,31 @@ function renderActs() {
       <div class="st-acc" id="st-acc" hidden></div><div class="st-btnrow" id="st-btnrow"></div><div class="st-actcap" id="st-actcap" aria-live="polite"></div>`;
     $('#st-safety').after(box);
   }
-  box.hidden = !C && !L && !S.activity;
-  box.querySelector('.st-editact').hidden = !S.activity;
+  box.hidden = !C && !(L && L.offer !== false) && !S.activity;
+  const edit = box.querySelector('.st-editact');
+  edit.hidden = !S.activity;
+  // A game (the chat's word, and Studio's while the arcade side is off): "Edit game", not "Edit lesson" (canvasLine.game).
+  const ew = E(C && C.game ? 'js.studio.activityEditGame' : 'js.studio.activityEdit');
+  if (edit.dataset.words !== ew) { edit.dataset.words = ew; edit.firstElementChild.innerHTML = `${ico('🧮')} ${ew}`; }
   const row = [], cap = [];
   if (C) {
     if (C.button) row.push(`<button class="btn st-actbtn" type="button" data-act="canvas-switch" data-kind="${esc(C.kind)}"><span>${ico(C.kind === 'activity' ? '🎮' : '🧮')} ${esc(C.button)}</span></button>`);
     cap.push(`<p class="st-cap" data-kind="${esc(C.kind)}">${ico(C.kind === 'activity' ? '🧮' : '🎮')} ${esc(C.label)}</p>`);
   }
-  if (L) {
+  // Where live play cannot work (L.offer false: a plain classroom game while the arcade side is off, a ready-made 3D
+  // world...), no live button at all: never an offer that only says why not.
+  if (L && L.offer !== false) {
     const live = L.line !== 'off';
     const words = `<span>${ico('📡')} ${E(live ? 'js.studio.liveLine.game' : 'js.studio.liveLine.make')}</span>`;
     const attrs = `id="st-livebtn" class="btn st-actbtn st-livebtn${live ? ' btn-hot is-live' : ''}" data-line="${esc(L.line)}"${live ? ' aria-describedby="st-live-cap"' : ''}`;
     if (L.line === 'host' && L.canHost) row.push(`<a ${attrs} href="${esc(L.host)}" data-act="host-live">${words}</a>`);
-    else if (L.line === 'off') row.push(`<button ${attrs} type="button" data-act="make-live" aria-expanded="false" aria-controls="st-live-why">${words}</button>`);
+    else if (L.line === 'off') row.push(`<button ${attrs} type="button" data-act="make-live">${words}</button>`);
     else row.push(`<button ${attrs} type="button" data-act="${{ host: 'live-info', publish: 'live-publish', fix: 'fix-live' }[L.line]}">${words}</button>`);
     if (live) {
       const say = L.line === 'host' ? E(L.canHost ? 'js.studio.liveLine.ready' : 'js.studio.liveLine.kidReady')
         : L.line === 'publish' ? E(L.canHost ? 'js.studio.liveLine.publish' : 'js.studio.liveLine.kidPublish') : E('js.studio.liveLine.fix', { issue: L.issue });
       cap.push(`<p class="st-cap${L.line === 'fix' ? ' warn' : ''}" id="st-live-cap">${ico('📡')} ${say}</p>`);
-    } else if (L.why) cap.push(`<p class="st-cap st-live-why" id="st-live-why" hidden>${esc(L.why)}</p>`);
+    }
   }
   const r = $('#st-btnrow'); r.innerHTML = row.join(''); r.dataset.n = String(row.length);
   $('#st-actcap').innerHTML = cap.join('');
@@ -286,11 +292,9 @@ function renderStudentBtn() {
   b.addEventListener('click', () => asStudent(!student));
   $('.st-prev-tools').prepend(b);
 }
-/** "Make it a live game": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
-function makeLive(btn) {
-  const L = S.liveClass; if (!L) return;
-  const why = $('#st-live-why');
-  if (L.why && why) { why.hidden = false; btn.setAttribute('aria-expanded', 'true'); return; }
+/** "Make it a live game": a fixed Builder message (offered only where live play can work: renderActs). */
+function makeLive() {
+  const L = S.liveClass; if (!L || L.offer === false) return;
   send(L.ask);
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
@@ -1556,7 +1560,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'update') updateLive();
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
-  else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
+  else if (a.dataset.act === 'make-live' && S.liveClass) makeLive();
   else if (a.dataset.act === 'canvas-switch' && S.canvasLine && S.canvasLine.ask) send(S.canvasLine.ask);
   else if (a.dataset.act === 'edit-activity' && panel) panel.toggleInline();
   else if (a.dataset.act === 'live-info' && S.liveClass) toast(t('js.studio.liveLine.kidReady'));
